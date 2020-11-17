@@ -57,13 +57,13 @@ struct RenderItem
     int BaseVertexLocation = 0;
 };
 
-class InstancingAndCullingApp : public D3DApp
+class GameApp : public D3DApp
 {
 public:
-    InstancingAndCullingApp(HINSTANCE hInstance);
-    InstancingAndCullingApp(const InstancingAndCullingApp& rhs) = delete;
-    InstancingAndCullingApp& operator=(const InstancingAndCullingApp& rhs) = delete;
-    ~InstancingAndCullingApp();
+    GameApp(HINSTANCE hInstance);
+    GameApp(const GameApp& rhs) = delete;
+    GameApp& operator=(const GameApp& rhs) = delete;
+    ~GameApp();
 
     virtual bool Initialize()override;
 
@@ -144,7 +144,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 
     try
     {
-        InstancingAndCullingApp theApp(hInstance);
+        GameApp theApp(hInstance);
         if(!theApp.Initialize())
             return 0;
 
@@ -157,18 +157,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
     }
 }
 
-InstancingAndCullingApp::InstancingAndCullingApp(HINSTANCE hInstance)
+GameApp::GameApp(HINSTANCE hInstance)
     : D3DApp(hInstance)
 {
 }
 
-InstancingAndCullingApp::~InstancingAndCullingApp()
+GameApp::~GameApp()
 {
     if(md3dDevice != nullptr)
         FlushCommandQueue();
 }
 
-bool InstancingAndCullingApp::Initialize()
+bool GameApp::Initialize()
 {
     if(!D3DApp::Initialize())
         return false;
@@ -203,7 +203,7 @@ bool InstancingAndCullingApp::Initialize()
     return true;
 }
  
-void InstancingAndCullingApp::OnResize()
+void GameApp::OnResize()
 {
     D3DApp::OnResize();
 
@@ -212,7 +212,7 @@ void InstancingAndCullingApp::OnResize()
 	BoundingFrustum::CreateFromMatrix(mCamFrustum, mCamera.GetProj());
 }
 
-void InstancingAndCullingApp::Update(const GameTimer& gt)
+void GameApp::Update(const GameTimer& gt)
 {
     OnKeyboardInput(gt);
 
@@ -236,7 +236,7 @@ void InstancingAndCullingApp::Update(const GameTimer& gt)
 	UpdateMainPassCB(gt);
 }
 
-void InstancingAndCullingApp::Draw(const GameTimer& gt)
+void GameApp::Draw(const GameTimer& gt)
 {
     auto cmdListAlloc = mCurrFrameResource->CmdListAlloc;
 
@@ -304,7 +304,7 @@ void InstancingAndCullingApp::Draw(const GameTimer& gt)
     mCommandQueue->Signal(mFence.Get(), mCurrentFence);
 }
 
-void InstancingAndCullingApp::OnMouseDown(WPARAM btnState, int x, int y)
+void GameApp::OnMouseDown(WPARAM btnState, int x, int y)
 {
     mLastMousePos.x = x;
     mLastMousePos.y = y;
@@ -312,12 +312,12 @@ void InstancingAndCullingApp::OnMouseDown(WPARAM btnState, int x, int y)
     SetCapture(mhMainWnd);
 }
 
-void InstancingAndCullingApp::OnMouseUp(WPARAM btnState, int x, int y)
+void GameApp::OnMouseUp(WPARAM btnState, int x, int y)
 {
     ReleaseCapture();
 }
 
-void InstancingAndCullingApp::OnMouseMove(WPARAM btnState, int x, int y)
+void GameApp::OnMouseMove(WPARAM btnState, int x, int y)
 {
     if((btnState & MK_LBUTTON) != 0)
     {
@@ -333,7 +333,7 @@ void InstancingAndCullingApp::OnMouseMove(WPARAM btnState, int x, int y)
     mLastMousePos.y = y;
 }
  
-void InstancingAndCullingApp::OnKeyboardInput(const GameTimer& gt)
+void GameApp::OnKeyboardInput(const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
 
@@ -358,12 +358,12 @@ void InstancingAndCullingApp::OnKeyboardInput(const GameTimer& gt)
 	mCamera.UpdateViewMatrix();
 }
  
-void InstancingAndCullingApp::AnimateMaterials(const GameTimer& gt)
+void GameApp::AnimateMaterials(const GameTimer& gt)
 {
 	
 }
 
-void InstancingAndCullingApp::UpdateInstanceData(const GameTimer& gt)
+void GameApp::UpdateInstanceData(const GameTimer& gt)
 {
 	XMMATRIX view = mCamera.GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
@@ -413,7 +413,7 @@ void InstancingAndCullingApp::UpdateInstanceData(const GameTimer& gt)
 	}
 }
 
-void InstancingAndCullingApp::UpdateMaterialBuffer(const GameTimer& gt)
+void GameApp::UpdateMaterialBuffer(const GameTimer& gt)
 {
 	auto currMaterialBuffer = mCurrFrameResource->MaterialBuffer.get();
 	for(auto& e : mMaterials)
@@ -440,7 +440,7 @@ void InstancingAndCullingApp::UpdateMaterialBuffer(const GameTimer& gt)
 	}
 }
 
-void InstancingAndCullingApp::UpdateMainPassCB(const GameTimer& gt)
+void GameApp::UpdateMainPassCB(const GameTimer& gt)
 {
 	XMMATRIX view = mCamera.GetView();
 	XMMATRIX proj = mCamera.GetProj();
@@ -475,7 +475,7 @@ void InstancingAndCullingApp::UpdateMainPassCB(const GameTimer& gt)
 	currPassCB->CopyData(0, mMainPassCB);
 }
 
-void InstancingAndCullingApp::LoadTextures()
+void GameApp::LoadTextures()
 {
 	auto bricksTex = std::make_unique<Texture>();
 	bricksTex->Name = "bricksTex";
@@ -535,7 +535,7 @@ void InstancingAndCullingApp::LoadTextures()
 	mTextures[defaultTex->Name] = std::move(defaultTex);
 }
 
-void InstancingAndCullingApp::BuildRootSignature()
+void GameApp::BuildRootSignature()
 {
 	CD3DX12_DESCRIPTOR_RANGE texTable;
 	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 7, 0, 0);
@@ -575,7 +575,7 @@ void InstancingAndCullingApp::BuildRootSignature()
         IID_PPV_ARGS(mRootSignature.GetAddressOf())));
 }
 
-void InstancingAndCullingApp::BuildDescriptorHeaps()
+void GameApp::BuildDescriptorHeaps()
 {
 	//
 	// Create the SRV heap.
@@ -651,7 +651,7 @@ void InstancingAndCullingApp::BuildDescriptorHeaps()
 	md3dDevice->CreateShaderResourceView(defaultTex.Get(), &srvDesc, hDescriptor);
 }
 
-void InstancingAndCullingApp::BuildShadersAndInputLayout()
+void GameApp::BuildShadersAndInputLayout()
 {
 	const D3D_SHADER_MACRO alphaTestDefines[] =
 	{
@@ -670,7 +670,7 @@ void InstancingAndCullingApp::BuildShadersAndInputLayout()
     };
 }
 
-void InstancingAndCullingApp::BuildSkullGeometry()
+void GameApp::BuildSkullGeometry()
 {
 	std::ifstream fin("Data/Models/skull.txt");
 
@@ -778,7 +778,7 @@ void InstancingAndCullingApp::BuildSkullGeometry()
 	mGeometries[geo->Name] = std::move(geo);
 }
 
-void InstancingAndCullingApp::BuildPSOs()
+void GameApp::BuildPSOs()
 {
     D3D12_GRAPHICS_PIPELINE_STATE_DESC opaquePsoDesc;
 
@@ -811,7 +811,7 @@ void InstancingAndCullingApp::BuildPSOs()
     ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&opaquePsoDesc, IID_PPV_ARGS(&mPSOs["opaque"])));
 }
 
-void InstancingAndCullingApp::BuildFrameResources()
+void GameApp::BuildFrameResources()
 {
     for(int i = 0; i < gNumFrameResources; ++i)
     {
@@ -820,7 +820,7 @@ void InstancingAndCullingApp::BuildFrameResources()
     }
 }
 
-void InstancingAndCullingApp::BuildMaterials()
+void GameApp::BuildMaterials()
 {
 	auto bricks0 = std::make_unique<Material>();
 	bricks0->Name = "bricks0";
@@ -887,7 +887,7 @@ void InstancingAndCullingApp::BuildMaterials()
 	mMaterials["skullMat"] = std::move(skullMat);
 }
 
-void InstancingAndCullingApp::BuildRenderItems()
+void GameApp::BuildRenderItems()
 {
     auto skullRitem = std::make_unique<RenderItem>();
 	skullRitem->World = MathHelper::Identity4x4();
@@ -946,7 +946,7 @@ void InstancingAndCullingApp::BuildRenderItems()
 		mOpaqueRitems.push_back(e.get());
 }
 
-void InstancingAndCullingApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems)
+void GameApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems)
 {
     // For each render item...
     for(size_t i = 0; i < ritems.size(); ++i)
@@ -966,7 +966,7 @@ void InstancingAndCullingApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList
     }
 }
 
-std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> InstancingAndCullingApp::GetStaticSamplers()
+std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GameApp::GetStaticSamplers()
 {
 	// Applications usually only need a handful of samplers.  So just define them all up front
 	// and keep them available as part of the root signature.  
