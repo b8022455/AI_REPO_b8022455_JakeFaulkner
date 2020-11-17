@@ -663,71 +663,35 @@ void GameApp::BuildFrameResources()
     }
 }
 
+void GameApp::BuildMaterial(int& matCBIndex, int texSrvHeapIndex, const std::string & name, float roughness, const DirectX::XMFLOAT4 & diffuseAlbedo,  const DirectX::XMFLOAT3 & fresnel)
+{
+
+	auto material = std::make_unique<Material>();
+	material->Name = name;
+	material->MatCBIndex = matCBIndex;
+	material->DiffuseSrvHeapIndex = texSrvHeapIndex;
+	material->DiffuseAlbedo = diffuseAlbedo;
+	material->FresnelR0 = fresnel;
+	material->Roughness = roughness;
+
+	mMaterials[material->Name] = std::move(material);
+
+	++matCBIndex; //increments for next material
+
+}
+
 void GameApp::BuildMaterials()
 {
-	auto bricks0 = std::make_unique<Material>();
-	bricks0->Name = "bricks0";
-	bricks0->MatCBIndex = 0;
-	bricks0->DiffuseSrvHeapIndex = 0;
-	bricks0->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-    bricks0->FresnelR0 = XMFLOAT3(0.02f, 0.02f, 0.02f);
-    bricks0->Roughness = 0.1f;
+	int matIndex = 0;
 
-	auto stone0 = std::make_unique<Material>();
-	stone0->Name = "stone0";
-	stone0->MatCBIndex = 1;
-	stone0->DiffuseSrvHeapIndex = 1;
-	stone0->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-    stone0->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
-    stone0->Roughness = 0.3f;
- 
-	auto tile0 = std::make_unique<Material>();
-	tile0->Name = "tile0";
-	tile0->MatCBIndex = 2;
-	tile0->DiffuseSrvHeapIndex = 2;
-	tile0->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-    tile0->FresnelR0 = XMFLOAT3(0.02f, 0.02f, 0.02f);
-    tile0->Roughness = 0.3f;
+	BuildMaterial(matIndex, matIndex, "bricks0",		0.1f, { 1.0f,1.0f,1.0f,1.0f }, { 0.02f, 0.02f, 0.02f });
+	BuildMaterial(matIndex, matIndex, "stone0",			0.3f);
+	BuildMaterial(matIndex, matIndex, "tile0",			0.3f, { 1.0f,1.0f,1.0f,1.0f }, { 0.02f, 0.02f, 0.02f });
+	BuildMaterial(matIndex, matIndex, "checkboard0",	0.2f);
+	BuildMaterial(matIndex, matIndex, "ice0",			0.0f, { 1.0f,1.0f,1.0f,1.0f }, { 0.01f, 0.01f, 0.01f });
+	BuildMaterial(matIndex, matIndex, "grass0",			0.0f, { 1.0f,1.0f,1.0f,1.0f } );
+	BuildMaterial(matIndex, matIndex, "skullMat");
 
-	auto crate0 = std::make_unique<Material>();
-	crate0->Name = "checkboard0";
-	crate0->MatCBIndex = 3;
-	crate0->DiffuseSrvHeapIndex = 3;
-	crate0->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-    crate0->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
-    crate0->Roughness = 0.2f;
-
-	auto ice0 = std::make_unique<Material>();
-	ice0->Name = "ice0";
-	ice0->MatCBIndex = 4;
-	ice0->DiffuseSrvHeapIndex = 4;
-	ice0->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	ice0->FresnelR0 = XMFLOAT3(0.1f, 0.1f, 0.1f);
-	ice0->Roughness = 0.0f;
-
-	auto grass0 = std::make_unique<Material>();
-	grass0->Name = "grass0";
-	grass0->MatCBIndex = 5;
-	grass0->DiffuseSrvHeapIndex = 5;
-	grass0->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	grass0->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
-	grass0->Roughness = 0.2f;
-
-	auto skullMat = std::make_unique<Material>();
-	skullMat->Name = "skullMat";
-	skullMat->MatCBIndex = 6;
-	skullMat->DiffuseSrvHeapIndex = 6;
-	skullMat->DiffuseAlbedo = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-	skullMat->FresnelR0 = XMFLOAT3(0.05f, 0.05f, 0.05f);
-	skullMat->Roughness = 0.5f;
-	
-	mMaterials["bricks0"] = std::move(bricks0);
-	mMaterials["stone0"] = std::move(stone0);
-	mMaterials["tile0"] = std::move(tile0);
-	mMaterials["crate0"] = std::move(crate0);
-	mMaterials["ice0"] = std::move(ice0);
-	mMaterials["grass0"] = std::move(grass0);
-	mMaterials["skullMat"] = std::move(skullMat);
 }
 
 void GameApp::BuildRenderItems()
