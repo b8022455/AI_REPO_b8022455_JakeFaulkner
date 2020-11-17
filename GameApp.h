@@ -75,6 +75,7 @@ private:
 	void UpdateMaterialBuffer(const GameTimer& gt);
 	void UpdateMainPassCB(const GameTimer& gt);
 
+	void LoadTexture(const std::string& name, const std::wstring& filename);
 	void LoadTextures();
 	void BuildRootSignature();
 	void BuildDescriptorHeaps();

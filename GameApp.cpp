@@ -352,64 +352,30 @@ void GameApp::UpdateMainPassCB(const GameTimer& gt)
 	currPassCB->CopyData(0, mMainPassCB);
 }
 
+void GameApp::LoadTexture(const std::string & name, const std::wstring & filename)
+{
+	auto texture = std::make_unique<Texture>();
+	assert(texture);
+	texture->Name = name;
+	texture->Filename = filename;
+	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
+		mCommandList.Get(), texture->Filename.c_str(),
+		texture->Resource, texture->UploadHeap));
+
+	mTextures[texture->Name] = std::move(texture);
+}
+
 void GameApp::LoadTextures()
 {
-	auto bricksTex = std::make_unique<Texture>();
-	bricksTex->Name = "bricksTex";
-	bricksTex->Filename = L"Data/Textures/bricks.dds";
-	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
-		mCommandList.Get(), bricksTex->Filename.c_str(),
-		bricksTex->Resource, bricksTex->UploadHeap));
 
-	auto stoneTex = std::make_unique<Texture>();
-	stoneTex->Name = "stoneTex";
-	stoneTex->Filename = L"Data/Textures/stone.dds";
-	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
-		mCommandList.Get(), stoneTex->Filename.c_str(),
-		stoneTex->Resource, stoneTex->UploadHeap));
+	LoadTexture("bricksTex", L"Data/Textures/bricks.dds");
+	LoadTexture("stoneTex", L"Data/Textures/stone.dds");
+	LoadTexture("tileTex", L"Data/Textures/tile.dds");
+	LoadTexture("crateTex", L"Data/Textures/WoodCrate01.dds");
+	LoadTexture("iceTex", L"Data/Textures/ice.dds");
+	LoadTexture("grassTex", L"Data/Textures/grass.dds");
+	LoadTexture("defaultTex", L"Data/Textures/white1x1.dds");
 
-	auto tileTex = std::make_unique<Texture>();
-	tileTex->Name = "tileTex";
-	tileTex->Filename = L"Data/Textures/tile.dds";
-	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
-		mCommandList.Get(), tileTex->Filename.c_str(),
-		tileTex->Resource, tileTex->UploadHeap));
-
-	auto crateTex = std::make_unique<Texture>();
-	crateTex->Name = "crateTex";
-	crateTex->Filename = L"Data/Textures/WoodCrate01.dds";
-	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
-		mCommandList.Get(), crateTex->Filename.c_str(),
-		crateTex->Resource, crateTex->UploadHeap));
-
-	auto iceTex = std::make_unique<Texture>();
-	iceTex->Name = "iceTex";
-	iceTex->Filename = L"Data/Textures/ice.dds";
-	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
-		mCommandList.Get(), iceTex->Filename.c_str(),
-		iceTex->Resource, iceTex->UploadHeap));
-
-	auto grassTex = std::make_unique<Texture>();
-	grassTex->Name = "grassTex";
-	grassTex->Filename = L"Data/Textures/grass.dds";
-	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
-		mCommandList.Get(), grassTex->Filename.c_str(),
-		grassTex->Resource, grassTex->UploadHeap));
-
-	auto defaultTex = std::make_unique<Texture>();
-	defaultTex->Name = "defaultTex";
-	defaultTex->Filename = L"Data/Textures/white1x1.dds";
-	ThrowIfFailed(DirectX::CreateDDSTextureFromFile12(md3dDevice.Get(),
-		mCommandList.Get(), defaultTex->Filename.c_str(),
-		defaultTex->Resource, defaultTex->UploadHeap));
-
-	mTextures[bricksTex->Name] = std::move(bricksTex);
-	mTextures[stoneTex->Name] = std::move(stoneTex);
-	mTextures[tileTex->Name] = std::move(tileTex);
-	mTextures[crateTex->Name] = std::move(crateTex);
-	mTextures[iceTex->Name] = std::move(iceTex);
-	mTextures[grassTex->Name] = std::move(grassTex);
-	mTextures[defaultTex->Name] = std::move(defaultTex);
 }
 
 void GameApp::BuildRootSignature()
