@@ -1,5 +1,7 @@
 #pragma once
 
+#define no_init_all // Removes VS 2017 error message. Bug fixed in VS 2019.
+
 #include "Common/d3dApp.h"
 #include "Common/MathHelper.h"
 #include "Common/UploadBuffer.h"
