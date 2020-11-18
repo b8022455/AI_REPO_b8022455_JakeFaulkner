@@ -32,7 +32,7 @@ void AudioSimple::Update(const GameTimer& gt)
 {
 	if (mAudioEngine->Update())
 	{
-		//mInstance->SetPitch(sinf(gt.TotalTime()));
+		//Apply3D effects here?
 	}
 	else
 	{
@@ -44,23 +44,24 @@ void AudioSimple::Update(const GameTimer& gt)
 	}
 }
 
-void AudioSimple::Load(const std::wstring& filename)
+void AudioSimple::Load(const std::string& name, const std::wstring& filename)
 {
+	SoundPair soundPair;
+	soundPair.first = std::make_unique<DirectX::SoundEffect>(mAudioEngine.get(), filename.c_str() );
+	assert(soundPair.first);
 
-	mSoundEffect = std::make_unique<DirectX::SoundEffect>(mAudioEngine.get(), filename.c_str() );
-
-	assert(mSoundEffect);
+	mSounds[name] = std::move(soundPair);
+	
 }
 
-void AudioSimple::Play(bool loop, float volume, float pitch , float pan )
+void AudioSimple::Play(const std::string& name, bool loop, float volume, float pitch , float pan )
 {
-	mInstance = std::move(mSoundEffect->CreateInstance()); // restarts if called while playing
-	assert(mInstance);
-
-	mInstance->Play(loop);
-	mInstance->SetVolume(volume);
-	mInstance->SetPitch(pitch);
-	mInstance->SetPan(pan);
+	assert(mSounds[name].first);
+	mSounds[name].second = std::move(mSounds[name].first->CreateInstance());
+	mSounds[name].second->Play(loop);
+	mSounds[name].second->SetVolume(volume);
+	mSounds[name].second->SetPitch(pitch);
+	mSounds[name].second->SetPan(pan);
 }
 
 void AudioSimple::Suspend()

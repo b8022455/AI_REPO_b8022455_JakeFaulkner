@@ -62,8 +62,9 @@ bool GameApp::Initialize()
 	mCamera.SetPosition(0.0f, 2.0f, -15.0f);
  
 	mAudio.Init();
-	mAudio.Load(L"Data/Sounds/Ring09.wav"); // Plays on 'Q' key
-
+	mAudio.Load("Chord", L"Data/Sounds/chord.wav"); // Plays on 'Q' key
+	mAudio.Load("Ring",L"Data/Sounds/Ring09.wav");  // Music
+	mAudio.Play("Ring", true); //Loops
 
 	LoadTextures();
     BuildRootSignature();
@@ -242,7 +243,7 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 
 
 	if (GetAsyncKeyState('Q') & 0x08000)
-		mAudio.Play();
+		mAudio.Play("Chord",false,1.0f,sinf(gt.TotalTime()));
 
 	mCamera.UpdateViewMatrix();
 }
