@@ -19,6 +19,12 @@
     <Filter Include="Source Files\Common">
       <UniqueIdentifier>{343a78f2-2dd5-4afe-9781-13092cbc2d38}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Audio">
+      <UniqueIdentifier>{5b3f2149-b1fd-400b-9d43-d6d729690cff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Audio">
+      <UniqueIdentifier>{4b20676c-e0d2-452e-9f00-852f8a68c7b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FrameResource.cpp">
@@ -47,6 +53,9 @@
     </ClCompile>
     <ClCompile Include="GameApp.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioSImple.cpp">
+      <Filter>Source Files\Audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -83,5 +92,11 @@
     <ClInclude Include="GameApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AudioSImple.h">
+      <Filter>Header Files\Audio</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

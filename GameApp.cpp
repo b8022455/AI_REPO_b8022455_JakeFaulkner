@@ -4,6 +4,8 @@
 
 #include "GameApp.h"
 
+#include <xaudio2.h>
+
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace DirectX::PackedVector;
@@ -59,6 +61,10 @@ bool GameApp::Initialize()
 
 	mCamera.SetPosition(0.0f, 2.0f, -15.0f);
  
+	mAudio.Init();
+	mAudio.Load(L"Data/Sounds/Ring09.wav"); // Plays on 'Q' key
+
+
 	LoadTextures();
     BuildRootSignature();
 	BuildDescriptorHeaps();
@@ -106,6 +112,8 @@ void GameApp::Update(const GameTimer& gt)
         WaitForSingleObject(eventHandle, INFINITE);
         CloseHandle(eventHandle);
     }
+
+	mAudio.Update(gt);
 
 	AnimateMaterials(gt);
 	UpdateInstanceData(gt);
@@ -231,6 +239,10 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 
 	if(GetAsyncKeyState('2') & 0x8000)
 		mFrustumCullingEnabled = false;
+
+
+	if (GetAsyncKeyState('Q') & 0x08000)
+		mAudio.Play();
 
 	mCamera.UpdateViewMatrix();
 }

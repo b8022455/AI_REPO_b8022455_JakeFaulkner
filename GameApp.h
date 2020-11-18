@@ -8,6 +8,7 @@
 #include "Common/GeometryGenerator.h"
 #include "Common/Camera.h"
 #include "FrameResource.h"
+#include "AudioSImple.h"
 
 const int gNumFrameResources = 3;
 
@@ -127,4 +128,8 @@ private:
 	Camera mCamera;
 
 	POINT mLastMousePos;
+
+	//Audio
+	AudioSimple mAudio;
+
 };
