@@ -60,11 +60,14 @@ bool GameApp::Initialize()
     mCbvSrvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	mCamera.SetPosition(0.0f, 2.0f, -15.0f);
- 
-	mAudio.Init();
-	mAudio.Load("Chord", L"Data/Sounds/chord.wav"); // Plays on 'Q' key
-	mAudio.Load("Ring",L"Data/Sounds/Ring09.wav");  // Music
-	mAudio.Play("Ring", true); //Loops
+	
+	//Audio setup
+	{
+		mAudio.Init();
+		mAudio.Load("Chord", L"Data/Sounds/chord.wav"); // Plays on 'Q' key
+		mAudio.Load("Ring",L"Data/Sounds/Ring09.wav");  // Music
+		mAudio.Play("Ring", true); //Loops
+	}
 
 	LoadTextures();
     BuildRootSignature();
@@ -114,12 +117,14 @@ void GameApp::Update(const GameTimer& gt)
         CloseHandle(eventHandle);
     }
 
-	mAudio.Update(gt);
 
 	AnimateMaterials(gt);
 	UpdateInstanceData(gt);
 	UpdateMaterialBuffer(gt);
 	UpdateMainPassCB(gt);
+
+
+	mAudio.Update(gt,mCamera.GetPosition3f(),mCamera.GetLook3f(),mCamera.GetUp3f());
 }
 
 void GameApp::Draw(const GameTimer& gt)
@@ -243,7 +248,10 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 
 
 	if (GetAsyncKeyState('Q') & 0x08000)
-		mAudio.Play("Chord",false,1.0f,sinf(gt.TotalTime()));
+		mAudio.Play("Chord",false,1.0f/*,sinf(gt.TotalTime()*0.0f)*/);
+
+	if (GetAsyncKeyState('E') & 0x08000)
+		mAudio.SetReverbRandom(); //todo fix reverb
 
 	mCamera.UpdateViewMatrix();
 }
