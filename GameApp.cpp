@@ -60,11 +60,16 @@ bool GameApp::Initialize()
     mCbvSrvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	mCamera.SetPosition(0.0f, 2.0f, -15.0f);
- 
-	mAudio.Init();
-	mAudio.Load("Chord", L"Data/Sounds/chord.wav"); // Plays on 'Q' key
-	mAudio.Load("Ring",L"Data/Sounds/Ring09.wav");  // Music
-	mAudio.Play("Ring", true); //Loops
+	
+	//Audio setup
+	{
+		mAudio.Init();
+		mAudio.Load("Chord", L"Data/Sounds/chord.wav"); // Plays on 'Q' key
+		mAudio.Load("Ring",L"Data/Sounds/Ring09.wav");  // Music
+		mAudio.Play("Ring", true); //Loops
+	}
+
+	//mCombatController.Init();
 
 	LoadTextures();
     BuildRootSignature();
@@ -114,12 +119,14 @@ void GameApp::Update(const GameTimer& gt)
         CloseHandle(eventHandle);
     }
 
-	mAudio.Update(gt);
 
 	AnimateMaterials(gt);
 	UpdateInstanceData(gt);
 	UpdateMaterialBuffer(gt);
 	UpdateMainPassCB(gt);
+
+
+	mAudio.Update(gt,mCamera.GetPosition3f(),mCamera.GetLook3f(),mCamera.GetUp3f());
 }
 
 void GameApp::Draw(const GameTimer& gt)
@@ -223,6 +230,7 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
 
+
 	if(GetAsyncKeyState('W') & 0x8000)
 		mCamera.Walk(20.0f*dt);
 
@@ -243,7 +251,52 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 
 
 	if (GetAsyncKeyState('Q') & 0x08000)
-		mAudio.Play("Chord",false,1.0f,sinf(gt.TotalTime()));
+		mAudio.Play("Chord",false,1.0f/*,sinf(gt.TotalTime()*0.0f)*/);
+
+	if (GetAsyncKeyState('E') & 0x08000)
+		mAudio.SetReverbRandom(); //todo fix reverb
+
+	if (GetAsyncKeyState('V') & 0x8000)		//Need to add delay to key
+	{
+		XMMATRIX swordPos = XMMatrixTranslation(0.0f, 0.0f, 5.0f);
+		swordPos *= XMMatrixRotationY(mCombatController.swordRotation);
+		swordPos *= XMMatrixTranslation(5.0f, 2.0f, 0.0f);
+
+		auto boxRitem = std::make_unique<RenderItem>();
+		XMStoreFloat4x4(&boxRitem->World, swordPos);
+		boxRitem->ObjCBIndex = 0;
+		boxRitem->Mat = mMaterials["tile0"].get();
+		boxRitem->Geo = mGeometries["skullGeo"].get();
+		boxRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		boxRitem->IndexCount = boxRitem->Geo->DrawArgs["skull"].IndexCount;
+		boxRitem->StartIndexLocation = boxRitem->Geo->DrawArgs["skull"].StartIndexLocation;
+		boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["skull"].BaseVertexLocation;
+
+		mAllRitems.push_back(std::move(boxRitem));
+
+		if (mCombatController.swordRotation < 1.5708f)
+			mCombatController.swordRotation += 0.0698132f;
+		else
+		{
+			mCombatController.swordRotation = 0.0f;				//Function to remove the sword from the pos as the attack is done
+
+			auto boxRitem = std::make_unique<RenderItem>();
+			XMStoreFloat4x4(&boxRitem->World, XMMatrixTranslation(0.0f, -10.0f, 0.0f));
+			boxRitem->ObjCBIndex = 0;
+			boxRitem->Mat = mMaterials["tile0"].get();
+			boxRitem->Geo = mGeometries["skullGeo"].get();
+			boxRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+			boxRitem->IndexCount = boxRitem->Geo->DrawArgs["skull"].IndexCount;
+			boxRitem->StartIndexLocation = boxRitem->Geo->DrawArgs["skull"].StartIndexLocation;
+			boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["skull"].BaseVertexLocation;
+
+			mAllRitems.push_back(std::move(boxRitem));
+		}
+
+	}
+		//Function that rotates/moves the sword
+
+
 
 	mCamera.UpdateViewMatrix();
 }
@@ -388,6 +441,8 @@ void GameApp::LoadTextures()
 	LoadTexture("iceTex", L"Data/Textures/ice.dds");
 	LoadTexture("grassTex", L"Data/Textures/grass.dds");
 	LoadTexture("defaultTex", L"Data/Textures/white1x1.dds");
+
+	//Load Texture for weapon
 
 }
 
@@ -705,6 +760,8 @@ void GameApp::BuildMaterials()
 	BuildMaterial(matIndex, matIndex, "grass0",			0.0f, { 1.0f,1.0f,1.0f,1.0f } );
 	BuildMaterial(matIndex, matIndex, "skullMat");
 
+	//Add the Weapon Material here
+
 }
 
 void GameApp::BuildRenderItems()
@@ -758,8 +815,22 @@ void GameApp::BuildRenderItems()
 		}
 	}
 
-
 	mAllRitems.push_back(std::move(skullRitem));
+
+	auto askullRitem = std::make_unique<RenderItem>();
+	XMStoreFloat4x4(&askullRitem->World, XMMatrixTranslation(1.0f, 1.0f, 1.0f));
+	askullRitem->TexTransform = MathHelper::Identity4x4();
+	askullRitem->ObjCBIndex = 1;
+	askullRitem->Mat = mMaterials["tile0"].get();
+	askullRitem->Geo = mGeometries["skullGeo"].get();
+	askullRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	askullRitem->InstanceCount = 0;
+	askullRitem->IndexCount = askullRitem->Geo->DrawArgs["skull"].IndexCount;
+	askullRitem->StartIndexLocation = askullRitem->Geo->DrawArgs["skull"].StartIndexLocation;
+	askullRitem->BaseVertexLocation = askullRitem->Geo->DrawArgs["skull"].BaseVertexLocation;
+	askullRitem->Bounds = askullRitem->Geo->DrawArgs["skull"].Bounds;
+
+	//Render the weapon here
 	
 	// All the render items are opaque.
 	for(auto& e : mAllRitems)
