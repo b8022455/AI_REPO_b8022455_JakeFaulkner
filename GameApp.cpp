@@ -228,8 +228,19 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
 
-	if(GetAsyncKeyState('W') & 0x8000)
-		mCamera.Walk(20.0f*dt);
+	if (GetAsyncKeyState('W') & 0x8000) // TODO: IMPLEMENT MOVEMENT HERE, PERFORMING CALCULATION, BUT NOT IMPLEMENTING IT
+		//mCamera.Walk(20.0f*dt);
+		//mAllRitems[0]; // TODO: NEED TO MAKE SURE SKULLS ARE DRAWN FROM mAllRitems IN ORDER FOR CHANGES TO BE VISIBLE AS WELL
+		XMStoreFloat4x4(&mAllRitems[0].get()->World, XMMatrixTranslation(2.0f*dt, 0.0f, 0.0f)); // RUNS BUT NO EFFECT
+	//mAllRitems[0].get()->MaterialIndex = 0 % mMaterials.size(); // THIS LINE MAY NOT BE NECESSARY 
+
+	//InstanceData data;
+	//XMStoreFloat4x4(&data.World, XMMatrixTranspose(world));
+	//XMStoreFloat4x4(&data.TexTransform, XMMatrixTranspose(texTransform));
+	//data.MaterialIndex = instanceData[i].MaterialIndex;
+
+	//// Write the instance data to structured buffer for the visible objects.
+	//currInstanceBuffer->CopyData(visibleInstanceCount++, data);
 
 	if(GetAsyncKeyState('S') & 0x8000)
 		mCamera.Walk(-20.0f*dt);
@@ -543,7 +554,7 @@ void GameApp::BuildSkullGeometry()
 		MessageBox(0, L"Data/Models/skull.txt not found.", 0, 0);
 		return;
 	}
-
+	// TODO: LOOK HERE FOR THE SKULL GENERATION
 	UINT vcount = 0;
 	UINT tcount = 0;
 	std::string ignore;
@@ -739,7 +750,7 @@ void GameApp::BuildRenderItems()
 	float width = 200.0f;
 	float height = 200.0f;
 	float depth = 200.0f;
-
+	// TODO: LOOK HERE FOR AID
 	float x = -0.5f*width;
 	float y = -0.5f*height;
 	float z = -0.5f*depth;
@@ -759,7 +770,7 @@ void GameApp::BuildRenderItems()
 					0.0f, 1.0f, 0.0f, 0.0f,
 					0.0f, 0.0f, 1.0f, 0.0f,
 					x + j*dx, y + i*dy, z + k*dz, 1.0f);
-
+				
 				XMStoreFloat4x4(&skullRitem->Instances[index].TexTransform, XMMatrixScaling(2.0f, 2.0f, 1.0f));
 				skullRitem->Instances[index].MaterialIndex = index % mMaterials.size();
 			}
