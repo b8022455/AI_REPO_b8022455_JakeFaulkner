@@ -306,11 +306,11 @@ void GameApp::UpdateInstanceData(const GameTimer& gt) // TODO: INSTANCE DATA UPD
 			{
 				InstanceData data;
 				//if (i != 0)
-					XMStoreFloat4x4(&data.World, XMMatrixTranspose(world));
+				XMStoreFloat4x4(&data.World, XMMatrixTranspose(world));
 				//if (i != 0)
 				XMStoreFloat4x4(&data.TexTransform, XMMatrixTranspose(texTransform));
-				if (i != 0)
-					data.MaterialIndex = instanceData[i].MaterialIndex;
+				//if (i != 0)
+				data.MaterialIndex = instanceData[i].MaterialIndex;
 
 				// Write the instance data to structured buffer for the visible objects.
 				currInstanceBuffer->CopyData(visibleInstanceCount++, data);
