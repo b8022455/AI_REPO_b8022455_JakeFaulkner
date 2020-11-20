@@ -69,12 +69,13 @@ bool GameApp::Initialize()
 		mAudio.Play("Ring", true); //Loops
 	}
 
-	//mCombatController.Init();
+	mCombatController.Initialize();
 
 	LoadTextures();
     BuildRootSignature();
 	BuildDescriptorHeaps();
     BuildShadersAndInputLayout();
+	BuildBoxGeometry();
 	BuildSkullGeometry();
 	BuildMaterials();
     BuildRenderItems();
@@ -230,7 +231,6 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
 
-
 	if(GetAsyncKeyState('W') & 0x8000)
 		mCamera.Walk(20.0f*dt);
 
@@ -256,47 +256,9 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	if (GetAsyncKeyState('E') & 0x08000)
 		mAudio.SetReverbRandom(); //todo fix reverb
 
-	if (GetAsyncKeyState('V') & 0x8000)		//Need to add delay to key
-	{
-		XMMATRIX swordPos = XMMatrixTranslation(0.0f, 0.0f, 5.0f);
-		swordPos *= XMMatrixRotationY(mCombatController.swordRotation);
-		swordPos *= XMMatrixTranslation(5.0f, 2.0f, 0.0f);
-
-		auto boxRitem = std::make_unique<RenderItem>();
-		XMStoreFloat4x4(&boxRitem->World, swordPos);
-		boxRitem->ObjCBIndex = 0;
-		boxRitem->Mat = mMaterials["tile0"].get();
-		boxRitem->Geo = mGeometries["skullGeo"].get();
-		boxRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-		boxRitem->IndexCount = boxRitem->Geo->DrawArgs["skull"].IndexCount;
-		boxRitem->StartIndexLocation = boxRitem->Geo->DrawArgs["skull"].StartIndexLocation;
-		boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["skull"].BaseVertexLocation;
-
-		mAllRitems.push_back(std::move(boxRitem));
-
-		if (mCombatController.swordRotation < 1.5708f)
-			mCombatController.swordRotation += 0.0698132f;
-		else
-		{
-			mCombatController.swordRotation = 0.0f;				//Function to remove the sword from the pos as the attack is done
-
-			auto boxRitem = std::make_unique<RenderItem>();
-			XMStoreFloat4x4(&boxRitem->World, XMMatrixTranslation(0.0f, -10.0f, 0.0f));
-			boxRitem->ObjCBIndex = 0;
-			boxRitem->Mat = mMaterials["tile0"].get();
-			boxRitem->Geo = mGeometries["skullGeo"].get();
-			boxRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-			boxRitem->IndexCount = boxRitem->Geo->DrawArgs["skull"].IndexCount;
-			boxRitem->StartIndexLocation = boxRitem->Geo->DrawArgs["skull"].StartIndexLocation;
-			boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["skull"].BaseVertexLocation;
-
-			mAllRitems.push_back(std::move(boxRitem));
-		}
-
-	}
-		//Function that rotates/moves the sword
-
-
+	//Checks input when attacking
+	if (GetAsyncKeyState('V') & 0x8000)		///Change key in future
+		mCombatController.PlayerAttack(mAllRitems);
 
 	mCamera.UpdateViewMatrix();
 }
@@ -442,8 +404,6 @@ void GameApp::LoadTextures()
 	LoadTexture("grassTex", L"Data/Textures/grass.dds");
 	LoadTexture("defaultTex", L"Data/Textures/white1x1.dds");
 
-	//Load Texture for weapon
-
 }
 
 void GameApp::BuildRootSignature()
@@ -579,6 +539,55 @@ void GameApp::BuildShadersAndInputLayout()
         { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
     };
+}
+
+void GameApp::BuildBoxGeometry()
+{
+	GeometryGenerator geoGen;
+	GeometryGenerator::MeshData box = geoGen.CreateBox(8.0f, 8.0f, 8.0f, 3);
+
+	std::vector<Vertex> vertices(box.Vertices.size());
+	for (size_t i = 0; i < box.Vertices.size(); ++i)
+	{
+		auto& p = box.Vertices[i].Position;
+		vertices[i].Pos = p;
+		vertices[i].Normal = box.Vertices[i].Normal;
+		vertices[i].TexC = box.Vertices[i].TexC;
+	}
+
+	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
+
+	std::vector<std::uint16_t> indices = box.GetIndices16();
+	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
+
+	auto geo = std::make_unique<MeshGeometry>();
+	geo->Name = "boxGeo";
+
+	ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
+	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
+
+	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
+	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
+
+	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+		mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
+
+	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+		mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
+
+	geo->VertexByteStride = sizeof(Vertex);
+	geo->VertexBufferByteSize = vbByteSize;
+	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
+	geo->IndexBufferByteSize = ibByteSize;
+
+	SubmeshGeometry submesh;
+	submesh.IndexCount = (UINT)indices.size();
+	submesh.StartIndexLocation = 0;
+	submesh.BaseVertexLocation = 0;
+
+	geo->DrawArgs["box"] = submesh;
+
+	mGeometries["boxGeo"] = std::move(geo);
 }
 
 void GameApp::BuildSkullGeometry()
@@ -760,30 +769,38 @@ void GameApp::BuildMaterials()
 	BuildMaterial(matIndex, matIndex, "grass0",			0.0f, { 1.0f,1.0f,1.0f,1.0f } );
 	BuildMaterial(matIndex, matIndex, "skullMat");
 
-	//Add the Weapon Material here
-
 }
 
 void GameApp::BuildRenderItems()
 {
-    auto skullRitem = std::make_unique<RenderItem>();
-	skullRitem->World = MathHelper::Identity4x4();
-	skullRitem->TexTransform = MathHelper::Identity4x4();
-	skullRitem->ObjCBIndex = 0;
-	skullRitem->Mat = mMaterials["tile0"].get();
-	skullRitem->Geo = mGeometries["skullGeo"].get();
-	skullRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	skullRitem->InstanceCount = 0;
-	skullRitem->IndexCount = skullRitem->Geo->DrawArgs["skull"].IndexCount;
-	skullRitem->StartIndexLocation = skullRitem->Geo->DrawArgs["skull"].StartIndexLocation;
-	skullRitem->BaseVertexLocation = skullRitem->Geo->DrawArgs["skull"].BaseVertexLocation;
-	skullRitem->Bounds = skullRitem->Geo->DrawArgs["skull"].Bounds;
+	//auto skullRitem = std::make_unique<RenderItem>();
+	//skullRitem->World = MathHelper::Identity4x4();
+	//skullRitem->TexTransform = MathHelper::Identity4x4();
+	//skullRitem->ObjCBIndex = 0;
+	//skullRitem->Mat = mMaterials["tile0"].get();
+	//skullRitem->Geo = mGeometries["skullGeo"].get();
+	//skullRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	//skullRitem->InstanceCount = 0;
+	//skullRitem->IndexCount = skullRitem->Geo->DrawArgs["skull"].IndexCount;
+	//skullRitem->StartIndexLocation = skullRitem->Geo->DrawArgs["skull"].StartIndexLocation;
+	//skullRitem->BaseVertexLocation = skullRitem->Geo->DrawArgs["skull"].BaseVertexLocation;
+	//skullRitem->Bounds = skullRitem->Geo->DrawArgs["skull"].Bounds;
 
-	// Generate instance data.
+	///Generic box used as the weapon default for now
+	auto boxRitem = std::make_unique<RenderItem>();
+	boxRitem->World = MathHelper::Identity4x4();
+	boxRitem->ObjCBIndex = 0;
+	boxRitem->InstanceCount = 0;
+	boxRitem->Mat = mMaterials["tile0"].get();
+	boxRitem->Geo = mGeometries["boxGeo"].get();
+	boxRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	boxRitem->IndexCount = boxRitem->Geo->DrawArgs["box"].IndexCount;
+	boxRitem->StartIndexLocation = boxRitem->Geo->DrawArgs["box"].StartIndexLocation;
+	boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["box"].BaseVertexLocation;
+
 	const int n = 5;
 	mInstanceCount = n*n*n;
-	skullRitem->Instances.resize(mInstanceCount);
-
+	boxRitem->Instances.resize(mInstanceCount);
 
 	float width = 200.0f;
 	float height = 200.0f;
@@ -792,9 +809,9 @@ void GameApp::BuildRenderItems()
 	float x = -0.5f*width;
 	float y = -0.5f*height;
 	float z = -0.5f*depth;
-	float dx = width / (n - 1);
-	float dy = height / (n - 1);
-	float dz = depth / (n - 1);
+	float dx = width / (n - 0);
+	float dy = height / (n - 0);
+	float dz = depth / (n - 0); 
 	for(int k = 0; k < n; ++k)
 	{
 		for(int i = 0; i < n; ++i)
@@ -803,32 +820,19 @@ void GameApp::BuildRenderItems()
 			{
 				int index = k*n*n + i*n + j;
 				// Position instanced along a 3D grid.
-				skullRitem->Instances[index].World = XMFLOAT4X4(
+				boxRitem->Instances[index].World = XMFLOAT4X4(
 					1.0f, 0.0f, 0.0f, 0.0f,
 					0.0f, 1.0f, 0.0f, 0.0f,
 					0.0f, 0.0f, 1.0f, 0.0f,
 					x + j*dx, y + i*dy, z + k*dz, 1.0f);
 
-				XMStoreFloat4x4(&skullRitem->Instances[index].TexTransform, XMMatrixScaling(2.0f, 2.0f, 1.0f));
-				skullRitem->Instances[index].MaterialIndex = index % mMaterials.size();
+				XMStoreFloat4x4(&boxRitem->Instances[index].TexTransform, XMMatrixScaling(2.0f, 2.0f, 1.0f));
+				boxRitem->Instances[index].MaterialIndex = index % mMaterials.size();
 			}
 		}
 	}
 
-	mAllRitems.push_back(std::move(skullRitem));
-
-	auto askullRitem = std::make_unique<RenderItem>();
-	XMStoreFloat4x4(&askullRitem->World, XMMatrixTranslation(1.0f, 1.0f, 1.0f));
-	askullRitem->TexTransform = MathHelper::Identity4x4();
-	askullRitem->ObjCBIndex = 1;
-	askullRitem->Mat = mMaterials["tile0"].get();
-	askullRitem->Geo = mGeometries["skullGeo"].get();
-	askullRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	askullRitem->InstanceCount = 0;
-	askullRitem->IndexCount = askullRitem->Geo->DrawArgs["skull"].IndexCount;
-	askullRitem->StartIndexLocation = askullRitem->Geo->DrawArgs["skull"].StartIndexLocation;
-	askullRitem->BaseVertexLocation = askullRitem->Geo->DrawArgs["skull"].BaseVertexLocation;
-	askullRitem->Bounds = askullRitem->Geo->DrawArgs["skull"].Bounds;
+	mAllRitems.push_back(std::move(boxRitem));
 
 	//Render the weapon here
 	

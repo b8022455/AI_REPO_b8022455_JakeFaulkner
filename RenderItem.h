@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Common/d3dApp.h"
+#include "FrameResource.h"
 
 
 struct RenderItem

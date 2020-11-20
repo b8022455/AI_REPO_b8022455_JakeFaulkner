@@ -39,6 +39,8 @@ private:
 	void UpdateMaterialBuffer(const GameTimer& gt);
 	void UpdateMainPassCB(const GameTimer& gt);
 
+	void BuildBoxGeometry();
+
 	void LoadTexture(const std::string& name, const std::wstring& filename);
 	void LoadTextures();
 	void BuildRootSignature();
@@ -95,6 +97,7 @@ private:
 	//Audio
 	AudioSimple mAudio;
 
+	//Combat Controller
 	CombatController mCombatController;
 
 };
