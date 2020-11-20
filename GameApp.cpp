@@ -119,7 +119,8 @@ void GameApp::Update(const GameTimer& gt)
 
 
 	AnimateMaterials(gt);
-	UpdateInstanceData(gt);
+	UpdateInstanceData(gt); 
+	// TODO: MAYBE CHANGE INSTANCEDATA ITSELF TO IMPLEMENT MOVEMENT BASED ON A PASSED VARIABLE FROM INPUT ABOVE
 	UpdateMaterialBuffer(gt);
 	UpdateMainPassCB(gt);
 
@@ -272,15 +273,17 @@ void GameApp::AnimateMaterials(const GameTimer& gt)
 	
 }
 
-void GameApp::UpdateInstanceData(const GameTimer& gt)
+void GameApp::UpdateInstanceData(const GameTimer& gt) // TODO: INSTANCE DATA UPDATED HERE
 {
+	const float dt = gt.DeltaTime();
+
 	XMMATRIX view = mCamera.GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
 
 	auto currInstanceBuffer = mCurrFrameResource->InstanceBuffer.get();
 	for(auto& e : mAllRitems)
 	{
-		const auto& instanceData = e->Instances;
+		/*const*/ auto& instanceData = e->Instances;
 
 		int visibleInstanceCount = 0;
 
@@ -302,13 +305,32 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 			if((localSpaceFrustum.Contains(e->Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled==false))
 			{
 				InstanceData data;
-				XMStoreFloat4x4(&data.World, XMMatrixTranspose(world));
+				//if (i != 0)
+					XMStoreFloat4x4(&data.World, XMMatrixTranspose(world));
+				//if (i != 0)
 				XMStoreFloat4x4(&data.TexTransform, XMMatrixTranspose(texTransform));
-				data.MaterialIndex = instanceData[i].MaterialIndex;
+				if (i != 0)
+					data.MaterialIndex = instanceData[i].MaterialIndex;
 
 				// Write the instance data to structured buffer for the visible objects.
 				currInstanceBuffer->CopyData(visibleInstanceCount++, data);
 			}
+
+			// TODO: WORKS, BUT IS CONSTANTLY RESET WITH THE ABOVE
+			
+			XMFLOAT4X4 store = (instanceData[0].World);
+			XMFLOAT4X4 texstore = (instanceData[0].TexTransform);
+			XMStoreFloat4x4(&store, XMMatrixTranslation(200.0f * dt, 0.0f, 0.0f));
+			//XMStoreFloat4x4(&texstore, XMMatrixTranslation(200.0f * dt, 0.0f, 0.0f));
+			XMMATRIX newWorld = XMLoadFloat4x4(&store);
+			XMMATRIX newTex = XMLoadFloat4x4(&texstore);
+
+			XMStoreFloat4x4(&instanceData[0].World, newWorld);
+			XMStoreFloat4x4(&instanceData[0].TexTransform, newTex);
+
+			//NO CHANGE BELOW
+			//XMStoreFloat4x4(&mAllRitems[0].get()->World, newWorld);
+			//XMStoreFloat4x4(&mAllRitems[0].get()->TexTransform, newTex);
 		}
 
 		e->InstanceCount = visibleInstanceCount;
