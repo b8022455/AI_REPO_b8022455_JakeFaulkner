@@ -5,9 +5,34 @@ void CombatController::Initialize()
 	mPlayerWeapon.Initialize();
 }
 
+void CombatController::Update(std::vector<std::unique_ptr<RenderItem>> &mAllRitems)
+{
+	isAttacking = CheckIfAttackIsFinished();		//Stops the attack
+
+	if(isAttacking)
+		mPlayerWeapon.SwingWeapon(mAllRitems);
+
+	mPlayerWeapon.UpdateTimer();					//Keeps timer updated regardless of key input
+}
+
 void CombatController::PlayerAttack(std::vector<std::unique_ptr<RenderItem>> &mAllRitems)
 {
 	mPlayerWeapon.Attack(mAllRitems);
+}
+
+bool CombatController::CheckIfAttackIsFinished()
+{
+	return mPlayerWeapon.GetAttackStatus();
+}
+
+void CombatController::DamageEnemy()
+{
+	//Take health from enemy
+}
+
+void CombatController::DamagePlayer()
+{
+	//Take health from player
 }
 
 
@@ -27,12 +52,9 @@ void PlayerWeapon::Attack(std::vector<std::unique_ptr<RenderItem>> &mAllRitems)
 	if (times.currentTime.tm_sec > times.nextAtkTime)
 	{
 		PositionWeapon(mAllRitems);			
-	}
 
-	if (attacking)
 		SwingWeapon(mAllRitems);
-
-	UpdateTimer();
+	}
 
 }
 
@@ -40,22 +62,12 @@ void PlayerWeapon::PositionWeapon(std::vector<std::unique_ptr<RenderItem>> &mAll
 {
 	times.nextAtkTime = times.currentTime.tm_sec + times.AttackDelay;	//Resets timer on attack delay (Currentime + 1 sec)
 	attacking = true;
+	weaponRotation = 0.0f;
 	UpdateWeaponMatrix();
 
-	auto boxRitem = std::make_unique<RenderItem>();
-	XMStoreFloat4x4(&boxRitem->World, weaponPositionMatrix);
-	boxRitem->ObjCBIndex = 0;
-	boxRitem->Mat = mAllRitems.at(0).get()->Mat;
-	boxRitem->Geo = mAllRitems.at(0).get()->Geo;
-	boxRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	boxRitem->IndexCount = boxRitem->Geo->DrawArgs["box"].IndexCount;
-	boxRitem->StartIndexLocation = boxRitem->Geo->DrawArgs["box"].StartIndexLocation;
-	boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["box"].BaseVertexLocation;
-	///Stuff thats required to show in instancing projects
-	boxRitem->InstanceCount = 0;
-	boxRitem->Instances.resize(125);
-
-	mAllRitems.push_back(std::move(boxRitem));
+	//Positions the first instance (Only instance) of the 'weapon' to the correct position
+	mAllRitems.at(0)->Instances.at(0).MaterialIndex = 1;
+	mAllRitems.at(0)->Instances.at(0).World = weaponPositionMatrix2;	///In future, change position to be where the player is
 }
 
 void PlayerWeapon::SwingWeapon(std::vector<std::unique_ptr<RenderItem>> &mAllRitems)
@@ -64,23 +76,10 @@ void PlayerWeapon::SwingWeapon(std::vector<std::unique_ptr<RenderItem>> &mAllRit
 		ResetWeaponPosition(mAllRitems);
 	else
 	{
-		weaponRotation += 0.0698132f;		///Could replace into its own variable
+		weaponRotation += 0.002f;		///Could replace into its own variable
 		UpdateWeaponMatrix();		//Updates to show the new rotation
 
-		auto boxRitem = std::make_unique<RenderItem>();			//Updates the position of the object to show the rotation taking place
-		XMStoreFloat4x4(&boxRitem->World, weaponPositionMatrix);
-		boxRitem->ObjCBIndex = 0;
-		boxRitem->Mat = mAllRitems.at(0).get()->Mat;
-		boxRitem->Geo = mAllRitems.at(0).get()->Geo;
-		boxRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-		boxRitem->IndexCount = boxRitem->Geo->DrawArgs["box"].IndexCount;
-		boxRitem->StartIndexLocation = boxRitem->Geo->DrawArgs["box"].StartIndexLocation;
-		boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["box"].BaseVertexLocation;
-		///Stuff thats required to show in instancing projects
-		boxRitem->InstanceCount = 0;
-		boxRitem->Instances.resize(125);
-
-		mAllRitems.push_back(std::move(boxRitem));
+		mAllRitems.at(0)->Instances.at(0).World = weaponPositionMatrix2;
 	}
 }
 
@@ -89,20 +88,8 @@ void PlayerWeapon::ResetWeaponPosition(std::vector<std::unique_ptr<RenderItem>> 
 	weaponRotation = 0.0f;
 	attacking = false;
 
-	auto boxRitem = std::make_unique<RenderItem>();
-	XMStoreFloat4x4(&boxRitem->World, XMMatrixTranslation(0.0f, -10.0f, 0.0f));			//Repositions the weapon away from the player as its not in use for now
-	boxRitem->ObjCBIndex = 0;
-	boxRitem->Mat = mAllRitems.at(0).get()->Mat;
-	boxRitem->Geo = mAllRitems.at(0).get()->Geo;
-	boxRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	boxRitem->IndexCount = boxRitem->Geo->DrawArgs["box"].IndexCount;
-	boxRitem->StartIndexLocation = boxRitem->Geo->DrawArgs["box"].StartIndexLocation;
-	boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["box"].BaseVertexLocation;
-	///Stuff thats required to show in instancing projects
-	boxRitem->InstanceCount = 0;
-	boxRitem->Instances.resize(125);
-
-	mAllRitems.push_back(std::move(boxRitem));
+	UpdateWeaponMatrix();
+	mAllRitems.at(0)->Instances.at(0).World = weaponPositionMatrix2;
 }
 
 void PlayerWeapon::UpdateTimer()
@@ -114,8 +101,16 @@ void PlayerWeapon::UpdateTimer()
 
 void PlayerWeapon::UpdateWeaponMatrix()
 {
-	weaponPositionMatrix = XMMatrixTranslation(0.0f, 0.0f, 5.0f);
+	///Original matrix used for positioning, need to find way to do rotation around a point using 1 matrix
+	weaponPositionMatrix = XMMatrixTranslation(5.0f, 0.0f, 0.0f);		///Could replace with a weapons position variable + 5.0 to get local positions
 	weaponPositionMatrix *= XMMatrixRotationY(weaponRotation);
-	weaponPositionMatrix = XMMatrixTranslation(5.0f, 2.0f, 0.0f);
+	weaponPositionMatrix *= XMMatrixTranslation(0.0f, 0.0f, 0.0f);
+
+	XMStoreFloat4x4(&weaponPositionMatrix2, weaponPositionMatrix);		//Stores above calculated matrix into the matrix which is assigned to the Objs World position
+}
+
+bool PlayerWeapon::GetAttackStatus()
+{
+	return attacking;
 }
 

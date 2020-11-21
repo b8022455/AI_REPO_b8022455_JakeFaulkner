@@ -49,7 +49,7 @@ private:
 	void BuildSkullGeometry();
 	void BuildPSOs();
 	void BuildFrameResources();
-	void BuildMaterial(int& index, int texIndex, const std::string& name, float roughness = 0.5f, const DirectX::XMFLOAT4& diffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f }, const DirectX::XMFLOAT3& fresnel = {0.05f, 0.05f, 0.05f} );
+	void BuildMaterial(int& index, int texIndex, const std::string& name, float roughness = 0.5f, const DirectX::XMFLOAT4& diffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f }, const DirectX::XMFLOAT3& fresnel = { 0.05f, 0.05f, 0.05f });
 	void BuildMaterials();
 	void BuildRenderItems();
 	void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems);
@@ -87,7 +87,7 @@ private:
 	bool mFrustumCullingEnabled = true;
 
 	DirectX::BoundingFrustum mCamFrustum;
-	
+
 	PassConstants mMainPassCB;
 
 	Camera mCamera;
