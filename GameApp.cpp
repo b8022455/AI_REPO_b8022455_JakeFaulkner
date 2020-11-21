@@ -36,6 +36,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
     }
 }
 
+
+
 GameApp::GameApp(HINSTANCE hInstance)
     : D3DApp(hInstance)
 {
@@ -74,6 +76,7 @@ bool GameApp::Initialize()
 	BuildDescriptorHeaps();
     BuildShadersAndInputLayout();
 	BuildSkullGeometry();
+	BuildPlaneGeometry();
 	BuildMaterials();
     BuildRenderItems();
     BuildFrameResources();
@@ -642,6 +645,56 @@ void GameApp::BuildSkullGeometry()
 	mGeometries[geo->Name] = std::move(geo);
 }
 
+
+void GameApp::BuildPlaneGeometry()
+{
+  GeometryGenerator geoGen;
+  GeometryGenerator::MeshData box = geoGen.CreateBox(6.0f, 6.0f, 6.0f, 3);
+
+  std::vector<Vertex> vertices(box.Vertices.size());
+  for (size_t i = 0; i < box.Vertices.size(); ++i)
+  {
+	auto& p = box.Vertices[i].Position;
+	vertices[i].Pos = p;
+	vertices[i].Normal = box.Vertices[i].Normal;
+	vertices[i].TexC = box.Vertices[i].TexC;
+  }
+
+  const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
+
+  std::vector<std::uint16_t> indices = box.GetIndices16();
+  const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
+
+  auto geo = std::make_unique<MeshGeometry>();
+  geo->Name = "boxGeo";
+
+  ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
+  CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
+
+  ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
+  CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
+
+  geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+	mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
+
+  geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+	mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
+
+  geo->VertexByteStride = sizeof(Vertex);
+  geo->VertexBufferByteSize = vbByteSize;
+  geo->IndexFormat = DXGI_FORMAT_R16_UINT;
+  geo->IndexBufferByteSize = ibByteSize;
+
+  SubmeshGeometry submesh;
+  submesh.IndexCount = (UINT)indices.size();
+  submesh.StartIndexLocation = 0;
+  submesh.BaseVertexLocation = 0;
+
+  geo->DrawArgs["box"] = submesh;
+
+  mGeometries["boxGeo"] = std::move(geo);
+}
+
 void GameApp::BuildPSOs()
 {
     D3D12_GRAPHICS_PIPELINE_STATE_DESC opaquePsoDesc;
@@ -734,6 +787,7 @@ void GameApp::BuildRenderItems()
 	const int n = 5;
 	mInstanceCount = n*n*n;
 	skullRitem->Instances.resize(mInstanceCount);
+	
 
 
 	float width = 200.0f;
@@ -767,7 +821,26 @@ void GameApp::BuildRenderItems()
 	}
 
 
+
+
 	mAllRitems.push_back(std::move(skullRitem));
+
+	auto boxRitem = std::make_unique<RenderItem>();
+	XMStoreFloat4x4(&boxRitem->World, XMMatrixTranslation(200.0f, 2.0f, -8.0f));
+	boxRitem->ObjCBIndex = 1;
+	boxRitem->Mat = mMaterials["tile0"].get();
+	boxRitem->Geo = mGeometries["boxGeo"].get();
+	boxRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	boxRitem->IndexCount = boxRitem->Geo->DrawArgs["box"].IndexCount;
+	boxRitem->StartIndexLocation = boxRitem->Geo->DrawArgs["box"].StartIndexLocation;
+	boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["box"].BaseVertexLocation;
+
+	mRitemLayer[(int)RenderLayer::Transparent].push_back(boxRitem.get());
+	
+	boxRitem->Instances.resize(mInstanceCount);
+
+	mAllRitems.push_back(std::move(boxRitem));
+
 	
 	// All the render items are opaque.
 	for(auto& e : mAllRitems)
@@ -788,7 +861,10 @@ void GameApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vec
 		// Set the instance buffer to use for this render-item.  For structured buffers, we can bypass 
 		// the heap and set as a root descriptor.
 		auto instanceBuffer = mCurrFrameResource->InstanceBuffer->Resource();
-		mCommandList->SetGraphicsRootShaderResourceView(0, instanceBuffer->GetGPUVirtualAddress());
+		mCommandList->SetGraphicsRootShaderResourceView(ri->ObjCBIndex, instanceBuffer->GetGPUVirtualAddress());
+
+		//auto instanceBuffer2 = mCurrFrameResource->InstanceBuffer2->Resource();
+		//mCommandList->SetGraphicsRootShaderResourceView(0, instanceBuffer2->GetGPUVirtualAddress());
 
         cmdList->DrawIndexedInstanced(ri->IndexCount, ri->InstanceCount, ri->StartIndexLocation, ri->BaseVertexLocation, 0);
     }

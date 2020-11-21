@@ -82,6 +82,7 @@ private:
 	void BuildDescriptorHeaps();
 	void BuildShadersAndInputLayout();
 	void BuildSkullGeometry();
+	void BuildPlaneGeometry();
 	void BuildPSOs();
 	void BuildFrameResources();
 	void BuildMaterial(int& index, int texIndex, const std::string& name, float roughness = 0.5f, const DirectX::XMFLOAT4& diffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f }, const DirectX::XMFLOAT3& fresnel = {0.05f, 0.05f, 0.05f} );
@@ -110,9 +111,19 @@ private:
 	std::unordered_map<std::string, Microsoft::WRL::ComPtr<ID3D12PipelineState>> mPSOs;
 
 	std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
+	RenderItem* mWavesRitem = nullptr;
 
 	// List of all the render items.
 	std::vector<std::unique_ptr<RenderItem>> mAllRitems;
+	enum class RenderLayer : int
+	{
+	  Opaque = 0,
+	  Transparent,
+	  transparentWater,
+	  AlphaTested,
+	  Count
+	};
+	std::vector<RenderItem*> mRitemLayer[(int)RenderLayer::Count];
 
 	// Render items divided by PSO.
 	std::vector<RenderItem*> mOpaqueRitems;
@@ -122,8 +133,10 @@ private:
 	bool mFrustumCullingEnabled = true;
 
 	DirectX::BoundingFrustum mCamFrustum;
+
 	
 	PassConstants mMainPassCB;
+
 
 	Camera mCamera;
 
