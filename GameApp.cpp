@@ -731,38 +731,32 @@ void GameApp::BuildRenderItems()
 	skullRitem->Bounds = skullRitem->Geo->DrawArgs["skull"].Bounds;
 
 	// Generate instance data.
+	
 	const int n = 5;
-	mInstanceCount = n*n*n;
+	mInstanceCount = n*n;
 	skullRitem->Instances.resize(mInstanceCount);
 
-
-	float width = 200.0f;
-	float height = 200.0f;
-	float depth = 200.0f;
-
+	float width = 10.0f;
+	float height = 10.0f;
+	float depth = 10.0f;
 	float x = -0.5f*width;
-	float y = -0.5f*height;
 	float z = -0.5f*depth;
 	float dx = width / (n - 1);
-	float dy = height / (n - 1);
 	float dz = depth / (n - 1);
-	for(int k = 0; k < n; ++k)
+	for (int k = 0; k < n; ++k)
 	{
-		for(int i = 0; i < n; ++i)
+		for (int j = 0; j < n; ++j)
 		{
-			for(int j = 0; j < n; ++j)
-			{
-				int index = k*n*n + i*n + j;
-				// Position instanced along a 3D grid.
-				skullRitem->Instances[index].World = XMFLOAT4X4(
-					1.0f, 0.0f, 0.0f, 0.0f,
-					0.0f, 1.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 1.0f, 0.0f,
-					x + j*dx, y + i*dy, z + k*dz, 1.0f);
+			int index = k*n + j;
+			// Position instanced along a 3D grid.
+			skullRitem->Instances[index].World = XMFLOAT4X4(
+				1.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 1.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				x + j * dx, 0.0f, z + k * dz, 1.0f);
 
-				XMStoreFloat4x4(&skullRitem->Instances[index].TexTransform, XMMatrixScaling(2.0f, 2.0f, 1.0f));
-				skullRitem->Instances[index].MaterialIndex = index % mMaterials.size();
-			}
+			XMStoreFloat4x4(&skullRitem->Instances[index].TexTransform, XMMatrixScaling(2.0f, 2.0f, 1.0f));
+			skullRitem->Instances[index].MaterialIndex = index % mMaterials.size();
 		}
 	}
 
