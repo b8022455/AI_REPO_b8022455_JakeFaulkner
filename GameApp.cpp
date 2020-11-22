@@ -274,12 +274,13 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
 
 	mCombatController.Update(mAllRitems);		//Continues rotating the weapon if the player has attacked
+	int i = 0;	//Counter for instance buffers
 
-	auto currInstanceBuffer = mCurrFrameResource->InstanceBuffer.get();
 	for (auto& e : mAllRitems)
 	{
+		auto currInstanceBuffer = mCurrFrameResource->InstanceBuffer[i].get();
 		const auto& instanceData = e.second->Instances;
-
+		i++;
 		int visibleInstanceCount = 0;
 
 		for (UINT i = 0; i < (UINT)instanceData.size(); ++i)
@@ -318,40 +319,6 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 			L" objects visible out of " << e.second->Instances.size();
 		mMainWndCaption = outs.str();
 	}
-
-	//auto instanceBuff2 = mCurrFrameResource->InstanceBuffer2.get();		//2nd instance
-	//const auto& instanceData2 = mAllRitems.at(1)->Instances;
-
-	//visibleInstanceCount = 0;
-
-	//for (UINT i = 0; i < (UINT)instanceData.size(); ++i)
-	//{
-	//	XMMATRIX world = XMLoadFloat4x4(&instanceData[i].World);
-	//	XMMATRIX texTransform = XMLoadFloat4x4(&instanceData[i].TexTransform);
-
-	//	XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
-
-	//	// View space to the object's local space.
-	//	XMMATRIX viewToLocal = XMMatrixMultiply(invView, invWorld);
-
-	//	// Transform the camera frustum from view space to the object's local space.
-	//	BoundingFrustum localSpaceFrustum;
-	//	mCamFrustum.Transform(localSpaceFrustum, viewToLocal);
-
-	//	// Perform the box/frustum intersection test in local space.
-	//	if ((localSpaceFrustum.Contains(mAllRitems.at(1)->Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
-	//	{
-	//		InstanceData data;
-	//		XMStoreFloat4x4(&data.World, XMMatrixTranspose(world));
-	//		XMStoreFloat4x4(&data.TexTransform, XMMatrixTranspose(texTransform));
-	//		data.MaterialIndex = instanceData[i].MaterialIndex;
-
-	//		// Write the instance data to structured buffer for the visible objects.
-	//		currInstanceBuffer->CopyData(visibleInstanceCount++, data);
-	//	}
-	//}
-
-	//mAllRitems.at(1)->InstanceCount = visibleInstanceCount;
 }
 
 void GameApp::UpdateMaterialBuffer(const GameTimer& gt)
@@ -809,30 +776,30 @@ void GameApp::BuildMaterials()
 
 void GameApp::BuildRenderItems()
 {
-	//auto skullRitem = std::make_unique<RenderItem>();
-	//skullRitem->World = MathHelper::Identity4x4();
-	//skullRitem->TexTransform = MathHelper::Identity4x4();
-	//skullRitem->ObjCBIndex = 0;
-	//skullRitem->Mat = mMaterials["tile0"].get();
-	//skullRitem->Geo = mGeometries["skullGeo"].get();
-	//skullRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	//skullRitem->InstanceCount = 1;
-	//skullRitem->IndexCount = skullRitem->Geo->DrawArgs["skull"].IndexCount;
-	//skullRitem->StartIndexLocation = skullRitem->Geo->DrawArgs["skull"].StartIndexLocation;
-	//skullRitem->BaseVertexLocation = skullRitem->Geo->DrawArgs["skull"].BaseVertexLocation;
-	//skullRitem->Bounds = skullRitem->Geo->DrawArgs["skull"].Bounds;
-
-	XMFLOAT4X4 test =
+	XMFLOAT4X4 test2 =
 	{
-		1.0f, 1.0f, 0.0f, 0.0f,
+		1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
-		100.0f, 300.0f, 0.0f, 1.0f
+		0.0f, 5.0f, 0.0f, 1.0f
 	};
+
+	auto skullRitem = std::make_unique<RenderItem>();
+	skullRitem->World = test2;
+	skullRitem->TexTransform = MathHelper::Identity4x4();
+	skullRitem->ObjCBIndex = 1;
+	skullRitem->Mat = mMaterials["tile0"].get();
+	skullRitem->Geo = mGeometries["skullGeo"].get();
+	skullRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	skullRitem->InstanceCount = 0;
+	skullRitem->IndexCount = skullRitem->Geo->DrawArgs["skull"].IndexCount;
+	skullRitem->StartIndexLocation = skullRitem->Geo->DrawArgs["skull"].StartIndexLocation;
+	skullRitem->BaseVertexLocation = skullRitem->Geo->DrawArgs["skull"].BaseVertexLocation;
+	skullRitem->Bounds = skullRitem->Geo->DrawArgs["skull"].Bounds;
 
 	///Generic box used as the weapon default for now
 	auto boxRitem = std::make_unique<RenderItem>();
-	boxRitem->World = test;
+	boxRitem->World = test2;
 	boxRitem->ObjCBIndex = 0;
 	boxRitem->InstanceCount = 0;
 	boxRitem->Mat = mMaterials["tile0"].get();
@@ -845,7 +812,7 @@ void GameApp::BuildRenderItems()
 	const int n = 5;
 	mInstanceCount = 1;
 	boxRitem->Instances.resize(mInstanceCount);
-	//skullRitem->Instances.resize(1);
+	skullRitem->Instances.resize(mInstanceCount);
 
 	//float width = 200.0f;
 	//float height = 200.0f;
@@ -879,6 +846,11 @@ void GameApp::BuildRenderItems()
 
 
 	mAllRitems["Weapon"] = std::move(boxRitem);
+	mAllRitems["Skull"] = std::move(skullRitem);
+
+	///Find a way to get the material/position changed before adding to mAllRitems
+	mAllRitems["Skull"]->Instances.at(0).MaterialIndex = 4;
+	mAllRitems["Skull"]->Instances.at(0).World = test2;
 
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)
@@ -902,11 +874,8 @@ void GameApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vec
 
 		// Set the instance buffer to use for this render-item.  For structured buffers, we can bypass 
 		// the heap and set as a root descriptor.
-		auto instanceBuffer = mCurrFrameResource->InstanceBuffer->Resource();
+		auto instanceBuffer = mCurrFrameResource->InstanceBuffer[i]->Resource();
 		mCommandList->SetGraphicsRootShaderResourceView(0, instanceBuffer->GetGPUVirtualAddress());
-
-		//auto instanceBuffer2 = mCurrFrameResource->InstanceBuffer2->Resource();
-		//mCommandList->SetGraphicsRootShaderResourceView(1, instanceBuffer2->GetGPUVirtualAddress());
 
 		cmdList->DrawIndexedInstanced(ri->IndexCount, ri->InstanceCount, ri->StartIndexLocation, ri->BaseVertexLocation, 0);
 	}
