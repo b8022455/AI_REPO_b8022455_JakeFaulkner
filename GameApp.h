@@ -132,5 +132,6 @@ private:
 	//Audio
 	//AudioSimple mAudio;
 	GameAudio mGameAudio;
+	SoundTestTimer mAudioTimer;
 
 };

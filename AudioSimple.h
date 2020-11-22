@@ -50,7 +50,7 @@ protected:
 	UINT mCacheLimit;
 	DirectX::AudioListener* pListener;
 	float mNormalisedVolume = 1.0f;
-	float mFadeInSecs = 10.0f; 
+	float mFadeInSecs = 3.0f; 
 	DirectX::SOUND_EFFECT_INSTANCE_FLAGS GetInstanceFlags(DirectX::AudioEmitter* emitter); //Flags set based on if emitter provided
 public:
 	SoundEngine(DirectX::AudioListener* listener);
@@ -101,4 +101,21 @@ public:
 	void Play(const std::string& soundName, bool loop = false, float volume = 1.0f, float pitch = 0.0f, float pan = 0.0f, DirectX::AudioEmitter* emitter = nullptr);
 	void LoadSound(const std::string& engineName, const std::string& soundName, const std::wstring& filename);
 	std::string GetVolume(const std::string& engineName);
+};
+
+
+#include <time.h>
+struct SoundTestTimer
+{
+	float timer = 10.0f;
+	
+	bool HasTimeElapsed(float dt, float resetOnElapsed)
+	{
+		timer -= dt;
+		bool elapsed(timer <= 0.0f);
+		if (elapsed)
+			timer = std::abs(resetOnElapsed);
+
+		return elapsed;
+	}
 };

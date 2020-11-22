@@ -81,8 +81,8 @@ void AudioSimple::Play(const std::string& name, bool loop, float volume, float p
 
 	DirectX::SOUND_EFFECT_INSTANCE_FLAGS iflags =
 		DirectX::SoundEffectInstance_Default 
-		//|
-		//DirectX::SoundEffectInstance_Use3D 
+		|
+		DirectX::SoundEffectInstance_Use3D 
 		//|
 		//DirectX::SoundEffectInstance_ReverbUseFilters
 		;
@@ -90,7 +90,7 @@ void AudioSimple::Play(const std::string& name, bool loop, float volume, float p
 	mSounds[name].second = std::move(mSounds[name].first->CreateInstance(iflags));
 
 	mSounds[name].second->Play(loop);
-	//mSounds[name].second->Apply3D(mListener,mEmitter);
+	mSounds[name].second->Apply3D(mListener,mEmitter);
 	mSounds[name].second->SetVolume(volume);
 	//mSounds[name].second->SetPitch(pitch);
 	//mSounds[name].second->SetPan(pan);
@@ -110,6 +110,9 @@ void AudioSimple::SetReverbRandom()
 {
 	mAudioEngine->SetReverb((DirectX::AUDIO_ENGINE_REVERB)(rand()% DirectX::AUDIO_ENGINE_REVERB::Reverb_MAX));
 }
+
+
+
 
 SfxEngine::SfxEngine(DirectX::AudioListener* listener)
 	:
@@ -137,9 +140,8 @@ void SfxEngine::Update(const GameTimer & gt)
 	
 	if (mAudioEngine->Update())
 	{
+		//Remove audio that has stopped
 		mCache.remove_if([](const auto& c) {
-
-			bool b1 = c->GetState() == DirectX::SoundState::STOPPED;
 			return c->GetState() == DirectX::SoundState::STOPPED;
 		});
 	}
@@ -163,7 +165,7 @@ void SfxEngine::Play(const std::string & soundName, bool loop, float volume, flo
 
 	mCache.push_front( std::move(mSounds[soundName]->CreateInstance(iflags)));
 
-	mCache.front()->Play(loop);
+	mCache.front()->Play(false); //no looping
 
 	if (emitter)
 	{
@@ -216,27 +218,37 @@ void MusicEngine::Init()
 
 void MusicEngine::Update(const GameTimer & gt)
 {
-	assert(mCache.size() == mCacheLimit);
-	
-	if (mNormalisedVolume > 0.5f && mNormalisedVolume < 0.6f)
+
+
+	if (mAudioEngine->Update())
 	{
-		int a = 0;
+		assert(mCache.size() == mCacheLimit);
+
+		//Increase volume for cache
+		mNormalisedVolume += gt.DeltaTime() / mFadeInSecs;
+
+		//Limit normalised volume
+		if (mNormalisedVolume > 1.0f)
+			mNormalisedVolume = 1.0f;
+		else if (mNormalisedVolume < 0.0f)
+			mNormalisedVolume = 0.0f;
+
+		//Apply volume
+		if (mCache.front())
+			mCache.front()->SetVolume(mNormalisedVolume);
+		if (mCache.back())
+			mCache.back()->SetVolume(1.0f - mNormalisedVolume); //compliment
+
+	}
+	else
+	{
+		if (mAudioEngine->IsCriticalError())
+		{
+			assert(false);
+		}
 	}
 
-	//Increase volume for cache 
-	mNormalisedVolume += gt.DeltaTime() / mFadeInSecs;
-
-	//Limit normalised volume
-	if (mNormalisedVolume > 1.0f)
-		mNormalisedVolume = 1.0f;
-	else if (mNormalisedVolume < 0.0f)
-		mNormalisedVolume = 0.0f;
-
-	//Apply volume
-	if (mCache.front())
-		mCache.front()->SetVolume(mNormalisedVolume);
-	if (mCache.back())
-		mCache.back()->SetVolume(1.0f - mNormalisedVolume); //compliment
+	
 
 }
 
@@ -423,3 +435,5 @@ std::string SoundEngine::GetVolume()
 
 	return str;
 }
+
+

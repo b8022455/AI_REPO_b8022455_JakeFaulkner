@@ -142,6 +142,19 @@ void GameApp::Update(const GameTimer& gt)
 
 	//mAudio.Update(gt,mCamera.GetPosition3f(),mCamera.GetLook3f(),mCamera.GetUp3f());
 	mGameAudio.Update(gt, mCamera.GetPosition3f(), mCamera.GetLook3f(), mCamera.GetUp3f());
+
+	if (mAudioTimer.HasTimeElapsed(gt.DeltaTime(), 12.0f))
+	{
+		bool r = rand() % 2;
+		if (r)
+			mGameAudio.Play("ring5", true);
+		else
+			mGameAudio.Play("ring9", true);
+
+		
+
+		
+	}
 }
 
 void GameApp::Draw(const GameTimer& gt)
@@ -267,7 +280,7 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	if (GetAsyncKeyState('Q') & 0x08000)
 	{
 		//mAudio.Play("Chord",false,1.0f/*,sinf(gt.TotalTime()*0.0f)*/);
-		mGameAudio.Play("ring5", true);
+		mGameAudio.Play("chord", false);
 	}
 	if (GetAsyncKeyState('E') & 0x08000)
 	{
