@@ -60,6 +60,9 @@ bool GameApp::Initialize()
     mCbvSrvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	mCamera.SetPosition(0.0f, 2.0f, -15.0f);
+
+	float dy = XMConvertToRadians(90.0f);
+	mCamera.Pitch(dy); // SETS CAMERA TO FACE DOWN
 	
 	//Audio setup
 	{
@@ -208,7 +211,7 @@ void GameApp::OnMouseUp(WPARAM btnState, int x, int y)
     ReleaseCapture();
 }
 
-void GameApp::OnMouseMove(WPARAM btnState, int x, int y)
+void GameApp::OnMouseMove(WPARAM btnState, int x, int y) // TODO: MOUSE ROTATING CAMERA HERE
 {
     if((btnState & MK_LBUTTON) != 0)
     {
@@ -216,8 +219,8 @@ void GameApp::OnMouseMove(WPARAM btnState, int x, int y)
 		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - mLastMousePos.x));
 		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - mLastMousePos.y));
 
-		mCamera.Pitch(dy);
-		mCamera.RotateY(dx);
+		mCamera.Pitch(dy); // ROTATES THE Y DIRECTION (MOVES CAMERA UP / DOWN)
+		mCamera.RotateY(dx); // ROTATES THE CAMERA ABOUT THE Y AXIS (LEFT TO RIGHT)
     }
 
     mLastMousePos.x = x;
@@ -227,11 +230,17 @@ void GameApp::OnMouseMove(WPARAM btnState, int x, int y)
 void GameApp::OnKeyboardInput(const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
-
+	
 	if (GetAsyncKeyState('W') & 0x8000)
+		mCamera.Elevate(20.0f * dt);
+
+	if (GetAsyncKeyState('S') & 0x8000)
+		mCamera.Elevate(-20.0f * dt);
+
+	if (GetAsyncKeyState('I') & 0x8000) 
 		mCamera.Walk(20.0f*dt);
 
-	if(GetAsyncKeyState('S') & 0x8000)
+	if(GetAsyncKeyState('O') & 0x8000)
 		mCamera.Walk(-20.0f*dt);
 
 	if(GetAsyncKeyState('A') & 0x8000)
@@ -742,37 +751,30 @@ void GameApp::BuildRenderItems()
 
 	// Generate instance data.
 	const int n = 5;
-	mInstanceCount = n*n*n;
+	mInstanceCount = n*n;
 	skullRitem->Instances.resize(mInstanceCount);
-
 
 	float width = 200.0f;
 	float height = 200.0f;
 	float depth = 200.0f;
-	// TODO: LOOK HERE FOR AID
 	float x = -0.5f*width;
-	float y = -0.5f*height;
 	float z = -0.5f*depth;
 	float dx = width / (n - 1);
-	float dy = height / (n - 1);
 	float dz = depth / (n - 1);
 	for(int k = 0; k < n; ++k)
 	{
-		for(int i = 0; i < n; ++i)
+		for(int j = 0; j < n; ++j)
 		{
-			for(int j = 0; j < n; ++j)
-			{
-				int index = k*n*n + i*n + j;
-				// Position instanced along a 3D grid.
-				skullRitem->Instances[index].World = XMFLOAT4X4(
-					1.0f, 0.0f, 0.0f, 0.0f,
-					0.0f, 1.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 1.0f, 0.0f,
-					x + j*dx, y + i*dy, z + k*dz, 1.0f);
+			int index = k*n + j;
+			// Position instanced along a 3D grid.
+			skullRitem->Instances[index].World = XMFLOAT4X4(
+				1.0f, 0.0f, 0.0f, 0.0f,
+				0.0f, 1.0f, 0.0f, 0.0f,
+				0.0f, 0.0f, 1.0f, 0.0f,
+				x + j*dx, /*y + i*dy*/0.0f, z + k*dz, 1.0f);
 				
-				XMStoreFloat4x4(&skullRitem->Instances[index].TexTransform, XMMatrixScaling(2.0f, 2.0f, 1.0f));
-				skullRitem->Instances[index].MaterialIndex = index % mMaterials.size();
-			}
+			XMStoreFloat4x4(&skullRitem->Instances[index].TexTransform, XMMatrixScaling(2.0f, 2.0f, 1.0f));
+			skullRitem->Instances[index].MaterialIndex = index % mMaterials.size();
 		}
 	}
 
