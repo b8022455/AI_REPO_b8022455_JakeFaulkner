@@ -5,7 +5,7 @@ void CombatController::Initialize()
 	mPlayerWeapon.Initialize();
 }
 
-void CombatController::Update(std::vector<std::unique_ptr<RenderItem>> &mAllRitems)
+void CombatController::Update(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
 {
 	isAttacking = CheckIfAttackIsFinished();		//Stops the attack
 
@@ -15,7 +15,7 @@ void CombatController::Update(std::vector<std::unique_ptr<RenderItem>> &mAllRite
 	mPlayerWeapon.UpdateTimer();					//Keeps timer updated regardless of key input
 }
 
-void CombatController::PlayerAttack(std::vector<std::unique_ptr<RenderItem>> &mAllRitems)
+void CombatController::PlayerAttack(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
 {
 	mPlayerWeapon.Attack(mAllRitems);
 }
@@ -47,7 +47,7 @@ void PlayerWeapon::Initialize()
 
 }
 
-void PlayerWeapon::Attack(std::vector<std::unique_ptr<RenderItem>> &mAllRitems)
+void PlayerWeapon::Attack(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
 {
 	if (times.currentTime.tm_sec > times.nextAtkTime)
 	{
@@ -58,7 +58,7 @@ void PlayerWeapon::Attack(std::vector<std::unique_ptr<RenderItem>> &mAllRitems)
 
 }
 
-void PlayerWeapon::PositionWeapon(std::vector<std::unique_ptr<RenderItem>> &mAllRitems)
+void PlayerWeapon::PositionWeapon(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
 {
 	times.nextAtkTime = times.currentTime.tm_sec + times.AttackDelay;	//Resets timer on attack delay (Currentime + 1 sec)
 	attacking = true;
@@ -66,11 +66,11 @@ void PlayerWeapon::PositionWeapon(std::vector<std::unique_ptr<RenderItem>> &mAll
 	UpdateWeaponMatrix();
 
 	//Positions the first instance (Only instance) of the 'weapon' to the correct position
-	mAllRitems.at(0)->Instances.at(0).MaterialIndex = 1;
-	mAllRitems.at(0)->Instances.at(0).World = weaponPositionMatrix2;	///In future, change position to be where the player is
+	mAllRitems["Weapon"]->Instances.at(0).MaterialIndex = 1;
+	mAllRitems["Weapon"]->Instances.at(0).World = weaponPositionMatrix2;	///In future, change position to be where the player is	
 }
 
-void PlayerWeapon::SwingWeapon(std::vector<std::unique_ptr<RenderItem>> &mAllRitems)
+void PlayerWeapon::SwingWeapon(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
 {
 	if (weaponRotation > PI / 2)
 		ResetWeaponPosition(mAllRitems);
@@ -79,17 +79,18 @@ void PlayerWeapon::SwingWeapon(std::vector<std::unique_ptr<RenderItem>> &mAllRit
 		weaponRotation += 0.002f;		///Could replace into its own variable
 		UpdateWeaponMatrix();		//Updates to show the new rotation
 
-		mAllRitems.at(0)->Instances.at(0).World = weaponPositionMatrix2;
+		mAllRitems["Weapon"]->Instances.at(0).World = weaponPositionMatrix2;
 	}
 }
 
-void PlayerWeapon::ResetWeaponPosition(std::vector<std::unique_ptr<RenderItem>> &mAllRitems)
+void PlayerWeapon::ResetWeaponPosition(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
 {
 	weaponRotation = 0.0f;
 	attacking = false;
 
 	UpdateWeaponMatrix();
-	mAllRitems.at(0)->Instances.at(0).World = weaponPositionMatrix2;
+
+	mAllRitems["Weapon"]->Instances.at(0).World = weaponPositionMatrix2;
 }
 
 void PlayerWeapon::UpdateTimer()

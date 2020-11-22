@@ -276,9 +276,9 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 	mCombatController.Update(mAllRitems);		//Continues rotating the weapon if the player has attacked
 
 	auto currInstanceBuffer = mCurrFrameResource->InstanceBuffer.get();
-	//for (auto& e : mAllRitems)
-	//{
-		const auto& instanceData = mAllRitems.at(0)->Instances;
+	for (auto& e : mAllRitems)
+	{
+		const auto& instanceData = e.second->Instances;
 
 		int visibleInstanceCount = 0;
 
@@ -297,7 +297,7 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 			mCamFrustum.Transform(localSpaceFrustum, viewToLocal);
 
 			// Perform the box/frustum intersection test in local space.
-			if ((localSpaceFrustum.Contains(mAllRitems.at(0)->Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
+			if ((localSpaceFrustum.Contains(e.second->Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
 			{
 				InstanceData data;
 				XMStoreFloat4x4(&data.World, XMMatrixTranspose(world));
@@ -309,15 +309,15 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 			}
 		}
 
-		mAllRitems.at(0)->InstanceCount = visibleInstanceCount;
+		e.second->InstanceCount = visibleInstanceCount;
 
 		std::wostringstream outs;
 		outs.precision(6);
 		outs << L"Instancing and Culling Demo" <<
-			L"    " << mAllRitems.at(0)->InstanceCount <<
-			L" objects visible out of " << mAllRitems.at(0)->Instances.size();
+			L"    " << e.second->InstanceCount <<
+			L" objects visible out of " << e.second->Instances.size();
 		mMainWndCaption = outs.str();
-	//}
+	}
 
 	//auto instanceBuff2 = mCurrFrameResource->InstanceBuffer2.get();		//2nd instance
 	//const auto& instanceData2 = mAllRitems.at(1)->Instances;
@@ -876,14 +876,13 @@ void GameApp::BuildRenderItems()
 	//		}
 	//	}
 	//}
-	//mAllRitems.push_back(std::move(skullRitem));
-	mAllRitems.push_back(std::move(boxRitem));
 
-	//Render the weapon here
+
+	mAllRitems["Weapon"] = std::move(boxRitem);
 
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)
-		mOpaqueRitems.push_back(e.get());
+		mOpaqueRitems.push_back(e.second.get());
 }
 
 void GameApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems)
