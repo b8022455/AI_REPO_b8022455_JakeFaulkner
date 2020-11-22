@@ -130,6 +130,7 @@ private:
 	POINT mLastMousePos;
 
 	//Audio
-	AudioSimple mAudio;
+	//AudioSimple mAudio;
+	GameAudio mGameAudio;
 
 };

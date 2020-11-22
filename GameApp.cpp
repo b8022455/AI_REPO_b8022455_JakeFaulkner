@@ -43,8 +43,12 @@ GameApp::GameApp(HINSTANCE hInstance)
 
 GameApp::~GameApp()
 {
+	OutputDebugStringA("~GameApp before flush \n");
+
     if(md3dDevice != nullptr)
         FlushCommandQueue();
+
+	OutputDebugStringA("~GameApp after flush \n");
 }
 
 bool GameApp::Initialize()
@@ -63,10 +67,23 @@ bool GameApp::Initialize()
 	
 	//Audio setup
 	{
-		mAudio.Init();
-		mAudio.Load("Chord", L"Data/Sounds/chord.wav"); // Plays on 'Q' key
-		mAudio.Load("Ring",L"Data/Sounds/Ring09.wav");  // Music
-		mAudio.Play("Ring", true); //Loops
+
+		//Old method
+		//mAudio.Init();
+		//mAudio.Load("Chord", L"Data/Sounds/chord.wav"); // Plays on 'Q' key
+		//mAudio.Load("Ring",L"Data/Sounds/Ring09.wav");  // Music
+		//mAudio.Play("Ring", true); //Loops
+
+		//New method
+		mGameAudio.Init();
+		mGameAudio.CreateEngine("sfx", GameAudio::ENGINE_SFX);
+		mGameAudio.LoadSound(	"sfx", "chord", L"Data/Sounds/chord.wav");
+
+		mGameAudio.CreateEngine("music", GameAudio::ENGINE_MUSIC);
+		mGameAudio.LoadSound(	"music", "ring5", L"Data/Sounds/518567__szegvari__cooking-indrustrial-music-loop-mastering.wav");
+		mGameAudio.LoadSound(	"music", "ring9", L"Data/Sounds/382318__sterferny__country-band-soundcheck-captured-through-vent.wav");
+
+		mGameAudio.Play("ring9",true);
 	}
 
 	LoadTextures();
@@ -117,14 +134,14 @@ void GameApp::Update(const GameTimer& gt)
         CloseHandle(eventHandle);
     }
 
-
 	AnimateMaterials(gt);
 	UpdateInstanceData(gt);
 	UpdateMaterialBuffer(gt);
 	UpdateMainPassCB(gt);
 
 
-	mAudio.Update(gt,mCamera.GetPosition3f(),mCamera.GetLook3f(),mCamera.GetUp3f());
+	//mAudio.Update(gt,mCamera.GetPosition3f(),mCamera.GetLook3f(),mCamera.GetUp3f());
+	mGameAudio.Update(gt, mCamera.GetPosition3f(), mCamera.GetLook3f(), mCamera.GetUp3f());
 }
 
 void GameApp::Draw(const GameTimer& gt)
@@ -248,10 +265,15 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 
 
 	if (GetAsyncKeyState('Q') & 0x08000)
-		mAudio.Play("Chord",false,1.0f/*,sinf(gt.TotalTime()*0.0f)*/);
-
+	{
+		//mAudio.Play("Chord",false,1.0f/*,sinf(gt.TotalTime()*0.0f)*/);
+		mGameAudio.Play("ring5", true);
+	}
 	if (GetAsyncKeyState('E') & 0x08000)
-		mAudio.SetReverbRandom(); //todo fix reverb
+	{
+		//mAudio.Play("Chord",false,1.0f/*,sinf(gt.TotalTime()*0.0f)*/);
+		mGameAudio.Play("ring9", true);
+	}
 
 	mCamera.UpdateViewMatrix();
 }
@@ -303,10 +325,11 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 		e->InstanceCount = visibleInstanceCount;
 
 		std::wostringstream outs;
-		outs.precision(6);
+		outs.precision(2);
 		outs << L"Instancing and Culling Demo" <<
 			L"    " << e->InstanceCount <<
 			L" objects visible out of " << e->Instances.size();
+		outs << "Vol:" << mGameAudio.GetVolume("music").c_str();
 		mMainWndCaption = outs.str();
 	}
 }
