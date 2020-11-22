@@ -59,7 +59,7 @@ bool GameApp::Initialize()
 	// so we have to query this information.
     mCbvSrvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-	mCamera.SetPosition(0.0f, 2.0f, -15.0f);
+	mCamera.SetPosition(0.0f, 50.0f, 0.0f);
 
 	float dy = XMConvertToRadians(90.0f);
 	mCamera.Pitch(dy); // SETS CAMERA TO FACE DOWN
