@@ -515,16 +515,6 @@ void GameAudio::SetFade(const std::string & name, float secs)
 	}
 }
 
-std::string GameAudio::GetVolume(const std::string& engineName)
-{
-
-	return mEngines[engineName]->GetVolume().c_str();
-}
-
-
-
-
-
 
 
 
@@ -573,17 +563,6 @@ void SoundEngine::Pause()
 void SoundEngine::Resume()
 {
 	mAudioEngine->Resume();
-}
-
-std::string SoundEngine::GetVolume()
-{
-	std::string str;
-
-
-	str = std::to_string( mNormalisedVolume);
-
-
-	return str;
 }
 
 AUDIO_ENGINE_TYPE SoundEngine::GetType()
