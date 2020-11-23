@@ -130,8 +130,7 @@ private:
 	POINT mLastMousePos;
 
 	//Audio
-	//AudioSimple mAudio;
 	GameAudio mGameAudio;
-	SoundTestTimer mAudioTimer;
+	SoundTestTimer mAudioTimer; //Changing track after a while
 
 };

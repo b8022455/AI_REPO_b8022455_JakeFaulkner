@@ -12,14 +12,12 @@ AudioSimple::~AudioSimple()
 
 void AudioSimple::Init()
 {
-
 	//todo put in GameAudio
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	if (FAILED(hr))
 	{
 		assert(false);
 	}
-
 
 	DirectX::AUDIO_ENGINE_FLAGS eflags = DirectX::AudioEngine_Default | DirectX::AudioEngine_EnvironmentalReverb | DirectX::AudioEngine_ReverbUseFilters;
 
@@ -83,8 +81,6 @@ void AudioSimple::Play(const std::string& name, bool loop, float volume, float p
 		DirectX::SoundEffectInstance_Default 
 		|
 		DirectX::SoundEffectInstance_Use3D 
-		//|
-		//DirectX::SoundEffectInstance_ReverbUseFilters
 		;
 
 	mSounds[name].second = std::move(mSounds[name].first->CreateInstance(iflags));
@@ -113,12 +109,13 @@ void AudioSimple::SetReverbRandom()
 
 
 
-
 SfxEngine::SfxEngine(DirectX::AudioListener* listener)
 	:
-	SoundEngine(listener)
+	SoundEngine(listener),
+	mForceAudio(true)
 {
-	mCacheLimit = 20;
+	mType = AUDIO_ENGINE_TYPE::SFX;
+	mCacheLimit = 1;
 }
 
 void SfxEngine::Init()
@@ -137,7 +134,6 @@ void SfxEngine::Init()
 
 void SfxEngine::Update(const GameTimer & gt)
 {
-	
 	if (mAudioEngine->Update())
 	{
 		//Remove audio that has stopped
@@ -158,32 +154,57 @@ void SfxEngine::Update(const GameTimer & gt)
 
 void SfxEngine::Play(const std::string & soundName, bool loop, float volume, float pitch, float pan, DirectX::AudioEmitter * emitter)
 {
+	bool play = true;
 
-	assert(mSounds[soundName]);
-
-	DirectX::SOUND_EFFECT_INSTANCE_FLAGS iflags = GetInstanceFlags(emitter);
-
-	mCache.push_front( std::move(mSounds[soundName]->CreateInstance(iflags)));
-
-	mCache.front()->Play(false); //no looping
-
-	if (emitter)
+	if (mCache.size() >= max(mCacheLimit,1) )
 	{
-		//3D
-		mCache.front()->Apply3D(*pListener,*emitter);
+		if (mForceAudio)
+			//if(mCache.size() > 0)
+				mCache.pop_back();
+		else
+			play = false;
+	}
+
+	if (play)
+	{
+		assert(mSounds[soundName]);
+
+		DirectX::SOUND_EFFECT_INSTANCE_FLAGS iflags = GetInstanceFlags(emitter);
+
+		mCache.push_front(std::move(mSounds[soundName]->CreateInstance(iflags)));
+
+		mCache.front()->Play(false); //no looping
+
+		if (emitter)
+		{
+			//3D
+			mCache.front()->Apply3D(*pListener, *emitter);
+		}
+		else
+		{
+			//Non-3D
+			mCache.front()->SetVolume(volume);
+			mCache.front()->SetPitch(pitch);
+			mCache.front()->SetPan(pan);
+		}
 	}
 	else
 	{
-		//Non-3D
-		mCache.front()->SetVolume(volume);
-		mCache.front()->SetPitch(pitch);
-		mCache.front()->SetPan(pan);
+		std::string str = "Warning - Unable to play '" + soundName + "' due to insufficent cache\n";
+		OutputDebugStringA(str.c_str());
 	}
 
+
+	
+	
+
+	
 }
 
-
-
+void SfxEngine::ForceAudio(bool force)
+{
+	mForceAudio = force;
+}
 
 
 
@@ -191,7 +212,8 @@ MusicEngine::MusicEngine(DirectX::AudioListener* listener)
 	:
 	SoundEngine(listener)
 {
-	mCacheLimit = 2;
+	mType = AUDIO_ENGINE_TYPE::MUSIC;
+	mCacheLimit = 2; // Only front and back
 }
 
 void MusicEngine::Init()
@@ -290,12 +312,44 @@ void MusicEngine::SwapCache()
 
 
 
+bool GameAudio::ValidEngine(const std::string & name)
+{
+	if (mEngines.count(name) == 1)
+	{
+		return true;
+	}
+	else
+	{
+		std::string str = "Error - SoundEngine '" + name + "' does not exist.\n";
+		OutputDebugStringA(str.c_str());
+		return false;
+	}
+}
 
-
-
-
-
-
+bool GameAudio::ValidKeys(const std::string & engineName, const std::string & soundName)
+{
+	bool b = false;
+	
+	if (mkeys.count(soundName) == 1)
+	{
+		if (mkeys[soundName] == engineName)
+		{
+			b = true;
+		}
+		else
+		{
+			std::string str = "Error - Sound '" + soundName + "' is not contained within '" + engineName + "'. Contained in '" + mkeys[soundName] + "'.\n";
+			OutputDebugStringA(str.c_str());
+		}
+	}
+	else
+	{
+		std::string str = "Error - Sound '" + soundName + "' does not exist.\n ";
+		OutputDebugStringA(str.c_str());
+	}
+	assert(b);
+	return b;
+}
 
 GameAudio::~GameAudio()
 {
@@ -314,17 +368,18 @@ void GameAudio::Init()
 
 }
 
-void GameAudio::CreateEngine(const std::string & name, const EngineType & type)
+void GameAudio::CreateEngine(const std::string & name, const AUDIO_ENGINE_TYPE & type)
 {
+	assert(name.length() > 0);
+
 	if (!mEngines[name])
 	{
 		switch (type)
 		{
-		case ENGINE_SFX:	mEngines[name] = std::make_unique<SfxEngine>(&mListener); break;
-		case ENGINE_MUSIC:	mEngines[name] = std::make_unique<MusicEngine>(&mListener); break;
+		case SFX:	mEngines[name] = std::make_unique<SfxEngine>(&mListener); break;
+		case MUSIC:	mEngines[name] = std::make_unique<MusicEngine>(&mListener); break;
 		default:			assert(false);
 		}
-
 
 		mEngines[name]->Init();
 	}
@@ -362,6 +417,34 @@ void GameAudio::Play(const std::string & soundName, bool loop, float volume, flo
 	
 }
 
+void GameAudio::Pause(const std::string & engineName)
+{
+	if (ValidEngine(engineName))
+		mEngines[engineName]->Pause();
+}
+
+void GameAudio::Resume(const std::string & engineName)
+{
+	if (ValidEngine(engineName))
+		mEngines[engineName]->Resume();
+}
+
+void GameAudio::PauseAll()
+{
+	std::for_each(mEngines.begin(), mEngines.end(), [](auto& e)
+	{
+		e.second->Pause();
+	});
+}
+
+void GameAudio::ResumeAll()
+{
+	std::for_each(mEngines.begin(), mEngines.end(), [](auto& e)
+	{
+		e.second->Resume();
+	});
+}
+
 void GameAudio::LoadSound(const std::string & engineName, const std::string & soundName, const std::wstring & filename)
 {
 	std::string debug = "";
@@ -371,9 +454,9 @@ void GameAudio::LoadSound(const std::string & engineName, const std::string & so
 	if (mkeys.count(soundName) == 0)
 	{
 		//Create an SFX engine if one doesn't exist
-		if (mEngines.count(engineName) == 0)
+		if (!ValidEngine(engineName))
 		{
-			CreateEngine(engineName, ENGINE_SFX);
+			CreateEngine(engineName, SFX);
 			OutputDebugStringA("Warning - Engine not created. Default SFX_Engine created");
 		}
 
@@ -393,11 +476,58 @@ void GameAudio::LoadSound(const std::string & engineName, const std::string & so
 	OutputDebugStringA(debug.c_str());
 }
 
+void GameAudio::SetCacheSize(const std::string & name, size_t limit)
+{
+	assert(ValidEngine(name));
+
+	switch (mEngines[name]->GetType())
+	{
+	case AUDIO_ENGINE_TYPE::SFX:	mEngines[name]->SetCacheLimit(limit); break;
+	case AUDIO_ENGINE_TYPE::MUSIC:	OutputDebugStringA("Warning - Cannot change cache size of music audio engines.\n"); break;
+
+	}
+}
+
+void GameAudio::ForceAudio(const std::string & name, bool force)
+{
+	if (ValidEngine(name))
+	{
+		switch (mEngines[name]->GetType())
+		{
+		case AUDIO_ENGINE_TYPE::SFX:	mEngines[name]->ForceAudio(force); break;
+		case AUDIO_ENGINE_TYPE::MUSIC:	OutputDebugStringA("Warning - No forcing audio for music audio engines.\n"); break;
+		}
+	}
+
+}
+
+void GameAudio::SetFade(const std::string & name, float secs)
+{
+	if (ValidEngine(name))
+	{
+		
+		switch (mEngines[name]->GetType())
+		{
+		case AUDIO_ENGINE_TYPE::MUSIC:	mEngines[name]->SetFade(secs); break;
+		case AUDIO_ENGINE_TYPE::SFX:	OutputDebugStringA("Warning - SFX audio engines do not support fading.\n"); break;
+		}
+		
+	}
+}
+
 std::string GameAudio::GetVolume(const std::string& engineName)
 {
 
 	return mEngines[engineName]->GetVolume().c_str();
 }
+
+
+
+
+
+
+
+
 
 DirectX::SOUND_EFFECT_INSTANCE_FLAGS SoundEngine::GetInstanceFlags(DirectX::AudioEmitter * emitter)
 {
@@ -417,12 +547,32 @@ SoundEngine::SoundEngine(DirectX::AudioListener* listener)
 
 }
 
+void SoundEngine::SetFade(float secs)
+{
+	mFadeInSecs = abs(secs);
+}
+
+void SoundEngine::SetCacheLimit(size_t limit)
+{
+	mCacheLimit = limit;
+}
+
 void SoundEngine::LoadSound(const std::string & soundName, const std::wstring & filename)
 {
 	//Loads a sound for the engine
 	auto sound = std::make_unique<DirectX::SoundEffect>(mAudioEngine.get(), filename.c_str());
 	assert(sound);
 	mSounds[soundName] = std::move(sound);
+}
+
+void SoundEngine::Pause()
+{
+	mAudioEngine->Suspend();
+}
+
+void SoundEngine::Resume()
+{
+	mAudioEngine->Resume();
 }
 
 std::string SoundEngine::GetVolume()
@@ -434,6 +584,11 @@ std::string SoundEngine::GetVolume()
 
 
 	return str;
+}
+
+AUDIO_ENGINE_TYPE SoundEngine::GetType()
+{
+	return mType;
 }
 
 

@@ -37,9 +37,16 @@ public:
         |    |
     -----    -----
    |              |
-SfxEngine   Music Engine
+SfxEngine    MusicEngine
+
+
+GameAudio
+	vector<SoundEngine>
 
 */
+
+enum AUDIO_ENGINE_TYPE { SFX, MUSIC };
+
 
 class SoundEngine
 {
@@ -47,28 +54,39 @@ protected:
 	std::unique_ptr<DirectX::AudioEngine> mAudioEngine;
 	std::map< std::string, std::unique_ptr<DirectX::SoundEffect>> mSounds;	// Load sounds and assigned to engine
 	std::list<std::unique_ptr<DirectX::SoundEffectInstance>> mCache;		//Plays instances of sounds
-	UINT mCacheLimit;
+	size_t mCacheLimit;
 	DirectX::AudioListener* pListener;
 	float mNormalisedVolume = 1.0f;
 	float mFadeInSecs = 3.0f; 
 	DirectX::SOUND_EFFECT_INSTANCE_FLAGS GetInstanceFlags(DirectX::AudioEmitter* emitter); //Flags set based on if emitter provided
+	AUDIO_ENGINE_TYPE mType;
 public:
 	SoundEngine(DirectX::AudioListener* listener);
 	virtual void Init() = 0;
 	virtual void Update(const GameTimer& gt) = 0;
 	virtual void Play(const std::string& soundName, bool loop = false, float volume = 1.0f, float pitch = 0.0f, float pan = 0.0f, DirectX::AudioEmitter* emitter = nullptr) = 0;
+	void Pause();
+	void Resume();
+	// Fade between music tracks. Music Only
+	void SetFade(float secs);
+	// How many audio clips can play at once per engine. SFX engine only. Minimum of 1. Music engines have cache size of 2.
+	void SetCacheLimit(size_t limit);
 	void LoadSound(const std::string& soundName, const std::wstring& filename);
+	virtual void ForceAudio(bool force) = 0;
 	std::string GetVolume();
+	AUDIO_ENGINE_TYPE GetType();
 };
 
 class SfxEngine : public SoundEngine
 {
+	// Forces new instance to play when cache is full by removing oldest instance.  
+	bool mForceAudio; 
 public:
 	SfxEngine(DirectX::AudioListener* listener);
 	void Init() override;
 	void Update(const GameTimer& gt) override;
 	void Play(const std::string& soundName, bool loop = false, float volume = 1.0f, float pitch = 0.0f, float pan = 0.0f, DirectX::AudioEmitter* emitter = nullptr) override; // push back mCache
-	
+	void ForceAudio(bool force) override;
 };
 
 class MusicEngine : public SoundEngine
@@ -79,6 +97,7 @@ public:
 	void Init() override;
 	void Update(const GameTimer& gt) override;
 	void Play(const std::string& soundName,  bool loop = false, float volume = 1.0f, float pitch = 0.0f, float pan = 0.0f, DirectX::AudioEmitter* emitter = nullptr) override;
+	void ForceAudio(bool force) override {};
 private:
 	void SwapCache();
 };
@@ -91,15 +110,25 @@ private:
 	float masterVolume;
 	DirectX::AudioListener mListener; 
 	X3DAUDIO_CONE mCone; // for 3D sound. Default set in Init()
+	bool ValidEngine(const std::string& name);
+	bool ValidKeys(const std::string& engineName, const std::string& soundName);
 public:
-	enum EngineType{ENGINE_SFX,ENGINE_MUSIC};
 
 	~GameAudio();
 	void Init();
-	void CreateEngine(const std::string& name, const EngineType& type);
+	void CreateEngine(const std::string& name, const AUDIO_ENGINE_TYPE& type);
 	void Update(const GameTimer& gt, const DirectX::XMFLOAT3& camPos, const DirectX::XMFLOAT3& camForward, const DirectX::XMFLOAT3& camUp);
 	void Play(const std::string& soundName, bool loop = false, float volume = 1.0f, float pitch = 0.0f, float pan = 0.0f, DirectX::AudioEmitter* emitter = nullptr);
+	void Pause(const std::string& engineName);
+	void Resume(const std::string& engineName);
+	void PauseAll();
+	void ResumeAll();
 	void LoadSound(const std::string& engineName, const std::string& soundName, const std::wstring& filename);
+	void SetCacheSize(const std::string& name, size_t limit);
+	// Forces new instance to play when cache is full by removing oldest instance. SFX Engine only
+	void ForceAudio(const std::string& name, bool force);
+	void SetFade(const std::string& name, float secs);
+	
 	std::string GetVolume(const std::string& engineName);
 };
 
@@ -108,7 +137,7 @@ public:
 struct SoundTestTimer
 {
 	float timer = 10.0f;
-	
+	// counts down and resets when time has elapsed
 	bool HasTimeElapsed(float dt, float resetOnElapsed)
 	{
 		timer -= dt;

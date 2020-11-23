@@ -67,22 +67,25 @@ bool GameApp::Initialize()
 	
 	//Audio setup
 	{
-
-		//Old method
-		//mAudio.Init();
-		//mAudio.Load("Chord", L"Data/Sounds/chord.wav"); // Plays on 'Q' key
-		//mAudio.Load("Ring",L"Data/Sounds/Ring09.wav");  // Music
-		//mAudio.Play("Ring", true); //Loops
-
-		//New method
 		mGameAudio.Init();
-		mGameAudio.CreateEngine("sfx", GameAudio::ENGINE_SFX);
-		mGameAudio.LoadSound(	"sfx", "chord", L"Data/Sounds/chord.wav");
 
-		mGameAudio.CreateEngine("music", GameAudio::ENGINE_MUSIC);
+		// Creates an 'engine' for sound effects. 
+		mGameAudio.CreateEngine("sfx", AUDIO_ENGINE_TYPE::SFX);
+		// Loads a sound onto an 'engine'
+		mGameAudio.LoadSound(	"sfx", "chord", L"Data/Sounds/chord.wav"); 
+		// Plays up to 20 instances at once. SFX only
+		mGameAudio.SetCacheSize("sfx", 20);
+		// New instance to play when cache is full. Oldest instance removed SFX only
+		mGameAudio.ForceAudio("sfx", true);
+
+		//Music 'engine'
+		mGameAudio.CreateEngine("music", AUDIO_ENGINE_TYPE::MUSIC);
+		// Loads sounds the same way
 		mGameAudio.LoadSound(	"music", "ring5", L"Data/Sounds/518567__szegvari__cooking-indrustrial-music-loop-mastering.wav");
 		mGameAudio.LoadSound(	"music", "ring9", L"Data/Sounds/382318__sterferny__country-band-soundcheck-captured-through-vent.wav");
-
+		// Time it takes to fade between tracks when Play() is called
+		mGameAudio.SetFade("music", 3.0f);
+		// Plays audio from 'music' engine. No need to specify engine
 		mGameAudio.Play("ring9",true);
 	}
 
@@ -143,17 +146,13 @@ void GameApp::Update(const GameTimer& gt)
 	//mAudio.Update(gt,mCamera.GetPosition3f(),mCamera.GetLook3f(),mCamera.GetUp3f());
 	mGameAudio.Update(gt, mCamera.GetPosition3f(), mCamera.GetLook3f(), mCamera.GetUp3f());
 
-	if (mAudioTimer.HasTimeElapsed(gt.DeltaTime(), 12.0f))
+	if (mAudioTimer.HasTimeElapsed(gt.DeltaTime(), 6.0f))
 	{
 		bool r = rand() % 2;
 		if (r)
 			mGameAudio.Play("ring5", true);
 		else
 			mGameAudio.Play("ring9", true);
-
-		
-
-		
 	}
 }
 
@@ -281,11 +280,13 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	{
 		//mAudio.Play("Chord",false,1.0f/*,sinf(gt.TotalTime()*0.0f)*/);
 		mGameAudio.Play("chord", false);
+		mGameAudio.Pause("music");
 	}
 	if (GetAsyncKeyState('E') & 0x08000)
 	{
 		//mAudio.Play("Chord",false,1.0f/*,sinf(gt.TotalTime()*0.0f)*/);
-		mGameAudio.Play("ring9", true);
+		//mGameAudio.Play("ring9", true);
+		mGameAudio.Resume("music");
 	}
 
 	mCamera.UpdateViewMatrix();
