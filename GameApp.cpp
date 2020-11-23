@@ -43,8 +43,12 @@ GameApp::GameApp(HINSTANCE hInstance)
 
 GameApp::~GameApp()
 {
+	OutputDebugStringA("~GameApp before flush \n");
+
     if(md3dDevice != nullptr)
         FlushCommandQueue();
+
+	OutputDebugStringA("~GameApp after flush \n");
 }
 
 bool GameApp::Initialize()
@@ -63,10 +67,26 @@ bool GameApp::Initialize()
 	
 	//Audio setup
 	{
-		mAudio.Init();
-		mAudio.Load("Chord", L"Data/Sounds/chord.wav"); // Plays on 'Q' key
-		mAudio.Load("Ring",L"Data/Sounds/Ring09.wav");  // Music
-		mAudio.Play("Ring", true); //Loops
+		mGameAudio.Init();
+
+		// Creates an 'engine' for sound effects. 
+		mGameAudio.CreateEngine("sfx", AUDIO_ENGINE_TYPE::SFX);
+		// Loads a sound onto an 'engine'
+		mGameAudio.LoadSound(	"sfx", "chord", L"Data/Sounds/chord.wav"); 
+		// Plays up to 20 instances at once. SFX only
+		mGameAudio.SetCacheSize("sfx", 20);
+		// New instance to play when cache is full. Oldest instance removed SFX only
+		mGameAudio.ForceAudio("sfx", true);
+
+		//Music 'engine'
+		mGameAudio.CreateEngine("music", AUDIO_ENGINE_TYPE::MUSIC);
+		// Loads sounds the same way
+		mGameAudio.LoadSound(	"music", "ring5", L"Data/Sounds/518567__szegvari__cooking-indrustrial-music-loop-mastering.wav");
+		mGameAudio.LoadSound(	"music", "ring9", L"Data/Sounds/382318__sterferny__country-band-soundcheck-captured-through-vent.wav");
+		// Time it takes to fade between tracks when Play() is called
+		mGameAudio.SetFade("music", 3.0f);
+		// Plays audio from 'music' engine. No need to specify engine
+		mGameAudio.Play("ring9",nullptr, true);
 	}
 
 	LoadTextures();
@@ -117,14 +137,22 @@ void GameApp::Update(const GameTimer& gt)
         CloseHandle(eventHandle);
     }
 
-
 	AnimateMaterials(gt);
 	UpdateInstanceData(gt);
 	UpdateMaterialBuffer(gt);
 	UpdateMainPassCB(gt);
 
+	mGameAudio.Update(gt, mCamera.GetPosition3f(), mCamera.GetLook3f(), mCamera.GetUp3f());
 
-	mAudio.Update(gt,mCamera.GetPosition3f(),mCamera.GetLook3f(),mCamera.GetUp3f());
+	//Music fades every 6 seconds
+	if (mAudioTimer.HasTimeElapsed(gt.DeltaTime(), 6.0f))
+	{
+		bool r = rand() % 2;
+		if (r)
+			mGameAudio.Play("ring5", nullptr, true);
+		else
+			mGameAudio.Play("ring9", nullptr, true);
+	}
 }
 
 void GameApp::Draw(const GameTimer& gt)
@@ -248,10 +276,17 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 
 
 	if (GetAsyncKeyState('Q') & 0x08000)
-		mAudio.Play("Chord",false,1.0f/*,sinf(gt.TotalTime()*0.0f)*/);
-
+	{
+		//mAudio.Play("Chord",false,1.0f/*,sinf(gt.TotalTime()*0.0f)*/);
+		mGameAudio.Play("chord", false);
+		mGameAudio.Pause("music");
+	}
 	if (GetAsyncKeyState('E') & 0x08000)
-		mAudio.SetReverbRandom(); //todo fix reverb
+	{
+		//mAudio.Play("Chord",false,1.0f/*,sinf(gt.TotalTime()*0.0f)*/);
+		//mGameAudio.Play("ring9", true);
+		mGameAudio.Resume("music");
+	}
 
 	mCamera.UpdateViewMatrix();
 }
@@ -303,7 +338,7 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 		e->InstanceCount = visibleInstanceCount;
 
 		std::wostringstream outs;
-		outs.precision(6);
+		outs.precision(2);
 		outs << L"Instancing and Culling Demo" <<
 			L"    " << e->InstanceCount <<
 			L" objects visible out of " << e->Instances.size();
