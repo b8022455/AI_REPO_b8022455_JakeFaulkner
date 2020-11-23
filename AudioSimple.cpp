@@ -152,7 +152,7 @@ void SfxEngine::Update(const GameTimer & gt)
 	
 }
 
-void SfxEngine::Play(const std::string & soundName, bool loop, float volume, float pitch, float pan, DirectX::AudioEmitter * emitter)
+void SfxEngine::Play(const std::string & soundName, DirectX::AudioEmitter * emitter, bool loop, float volume, float pitch, float pan)
 {
 	bool play = true;
 
@@ -274,7 +274,7 @@ void MusicEngine::Update(const GameTimer & gt)
 
 }
 
-void MusicEngine::Play(const std::string & soundName, bool loop, float volume, float pitch, float pan, DirectX::AudioEmitter * emitter)
+void MusicEngine::Play(const std::string & soundName, DirectX::AudioEmitter * emitter, bool loop, float volume, float pitch, float pan)
 {
 
 
@@ -401,11 +401,11 @@ void GameAudio::Update(const GameTimer & gt, const DirectX::XMFLOAT3 & camPos, c
 	}
 }
 
-void GameAudio::Play(const std::string & soundName, bool loop, float volume, float pitch, float pan, DirectX::AudioEmitter * emitter)
+void GameAudio::Play(const std::string & soundName, DirectX::AudioEmitter * emitter, bool loop, float volume, float pitch, float pan)
 {
 	if (mkeys.count(soundName) == 1)
 	{
-		mEngines[mkeys[soundName]]->Play(soundName, loop,volume,pitch,pan,emitter);
+		mEngines[mkeys[soundName]]->Play(soundName, emitter, loop,volume,pitch,pan);
 	}
 	else
 	{

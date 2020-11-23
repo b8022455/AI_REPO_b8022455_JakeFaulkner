@@ -86,7 +86,7 @@ bool GameApp::Initialize()
 		// Time it takes to fade between tracks when Play() is called
 		mGameAudio.SetFade("music", 3.0f);
 		// Plays audio from 'music' engine. No need to specify engine
-		mGameAudio.Play("ring9",true);
+		mGameAudio.Play("ring9",nullptr, true);
 	}
 
 	LoadTextures();
@@ -142,17 +142,16 @@ void GameApp::Update(const GameTimer& gt)
 	UpdateMaterialBuffer(gt);
 	UpdateMainPassCB(gt);
 
-
-	//mAudio.Update(gt,mCamera.GetPosition3f(),mCamera.GetLook3f(),mCamera.GetUp3f());
 	mGameAudio.Update(gt, mCamera.GetPosition3f(), mCamera.GetLook3f(), mCamera.GetUp3f());
 
+	//Music fades every 6 seconds
 	if (mAudioTimer.HasTimeElapsed(gt.DeltaTime(), 6.0f))
 	{
 		bool r = rand() % 2;
 		if (r)
-			mGameAudio.Play("ring5", true);
+			mGameAudio.Play("ring5", nullptr, true);
 		else
-			mGameAudio.Play("ring9", true);
+			mGameAudio.Play("ring9", nullptr, true);
 	}
 }
 

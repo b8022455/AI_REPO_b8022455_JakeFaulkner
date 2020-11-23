@@ -131,6 +131,6 @@ private:
 
 	//Audio
 	GameAudio mGameAudio;
-	SoundTestTimer mAudioTimer; //Changing track after a while
+	DeltaTimer mAudioTimer; //Changing track after a while
 
 };
