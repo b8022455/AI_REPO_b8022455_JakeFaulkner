@@ -1,6 +1,8 @@
 #include "AudioSImple.h"
 #include "Common/GameTimer.h"
 #include <string>
+#include <algorithm>
+#include <iterator>
 
 AudioSimple::~AudioSimple()
 {
