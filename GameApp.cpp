@@ -342,7 +342,6 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 		outs << L"Instancing and Culling Demo" <<
 			L"    " << e->InstanceCount <<
 			L" objects visible out of " << e->Instances.size();
-		outs << "Vol:" << mGameAudio.GetVolume("music").c_str();
 		mMainWndCaption = outs.str();
 	}
 }
