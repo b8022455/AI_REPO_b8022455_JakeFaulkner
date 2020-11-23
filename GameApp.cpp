@@ -93,6 +93,7 @@ bool GameApp::Initialize()
     BuildRootSignature();
 	BuildDescriptorHeaps();
     BuildShadersAndInputLayout();
+	BuildBoxGeometry();
 	BuildSkullGeometry();
 	BuildMaterials();
     BuildRenderItems();
@@ -569,6 +570,55 @@ void GameApp::BuildShadersAndInputLayout()
     };
 }
 
+void GameApp::BuildBoxGeometry()
+{
+	GeometryGenerator geoGen;
+	GeometryGenerator::MeshData box = geoGen.CreateBox(8.0f, 8.0f, 8.0f, 3);
+
+	std::vector<Vertex> vertices(box.Vertices.size());
+	for (size_t i = 0; i < box.Vertices.size(); ++i)
+	{
+		auto& p = box.Vertices[i].Position;
+		vertices[i].Pos = p;
+		vertices[i].Normal = box.Vertices[i].Normal;
+		vertices[i].TexC = box.Vertices[i].TexC;
+	}
+
+	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
+
+	std::vector<std::uint16_t> indices = box.GetIndices16();
+	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
+
+	auto geo = std::make_unique<MeshGeometry>();
+	geo->Name = "boxGeo";
+
+	ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
+	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
+
+	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
+	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
+
+	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+		mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
+
+	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+		mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
+
+	geo->VertexByteStride = sizeof(Vertex);
+	geo->VertexBufferByteSize = vbByteSize;
+	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
+	geo->IndexBufferByteSize = ibByteSize;
+
+	SubmeshGeometry submesh;
+	submesh.IndexCount = (UINT)indices.size();
+	submesh.StartIndexLocation = 0;
+	submesh.BaseVertexLocation = 0;
+
+	geo->DrawArgs["box"] = submesh;
+
+	mGeometries["boxGeo"] = std::move(geo);
+}
+
 void GameApp::BuildSkullGeometry()
 {
 	std::ifstream fin("Data/Models/skull.txt");
@@ -766,14 +816,30 @@ void GameApp::BuildRenderItems()
 	skullRitem->Bounds = skullRitem->Geo->DrawArgs["skull"].Bounds;
 
 	// Generate instance data.
-	
-	const int n = 5;
-	mInstanceCount = n*n;
-	skullRitem->Instances.resize(mInstanceCount);
 
-	float width = 10.0f;
-	float height = 10.0f;
-	float depth = 10.0f;
+	auto boxRitem = std::make_unique<RenderItem>();
+	boxRitem->World = MathHelper::Identity4x4();
+	boxRitem->TexTransform = MathHelper::Identity4x4();
+	boxRitem->ObjCBIndex = 1;
+	boxRitem->Mat = mMaterials["tile0"].get();
+	boxRitem->Geo = mGeometries["boxGeo"].get();
+	boxRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	boxRitem->InstanceCount = 0;
+	boxRitem->IndexCount = boxRitem->Geo->DrawArgs["box"].IndexCount;
+	boxRitem->StartIndexLocation = boxRitem->Geo->DrawArgs["box"].StartIndexLocation;
+	boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["box"].BaseVertexLocation;
+	boxRitem->Bounds = boxRitem->Geo->DrawArgs["box"].Bounds;
+
+	
+	
+	const int n = 10;
+	mInstanceCount = n*n;
+	//skullRitem->Instances.resize(mInstanceCount);
+	boxRitem->Instances.resize(mInstanceCount);
+
+	float width = 75.0f;
+	float height = 75.0f;
+	float depth = 75.0f;
 	float x = -0.5f*width;
 	float z = -0.5f*depth;
 	float dx = width / (n - 1);
@@ -784,19 +850,19 @@ void GameApp::BuildRenderItems()
 		{
 			int index = k*n + j;
 			// Position instanced along a 3D grid.
-			skullRitem->Instances[index].World = XMFLOAT4X4(
+			boxRitem->Instances[index].World = XMFLOAT4X4(
 				1.0f, 0.0f, 0.0f, 0.0f,
 				0.0f, 1.0f, 0.0f, 0.0f,
 				0.0f, 0.0f, 1.0f, 0.0f,
 				x + j * dx, 0.0f, z + k * dz, 1.0f);
 
-			XMStoreFloat4x4(&skullRitem->Instances[index].TexTransform, XMMatrixScaling(2.0f, 2.0f, 1.0f));
-			skullRitem->Instances[index].MaterialIndex = index % mMaterials.size();
+			XMStoreFloat4x4(&boxRitem->Instances[index].TexTransform, XMMatrixScaling(1.0f, 1.0f, 1.0f));
+			boxRitem->Instances[index].MaterialIndex = index % mMaterials.size();
 		}
 	}
 
 
-	mAllRitems.push_back(std::move(skullRitem));
+	mAllRitems.push_back(std::move(boxRitem));
 	
 	// All the render items are opaque.
 	for(auto& e : mAllRitems)
