@@ -279,6 +279,9 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	if(GetAsyncKeyState('D') & 0x8000)
 		mCamera.Strafe(20.0f*dt);
 
+	if (GetAsyncKeyState('P') & 0x8000)
+		mCamera.SetPosition(0.0f, 50.0f, 0.0f);
+
 	if(GetAsyncKeyState('1') & 0x8000)
 		mFrustumCullingEnabled = true;
 
@@ -741,7 +744,7 @@ void GameApp::BuildRenderItems()
 	boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["box"].BaseVertexLocation;
 	boxRitem->Bounds = boxRitem->Geo->DrawArgs["box"].Bounds;
 
-	const int n = 10;
+	const int n = 10; // USED TO CHOOSE SIZE OF GRID
 	mInstanceCount = n*n;
 	boxRitem->Instances.resize(mInstanceCount);
 
