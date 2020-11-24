@@ -63,8 +63,13 @@ bool GameApp::Initialize()
 	// so we have to query this information.
     mCbvSrvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-	mCamera.SetPosition(0.0f, 2.0f, -15.0f);
+	//mCamera.SetPosition(0.0f, 2.0f, -15.0f);
 	
+	mCamera.SetPosition(0.0f, 50.0f, 0.0f);
+
+	float dy = XMConvertToRadians(90.0f);
+	mCamera.Pitch(dy); // SETS CAMERA TO FACE DOWN
+
 	//Audio setup
 	{
 		mGameAudio.Init();
@@ -89,14 +94,11 @@ bool GameApp::Initialize()
 		mGameAudio.Play("ring9",nullptr, true);
 	}
 
-	mCombatController.Initialize();
-
 	LoadTextures();
     BuildRootSignature();
 	BuildDescriptorHeaps();
     BuildShadersAndInputLayout();
 	BuildBoxGeometry();
-	BuildSwordGeometry();
 	BuildMaterials();
     BuildRenderItems();
     BuildFrameResources();
@@ -260,10 +262,16 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	const float dt = gt.DeltaTime();
 
 	if(GetAsyncKeyState('W') & 0x8000)
-		mCamera.Walk(20.0f*dt);
+		mCamera.Elevate(20.0f*dt);
 
 	if(GetAsyncKeyState('S') & 0x8000)
-		mCamera.Walk(-20.0f*dt);
+		mCamera.Elevate(-20.0f*dt);
+
+	if (GetAsyncKeyState('I') & 0x8000)
+		mCamera.Walk(20.0f * dt);
+
+	if (GetAsyncKeyState('O') & 0x8000)
+		mCamera.Walk(-20.0f * dt);
 
 	if(GetAsyncKeyState('A') & 0x8000)
 		mCamera.Strafe(-20.0f*dt);
@@ -276,7 +284,6 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 
 	if(GetAsyncKeyState('2') & 0x8000)
 		mFrustumCullingEnabled = false;
-
 
 	if (GetAsyncKeyState('Q') & 0x08000)
 	{
@@ -291,9 +298,14 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 		mGameAudio.Resume("music");
 	}
 
-	//Checks input when attacking
-	if (GetAsyncKeyState('V') & 0x8000)		///Change key in future
-		mCombatController.PlayerAttack(mAllRitems);
+	if (GetAsyncKeyState('4') & 0x8000)
+	{
+		// TODO: WORKING MOVEMENT TEST LOCATED HERE
+		XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(5.0f * dt, 0.0f, 0.0f));
+		XMMATRIX current = XMLoadFloat4x4(&mAllRitems.at(0)->Instances.at(0).World);
+		transform = XMMatrixMultiply(current, transform);
+		XMStoreFloat4x4(&mAllRitems.at(0)->Instances.at(0).World, transform);
+	}
 
 	mCamera.UpdateViewMatrix();
 }
@@ -307,8 +319,6 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 {
 	XMMATRIX view = mCamera.GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
-
-	mCombatController.Update(mAllRitems);		//Continues rotating the weapon if the player has attacked
 
 	auto currInstanceBuffer = mCurrFrameResource->InstanceBuffer.get();
 	for(auto& e : mAllRitems)
@@ -406,8 +416,21 @@ void GameApp::UpdateMainPassCB(const GameTimer& gt)
 	mMainPassCB.TotalTime = gt.TotalTime();
 	mMainPassCB.DeltaTime = gt.DeltaTime();
 	mMainPassCB.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
+	
 	mMainPassCB.Lights[0].Direction = { 0.57735f, -0.57735f, 0.57735f };
-	mMainPassCB.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
+	
+	//flashing red for low health
+	if (GetAsyncKeyState('L') & 0x8000)
+	{
+	  mMainPassCB.Lights[0].Strength = { sin(gt.TotalTime()) / 2 + 0.5f ,0.0f,0.0f };
+	}
+
+	else if(GetAsyncKeyState('M') & 0x8000)
+	{
+	  mMainPassCB.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
+	}
+	
+	
 	mMainPassCB.Lights[1].Direction = { -0.57735f, -0.57735f, 0.57735f };
 	mMainPassCB.Lights[1].Strength = { 0.4f, 0.4f, 0.4f };
 	mMainPassCB.Lights[2].Direction = { 0.0f, -0.707f, -0.707f };
@@ -627,54 +650,6 @@ void GameApp::BuildBoxGeometry()
 	mGeometries["boxGeo"] = std::move(geo);
 }
 
-void GameApp::BuildSwordGeometry()
-{
-	GeometryGenerator geoGen;
-	GeometryGenerator::MeshData sword = geoGen.CreateSword(8.0f, 8.0f, 8.0f, 3);
-
-	std::vector<Vertex> vertices(sword.Vertices.size());
-	for (size_t i = 0; i < sword.Vertices.size(); ++i)
-	{
-		auto& p = sword.Vertices[i].Position;
-		vertices[i].Pos = p;
-		vertices[i].Normal = sword.Vertices[i].Normal;
-		vertices[i].TexC = sword.Vertices[i].TexC;
-	}
-
-	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
-
-	std::vector<std::uint16_t> indices = sword.GetIndices16();
-	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
-
-	auto geo = std::make_unique<MeshGeometry>();
-	geo->Name = "swordGeo";
-
-	ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
-	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
-
-	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
-	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
-
-	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-		mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
-
-	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-		mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
-
-	geo->VertexByteStride = sizeof(Vertex);
-	geo->VertexBufferByteSize = vbByteSize;
-	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
-	geo->IndexBufferByteSize = ibByteSize;
-
-	SubmeshGeometry submesh;
-	submesh.IndexCount = (UINT)indices.size();
-	submesh.StartIndexLocation = 0;
-	submesh.BaseVertexLocation = 0;
-
-	geo->DrawArgs["swordGeo"] = submesh;
-
-	mGeometries["swordGeo"] = std::move(geo);
-}
 
 void GameApp::BuildPSOs()
 {
@@ -794,29 +769,8 @@ void GameApp::BuildRenderItems()
 		}
 	}
 
-	//Sword Obj
-	auto swordRitem = std::make_unique<RenderItem>();
-	swordRitem->World = MathHelper::Identity4x4();
-	swordRitem->ObjCBIndex = 1;
-	swordRitem->InstanceCount = 0;
-	swordRitem->Mat = mMaterials["tile0"].get();
-	swordRitem->Geo = mGeometries["swordGeo"].get();
-	swordRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	swordRitem->IndexCount = swordRitem->Geo->DrawArgs["swordGeo"].IndexCount;
-	swordRitem->StartIndexLocation = swordRitem->Geo->DrawArgs["swordGeo"].StartIndexLocation;
-	swordRitem->BaseVertexLocation = swordRitem->Geo->DrawArgs["swordGeo"].BaseVertexLocation;
-	swordRitem->Instances.resize(1);
-	
-	mAllRitems.push_back(std::move(boxRitem));
-	mAllRitems.push_back(std::move(swordRitem));
 
-	mAllRitems.at(1)->Instances.at(0).World =			//Just to not clip it with the map upon start
-	{
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		5.0f, 10.0f, 0.0f, 1.0f
-	};
+	mAllRitems.push_back(std::move(boxRitem));
 	
 	// All the render items are opaque.
 	for(auto& e : mAllRitems)
