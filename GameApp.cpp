@@ -3,6 +3,7 @@
 //***************************************************************************************
 
 #include "GameApp.h"
+#include "SimpleMath.h"
 
 #include <xaudio2.h>
 
@@ -14,88 +15,87 @@ using namespace DirectX::PackedVector;
 #pragma comment(lib, "D3D12.lib")
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
-    PSTR cmdLine, int showCmd)
+	PSTR cmdLine, int showCmd)
 {
-    // Enable run-time memory check for debug builds.
+	// Enable run-time memory check for debug builds.
 #if defined(DEBUG) | defined(_DEBUG)
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    try
-    {
-        GameApp theApp(hInstance);
-        if(!theApp.Initialize())
-            return 0;
+	try
+	{
+		GameApp theApp(hInstance);
+		if (!theApp.Initialize())
+			return 0;
 
-        return theApp.Run();
-    }
-    catch(DxException& e)
-    {
-        MessageBox(nullptr, e.ToString().c_str(), L"HR Failed", MB_OK);
-        return 0;
-    }
+		return theApp.Run();
+	}
+	catch (DxException& e)
+	{
+		MessageBox(nullptr, e.ToString().c_str(), L"HR Failed", MB_OK);
+		return 0;
+	}
 }
 
-
-
 GameApp::GameApp(HINSTANCE hInstance)
-    : D3DApp(hInstance)
+	: D3DApp(hInstance)
 {
 }
 
 GameApp::~GameApp()
 {
-    if(md3dDevice != nullptr)
-        FlushCommandQueue();
+	if (md3dDevice != nullptr)
+		FlushCommandQueue();
 }
 
 bool GameApp::Initialize()
 {
-    if(!D3DApp::Initialize())
-        return false;
+	if (!D3DApp::Initialize())
+		return false;
 
-    // Reset the command list to prep for initialization commands.
-    ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
+	// Reset the command list to prep for initialization commands.
+	ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
 
-    // Get the increment size of a descriptor in this heap type.  This is hardware specific, 
+	// Get the increment size of a descriptor in this heap type.  This is hardware specific, 
 	// so we have to query this information.
-    mCbvSrvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	mCbvSrvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 	mCamera.SetPosition(0.0f, 2.0f, -15.0f);
-	
+
 	//Audio setup
 	{
 		mAudio.Init();
 		mAudio.Load("Chord", L"Data/Sounds/chord.wav"); // Plays on 'Q' key
-		mAudio.Load("Ring",L"Data/Sounds/Ring09.wav");  // Music
+		mAudio.Load("Ring", L"Data/Sounds/Ring09.wav");  // Music
 		mAudio.Play("Ring", true); //Loops
 	}
 
+
 	LoadTextures();
-    BuildRootSignature();
+	BuildRootSignature();
 	BuildDescriptorHeaps();
-    BuildShadersAndInputLayout();
+	BuildShadersAndInputLayout();
+	BuildBoxGeometry();
 	BuildSkullGeometry();
-	BuildPlaneGeometry();
 	BuildMaterials();
-    BuildRenderItems();
-    BuildFrameResources();
-    BuildPSOs();
+	BuildRenderItems();
+	BuildFrameResources();
+	BuildPSOs();
 
-    // Execute the initialization commands.
-    ThrowIfFailed(mCommandList->Close());
-    ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
-    mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+	// Execute the initialization commands.
+	ThrowIfFailed(mCommandList->Close());
+	ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
+	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-    // Wait until initialization is complete.
-    FlushCommandQueue();
+	// Wait until initialization is complete.
+	FlushCommandQueue();
 
-    return true;
+	return true;
 }
- 
+
 void GameApp::OnResize()
 {
-    D3DApp::OnResize();
+	D3DApp::OnResize();
 
 	mCamera.SetLens(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
 
@@ -104,21 +104,21 @@ void GameApp::OnResize()
 
 void GameApp::Update(const GameTimer& gt)
 {
-    OnKeyboardInput(gt);
+	OnKeyboardInput(gt);
 
-    // Cycle through the circular frame resource array.
-    mCurrFrameResourceIndex = (mCurrFrameResourceIndex + 1) % gNumFrameResources;
-    mCurrFrameResource = mFrameResources[mCurrFrameResourceIndex].get();
+	// Cycle through the circular frame resource array.
+	mCurrFrameResourceIndex = (mCurrFrameResourceIndex + 1) % gNumFrameResources;
+	mCurrFrameResource = mFrameResources[mCurrFrameResourceIndex].get();
 
-    // Has the GPU finished processing the commands of the current frame resource?
-    // If not, wait until the GPU has completed commands up to this fence point.
-    if(mCurrFrameResource->Fence != 0 && mFence->GetCompletedValue() < mCurrFrameResource->Fence)
-    {
-        HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
-        ThrowIfFailed(mFence->SetEventOnCompletion(mCurrFrameResource->Fence, eventHandle));
-        WaitForSingleObject(eventHandle, INFINITE);
-        CloseHandle(eventHandle);
-    }
+	// Has the GPU finished processing the commands of the current frame resource?
+	// If not, wait until the GPU has completed commands up to this fence point.
+	if (mCurrFrameResource->Fence != 0 && mFence->GetCompletedValue() < mCurrFrameResource->Fence)
+	{
+		HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
+		ThrowIfFailed(mFence->SetEventOnCompletion(mCurrFrameResource->Fence, eventHandle));
+		WaitForSingleObject(eventHandle, INFINITE);
+		CloseHandle(eventHandle);
+	}
 
 
 	AnimateMaterials(gt);
@@ -127,34 +127,38 @@ void GameApp::Update(const GameTimer& gt)
 	UpdateMainPassCB(gt);
 
 
-	mAudio.Update(gt,mCamera.GetPosition3f(),mCamera.GetLook3f(),mCamera.GetUp3f());
+	mAudio.Update(gt, mCamera.GetPosition3f(), mCamera.GetLook3f(), mCamera.GetUp3f());
+
+
+
+	
 }
 
 void GameApp::Draw(const GameTimer& gt)
 {
-    auto cmdListAlloc = mCurrFrameResource->CmdListAlloc;
+	auto cmdListAlloc = mCurrFrameResource->CmdListAlloc;
 
-    // Reuse the memory associated with command recording.
-    // We can only reset when the associated command lists have finished execution on the GPU.
-    ThrowIfFailed(cmdListAlloc->Reset());
+	// Reuse the memory associated with command recording.
+	// We can only reset when the associated command lists have finished execution on the GPU.
+	ThrowIfFailed(cmdListAlloc->Reset());
 
-    // A command list can be reset after it has been added to the command queue via ExecuteCommandList.
-    // Reusing the command list reuses memory.
-    ThrowIfFailed(mCommandList->Reset(cmdListAlloc.Get(), mPSOs["opaque"].Get()));
+	// A command list can be reset after it has been added to the command queue via ExecuteCommandList.
+	// Reusing the command list reuses memory.
+	ThrowIfFailed(mCommandList->Reset(cmdListAlloc.Get(), mPSOs["opaque"].Get()));
 
-    mCommandList->RSSetViewports(1, &mScreenViewport);
-    mCommandList->RSSetScissorRects(1, &mScissorRect);
+	mCommandList->RSSetViewports(1, &mScreenViewport);
+	mCommandList->RSSetScissorRects(1, &mScissorRect);
 
-    // Indicate a state transition on the resource usage.
+	// Indicate a state transition on the resource usage.
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
-    // Clear the back buffer and depth buffer.
-    mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
-    mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+	// Clear the back buffer and depth buffer.
+	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
+	mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
-    // Specify the buffers we are going to render to.
-    mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
+	// Specify the buffers we are going to render to.
+	mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
 
 	ID3D12DescriptorHeap* descriptorHeaps[] = { mSrvDescriptorHeap.Get() };
 	mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
@@ -172,96 +176,97 @@ void GameApp::Draw(const GameTimer& gt)
 	// Bind all the textures used in this scene.
 	mCommandList->SetGraphicsRootDescriptorTable(3, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
-    DrawRenderItems(mCommandList.Get(), mOpaqueRitems);
+	DrawRenderItems(mCommandList.Get(), mOpaqueRitems);
 
-    // Indicate a state transition on the resource usage.
+	// Indicate a state transition on the resource usage.
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 
-    // Done recording commands.
-    ThrowIfFailed(mCommandList->Close());
+	// Done recording commands.
+	ThrowIfFailed(mCommandList->Close());
 
-    // Add the command list to the queue for execution.
-    ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
-    mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+	// Add the command list to the queue for execution.
+	ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
+	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-    // Swap the back and front buffers
-    ThrowIfFailed(mSwapChain->Present(0, 0));
+	// Swap the back and front buffers
+	ThrowIfFailed(mSwapChain->Present(0, 0));
 	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
 
-    // Advance the fence value to mark commands up to this fence point.
-    mCurrFrameResource->Fence = ++mCurrentFence;
+	// Advance the fence value to mark commands up to this fence point.
+	mCurrFrameResource->Fence = ++mCurrentFence;
 
-    // Add an instruction to the command queue to set a new fence point. 
-    // Because we are on the GPU timeline, the new fence point won't be 
-    // set until the GPU finishes processing all the commands prior to this Signal().
-    mCommandQueue->Signal(mFence.Get(), mCurrentFence);
+	// Add an instruction to the command queue to set a new fence point. 
+	// Because we are on the GPU timeline, the new fence point won't be 
+	// set until the GPU finishes processing all the commands prior to this Signal().
+	mCommandQueue->Signal(mFence.Get(), mCurrentFence);
 }
 
 void GameApp::OnMouseDown(WPARAM btnState, int x, int y)
 {
-    mLastMousePos.x = x;
-    mLastMousePos.y = y;
+	mLastMousePos.x = x;
+	mLastMousePos.y = y;
 
-    SetCapture(mhMainWnd);
+	SetCapture(mhMainWnd);
 }
 
 void GameApp::OnMouseUp(WPARAM btnState, int x, int y)
 {
-    ReleaseCapture();
+	ReleaseCapture();
 }
 
 void GameApp::OnMouseMove(WPARAM btnState, int x, int y)
 {
-    if((btnState & MK_LBUTTON) != 0)
-    {
+	if ((btnState & MK_LBUTTON) != 0)
+	{
 		// Make each pixel correspond to a quarter of a degree.
 		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - mLastMousePos.x));
 		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - mLastMousePos.y));
 
 		mCamera.Pitch(dy);
 		mCamera.RotateY(dx);
-    }
+	}
 
-    mLastMousePos.x = x;
-    mLastMousePos.y = y;
+	mLastMousePos.x = x;
+	mLastMousePos.y = y;
 }
- 
+
 void GameApp::OnKeyboardInput(const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
 
-	if(GetAsyncKeyState('W') & 0x8000)
+	if (GetAsyncKeyState('W') & 0x8000)
 		mCamera.Walk(20.0f*dt);
 
-	if(GetAsyncKeyState('S') & 0x8000)
+	if (GetAsyncKeyState('S') & 0x8000)
 		mCamera.Walk(-20.0f*dt);
 
-	if(GetAsyncKeyState('A') & 0x8000)
+	if (GetAsyncKeyState('A') & 0x8000)
 		mCamera.Strafe(-20.0f*dt);
 
-	if(GetAsyncKeyState('D') & 0x8000)
+	if (GetAsyncKeyState('D') & 0x8000)
 		mCamera.Strafe(20.0f*dt);
 
-	if(GetAsyncKeyState('1') & 0x8000)
+	if (GetAsyncKeyState('1') & 0x8000)
 		mFrustumCullingEnabled = true;
 
-	if(GetAsyncKeyState('2') & 0x8000)
+	if (GetAsyncKeyState('2') & 0x8000)
 		mFrustumCullingEnabled = false;
 
 
 	if (GetAsyncKeyState('Q') & 0x08000)
-		mAudio.Play("Chord",false,1.0f/*,sinf(gt.TotalTime()*0.0f)*/);
+		mAudio.Play("Chord", false, 1.0f/*,sinf(gt.TotalTime()*0.0f)*/);
 
 	if (GetAsyncKeyState('E') & 0x08000)
 		mAudio.SetReverbRandom(); //todo fix reverb
 
+	
 	mCamera.UpdateViewMatrix();
 }
- 
+
 void GameApp::AnimateMaterials(const GameTimer& gt)
 {
-	
+
 }
 
 void GameApp::UpdateInstanceData(const GameTimer& gt)
@@ -270,13 +275,13 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
 
 	auto currInstanceBuffer = mCurrFrameResource->InstanceBuffer.get();
-	for(auto& e : mAllRitems)
-	{
-		const auto& instanceData = e->Instances;
+	//for (auto& e : mAllRitems)
+	//{
+		const auto& instanceData = mAllRitems.at(0)->Instances;
 
 		int visibleInstanceCount = 0;
 
-		for(UINT i = 0; i < (UINT)instanceData.size(); ++i)
+		for (UINT i = 0; i < (UINT)instanceData.size(); ++i)
 		{
 			XMMATRIX world = XMLoadFloat4x4(&instanceData[i].World);
 			XMMATRIX texTransform = XMLoadFloat4x4(&instanceData[i].TexTransform);
@@ -285,13 +290,13 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 
 			// View space to the object's local space.
 			XMMATRIX viewToLocal = XMMatrixMultiply(invView, invWorld);
- 
+
 			// Transform the camera frustum from view space to the object's local space.
 			BoundingFrustum localSpaceFrustum;
 			mCamFrustum.Transform(localSpaceFrustum, viewToLocal);
 
 			// Perform the box/frustum intersection test in local space.
-			if((localSpaceFrustum.Contains(e->Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled==false))
+			if ((localSpaceFrustum.Contains(mAllRitems.at(0)->Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
 			{
 				InstanceData data;
 				XMStoreFloat4x4(&data.World, XMMatrixTranspose(world));
@@ -303,26 +308,60 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 			}
 		}
 
-		e->InstanceCount = visibleInstanceCount;
+		mAllRitems.at(0)->InstanceCount = visibleInstanceCount;
 
 		std::wostringstream outs;
 		outs.precision(6);
 		outs << L"Instancing and Culling Demo" <<
-			L"    " << e->InstanceCount <<
-			L" objects visible out of " << e->Instances.size();
+			L"    " << mAllRitems.at(0)->InstanceCount <<
+			L" objects visible out of " << mAllRitems.at(0)->Instances.size();
 		mMainWndCaption = outs.str();
-	}
+	//}
+
+	//auto instanceBuff2 = mCurrFrameResource->InstanceBuffer2.get();		//2nd instance
+	//const auto& instanceData2 = mAllRitems.at(1)->Instances;
+
+	//visibleInstanceCount = 0;
+
+	//for (UINT i = 0; i < (UINT)instanceData.size(); ++i)
+	//{
+	//	XMMATRIX world = XMLoadFloat4x4(&instanceData[i].World);
+	//	XMMATRIX texTransform = XMLoadFloat4x4(&instanceData[i].TexTransform);
+
+	//	XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
+
+	//	// View space to the object's local space.
+	//	XMMATRIX viewToLocal = XMMatrixMultiply(invView, invWorld);
+
+	//	// Transform the camera frustum from view space to the object's local space.
+	//	BoundingFrustum localSpaceFrustum;
+	//	mCamFrustum.Transform(localSpaceFrustum, viewToLocal);
+
+	//	// Perform the box/frustum intersection test in local space.
+	//	if ((localSpaceFrustum.Contains(mAllRitems.at(1)->Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
+	//	{
+	//		InstanceData data;
+	//		XMStoreFloat4x4(&data.World, XMMatrixTranspose(world));
+	//		XMStoreFloat4x4(&data.TexTransform, XMMatrixTranspose(texTransform));
+	//		data.MaterialIndex = instanceData[i].MaterialIndex;
+
+	//		// Write the instance data to structured buffer for the visible objects.
+	//		currInstanceBuffer->CopyData(visibleInstanceCount++, data);
+	//	}
+	//}
+
+	//mAllRitems.at(1)->InstanceCount = visibleInstanceCount;
 }
 
 void GameApp::UpdateMaterialBuffer(const GameTimer& gt)
 {
 	auto currMaterialBuffer = mCurrFrameResource->MaterialBuffer.get();
-	for(auto& e : mMaterials)
+	for (auto& e : mMaterials)
 	{
 		// Only update the cbuffer data if the constants have changed.  If the cbuffer
 		// data changes, it needs to be updated for each FrameResource.
 		Material* mat = e.second.get();
-		if(mat->NumFramesDirty > 0)
+		if (mat->NumFramesDirty > 0)
 		{
 			XMMATRIX matTransform = XMLoadFloat4x4(&mat->MatTransform);
 
@@ -364,7 +403,8 @@ void GameApp::UpdateMainPassCB(const GameTimer& gt)
 	mMainPassCB.FarZ = 1000.0f;
 	mMainPassCB.TotalTime = gt.TotalTime();
 	mMainPassCB.DeltaTime = gt.DeltaTime();
-	mMainPassCB.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
+	float period = 2*(mMainPassCB.TotalTime - mMainPassCB.DeltaTime);
+	mMainPassCB.AmbientLight = { sin(period), 0.0f, 0.0f, 1.0f };
 	mMainPassCB.Lights[0].Direction = { 0.57735f, -0.57735f, 0.57735f };
 	mMainPassCB.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
 	mMainPassCB.Lights[1].Direction = { -0.57735f, -0.57735f, 0.57735f };
@@ -407,39 +447,39 @@ void GameApp::BuildRootSignature()
 	CD3DX12_DESCRIPTOR_RANGE texTable;
 	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 7, 0, 0);
 
-    // Root parameter can be a table, root descriptor or root constants.
-    CD3DX12_ROOT_PARAMETER slotRootParameter[4];
+	// Root parameter can be a table, root descriptor or root constants.
+	CD3DX12_ROOT_PARAMETER slotRootParameter[4];
 
 	// Perfomance TIP: Order from most frequent to least frequent.
-    slotRootParameter[0].InitAsShaderResourceView(0, 1);
-    slotRootParameter[1].InitAsShaderResourceView(1, 1);
-    slotRootParameter[2].InitAsConstantBufferView(0);
+	slotRootParameter[0].InitAsShaderResourceView(0, 1);
+	slotRootParameter[1].InitAsShaderResourceView(1, 1);
+	slotRootParameter[2].InitAsConstantBufferView(0);
 	slotRootParameter[3].InitAsDescriptorTable(1, &texTable, D3D12_SHADER_VISIBILITY_PIXEL);
 
 	auto staticSamplers = GetStaticSamplers();
 
-    // A root signature is an array of root parameters.
+	// A root signature is an array of root parameters.
 	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(4, slotRootParameter,
 		(UINT)staticSamplers.size(), staticSamplers.data(),
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
-    // create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
-    ComPtr<ID3DBlob> serializedRootSig = nullptr;
-    ComPtr<ID3DBlob> errorBlob = nullptr;
-    HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1,
-        serializedRootSig.GetAddressOf(), errorBlob.GetAddressOf());
+	// create a root signature with a single slot which points to a descriptor range consisting of a single constant buffer
+	ComPtr<ID3DBlob> serializedRootSig = nullptr;
+	ComPtr<ID3DBlob> errorBlob = nullptr;
+	HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1,
+		serializedRootSig.GetAddressOf(), errorBlob.GetAddressOf());
 
-    if(errorBlob != nullptr)
-    {
-        ::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-    }
-    ThrowIfFailed(hr);
+	if (errorBlob != nullptr)
+	{
+		::OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+	}
+	ThrowIfFailed(hr);
 
-    ThrowIfFailed(md3dDevice->CreateRootSignature(
+	ThrowIfFailed(md3dDevice->CreateRootSignature(
 		0,
-        serializedRootSig->GetBufferPointer(),
-        serializedRootSig->GetBufferSize(),
-        IID_PPV_ARGS(mRootSignature.GetAddressOf())));
+		serializedRootSig->GetBufferPointer(),
+		serializedRootSig->GetBufferSize(),
+		IID_PPV_ARGS(mRootSignature.GetAddressOf())));
 }
 
 void GameApp::BuildDescriptorHeaps()
@@ -528,20 +568,69 @@ void GameApp::BuildShadersAndInputLayout()
 
 	mShaders["standardVS"] = d3dUtil::CompileShader(L"Shaders\\Default.hlsl", nullptr, "VS", "vs_5_1");
 	mShaders["opaquePS"] = d3dUtil::CompileShader(L"Shaders\\Default.hlsl", nullptr, "PS", "ps_5_1");
-	
-    mInputLayout =
-    {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+
+	mInputLayout =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-    };
+	};
+}
+
+void GameApp::BuildBoxGeometry()
+{
+	GeometryGenerator geoGen;
+	GeometryGenerator::MeshData box = geoGen.CreateBox(8.0f, 8.0f, 8.0f, 3);
+
+	std::vector<Vertex> vertices(box.Vertices.size());
+	for (size_t i = 0; i < box.Vertices.size(); ++i)
+	{
+		auto& p = box.Vertices[i].Position;
+		vertices[i].Pos = p;
+		vertices[i].Normal = box.Vertices[i].Normal;
+		vertices[i].TexC = box.Vertices[i].TexC;
+	}
+
+	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
+
+	std::vector<std::uint16_t> indices = box.GetIndices16();
+	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
+
+	auto geo = std::make_unique<MeshGeometry>();
+	geo->Name = "boxGeo";
+
+	ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
+	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
+
+	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
+	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
+
+	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+		mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
+
+	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+		mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
+
+	geo->VertexByteStride = sizeof(Vertex);
+	geo->VertexBufferByteSize = vbByteSize;
+	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
+	geo->IndexBufferByteSize = ibByteSize;
+
+	SubmeshGeometry submesh;
+	submesh.IndexCount = (UINT)indices.size();
+	submesh.StartIndexLocation = 0;
+	submesh.BaseVertexLocation = 0;
+
+	geo->DrawArgs["box"] = submesh;
+
+	mGeometries["boxGeo"] = std::move(geo);
 }
 
 void GameApp::BuildSkullGeometry()
 {
 	std::ifstream fin("Data/Models/skull.txt");
 
-	if(!fin)
+	if (!fin)
 	{
 		MessageBox(0, L"Data/Models/skull.txt not found.", 0, 0);
 		return;
@@ -562,7 +651,7 @@ void GameApp::BuildSkullGeometry()
 	XMVECTOR vMax = XMLoadFloat3(&vMaxf3);
 
 	std::vector<Vertex> vertices(vcount);
-	for(UINT i = 0; i < vcount; ++i)
+	for (UINT i = 0; i < vcount; ++i)
 	{
 		fin >> vertices[i].Pos.x >> vertices[i].Pos.y >> vertices[i].Pos.z;
 		fin >> vertices[i].Normal.x >> vertices[i].Normal.y >> vertices[i].Normal.z;
@@ -576,7 +665,7 @@ void GameApp::BuildSkullGeometry()
 		float theta = atan2f(spherePos.z, spherePos.x);
 
 		// Put in [0, 2pi].
-		if(theta < 0.0f)
+		if (theta < 0.0f)
 			theta += XM_2PI;
 
 		float phi = acosf(spherePos.y);
@@ -599,7 +688,7 @@ void GameApp::BuildSkullGeometry()
 	fin >> ignore;
 
 	std::vector<std::int32_t> indices(3 * tcount);
-	for(UINT i = 0; i < tcount; ++i)
+	for (UINT i = 0; i < tcount; ++i)
 	{
 		fin >> indices[i * 3 + 0] >> indices[i * 3 + 1] >> indices[i * 3 + 2];
 	}
@@ -645,73 +734,23 @@ void GameApp::BuildSkullGeometry()
 	mGeometries[geo->Name] = std::move(geo);
 }
 
-
-void GameApp::BuildPlaneGeometry()
-{
-  GeometryGenerator geoGen;
-  GeometryGenerator::MeshData box = geoGen.CreateBox(6.0f, 6.0f, 6.0f, 3);
-
-  std::vector<Vertex> vertices(box.Vertices.size());
-  for (size_t i = 0; i < box.Vertices.size(); ++i)
-  {
-	auto& p = box.Vertices[i].Position;
-	vertices[i].Pos = p;
-	vertices[i].Normal = box.Vertices[i].Normal;
-	vertices[i].TexC = box.Vertices[i].TexC;
-  }
-
-  const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
-
-  std::vector<std::uint16_t> indices = box.GetIndices16();
-  const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
-
-  auto geo = std::make_unique<MeshGeometry>();
-  geo->Name = "boxGeo";
-
-  ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
-  CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
-
-  ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
-  CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
-
-  geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-	mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
-
-  geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-	mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
-
-  geo->VertexByteStride = sizeof(Vertex);
-  geo->VertexBufferByteSize = vbByteSize;
-  geo->IndexFormat = DXGI_FORMAT_R16_UINT;
-  geo->IndexBufferByteSize = ibByteSize;
-
-  SubmeshGeometry submesh;
-  submesh.IndexCount = (UINT)indices.size();
-  submesh.StartIndexLocation = 0;
-  submesh.BaseVertexLocation = 0;
-
-  geo->DrawArgs["box"] = submesh;
-
-  mGeometries["boxGeo"] = std::move(geo);
-}
-
 void GameApp::BuildPSOs()
 {
-    D3D12_GRAPHICS_PIPELINE_STATE_DESC opaquePsoDesc;
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC opaquePsoDesc;
 
 	//
 	// PSO for opaque objects.
 	//
-    ZeroMemory(&opaquePsoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
+	ZeroMemory(&opaquePsoDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
 	opaquePsoDesc.InputLayout = { mInputLayout.data(), (UINT)mInputLayout.size() };
 	opaquePsoDesc.pRootSignature = mRootSignature.Get();
-	opaquePsoDesc.VS = 
-	{ 
-		reinterpret_cast<BYTE*>(mShaders["standardVS"]->GetBufferPointer()), 
+	opaquePsoDesc.VS =
+	{
+		reinterpret_cast<BYTE*>(mShaders["standardVS"]->GetBufferPointer()),
 		mShaders["standardVS"]->GetBufferSize()
 	};
-	opaquePsoDesc.PS = 
-	{ 
+	opaquePsoDesc.PS =
+	{
 		reinterpret_cast<BYTE*>(mShaders["opaquePS"]->GetBufferPointer()),
 		mShaders["opaquePS"]->GetBufferSize()
 	};
@@ -725,19 +764,19 @@ void GameApp::BuildPSOs()
 	opaquePsoDesc.SampleDesc.Count = m4xMsaaState ? 4 : 1;
 	opaquePsoDesc.SampleDesc.Quality = m4xMsaaState ? (m4xMsaaQuality - 1) : 0;
 	opaquePsoDesc.DSVFormat = mDepthStencilFormat;
-    ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&opaquePsoDesc, IID_PPV_ARGS(&mPSOs["opaque"])));
+	ThrowIfFailed(md3dDevice->CreateGraphicsPipelineState(&opaquePsoDesc, IID_PPV_ARGS(&mPSOs["opaque"])));
 }
 
 void GameApp::BuildFrameResources()
 {
-    for(int i = 0; i < gNumFrameResources; ++i)
-    {
-        mFrameResources.push_back(std::make_unique<FrameResource>(md3dDevice.Get(),
-            1, mInstanceCount, (UINT)mMaterials.size()));
-    }
+	for (int i = 0; i < gNumFrameResources; ++i)
+	{
+		mFrameResources.push_back(std::make_unique<FrameResource>(md3dDevice.Get(),
+			1, mInstanceCount, (UINT)mMaterials.size()));
+	}
 }
 
-void GameApp::BuildMaterial(int& matCBIndex, int texSrvHeapIndex, const std::string & name, float roughness, const DirectX::XMFLOAT4 & diffuseAlbedo,  const DirectX::XMFLOAT3 & fresnel)
+void GameApp::BuildMaterial(int& matCBIndex, int texSrvHeapIndex, const std::string & name, float roughness, const DirectX::XMFLOAT4 & diffuseAlbedo, const DirectX::XMFLOAT3 & fresnel)
 {
 
 	auto material = std::make_unique<Material>();
@@ -758,76 +797,44 @@ void GameApp::BuildMaterials()
 {
 	int matIndex = 0;
 
-	BuildMaterial(matIndex, matIndex, "bricks0",		0.1f, { 1.0f,1.0f,1.0f,1.0f }, { 0.02f, 0.02f, 0.02f });
-	BuildMaterial(matIndex, matIndex, "stone0",			0.3f);
-	BuildMaterial(matIndex, matIndex, "tile0",			0.3f, { 1.0f,1.0f,1.0f,1.0f }, { 0.02f, 0.02f, 0.02f });
-	BuildMaterial(matIndex, matIndex, "checkboard0",	0.2f);
-	BuildMaterial(matIndex, matIndex, "ice0",			0.0f, { 1.0f,1.0f,1.0f,1.0f }, { 0.01f, 0.01f, 0.01f });
-	BuildMaterial(matIndex, matIndex, "grass0",			0.0f, { 1.0f,1.0f,1.0f,1.0f } );
+	BuildMaterial(matIndex, matIndex, "bricks0", 0.1f, { 1.0f,1.0f,1.0f,1.0f }, { 0.02f, 0.02f, 0.02f });
+	BuildMaterial(matIndex, matIndex, "stone0", 0.3f);
+	BuildMaterial(matIndex, matIndex, "tile0", 0.3f, { 1.0f,1.0f,1.0f,1.0f }, { 0.02f, 0.02f, 0.02f });
+	BuildMaterial(matIndex, matIndex, "checkboard0", 0.2f);
+	BuildMaterial(matIndex, matIndex, "ice0", 0.0f, { 1.0f,1.0f,1.0f,1.0f }, { 0.01f, 0.01f, 0.01f });
+	BuildMaterial(matIndex, matIndex, "grass0", 0.0f, { 1.0f,1.0f,1.0f,1.0f });
 	BuildMaterial(matIndex, matIndex, "skullMat");
 
 }
 
 void GameApp::BuildRenderItems()
 {
-    auto skullRitem = std::make_unique<RenderItem>();
-	skullRitem->World = MathHelper::Identity4x4();
-	skullRitem->TexTransform = MathHelper::Identity4x4();
-	skullRitem->ObjCBIndex = 0;
-	skullRitem->Mat = mMaterials["tile0"].get();
-	skullRitem->Geo = mGeometries["skullGeo"].get();
-	skullRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	skullRitem->InstanceCount = 0;
-	skullRitem->IndexCount = skullRitem->Geo->DrawArgs["skull"].IndexCount;
-	skullRitem->StartIndexLocation = skullRitem->Geo->DrawArgs["skull"].StartIndexLocation;
-	skullRitem->BaseVertexLocation = skullRitem->Geo->DrawArgs["skull"].BaseVertexLocation;
-	skullRitem->Bounds = skullRitem->Geo->DrawArgs["skull"].Bounds;
+	//auto skullRitem = std::make_unique<RenderItem>();
+	//skullRitem->World = MathHelper::Identity4x4();
+	//skullRitem->TexTransform = MathHelper::Identity4x4();
+	//skullRitem->ObjCBIndex = 0;
+	//skullRitem->Mat = mMaterials["tile0"].get();
+	//skullRitem->Geo = mGeometries["skullGeo"].get();
+	//skullRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	//skullRitem->InstanceCount = 1;
+	//skullRitem->IndexCount = skullRitem->Geo->DrawArgs["skull"].IndexCount;
+	//skullRitem->StartIndexLocation = skullRitem->Geo->DrawArgs["skull"].StartIndexLocation;
+	//skullRitem->BaseVertexLocation = skullRitem->Geo->DrawArgs["skull"].BaseVertexLocation;
+	//skullRitem->Bounds = skullRitem->Geo->DrawArgs["skull"].Bounds;
 
-	// Generate instance data.
-	const int n = 5;
-	mInstanceCount = n*n*n;
-	skullRitem->Instances.resize(mInstanceCount);
-	
-
-
-	float width = 200.0f;
-	float height = 200.0f;
-	float depth = 200.0f;
-
-	float x = -0.5f*width;
-	float y = -0.5f*height;
-	float z = -0.5f*depth;
-	float dx = width / (n - 1);
-	float dy = height / (n - 1);
-	float dz = depth / (n - 1);
-	for(int k = 0; k < n; ++k)
+	XMFLOAT4X4 test =
 	{
-		for(int i = 0; i < n; ++i)
-		{
-			for(int j = 0; j < n; ++j)
-			{
-				int index = k*n*n + i*n + j;
-				// Position instanced along a 3D grid.
-				skullRitem->Instances[index].World = XMFLOAT4X4(
-					1.0f, 0.0f, 0.0f, 0.0f,
-					0.0f, 1.0f, 0.0f, 0.0f,
-					0.0f, 0.0f, 1.0f, 0.0f,
-					x + j*dx, y + i*dy, z + k*dz, 1.0f);
+		1.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		100.0f, 300.0f, 0.0f, 1.0f
+	};
 
-				XMStoreFloat4x4(&skullRitem->Instances[index].TexTransform, XMMatrixScaling(2.0f, 2.0f, 1.0f));
-				skullRitem->Instances[index].MaterialIndex = index % mMaterials.size();
-			}
-		}
-	}
-
-
-
-
-	mAllRitems.push_back(std::move(skullRitem));
-
+	///Generic box used as the weapon default for now
 	auto boxRitem = std::make_unique<RenderItem>();
-	XMStoreFloat4x4(&boxRitem->World, XMMatrixTranslation(200.0f, 2.0f, -8.0f));
-	boxRitem->ObjCBIndex = 1;
+	boxRitem->World = test;
+	boxRitem->ObjCBIndex = 0;
+	boxRitem->InstanceCount = 0;
 	boxRitem->Mat = mMaterials["tile0"].get();
 	boxRitem->Geo = mGeometries["boxGeo"].get();
 	boxRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -835,39 +842,75 @@ void GameApp::BuildRenderItems()
 	boxRitem->StartIndexLocation = boxRitem->Geo->DrawArgs["box"].StartIndexLocation;
 	boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["box"].BaseVertexLocation;
 
-	mRitemLayer[(int)RenderLayer::Transparent].push_back(boxRitem.get());
-	
+	const int n = 5;
+	mInstanceCount = 1;
 	boxRitem->Instances.resize(mInstanceCount);
+	//skullRitem->Instances.resize(1);
 
+	//float width = 200.0f;
+	//float height = 200.0f;
+	//float depth = 200.0f;
+
+	//float x = -0.5f*width;
+	//float y = -0.5f*height;
+	//float z = -0.5f*depth;
+	//float dx = width / (n - 0);
+	//float dy = height / (n - 0);
+	//float dz = depth / (n - 0);
+	//for (int k = 0; k < n; ++k)
+	//{
+	//	for (int i = 0; i < n; ++i)
+	//	{
+	//		for (int j = 0; j < n; ++j)
+	//		{
+	//			int index = k * n*n + i * n + j;
+	//			// Position instanced along a 3D grid.
+	//			boxRitem->Instances[index].World = XMFLOAT4X4(
+	//				1.0f, 0.0f, 0.0f, 0.0f,
+	//				0.0f, 1.0f, 0.0f, 0.0f,
+	//				0.0f, 0.0f, 1.0f, 0.0f,
+	//				x + j * dx, y + i * dy, z + k * dz, 1.0f);
+
+	//			XMStoreFloat4x4(&boxRitem->Instances[index].TexTransform, XMMatrixScaling(2.0f, 2.0f, 1.0f));
+	//			boxRitem->Instances[index].MaterialIndex = index % mMaterials.size();
+	//		}
+	//	}
+	//}
+	//mAllRitems.push_back(std::move(skullRitem));
 	mAllRitems.push_back(std::move(boxRitem));
 
-	
+	//Render the weapon here
+
 	// All the render items are opaque.
-	for(auto& e : mAllRitems)
+	for (auto& e : mAllRitems)
 		mOpaqueRitems.push_back(e.get());
 }
 
 void GameApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems)
 {
-    // For each render item...
-    for(size_t i = 0; i < ritems.size(); ++i)
-    {
-        auto ri = ritems[i];
+	// For each render item...
+	for (size_t i = 0; i < ritems.size(); ++i)
+	{
+		auto ri = ritems[i];
 
-        cmdList->IASetVertexBuffers(0, 1, &ri->Geo->VertexBufferView());
-        cmdList->IASetIndexBuffer(&ri->Geo->IndexBufferView());
-        cmdList->IASetPrimitiveTopology(ri->PrimitiveType);
+		cmdList->IASetVertexBuffers(0, 1, &ri->Geo->VertexBufferView());
+		cmdList->IASetIndexBuffer(&ri->Geo->IndexBufferView());
+		cmdList->IASetPrimitiveTopology(ri->PrimitiveType);
+
+		CD3DX12_GPU_DESCRIPTOR_HANDLE tex(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+		tex.Offset(ri->Mat->DiffuseSrvHeapIndex, mCbvSrvDescriptorSize);
+
 
 		// Set the instance buffer to use for this render-item.  For structured buffers, we can bypass 
 		// the heap and set as a root descriptor.
 		auto instanceBuffer = mCurrFrameResource->InstanceBuffer->Resource();
-		mCommandList->SetGraphicsRootShaderResourceView(ri->ObjCBIndex, instanceBuffer->GetGPUVirtualAddress());
+		mCommandList->SetGraphicsRootShaderResourceView(0, instanceBuffer->GetGPUVirtualAddress());
 
 		//auto instanceBuffer2 = mCurrFrameResource->InstanceBuffer2->Resource();
-		//mCommandList->SetGraphicsRootShaderResourceView(0, instanceBuffer2->GetGPUVirtualAddress());
+		//mCommandList->SetGraphicsRootShaderResourceView(1, instanceBuffer2->GetGPUVirtualAddress());
 
-        cmdList->DrawIndexedInstanced(ri->IndexCount, ri->InstanceCount, ri->StartIndexLocation, ri->BaseVertexLocation, 0);
-    }
+		cmdList->DrawIndexedInstanced(ri->IndexCount, ri->InstanceCount, ri->StartIndexLocation, ri->BaseVertexLocation, 0);
+	}
 }
 
 std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GameApp::GetStaticSamplers()
@@ -921,9 +964,8 @@ std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GameApp::GetStaticSamplers()
 		0.0f,                              // mipLODBias
 		8);                                // maxAnisotropy
 
-	return { 
+	return {
 		pointWrap, pointClamp,
-		linearWrap, linearClamp, 
+		linearWrap, linearClamp,
 		anisotropicWrap, anisotropicClamp };
 }
-
