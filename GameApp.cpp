@@ -274,7 +274,6 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	if(GetAsyncKeyState('2') & 0x8000)
 		mFrustumCullingEnabled = false;
 
-
 	if (GetAsyncKeyState('Q') & 0x08000)
 	{
 		//mAudio.Play("Chord",false,1.0f/*,sinf(gt.TotalTime()*0.0f)*/);
@@ -397,10 +396,21 @@ void GameApp::UpdateMainPassCB(const GameTimer& gt)
 	mMainPassCB.TotalTime = gt.TotalTime();
 	mMainPassCB.DeltaTime = gt.DeltaTime();
 	mMainPassCB.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
-	//flashing red for low health
+	
 	mMainPassCB.Lights[0].Direction = { 0.57735f, -0.57735f, 0.57735f };
-	mMainPassCB.Lights[0].Strength = { sin(gt.TotalTime()) / 2 + 0.5f ,0.0f,0.0f };
-	//mMainPassCB.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
+	
+	//flashing red for low health
+	if (GetAsyncKeyState('L') & 0x8000)
+	{
+	  mMainPassCB.Lights[0].Strength = { sin(gt.TotalTime()) / 2 + 0.5f ,0.0f,0.0f };
+	}
+
+	else if(GetAsyncKeyState('M') & 0x8000)
+	{
+	  mMainPassCB.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
+	}
+	
+	
 	mMainPassCB.Lights[1].Direction = { -0.57735f, -0.57735f, 0.57735f };
 	mMainPassCB.Lights[1].Strength = { 0.4f, 0.4f, 0.4f };
 	mMainPassCB.Lights[2].Direction = { 0.0f, -0.707f, -0.707f };
