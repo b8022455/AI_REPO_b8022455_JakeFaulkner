@@ -210,6 +210,15 @@ void Camera::Pitch(float angle)
 	mViewDirty = true;
 }
 
+void Camera::Elevate(float d) {
+	XMVECTOR s = XMVectorReplicate(d);
+	XMVECTOR u = XMLoadFloat3(&mUp);
+	XMVECTOR p = XMLoadFloat3(&mPosition);
+	XMStoreFloat3(&mPosition, XMVectorMultiplyAdd(s, u, p));
+
+	mViewDirty = true;
+}
+
 void Camera::RotateY(float angle)
 {
 	// Rotate the basis vectors about the world y-axis.

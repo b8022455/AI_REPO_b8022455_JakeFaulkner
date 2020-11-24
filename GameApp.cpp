@@ -63,8 +63,13 @@ bool GameApp::Initialize()
 	// so we have to query this information.
     mCbvSrvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-	mCamera.SetPosition(0.0f, 2.0f, -15.0f);
+	//mCamera.SetPosition(0.0f, 2.0f, -15.0f);
 	
+	mCamera.SetPosition(0.0f, 50.0f, 0.0f);
+
+	float dy = XMConvertToRadians(90.0f);
+	mCamera.Pitch(dy); // SETS CAMERA TO FACE DOWN
+
 	//Audio setup
 	{
 		mGameAudio.Init();
@@ -257,10 +262,16 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	const float dt = gt.DeltaTime();
 
 	if(GetAsyncKeyState('W') & 0x8000)
-		mCamera.Walk(20.0f*dt);
+		mCamera.Elevate(20.0f*dt);
 
 	if(GetAsyncKeyState('S') & 0x8000)
-		mCamera.Walk(-20.0f*dt);
+		mCamera.Elevate(-20.0f*dt);
+
+	if (GetAsyncKeyState('I') & 0x8000)
+		mCamera.Walk(20.0f * dt);
+
+	if (GetAsyncKeyState('O') & 0x8000)
+		mCamera.Walk(-20.0f * dt);
 
 	if(GetAsyncKeyState('A') & 0x8000)
 		mCamera.Strafe(-20.0f*dt);
@@ -285,6 +296,15 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 		//mAudio.Play("Chord",false,1.0f/*,sinf(gt.TotalTime()*0.0f)*/);
 		//mGameAudio.Play("ring9", true);
 		mGameAudio.Resume("music");
+	}
+
+	if (GetAsyncKeyState('4') & 0x8000)
+	{
+		// TODO: WORKING MOVEMENT TEST LOCATED HERE
+		XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(5.0f * dt, 0.0f, 0.0f));
+		XMMATRIX current = XMLoadFloat4x4(&mAllRitems.at(0)->Instances.at(0).World);
+		transform = XMMatrixMultiply(current, transform);
+		XMStoreFloat4x4(&mAllRitems.at(0)->Instances.at(0).World, transform);
 	}
 
 	mCamera.UpdateViewMatrix();
