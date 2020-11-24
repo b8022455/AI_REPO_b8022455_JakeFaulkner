@@ -4,6 +4,8 @@
 #include "Common/MathHelper.h"
 #include "Common/UploadBuffer.h"
 
+const int differentRenderObjectsNum = 2;		//If adding another object with diff geo, increment this
+
 struct InstanceData
 {
 	DirectX::XMFLOAT4X4 World = MathHelper::Identity4x4();
@@ -82,6 +84,7 @@ public:
    // std::unique_ptr<UploadBuffer<FrameConstants>> FrameCB = nullptr;
     std::unique_ptr<UploadBuffer<PassConstants>> PassCB = nullptr;
     std::unique_ptr<UploadBuffer<MaterialData>> MaterialBuffer = nullptr;
+	int num = 2;
 
 	// NOTE: In this demo, we instance only one render-item, so we only have one structured buffer to 
 	// store instancing data.  To make this more general (i.e., to support instancing multiple render-items), 
@@ -91,7 +94,7 @@ public:
 	// would need if we were not using instancing.  For example, if we were drawing 1000 objects without instancing,
 	// we would create a constant buffer with enough room for a 1000 objects.  With instancing, we would just
 	// create a structured buffer large enough to store the instance data for 1000 instances.  
-    std::unique_ptr<UploadBuffer<InstanceData>> InstanceBuffer = nullptr;
+    std::unique_ptr<UploadBuffer<InstanceData>> InstanceBuffer[differentRenderObjectsNum];
 
     // Fence value to mark commands up to this fence point.  This lets us
     // check if these frame resources are still in use by the GPU.
