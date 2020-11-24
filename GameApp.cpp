@@ -89,11 +89,14 @@ bool GameApp::Initialize()
 		mGameAudio.Play("ring9",nullptr, true);
 	}
 
+	mCombatController.Initialize();
+
 	LoadTextures();
     BuildRootSignature();
 	BuildDescriptorHeaps();
     BuildShadersAndInputLayout();
 	BuildBoxGeometry();
+	BuildSwordGeometry();
 	BuildMaterials();
     BuildRenderItems();
     BuildFrameResources();
@@ -288,6 +291,10 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 		mGameAudio.Resume("music");
 	}
 
+	//Checks input when attacking
+	if (GetAsyncKeyState('V') & 0x8000)		///Change key in future
+		mCombatController.PlayerAttack(mAllRitems);
+
 	mCamera.UpdateViewMatrix();
 }
  
@@ -300,6 +307,8 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 {
 	XMMATRIX view = mCamera.GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
+
+	mCombatController.Update(mAllRitems);		//Continues rotating the weapon if the player has attacked
 
 	auto currInstanceBuffer = mCurrFrameResource->InstanceBuffer.get();
 	for(auto& e : mAllRitems)
@@ -618,6 +627,54 @@ void GameApp::BuildBoxGeometry()
 	mGeometries["boxGeo"] = std::move(geo);
 }
 
+void GameApp::BuildSwordGeometry()
+{
+	GeometryGenerator geoGen;
+	GeometryGenerator::MeshData sword = geoGen.CreateSword(8.0f, 8.0f, 8.0f, 3);
+
+	std::vector<Vertex> vertices(sword.Vertices.size());
+	for (size_t i = 0; i < sword.Vertices.size(); ++i)
+	{
+		auto& p = sword.Vertices[i].Position;
+		vertices[i].Pos = p;
+		vertices[i].Normal = sword.Vertices[i].Normal;
+		vertices[i].TexC = sword.Vertices[i].TexC;
+	}
+
+	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
+
+	std::vector<std::uint16_t> indices = sword.GetIndices16();
+	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
+
+	auto geo = std::make_unique<MeshGeometry>();
+	geo->Name = "swordGeo";
+
+	ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
+	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
+
+	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
+	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
+
+	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+		mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
+
+	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+		mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
+
+	geo->VertexByteStride = sizeof(Vertex);
+	geo->VertexBufferByteSize = vbByteSize;
+	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
+	geo->IndexBufferByteSize = ibByteSize;
+
+	SubmeshGeometry submesh;
+	submesh.IndexCount = (UINT)indices.size();
+	submesh.StartIndexLocation = 0;
+	submesh.BaseVertexLocation = 0;
+
+	geo->DrawArgs["swordGeo"] = submesh;
+
+	mGeometries["swordGeo"] = std::move(geo);
+}
 
 void GameApp::BuildPSOs()
 {
@@ -737,8 +794,29 @@ void GameApp::BuildRenderItems()
 		}
 	}
 
-
+	//Sword Obj
+	auto swordRitem = std::make_unique<RenderItem>();
+	swordRitem->World = MathHelper::Identity4x4();
+	swordRitem->ObjCBIndex = 1;
+	swordRitem->InstanceCount = 0;
+	swordRitem->Mat = mMaterials["tile0"].get();
+	swordRitem->Geo = mGeometries["swordGeo"].get();
+	swordRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	swordRitem->IndexCount = swordRitem->Geo->DrawArgs["swordGeo"].IndexCount;
+	swordRitem->StartIndexLocation = swordRitem->Geo->DrawArgs["swordGeo"].StartIndexLocation;
+	swordRitem->BaseVertexLocation = swordRitem->Geo->DrawArgs["swordGeo"].BaseVertexLocation;
+	swordRitem->Instances.resize(1);
+	
 	mAllRitems.push_back(std::move(boxRitem));
+	mAllRitems.push_back(std::move(swordRitem));
+
+	mAllRitems.at(1)->Instances.at(0).World =			//Just to not clip it with the map upon start
+	{
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		5.0f, 10.0f, 0.0f, 1.0f
+	};
 	
 	// All the render items are opaque.
 	for(auto& e : mAllRitems)
