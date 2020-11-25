@@ -76,7 +76,7 @@ private:
 	std::vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
 
 	// List of all the render items.
-	std::vector<std::unique_ptr<RenderItem>> mAllRitems;
+	std::unordered_map<std::string, std::unique_ptr<RenderItem>> mAllRitems;	//Makes it easier to know what you're accessing (i.e "Tiles" rather than 0)
 
 	// Render items divided by PSO.
 	std::vector<RenderItem*> mOpaqueRitems;

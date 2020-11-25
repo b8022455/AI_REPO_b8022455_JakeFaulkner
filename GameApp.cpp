@@ -338,7 +338,7 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 	for (auto& e : mAllRitems)
 	{
 		auto currInstanceBuffer = mCurrFrameResource->InstanceBuffer[i].get();
-		const auto& instanceData = e->Instances;
+		const auto& instanceData = e.second->Instances;
 		i++;		//Increments the instance buffer for the next geo to be rendered
 		int visibleInstanceCount = 0;
 
@@ -357,7 +357,7 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 			mCamFrustum.Transform(localSpaceFrustum, viewToLocal);
 
 			// Perform the box/frustum intersection test in local space.
-			if ((localSpaceFrustum.Contains(e->Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
+			if ((localSpaceFrustum.Contains(e.second->Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
 			{
 				InstanceData data;
 				XMStoreFloat4x4(&data.World, XMMatrixTranspose(world));
@@ -369,13 +369,13 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 			}
 		}
 
-		e->InstanceCount = visibleInstanceCount;
+		e.second->InstanceCount = visibleInstanceCount;
 
 		std::wostringstream outs;
 		outs.precision(2);
 		outs << L"Instancing and Culling Demo" <<
-			L"    " << e->InstanceCount <<
-			L" objects visible out of " << e->Instances.size();
+			L"    " << e.second->InstanceCount <<
+			L" objects visible out of " << e.second->Instances.size();
 		mMainWndCaption = outs.str();
 	}
 }
@@ -846,12 +846,12 @@ void GameApp::BuildRenderItems()
 	swordRitem->BaseVertexLocation = swordRitem->Geo->DrawArgs["swordGeo"].BaseVertexLocation;
 	swordRitem->Instances.resize(1);
 
-	mAllRitems.push_back(std::move(boxRitem));
-	mAllRitems.push_back(std::move(swordRitem));
+	mAllRitems["Tiles"] = std::move(boxRitem);
+	mAllRitems["Weapon"] = std::move(swordRitem);
 
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)
-		mOpaqueRitems.push_back(e.get());
+		mOpaqueRitems.push_back(e.second.get());
 }
 
 void GameApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems)
