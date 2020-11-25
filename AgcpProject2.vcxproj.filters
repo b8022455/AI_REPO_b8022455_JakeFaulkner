@@ -57,6 +57,9 @@
     <ClCompile Include="AudioSImple.cpp">
       <Filter>Source Files\Audio</Filter>
     </ClCompile>
+    <ClCompile Include="CombatController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FrameResource.h">
@@ -95,8 +98,17 @@
     <ClInclude Include="AudioSImple.h">
       <Filter>Header Files\Audio</Filter>
     </ClInclude>
+    <ClInclude Include="CombatController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Shaders\Default.hlsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Shaders\LightingUtil.hlsl">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

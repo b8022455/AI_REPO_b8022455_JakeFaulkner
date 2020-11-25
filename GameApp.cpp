@@ -92,6 +92,8 @@ bool GameApp::Initialize()
 		mGameAudio.SetFade("music", 3.0f);
 		// Plays audio from 'music' engine. No need to specify engine
 		mGameAudio.Play("ring9", nullptr, true);
+		// Is that better?
+		mGameAudio.SetEngineVolume("music", 0.005f);
 	}
 
 	mCombatController.Initialize();

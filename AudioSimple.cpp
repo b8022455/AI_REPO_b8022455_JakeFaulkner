@@ -261,7 +261,7 @@ void MusicEngine::Update(const GameTimer & gt)
 		if (mCache.front())
 			mCache.front()->SetVolume(mNormalisedVolume);
 		if (mCache.back())
-			mCache.back()->SetVolume(1.0f - mNormalisedVolume); //compliment
+			mCache.back()->SetVolume((1.0f - mNormalisedVolume)); //compliment
 
 	}
 	else
@@ -517,6 +517,14 @@ void GameAudio::SetFade(const std::string & name, float secs)
 	}
 }
 
+void GameAudio::SetEngineVolume(const std::string & engineName, float volume)
+{
+	if (ValidEngine(engineName))
+	{
+		mEngines[engineName]->SetEngineVolume(volume);
+	}
+}
+
 
 
 
@@ -570,6 +578,11 @@ void SoundEngine::Resume()
 AUDIO_ENGINE_TYPE SoundEngine::GetType()
 {
 	return mType;
+}
+
+void SoundEngine::SetEngineVolume(float volume)
+{
+	mAudioEngine->SetMasterVolume(volume);
 }
 
 

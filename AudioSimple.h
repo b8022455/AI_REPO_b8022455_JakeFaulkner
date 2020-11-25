@@ -72,6 +72,7 @@ public:
 	void LoadSound(const std::string& soundName, const std::wstring& filename);
 	virtual void ForceAudio(bool force) = 0;
 	AUDIO_ENGINE_TYPE GetType();
+	void SetEngineVolume(float volume);
 };
 
 class SfxEngine : public SoundEngine
@@ -131,6 +132,7 @@ public:
 	void ForceAudio(const std::string& name, bool force);
 	// Fade effect for music audio engines
 	void SetFade(const std::string& name, float secs);
+	void SetEngineVolume(const std::string& engineName, float volume);
 };
 
 
