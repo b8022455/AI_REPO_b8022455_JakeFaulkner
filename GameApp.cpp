@@ -86,8 +86,8 @@ bool GameApp::Initialize()
 		//Music 'engine'
 		mGameAudio.CreateEngine("music", AUDIO_ENGINE_TYPE::MUSIC);
 		// Loads sounds the same way
-		mGameAudio.LoadSound("music", "ring5", L"Data/Sounds/518567__szegvari__cooking-indrustrial-music-loop-mastering.wav");
-		mGameAudio.LoadSound("music", "ring9", L"Data/Sounds/382318__sterferny__country-band-soundcheck-captured-through-vent.wav");
+		mGameAudio.LoadSound("music", "ring5", L"Data/Sounds/Ring05.wav");
+		mGameAudio.LoadSound("music", "ring9", L"Data/Sounds/Ring09.wav");
 		// Time it takes to fade between tracks when Play() is called
 		mGameAudio.SetFade("music", 3.0f);
 		// Plays audio from 'music' engine. No need to specify engine
