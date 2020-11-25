@@ -11,6 +11,7 @@
 #include "AudioSImple.h"
 #include "RenderItem.h"
 #include "CombatController.h"
+#include "SpriteManager.h"
 
 const int gNumFrameResources = 3;
 
@@ -99,5 +100,8 @@ private:
 
 	//Combat
 	CombatController mCombatController;
+
+	//Viewport Sprites
+	SpriteManager mSprites;
 
 };

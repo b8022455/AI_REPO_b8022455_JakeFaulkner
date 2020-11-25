@@ -101,6 +101,7 @@ bool GameApp::Initialize()
 	LoadTextures();
 	BuildRootSignature();
 	BuildDescriptorHeaps();
+	mSprites.Init(md3dDevice.Get(), mCommandQueue.Get(), mCbvSrvDescriptorSize,mBackBufferFormat,mDepthStencilFormat);
 	BuildShadersAndInputLayout();
 	BuildBoxGeometry();
 	BuildSwordGeometry();
@@ -179,10 +180,13 @@ void GameApp::Draw(const GameTimer& gt)
 
 	mCommandList->RSSetViewports(1, &mScreenViewport);
 	mCommandList->RSSetScissorRects(1, &mScissorRect);
-
+	
 	// Indicate a state transition on the resource usage.
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+
+	mSprites.Draw(mCommandList.Get(), mScreenViewport);
+
 
 	// Clear the back buffer and depth buffer.
 	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
@@ -193,6 +197,9 @@ void GameApp::Draw(const GameTimer& gt)
 
 	ID3D12DescriptorHeap* descriptorHeaps[] = { mSrvDescriptorHeap.Get() };
 	mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+
+
+
 
 	mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
@@ -215,7 +222,6 @@ void GameApp::Draw(const GameTimer& gt)
 
 	// Done recording commands.
 	ThrowIfFailed(mCommandList->Close());
-
 	// Add the command list to the queue for execution.
 	ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
 	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
@@ -556,7 +562,7 @@ void GameApp::BuildDescriptorHeaps()
 
 	// next descriptor
 	hDescriptor.Offset(1, mCbvSrvDescriptorSize);
-
+	
 	srvDesc.Format = stoneTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = stoneTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(stoneTex.Get(), &srvDesc, hDescriptor);
