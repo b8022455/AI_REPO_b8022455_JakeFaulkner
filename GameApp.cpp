@@ -496,7 +496,7 @@ void GameApp::LoadTextures()
 void GameApp::BuildRootSignature()
 {
 	CD3DX12_DESCRIPTOR_RANGE texTable;
-	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 7, 0, 0);
+	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 8, 0, 0);
 
 	// Root parameter can be a table, root descriptor or root constants.
 	CD3DX12_ROOT_PARAMETER slotRootParameter[4];

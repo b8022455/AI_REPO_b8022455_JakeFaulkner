@@ -111,7 +111,7 @@ void SpriteManager::Draw(ID3D12GraphicsCommandList * commandList, const D3D12_VI
 	mSpriteBatch->Begin(commandList);
 	
 	//demo
-	mSpriteFont.at(0)->DrawString(mSpriteBatch.get(), L"SpriteFontString0", DirectX::XMFLOAT2(1.0f, 1.0f));
+	//mSpriteFont.at(0)->DrawString(mSpriteBatch.get(), L"SpriteFontString0", DirectX::XMFLOAT2(1.0f, 1.0f));
 	//mSpriteFont.at(1)->DrawString(mSpriteBatch.get(), L"SpriteFontString1",DirectX::XMFLOAT2(1.0f,32.0f));
 
 	
