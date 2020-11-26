@@ -9,7 +9,7 @@ void Player::Move(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &
 {
   const float dt = gt.DeltaTime();
 
-
+  // cant move diagonally, 2 key presses at once just does first key
   if (GetAsyncKeyState(VK_LEFT) & 0x8000)
   {
 	// TODO: WORKING MOVEMENT TEST LOCATED HERE
