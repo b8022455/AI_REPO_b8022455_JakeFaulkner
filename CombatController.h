@@ -20,6 +20,7 @@ public:
 	bool GetAttackStatus();		//Lets the Combat Controller class know when the attack has ended
 	void UpdateTimer();		//Keeps track of the time delay for attacking
 
+	XMFLOAT4X4 collisionPos;		//Passed to Combat Controller class for ease of access for now
 private:
 	void PositionWeapon(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems);	///Positions weapon at the position of the player, For now just positions at random place in scene, Fix once player model is in!!!
 	void ResetWeaponPosition(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems);		///Positions weapon out of sight when done swinging, Find better way to do this!!!
@@ -55,7 +56,11 @@ public:
 	void Update(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems);
 	void PlayerAttack(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems);	//Connects to PlayerWeapon::Attack() function
 	bool CheckIfAttackIsFinished();					//Checks with PlayerWeapon Class to see if its possible to attack again
+	bool CheckCollision(float ObjX, float ObjY, float ObjZ);		//Used specifically for weapon and enemy collision
+	bool CheckCollision(XMFLOAT3 Object1, XMFLOAT3 Object2);								//Can be generically used for any type of collision involving 2 objs, need to move it somewhere outside of class
+	bool CheckCollision(XMFLOAT3 Object1, XMFLOAT3 Object2, float xMin, float xMax, float yMin, float yMax, float zMin, float zMax);		//Generic for 2 objects collision but includes changeable coordinate boundaries, again move it out of class
 
+	XMFLOAT4X4 collisionPoint;		//Used in the check collision functions, !!! in future change this to only have this variable in playerWeapon
 private:
 	void DamageEnemy();		///For future use?
 	void DamagePlayer();

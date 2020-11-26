@@ -3,11 +3,13 @@
 void CombatController::Initialize()
 {
 	mPlayerWeapon.Initialize();
+	collisionPoint = mPlayerWeapon.collisionPos;
 }
 
 void CombatController::Update(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
 {
 	isAttacking = CheckIfAttackIsFinished();		//Stops the attack
+	collisionPoint = mPlayerWeapon.collisionPos;	//Updates to check positions of objects in case of collision
 
 	if (isAttacking)
 		mPlayerWeapon.SwingWeapon(mAllRitems);
@@ -35,6 +37,49 @@ void CombatController::DamagePlayer()
 	//Take health from player
 }
 
+bool CombatController::CheckCollision(float ObjX, float ObjY, float ObjZ)
+{
+	//Gets the distance between both objects coordinates
+	float xDistance = ObjX - collisionPoint._41;
+	float yDistance = ObjY - collisionPoint._42;
+	float zDistance = ObjZ - collisionPoint._43;
+
+	if (xDistance > -7.5f && xDistance < 7.5f)							//If distance between X coordinate is within boundaries (-7.5 < X < 7.5)
+		if (yDistance > -1.5f && yDistance < 1.5f)						//If distance between Y coordinate is within boundaries (-1.5 < Y < 1.5)
+			if (zDistance > -5.0f && zDistance < 5.0f)					//If distance between Z coordinate is within boundaries (-5.0f < Z < 5.0f)
+				return true;				//There is a collision between the 2 objects
+
+	return false;				//If the distance between the objects is not within the boundaries, there is no collision
+}
+
+bool CombatController::CheckCollision(XMFLOAT3 Obj1, XMFLOAT3 Obj2)
+{
+	float xDistance = Obj1.x - Obj2.x;
+	float yDistance = Obj1.y - Obj2.y;
+	float zDistance = Obj1.z - Obj2.z;
+
+	if (xDistance > -7.5f && xDistance < 7.5f)							//If distance between X coordinate is within boundaries (-7.5 < X < 7.5)
+		if (yDistance > -1.5f && yDistance < 1.5f)						//If distance between Y coordinate is within boundaries (-1.5 < Y < 1.5)
+			if (zDistance > -5.0f && zDistance < 5.0f)					//If distance between Z coordinate is within boundaries (-5.0f < Z < 5.0f)
+				return true;				//There is a collision between the 2 objects
+
+	return false;				//If the distance between the objects is not within the boundaries, there is no collision
+}
+
+bool CombatController::CheckCollision(XMFLOAT3 Obj1, XMFLOAT3 Obj2, float xMin, float xMax, float yMin, float yMax, float zMin, float zMax)
+{
+	float xDistance = Obj1.x - Obj2.x;
+	float yDistance = Obj1.y - Obj2.y;
+	float zDistance = Obj1.z - Obj2.z;
+
+	if (xDistance > xMin && xDistance < xMax)							//If distance between X coordinate is within custom boundaries
+		if (yDistance > yMin && yDistance < yMax)						//If distance between Y coordinate is within custom boundaries
+			if (zDistance > zMin && zDistance < zMax)					//If distance between Z coordinate is within custom boundaries
+				return true;				//There is a collision between the 2 objects
+
+	return false;				//If the distance between the objects is not within the boundaries, there is no collision
+}
+
 
 void PlayerWeapon::Initialize()
 {
@@ -44,6 +89,10 @@ void PlayerWeapon::Initialize()
 
 	weaponRotation = 0.0f;
 	attacking = false;
+
+	//Collision point stuff
+	collisionPos = weaponPositionMatrix2;
+	collisionPos._41 += 0.5f;
 
 }
 
@@ -76,11 +125,14 @@ void PlayerWeapon::SwingWeapon(std::unordered_map<std::string, std::unique_ptr<R
 		ResetWeaponPosition(mAllRitems);
 	else
 	{
-		weaponRotation += 0.002f;		///Could replace into its own variable
+		weaponRotation += 0.02f;		///Could replace into its own variable
 		UpdateWeaponMatrix();		//Updates to show the new rotation
 
 		mAllRitems["Weapon"]->Instances.at(0).World = weaponPositionMatrix2;
 	}
+
+	collisionPos = weaponPositionMatrix2;
+	collisionPos._41 += 0.5f;
 }
 
 void PlayerWeapon::ResetWeaponPosition(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
@@ -103,9 +155,9 @@ void PlayerWeapon::UpdateTimer()
 void PlayerWeapon::UpdateWeaponMatrix()
 {
 	///Original matrix used for positioning, need to find way to do rotation around a point using 1 matrix
-	weaponPositionMatrix = XMMatrixTranslation(5.0f, 0.0f, 0.0f);		///Could replace with a weapons position variable + 5.0 to get local positions
+	weaponPositionMatrix = XMMatrixTranslation(1.0f, 0.0f, 0.0f);		///Could replace with a weapons position variable + 5.0 to get local positions
 	weaponPositionMatrix *= XMMatrixRotationY(weaponRotation);
-	weaponPositionMatrix *= XMMatrixTranslation(0.0f, 10.0f, 0.0f);
+	weaponPositionMatrix *= XMMatrixTranslation(0.0f, -5.0f, 2.0f);
 
 	XMStoreFloat4x4(&weaponPositionMatrix2, weaponPositionMatrix);		//Stores above calculated matrix into the matrix which is assigned to the Objs World position
 }

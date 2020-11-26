@@ -336,6 +336,13 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 
 	mCombatController.Update(mAllRitems);		//Continues rotating the weapon if the player has attacked
 
+	//Checks if weapon is colliding w/ example box
+	if (mCombatController.CheckCollision(mAllRitems["Tiles"]->Instances.at(1024).World._41, mAllRitems["Tiles"]->Instances.at(1024).World._42,
+		mAllRitems["Tiles"]->Instances.at(1024).World._43))
+	{
+		mAllRitems["Tiles"]->Instances.at(1024).MaterialIndex = 5;			//Visual representation for collision
+	}
+
 	int i = 0;					//Makes sure each object with a different geo is using a different instance buffer
 	for (auto& e : mAllRitems)
 	{
@@ -670,7 +677,7 @@ void GameApp::BuildBoxGeometry()
 void GameApp::BuildSwordGeometry()
 {
 	GeometryGenerator geoGen;
-	GeometryGenerator::MeshData sword = geoGen.CreateSword(8.0f, 8.0f, 8.0f, 3);
+	GeometryGenerator::MeshData sword = geoGen.CreateSword(1.0f, 1.0f, 1.0f, 3);
 
 	std::vector<Vertex> vertices(sword.Vertices.size());
 	for (size_t i = 0; i < sword.Vertices.size(); ++i)
@@ -915,6 +922,22 @@ void GameApp::BuildRenderItems()
 	mAllRitems["Tiles"] = std::move(boxRitem);
 	mAllRitems["Weapon"] = std::move(swordRitem);
 	mAllRitems["Player"] = std::move(playerRitem);
+
+	#pragma region Weapon Collision Checking
+
+	InstanceData id;
+	id.World =
+	{
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		2.0f, -5.0f, 2.0f, 1.0f
+	};
+	id.MaterialIndex = 3;
+
+	mAllRitems["Tiles"]->Instances.push_back(id);
+
+	#pragma endregion
 
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)
