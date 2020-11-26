@@ -105,7 +105,6 @@ bool GameApp::Initialize()
 	LoadTextures();
 	BuildRootSignature();
 	BuildDescriptorHeaps();
-	mSprites.Init(md3dDevice.Get(), mCommandQueue.Get(), mCbvSrvDescriptorSize,mBackBufferFormat,mDepthStencilFormat);
 	BuildShadersAndInputLayout();
 	BuildBoxGeometry();
 	BuildSwordGeometry();
@@ -540,7 +539,7 @@ void GameApp::BuildDescriptorHeaps()
 	// Create the SRV heap.
 	//
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-	srvHeapDesc.NumDescriptors = 7;
+	srvHeapDesc.NumDescriptors = 8;
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&mSrvDescriptorHeap)));
@@ -548,7 +547,8 @@ void GameApp::BuildDescriptorHeaps()
 	//
 	// Fill out the heap with actual descriptors.
 	//
-	CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor(mSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	CD3DX12_CPU_DESCRIPTOR_HANDLE hCpuDescriptor(mSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	CD3DX12_GPU_DESCRIPTOR_HANDLE hGpuDescriptor(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
 	auto bricksTex = mTextures["bricksTex"]->Resource;
 	auto stoneTex = mTextures["stoneTex"]->Resource;
@@ -565,66 +565,62 @@ void GameApp::BuildDescriptorHeaps()
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.MipLevels = bricksTex->GetDesc().MipLevels;
 	srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
-	md3dDevice->CreateShaderResourceView(bricksTex.Get(), &srvDesc, hDescriptor);
+	md3dDevice->CreateShaderResourceView(bricksTex.Get(), &srvDesc, hCpuDescriptor);
 
 	// next descriptor
-	hDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	
 	srvDesc.Format = stoneTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = stoneTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(stoneTex.Get(), &srvDesc, hDescriptor);
+	md3dDevice->CreateShaderResourceView(stoneTex.Get(), &srvDesc, hCpuDescriptor);
 
 	// next descriptor
-	hDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
 	srvDesc.Format = tileTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = tileTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(tileTex.Get(), &srvDesc, hDescriptor);
+	md3dDevice->CreateShaderResourceView(tileTex.Get(), &srvDesc, hCpuDescriptor);
 
 	// next descriptor
-	hDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
 	srvDesc.Format = crateTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = crateTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(crateTex.Get(), &srvDesc, hDescriptor);
+	md3dDevice->CreateShaderResourceView(crateTex.Get(), &srvDesc, hCpuDescriptor);
 
 	// next descriptor
-	hDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
 	srvDesc.Format = iceTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = iceTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(iceTex.Get(), &srvDesc, hDescriptor);
+	md3dDevice->CreateShaderResourceView(iceTex.Get(), &srvDesc, hCpuDescriptor);
 
 	// next descriptor
-	hDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
 	srvDesc.Format = grassTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = grassTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(grassTex.Get(), &srvDesc, hDescriptor);
+	md3dDevice->CreateShaderResourceView(grassTex.Get(), &srvDesc, hCpuDescriptor);
 
 	// next descriptor
-	hDescriptor.Offset(1, mCbvSrvDescriptorSize);
-
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	
 	srvDesc.Format = defaultTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = defaultTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(defaultTex.Get(), &srvDesc, hDescriptor);
-
+	md3dDevice->CreateShaderResourceView(defaultTex.Get(), &srvDesc, hCpuDescriptor);
+	md3dDevice->CreateShaderResourceView(defaultTex.Get(), &srvDesc, hCpuDescriptor);
+	
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
 	{
-		//DirectX::ResourceUploadBatch resourceUpload(md3dDevice.Get());
-		//DirectX::RenderTargetState rtState(mBackBufferFormat, mDepthStencilFormat);
-		//DirectX::SpriteBatchPipelineStateDescription sbPipelineDesc(rtState);
-		//
-		//mConsole = std::make_unique<DX::TextConsole>(
-		//	md3dDevice.Get(),
-		//	resourceUpload,
-		//	rtState,
-		//	L"Data/Fonts/Subway_Novella_16.spritefont"
-		//	);
-		//
-		//mConsole->SetViewport(mScreenViewport);
-		//RECT size = mScissorRect;
-		//mConsole->SetWindow(SimpleMath::Viewport::ComputeTitleSafeArea(size.right, size.bottom));
+		mSprites.Init(md3dDevice.Get(), mCommandQueue.Get(), mCbvSrvDescriptorSize, mBackBufferFormat, mDepthStencilFormat, hCpuDescriptor,hGpuDescriptor);
 	}
 
 }

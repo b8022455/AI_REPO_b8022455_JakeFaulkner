@@ -3,6 +3,7 @@
 #include "DescriptorHeap.h"
 
 #include "Common/d3dUtil.h"
+#include "Common/d3dx12.h"
 
 #define IID_PPV_ARGS(ppType) __uuidof(**(ppType)), IID_PPV_ARGS_Helper(ppType)
 
@@ -25,19 +26,16 @@ void SpriteManager::Init2()
 
 void SpriteManager::Draw2()
 {
-	//mConsole
-
 	mConsole->WriteLine(L"stuff and things");
 }
 
-void SpriteManager::Init(ID3D12Device * device, ID3D12CommandQueue* commandQueue, UINT srvDescSize,DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthStencilFormat)
+void SpriteManager::Init(ID3D12Device * device, ID3D12CommandQueue* commandQueue, UINT srvDescSize,DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthStencilFormat, CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle)
 {
 	DirectX::ResourceUploadBatch resourceUpload(device);
 
 	resourceUpload.Begin();
 	{
 		DirectX::RenderTargetState rtState(backBufferFormat,depthStencilFormat);
-
 		DirectX::SpriteBatchPipelineStateDescription sbPipelineDesc(rtState);
 
 		mSpriteBatch = std::make_unique<DirectX::SpriteBatch>(device,resourceUpload, sbPipelineDesc);
@@ -62,17 +60,24 @@ void SpriteManager::Init(ID3D12Device * device, ID3D12CommandQueue* commandQueue
 
 		}*/
 
-		 mDescriptorHeap = std::make_unique<DirectX::DescriptorHeap>(device,
+		 /*mDescriptorHeap = std::make_unique<DirectX::DescriptorHeap>(device,
 			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 			D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE,
-			1);
+			1);*/
 
-		mSpriteFont.at(0) = std::make_unique<DirectX::SpriteFont>(
+		/*mSpriteFont.at(0) = std::make_unique<DirectX::SpriteFont>(
 			device,
 			resourceUpload,
 			L"Data/Fonts/Subway_Novella_16.spritefont",
 			mDescriptorHeap->GetFirstCpuHandle(),
 			mDescriptorHeap->GetFirstGpuHandle()
+			);*/
+		mSpriteFont.at(0) = std::make_unique<DirectX::SpriteFont>(
+			device,
+			resourceUpload,
+			L"Data/Fonts/Subway_Novella_16.spritefont",
+			cpuHandle,
+			gpuHandle
 			);
 
 		//todo next
@@ -86,6 +91,10 @@ void SpriteManager::Init(ID3D12Device * device, ID3D12CommandQueue* commandQueue
 
 }
 
+void SpriteManager::CreateFontResource(ID3D12Device * device, ID3D12CommandQueue * commandQueue, UINT srvDescSize, DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthStencilFormat)
+{
+}
+
 void SpriteManager::OnResize( D3D12_VIEWPORT & viewport)
 {
 }
@@ -95,11 +104,9 @@ void SpriteManager::Draw(ID3D12GraphicsCommandList * commandList, const D3D12_VI
 
 	mSpriteBatch->SetViewport(viewport);
 
-	auto mdh = mDescriptorHeap->Heap();
-
-
-	ID3D12DescriptorHeap* descriptorHeaps[] = { mDescriptorHeap->Heap() };
-	commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	//auto mdh = mDescriptorHeap->Heap(); // test
+	/*ID3D12DescriptorHeap* descriptorHeaps[] = { mDescriptorHeap->Heap() };
+	commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);*/
 
 	mSpriteBatch->Begin(commandList);
 	
