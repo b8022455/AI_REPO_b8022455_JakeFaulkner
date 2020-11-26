@@ -17,12 +17,8 @@ class SpriteManager
 {
 	std::unique_ptr<DirectX::SpriteBatch> mSpriteBatch;
 	std::array<std::unique_ptr<DirectX::SpriteFont>, FONT_SIZE> mSpriteFont;
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mSpriteSrvDescriptorHeap = nullptr;
-	std::unique_ptr<DirectX::DescriptorHeap> mDescriptorHeap = nullptr;
-
-
-	//Text Approach
-	std::unique_ptr<DX::TextConsole> mConsole;
+	//Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mSpriteSrvDescriptorHeap = nullptr;
+	//std::unique_ptr<DirectX::DescriptorHeap> mDescriptorHeap = nullptr;
 
 public:
 	void Init2();

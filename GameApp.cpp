@@ -195,16 +195,10 @@ void GameApp::Draw(const GameTimer& gt)
 	// Specify the buffers we are going to render to.
 	mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
 
-	mSprites.Draw(mCommandList.Get(), mScreenViewport);
 
 	ID3D12DescriptorHeap* descriptorHeaps[] = { mSrvDescriptorHeap.Get() };
 	mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
-	//auto heap = mSrvDescriptorHeap.Get();
-	//mCommandList->SetDescriptorHeaps(1, &heap);
-
-	//mConsole->Clear();
-	//mConsole->WriteLine(L"Moo");
 
 	mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
@@ -220,6 +214,7 @@ void GameApp::Draw(const GameTimer& gt)
 	mCommandList->SetGraphicsRootDescriptorTable(3, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
 	DrawRenderItems(mCommandList.Get(), mOpaqueRitems);
+	mSprites.Draw(mCommandList.Get(), mScreenViewport);
 
 	// Indicate a state transition on the resource usage.
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
