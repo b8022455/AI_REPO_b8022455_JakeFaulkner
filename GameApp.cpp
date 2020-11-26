@@ -336,6 +336,16 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 
 	mCombatController.Update(mAllRitems);		//Continues rotating the weapon if the player has attacked
 
+	if (mAllRitems["Tiles"]->Instances.size() == 1025)
+	{
+		//Checks if weapon is colliding w/ example box
+		if (mCombatController.CheckCollision(mAllRitems["Tiles"]->Instances.at(1024).World._41, mAllRitems["Tiles"]->Instances.at(1024).World._42,
+			mAllRitems["Tiles"]->Instances.at(1024).World._43))
+		{
+			mAllRitems["Tiles"]->Instances.at(1024).MaterialIndex = 5;			//Visual representation for collision
+		}
+	}
+
 	int i = 0;					//Makes sure each object with a different geo is using a different instance buffer
 	for (auto& e : mAllRitems)
 	{
@@ -670,7 +680,7 @@ void GameApp::BuildBoxGeometry()
 void GameApp::BuildSwordGeometry()
 {
 	GeometryGenerator geoGen;
-	GeometryGenerator::MeshData sword = geoGen.CreateSword(8.0f, 8.0f, 8.0f, 3);
+	GeometryGenerator::MeshData sword = geoGen.CreateSword(1.0f, 1.0f, 1.0f, 3);
 
 	std::vector<Vertex> vertices(sword.Vertices.size());
 	for (size_t i = 0; i < sword.Vertices.size(); ++i)
@@ -718,51 +728,51 @@ void GameApp::BuildSwordGeometry()
 
 void GameApp::BuildPlayerGeometry()
 {
-  GeometryGenerator geoGen;
-  GeometryGenerator::MeshData player = geoGen.CreatePlayer(6.0f, 6.0f, 6.0f, 3);
+	GeometryGenerator geoGen;
+	GeometryGenerator::MeshData player = geoGen.CreatePlayer(6.0f, 6.0f, 6.0f, 3);
 
-  std::vector<Vertex> vertices(player.Vertices.size());
-  for (size_t i = 0; i < player.Vertices.size(); ++i)
-  {
-	auto& p = player.Vertices[i].Position;
-	vertices[i].Pos = p;
-	vertices[i].Normal = player.Vertices[i].Normal;
-	vertices[i].TexC = player.Vertices[i].TexC;
-  }
+	std::vector<Vertex> vertices(player.Vertices.size());
+	for (size_t i = 0; i < player.Vertices.size(); ++i)
+	{
+		auto& p = player.Vertices[i].Position;
+		vertices[i].Pos = p;
+		vertices[i].Normal = player.Vertices[i].Normal;
+		vertices[i].TexC = player.Vertices[i].TexC;
+	}
 
-  const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
+	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
 
-  std::vector<std::uint16_t> indices = player.GetIndices16();
-  const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
+	std::vector<std::uint16_t> indices = player.GetIndices16();
+	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
 
-  auto geo = std::make_unique<MeshGeometry>();
-  geo->Name = "playerGeo";
+	auto geo = std::make_unique<MeshGeometry>();
+	geo->Name = "playerGeo";
 
-  ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
-  CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
+	ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
+	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
 
-  ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
-  CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
+	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
+	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
 
-  geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-	mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
+	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+		mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
 
-  geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-	mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
+	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+		mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
 
-  geo->VertexByteStride = sizeof(Vertex);
-  geo->VertexBufferByteSize = vbByteSize;
-  geo->IndexFormat = DXGI_FORMAT_R16_UINT;
-  geo->IndexBufferByteSize = ibByteSize;
+	geo->VertexByteStride = sizeof(Vertex);
+	geo->VertexBufferByteSize = vbByteSize;
+	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
+	geo->IndexBufferByteSize = ibByteSize;
 
-  SubmeshGeometry submesh;
-  submesh.IndexCount = (UINT)indices.size();
-  submesh.StartIndexLocation = 0;
-  submesh.BaseVertexLocation = 0;
+	SubmeshGeometry submesh;
+	submesh.IndexCount = (UINT)indices.size();
+	submesh.StartIndexLocation = 0;
+	submesh.BaseVertexLocation = 0;
 
-  geo->DrawArgs["playerGeo"] = submesh;
+	geo->DrawArgs["playerGeo"] = submesh;
 
-  mGeometries["playerGeo"] = std::move(geo);
+	mGeometries["playerGeo"] = std::move(geo);
 }
 
 
@@ -916,7 +926,24 @@ void GameApp::BuildRenderItems()
 	mAllRitems["Weapon"] = std::move(swordRitem);
 	mAllRitems["Player"] = std::move(playerRitem);
 
-	// All the render items are opaque.
+	//Comment this out if wanting to use all of the tile instances 
+	#pragma region Weapon Collision Checking
+
+	InstanceData id;
+	id.World =
+	{
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		2.0f, -5.0f, 2.0f, 1.0f
+	};
+	id.MaterialIndex = 3;
+
+	mAllRitems["Tiles"]->Instances.push_back(id);		//Creates new box underneath map to test collision w/ weapon
+
+	#pragma endregion
+
+// All the render items are opaque.
 	for (auto& e : mAllRitems)
 		mOpaqueRitems.push_back(e.second.get());
 }
