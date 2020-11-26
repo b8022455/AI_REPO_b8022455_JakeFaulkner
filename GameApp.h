@@ -11,6 +11,7 @@
 #include "AudioSImple.h"
 #include "RenderItem.h"
 #include "CombatController.h"
+#include "Player.h"
 
 const int gNumFrameResources = 3;
 
@@ -46,6 +47,7 @@ private:
 	void BuildShadersAndInputLayout();
 	void BuildBoxGeometry();
 	void BuildSwordGeometry();
+	void BuildPlayerGeometry();
 	void BuildPSOs();
 	void BuildFrameResources();
 	void BuildMaterial(int& index, int texIndex, const std::string& name, float roughness = 0.5f, const DirectX::XMFLOAT4& diffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f }, const DirectX::XMFLOAT3& fresnel = { 0.05f, 0.05f, 0.05f });
@@ -99,5 +101,6 @@ private:
 
 	//Combat
 	CombatController mCombatController;
+	Player mPlayer;
 
 };
