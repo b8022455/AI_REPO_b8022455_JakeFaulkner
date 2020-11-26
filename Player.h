@@ -22,6 +22,8 @@ private:
   void DamageEnemy();		
   void DamagePlayer();
 
+  Camera mCamera;
+
   int health = 100;
 
  
