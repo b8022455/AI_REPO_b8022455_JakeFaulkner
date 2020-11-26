@@ -12,6 +12,7 @@
 #include "RenderItem.h"
 #include "CombatController.h"
 #include "SpriteManager.h"
+#include "TextConsole.h"
 
 const int gNumFrameResources = 3;
 
@@ -103,5 +104,6 @@ private:
 
 	//Viewport Sprites
 	SpriteManager mSprites;
+	//std::unique_ptr<DX::TextConsole> mConsole;
 
 };

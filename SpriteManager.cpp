@@ -2,10 +2,7 @@
 #include "ResourceUploadBatch.h"
 #include "DescriptorHeap.h"
 
-//#include "SpriteBatch.h"
 #include "Common/d3dUtil.h"
-//#include "Common/d3dx12.h"
-
 
 #define IID_PPV_ARGS(ppType) __uuidof(**(ppType)), IID_PPV_ARGS_Helper(ppType)
 
@@ -21,9 +18,20 @@
 #endif
 
 
+void SpriteManager::Init2()
+{
+	mConsole = std::make_unique<DX::TextConsole>();
+}
+
+void SpriteManager::Draw2()
+{
+	//mConsole
+
+	mConsole->WriteLine(L"stuff and things");
+}
+
 void SpriteManager::Init(ID3D12Device * device, ID3D12CommandQueue* commandQueue, UINT srvDescSize,DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthStencilFormat)
 {
-
 	DirectX::ResourceUploadBatch resourceUpload(device);
 
 	resourceUpload.Begin();
@@ -99,9 +107,13 @@ void SpriteManager::Draw(ID3D12GraphicsCommandList * commandList, const D3D12_VI
 	mSpriteFont.at(0)->DrawString(mSpriteBatch.get(), L"SpriteFontString0", DirectX::XMFLOAT2(1.0f, 1.0f));
 	//mSpriteFont.at(1)->DrawString(mSpriteBatch.get(), L"SpriteFontString1",DirectX::XMFLOAT2(1.0f,32.0f));
 
+	
 	mSpriteBatch->End();
 
 
-	int a = 0;
+}
+
+void SpriteManager::DrawEnd()
+{
 }
 

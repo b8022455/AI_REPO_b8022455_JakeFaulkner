@@ -5,6 +5,7 @@
 #include "GameApp.h"
 
 #include <xaudio2.h>
+#include "SimpleMath.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -94,9 +95,12 @@ bool GameApp::Initialize()
 		mGameAudio.Play("ring9", nullptr, true);
 		// Is that better?
 		mGameAudio.SetEngineVolume("music", 0.005f);
+		mGameAudio.SetEngineVolume("sfx", 0.005f);
 	}
 
 	mCombatController.Initialize();
+
+	
 
 	LoadTextures();
 	BuildRootSignature();
@@ -185,9 +189,6 @@ void GameApp::Draw(const GameTimer& gt)
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
-	mSprites.Draw(mCommandList.Get(), mScreenViewport);
-
-
 	// Clear the back buffer and depth buffer.
 	mCommandList->ClearRenderTargetView(CurrentBackBufferView(), Colors::LightSteelBlue, 0, nullptr);
 	mCommandList->ClearDepthStencilView(DepthStencilView(), D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
@@ -195,11 +196,16 @@ void GameApp::Draw(const GameTimer& gt)
 	// Specify the buffers we are going to render to.
 	mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
 
+	mSprites.Draw(mCommandList.Get(), mScreenViewport);
+
 	ID3D12DescriptorHeap* descriptorHeaps[] = { mSrvDescriptorHeap.Get() };
 	mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
+	//auto heap = mSrvDescriptorHeap.Get();
+	//mCommandList->SetDescriptorHeaps(1, &heap);
 
-
+	//mConsole->Clear();
+	//mConsole->WriteLine(L"Moo");
 
 	mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
@@ -226,6 +232,7 @@ void GameApp::Draw(const GameTimer& gt)
 	ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
 	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
+	//mSprites.DrawEnd();
 	// Swap the back and front buffers
 	ThrowIfFailed(mSwapChain->Present(0, 0));
 	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
@@ -601,6 +608,25 @@ void GameApp::BuildDescriptorHeaps()
 	srvDesc.Format = defaultTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = defaultTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(defaultTex.Get(), &srvDesc, hDescriptor);
+
+
+	{
+		//DirectX::ResourceUploadBatch resourceUpload(md3dDevice.Get());
+		//DirectX::RenderTargetState rtState(mBackBufferFormat, mDepthStencilFormat);
+		//DirectX::SpriteBatchPipelineStateDescription sbPipelineDesc(rtState);
+		//
+		//mConsole = std::make_unique<DX::TextConsole>(
+		//	md3dDevice.Get(),
+		//	resourceUpload,
+		//	rtState,
+		//	L"Data/Fonts/Subway_Novella_16.spritefont"
+		//	);
+		//
+		//mConsole->SetViewport(mScreenViewport);
+		//RECT size = mScissorRect;
+		//mConsole->SetWindow(SimpleMath::Viewport::ComputeTitleSafeArea(size.right, size.bottom));
+	}
+
 }
 
 void GameApp::BuildShadersAndInputLayout()
