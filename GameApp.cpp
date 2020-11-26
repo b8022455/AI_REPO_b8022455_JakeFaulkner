@@ -882,7 +882,7 @@ void GameApp::BuildRenderItems()
 
 			XMStoreFloat4x4(&boxRitem->Instances[index].TexTransform, XMMatrixScaling(1.0f, 1.0f, 1.0f));
 			//boxRitem->Instances[index].MaterialIndex = index % mMaterials.size();
-			boxRitem->Instances[index].MaterialIndex = mMaterials.size() / mMaterials.size(); 
+			boxRitem->Instances[index].MaterialIndex = 1;
 			// not sure of syntax to pull [1] index from this array so cheaty way to get this
 		}
 	}
