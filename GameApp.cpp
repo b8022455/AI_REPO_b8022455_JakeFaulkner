@@ -923,6 +923,7 @@ void GameApp::BuildRenderItems()
 	mAllRitems["Weapon"] = std::move(swordRitem);
 	mAllRitems["Player"] = std::move(playerRitem);
 
+	//Comment this out if wanting to use all of the tile instances 
 	#pragma region Weapon Collision Checking
 
 	InstanceData id;
@@ -935,7 +936,7 @@ void GameApp::BuildRenderItems()
 	};
 	id.MaterialIndex = 3;
 
-	mAllRitems["Tiles"]->Instances.push_back(id);
+	mAllRitems["Tiles"]->Instances.push_back(id);		//Creates new box underneath map to test collision w/ weapon
 
 	#pragma endregion
 
