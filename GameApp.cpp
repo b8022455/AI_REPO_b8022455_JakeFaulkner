@@ -619,7 +619,7 @@ void GameApp::BuildShadersAndInputLayout()
 void GameApp::BuildBoxGeometry()
 {
 	GeometryGenerator geoGen;
-	GeometryGenerator::MeshData box = geoGen.CreateBox(8.0f, 8.0f, 8.0f, 3);
+	GeometryGenerator::MeshData box = geoGen.CreateBox(1.0f, 1.0f, 1.0f, 3);
 
 	std::vector<Vertex> vertices(box.Vertices.size());
 	for (size_t i = 0; i < box.Vertices.size(); ++i)
@@ -805,13 +805,13 @@ void GameApp::BuildRenderItems()
 	boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["box"].BaseVertexLocation;
 	boxRitem->Bounds = boxRitem->Geo->DrawArgs["box"].Bounds;
 
-	const int n = 10; // USED TO CHOOSE SIZE OF GRID
+	const int n = 32; // USED TO CHOOSE SIZE OF GRID
 	mInstanceCount = n * n;
 	boxRitem->Instances.resize(mInstanceCount);
 
-	float width = 75.0f;
-	float height = 75.0f;
-	float depth = 75.0f;
+	float width = 32.0f;
+	float height = 32.0f;
+	float depth = 32.0f;
 	float x = -0.5f*width;
 	float z = -0.5f*depth;
 	float dx = width / (n - 1);
@@ -829,7 +829,9 @@ void GameApp::BuildRenderItems()
 				x + j * dx, 0.0f, z + k * dz, 1.0f);
 
 			XMStoreFloat4x4(&boxRitem->Instances[index].TexTransform, XMMatrixScaling(1.0f, 1.0f, 1.0f));
-			boxRitem->Instances[index].MaterialIndex = index % mMaterials.size();
+			//boxRitem->Instances[index].MaterialIndex = index % mMaterials.size();
+			boxRitem->Instances[index].MaterialIndex = mMaterials.size() / mMaterials.size(); 
+			// not sure of syntax to pull [1] index from this array so cheaty way to get this
 		}
 	}
 
