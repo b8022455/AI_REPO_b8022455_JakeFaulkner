@@ -24,7 +24,7 @@ public:
 private:
 	void PositionWeapon(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems);	///Positions weapon at the position of the player, For now just positions at random place in scene, Fix once player model is in!!!
 	void ResetWeaponPosition(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems);		///Positions weapon out of sight when done swinging, Find better way to do this!!!
-	void UpdateWeaponMatrix();
+	void UpdateWeaponMatrix(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems);
 
 	int damage;		///Not sure if needed in future
 	XMMATRIX weaponPositionMatrix;		//Could change from XMMATRIX into different type?

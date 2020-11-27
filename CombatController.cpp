@@ -13,6 +13,10 @@ void CombatController::Update(std::unordered_map<std::string, std::unique_ptr<Re
 
 	if (isAttacking)
 		mPlayerWeapon.SwingWeapon(mAllRitems);
+	//else												//Code for weapon follwing player at all times, move updateWeaponMatrix to public in order to work
+	//{
+	//	mPlayerWeapon.UpdateWeaponMatrix(mAllRitems);
+	//}
 
 	mPlayerWeapon.UpdateTimer();					//Keeps timer updated regardless of key input
 }
@@ -44,9 +48,9 @@ bool CombatController::CheckCollision(float ObjX, float ObjY, float ObjZ)
 	float yDistance = ObjY - collisionPoint._42;
 	float zDistance = ObjZ - collisionPoint._43;
 
-	if (xDistance > -7.5f && xDistance < 7.5f)							//If distance between X coordinate is within boundaries (-7.5 < X < 7.5)
+	if (xDistance > -1.0f && xDistance < 1.0f)							//If distance between X coordinate is within boundaries (-1.0 < X < 1.0)
 		if (yDistance > -1.5f && yDistance < 1.5f)						//If distance between Y coordinate is within boundaries (-1.5 < Y < 1.5)
-			if (zDistance > -5.0f && zDistance < 5.0f)					//If distance between Z coordinate is within boundaries (-5.0f < Z < 5.0f)
+			if (zDistance > -1.0f && zDistance < 1.0f)					//If distance between Z coordinate is within boundaries (-1.0f < Z < 1.0f)
 				return true;				//There is a collision between the 2 objects
 
 	return false;				//If the distance between the objects is not within the boundaries, there is no collision
@@ -58,9 +62,9 @@ bool CombatController::CheckCollision(XMFLOAT3 Obj1, XMFLOAT3 Obj2)
 	float yDistance = Obj1.y - Obj2.y;
 	float zDistance = Obj1.z - Obj2.z;
 
-	if (xDistance > -7.5f && xDistance < 7.5f)							//If distance between X coordinate is within boundaries (-7.5 < X < 7.5)
+	if (xDistance > -1.0f && xDistance < 1.0f)							//If distance between X coordinate is within boundaries (-1.0 < X < 1.0)
 		if (yDistance > -1.5f && yDistance < 1.5f)						//If distance between Y coordinate is within boundaries (-1.5 < Y < 1.5)
-			if (zDistance > -5.0f && zDistance < 5.0f)					//If distance between Z coordinate is within boundaries (-5.0f < Z < 5.0f)
+			if (zDistance > -1.0f && zDistance < 1.0f)					//If distance between Z coordinate is within boundaries (-1.0f < Z < 1.0f)
 				return true;				//There is a collision between the 2 objects
 
 	return false;				//If the distance between the objects is not within the boundaries, there is no collision
@@ -87,12 +91,12 @@ void PlayerWeapon::Initialize()
 	times.nextAtkTime = 0;
 	times.err = localtime_s(&times.currentTime, &times.timeAtNow);		//Gets current time from system and stores in currentTime struct
 
-	weaponRotation = 0.0f;
+	weaponRotation = -0.785398f;
 	attacking = false;
 
 	//Collision point stuff
 	collisionPos = weaponPositionMatrix2;
-	collisionPos._41 += 0.5f;
+	collisionPos._41 += 0.2f;
 
 }
 
@@ -111,11 +115,11 @@ void PlayerWeapon::PositionWeapon(std::unordered_map<std::string, std::unique_pt
 {
 	times.nextAtkTime = times.currentTime.tm_sec + times.AttackDelay;	//Resets timer on attack delay (Currentime + 1 sec)
 	attacking = true;
-	weaponRotation = 0.0f;
-	UpdateWeaponMatrix();
+	weaponRotation = -0.785398f;		//Sets rotation to default -45 degree angle
+	UpdateWeaponMatrix(mAllRitems);
 
 	//Positions the first instance (Only instance) of the 'weapon' to the correct position
-	mAllRitems["Weapon"]->Instances.at(0).MaterialIndex = 1;
+	mAllRitems["Weapon"]->Instances.at(0).MaterialIndex = 4;
 	mAllRitems["Weapon"]->Instances.at(0).World = weaponPositionMatrix2;	///In future, change position to be where the player is	
 }
 
@@ -125,22 +129,24 @@ void PlayerWeapon::SwingWeapon(std::unordered_map<std::string, std::unique_ptr<R
 		ResetWeaponPosition(mAllRitems);
 	else
 	{
-		weaponRotation += 0.02f;		///Could replace into its own variable
-		UpdateWeaponMatrix();		//Updates to show the new rotation
+		weaponRotation += 0.03f;		///Could replace into its own variable
+		UpdateWeaponMatrix(mAllRitems);		//Updates to show the new rotation
 
 		mAllRitems["Weapon"]->Instances.at(0).World = weaponPositionMatrix2;
 	}
 
+	//Sets collision point to the edge of the sword
 	collisionPos = weaponPositionMatrix2;
-	collisionPos._41 += 0.5f;
+	collisionPos._41 += 0.2f;
 }
 
 void PlayerWeapon::ResetWeaponPosition(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
 {
-	weaponRotation = 0.0f;
+	weaponRotation = -0.785398f;			//Resets rotation to -45 degrees
 	attacking = false;
 
-	UpdateWeaponMatrix();
+	weaponPositionMatrix = XMMatrixTranslation(0.0f, -5.0f, 2.0f);		//Resets the sword back underneath the map until attack is used again
+	XMStoreFloat4x4(&weaponPositionMatrix2, weaponPositionMatrix);
 
 	mAllRitems["Weapon"]->Instances.at(0).World = weaponPositionMatrix2;
 }
@@ -152,12 +158,14 @@ void PlayerWeapon::UpdateTimer()
 	if (times.currentTime.tm_sec == 0)	times.nextAtkTime = 0;		//Prevents it from doing multiple attacks per frame once hit 60 secs
 }
 
-void PlayerWeapon::UpdateWeaponMatrix()
+void PlayerWeapon::UpdateWeaponMatrix(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
 {
-	///Original matrix used for positioning, need to find way to do rotation around a point using 1 matrix
-	weaponPositionMatrix = XMMatrixTranslation(1.0f, 0.0f, 0.0f);		///Could replace with a weapons position variable + 5.0 to get local positions
+	///Find way to do rotation around a point using 1 matrix
+	weaponPositionMatrix = XMMatrixTranslation(1.0f, 0.0f, 0.0f);
 	weaponPositionMatrix *= XMMatrixRotationY(weaponRotation);
-	weaponPositionMatrix *= XMMatrixTranslation(0.0f, -5.0f, 2.0f);
+	//Positions the weapon at the players position + offset
+	weaponPositionMatrix *= XMMatrixTranslation(mAllRitems["Player"]->Instances.at(0).World._41 + 0.2f,
+		mAllRitems["Player"]->Instances.at(0).World._42 + 1.0f, mAllRitems["Player"]->Instances.at(0).World._43 + 0.2f);
 
 	XMStoreFloat4x4(&weaponPositionMatrix2, weaponPositionMatrix);		//Stores above calculated matrix into the matrix which is assigned to the Objs World position
 }

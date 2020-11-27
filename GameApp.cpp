@@ -336,14 +336,11 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 
 	mCombatController.Update(mAllRitems);		//Continues rotating the weapon if the player has attacked
 
-	if (mAllRitems["Tiles"]->Instances.size() == 1025)
+	//Checks if weapon is colliding w/ example box
+	if (mCombatController.CheckCollision(mAllRitems["Enemy"]->Instances.at(0).World._41, mAllRitems["Enemy"]->Instances.at(0).World._42,
+		mAllRitems["Enemy"]->Instances.at(0).World._43))
 	{
-		//Checks if weapon is colliding w/ example box
-		if (mCombatController.CheckCollision(mAllRitems["Tiles"]->Instances.at(1024).World._41, mAllRitems["Tiles"]->Instances.at(1024).World._42,
-			mAllRitems["Tiles"]->Instances.at(1024).World._43))
-		{
-			mAllRitems["Tiles"]->Instances.at(1024).MaterialIndex = 5;			//Visual representation for collision
-		}
+		mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 5;			//Visual representation for collision
 	}
 
 	int i = 0;					//Makes sure each object with a different geo is using a different instance buffer
@@ -922,28 +919,38 @@ void GameApp::BuildRenderItems()
 	playerRitem->BaseVertexLocation = playerRitem->Geo->DrawArgs["playerGeo"].BaseVertexLocation;
 	playerRitem->Instances.resize(1);
 
+	auto enemyRitem = std::make_unique<RenderItem>();
+	enemyRitem->World = MathHelper::Identity4x4();
+	enemyRitem->ObjCBIndex = 3;
+	enemyRitem->InstanceCount = 0;
+	enemyRitem->Mat = mMaterials["ice0"].get();
+	enemyRitem->Geo = mGeometries["boxGeo"].get();
+	enemyRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	enemyRitem->IndexCount = enemyRitem->Geo->DrawArgs["box"].IndexCount;				//Just for testing, will give enemy its own geo eventually
+	enemyRitem->StartIndexLocation = enemyRitem->Geo->DrawArgs["box"].StartIndexLocation;
+	enemyRitem->BaseVertexLocation = enemyRitem->Geo->DrawArgs["box"].BaseVertexLocation;
+	enemyRitem->Instances.resize(1);
+
 	mAllRitems["Tiles"] = std::move(boxRitem);
 	mAllRitems["Weapon"] = std::move(swordRitem);
 	mAllRitems["Player"] = std::move(playerRitem);
+	mAllRitems["Enemy"] = std::move(enemyRitem);
 
-	//Comment this out if wanting to use all of the tile instances 
-	#pragma region Weapon Collision Checking
+	//Uncomment this if testing weapon collision
+	//#pragma region Weapon Collision Checking
 
-	InstanceData id;
-	id.World =
-	{
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		2.0f, -5.0f, 2.0f, 1.0f
-	};
-	id.MaterialIndex = 3;
+	//mAllRitems["Enemy"]->Instances.at(0).World = 
+	//{
+	//	1.0f, 0.0f, 0.0f, 0.0f,
+	//	0.0f, 1.0f, 0.0f, 0.0f,
+	//	0.0f, 0.0f, 1.0f, 0.0f,
+	//	1.0f, 1.0f, 5.0f, 1.0f
+	//};
+	//mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 3;
 
-	mAllRitems["Tiles"]->Instances.push_back(id);		//Creates new box underneath map to test collision w/ weapon
+	//#pragma endregion
 
-	#pragma endregion
-
-// All the render items are opaque.
+	// All the render items are opaque.
 	for (auto& e : mAllRitems)
 		mOpaqueRitems.push_back(e.second.get());
 }
