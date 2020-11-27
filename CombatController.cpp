@@ -119,7 +119,7 @@ void PlayerWeapon::PositionWeapon(std::unordered_map<std::string, std::unique_pt
 	UpdateWeaponMatrix(mAllRitems);
 
 	//Positions the first instance (Only instance) of the 'weapon' to the correct position
-	mAllRitems["Weapon"]->Instances.at(0).MaterialIndex = 1;
+	mAllRitems["Weapon"]->Instances.at(0).MaterialIndex = 4;
 	mAllRitems["Weapon"]->Instances.at(0).World = weaponPositionMatrix2;	///In future, change position to be where the player is	
 }
 
