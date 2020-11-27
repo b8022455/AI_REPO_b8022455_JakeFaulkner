@@ -12,6 +12,7 @@
 #include "RenderItem.h"
 #include "CombatController.h"
 #include "Player.h"
+#include "State.h"
 
 const int gNumFrameResources = 3;
 
@@ -102,5 +103,8 @@ private:
 	//Combat
 	CombatController mCombatController;
 	Player mPlayer;
+
+	//States
+	StateManager mStateManager;
 
 };

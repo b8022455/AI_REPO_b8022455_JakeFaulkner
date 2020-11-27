@@ -56,6 +56,15 @@ bool GameApp::Initialize()
 	if (!D3DApp::Initialize())
 		return false;
 
+
+	mStateManager.Init();
+	mStateManager.AddState("foo", std::make_unique<StateA>());
+	mStateManager.AddState("bar", std::make_unique<StateB>());
+
+	mStateManager.ChangeState("bar");
+	//mStateManager.RemoveState("foo");
+
+
 	// Reset the command list to prep for initialization commands.
 	ThrowIfFailed(mCommandList->Reset(mDirectCmdListAlloc.Get(), nullptr));
 
@@ -154,6 +163,8 @@ void GameApp::Update(const GameTimer& gt)
 	UpdateMaterialBuffer(gt);
 	UpdateMainPassCB(gt);
 
+	mStateManager.Update(gt);
+
 	mGameAudio.Update(gt, mCamera.GetPosition3f(), mCamera.GetLook3f(), mCamera.GetUp3f());
 	//Music fades every 6 seconds
 	if (mAudioTimer.HasTimeElapsed(gt.DeltaTime(), 6.0f))
@@ -209,6 +220,8 @@ void GameApp::Draw(const GameTimer& gt)
 	mCommandList->SetGraphicsRootDescriptorTable(3, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
 	DrawRenderItems(mCommandList.Get(), mOpaqueRitems);
+
+	mStateManager.Draw(gt);
 
 	// Indicate a state transition on the resource usage.
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
@@ -319,6 +332,14 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	//Checks input when attacking
 	if (GetAsyncKeyState('V') & 0x8000)		///Change key in future
 		mCombatController.PlayerAttack(mAllRitems);
+
+
+	if (GetAsyncKeyState('Z') & 0x08000)
+		mStateManager.ChangeState("foo");
+	
+	if (GetAsyncKeyState('X') & 0x08000)
+		mStateManager.ChangeState("bar");
+
 
 	mPlayer.Move(mAllRitems, gt);
 	mCamera.UpdateViewMatrix();
