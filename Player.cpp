@@ -18,7 +18,7 @@ void Player::Move(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &
 	XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World);
 	transform = XMMatrixMultiply(current, transform);
 	XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
-	mCamera.SetPosition(-5.0f * dt, 50.0f, 0.0f);
+	mCamera.Strafe(-20.0f*dt);
   }
 
   else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
@@ -28,7 +28,7 @@ void Player::Move(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &
 	XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World);
 	transform = XMMatrixMultiply(current, transform);
 	XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
-	mCamera.SetPosition(5.0f * dt, 50.0f, 0.0f);
+	mCamera.Strafe(20.0f*dt);
   }
 
 
@@ -39,7 +39,7 @@ void Player::Move(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &
 	XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World);
 	transform = XMMatrixMultiply(current, transform);
 	XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
-	mCamera.SetPosition(0.0f, 50.0f, 5.0f * dt);
+	mCamera.Elevate(20.0f*dt);
   }
 
   else if (GetAsyncKeyState(VK_DOWN) & 0x8000)
@@ -49,7 +49,7 @@ void Player::Move(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &
 	XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World);
 	transform = XMMatrixMultiply(current, transform);
 	XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
-	mCamera.SetPosition(0.0f, 50.0f, -5.0f * dt);
+	mCamera.Elevate(-20.0f*dt);
   }
 
 
