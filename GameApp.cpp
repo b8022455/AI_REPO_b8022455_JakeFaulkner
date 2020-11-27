@@ -5,6 +5,8 @@
 #include "GameApp.h"
 
 #include <xaudio2.h>
+#include "OBJ_Loader.h"
+#include <functional>
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -113,6 +115,10 @@ bool GameApp::Initialize()
 	BuildDescriptorHeaps();
 	BuildShadersAndInputLayout();
 	BuildBoxGeometry();
+	BuildObjGeometry("Data/Models/tempSword.obj", "tempSwordGeo", "tempSword");// loads obj
+	BuildObjGeometry("Data/Models/tempPlayer.obj", "tempPlayerGeo", "tempPlayer");
+	BuildObjGeometry("Data/Models/tempEnemy.obj", "tempEnemyGeo", "tempEnemy");
+	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" );
 	BuildSwordGeometry();
 	BuildPlayerGeometry();
 	BuildMaterials();
@@ -278,25 +284,33 @@ void GameApp::OnMouseMove(WPARAM btnState, int x, int y)
 
 void GameApp::OnKeyboardInput(const GameTimer& gt)
 {
+	int forward =	'W';
+	int back =		'S';
+	int left =		'A';
+	int right =		'D';
+	int up =		'E';
+	int down =		'Q';
+	float camSpeed = 20.0f;
+
 	const float dt = gt.DeltaTime();
 
-	if (GetAsyncKeyState('W') & 0x8000)
-		mCamera.Elevate(20.0f*dt);
+	if (GetAsyncKeyState(up) & 0x8000)
+		mCamera.Elevate(camSpeed*dt);
 
-	if (GetAsyncKeyState('S') & 0x8000)
-		mCamera.Elevate(-20.0f*dt);
+	if (GetAsyncKeyState(down) & 0x8000)
+		mCamera.Elevate(-camSpeed *dt);
 
-	if (GetAsyncKeyState('I') & 0x8000)
-		mCamera.Walk(20.0f * dt);
+	if (GetAsyncKeyState(forward) & 0x8000)
+		mCamera.Walk(camSpeed* dt);
 
-	if (GetAsyncKeyState('O') & 0x8000)
-		mCamera.Walk(-20.0f * dt);
+	if (GetAsyncKeyState(back) & 0x8000)
+		mCamera.Walk(-camSpeed * dt);
 
-	if (GetAsyncKeyState('A') & 0x8000)
-		mCamera.Strafe(-20.0f*dt);
+	if (GetAsyncKeyState(left) & 0x8000)
+		mCamera.Strafe(-camSpeed *dt);
 
-	if (GetAsyncKeyState('D') & 0x8000)
-		mCamera.Strafe(20.0f*dt);
+	if (GetAsyncKeyState(right) & 0x8000)
+		mCamera.Strafe(camSpeed*dt);
 
 	if (GetAsyncKeyState('P') & 0x8000)
 		mCamera.SetPosition(0.0f, 50.0f, 0.0f);
@@ -306,19 +320,6 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 
 	if (GetAsyncKeyState('2') & 0x8000)
 		mFrustumCullingEnabled = false;
-
-	if (GetAsyncKeyState('Q') & 0x08000)
-	{
-		//mAudio.Play("Chord",false,1.0f/*,sinf(gt.TotalTime()*0.0f)*/);
-		mGameAudio.Play("chord", false);
-		mGameAudio.Pause("music");
-	}
-	if (GetAsyncKeyState('E') & 0x08000)
-	{
-		//mAudio.Play("Chord",false,1.0f/*,sinf(gt.TotalTime()*0.0f)*/);
-		//mGameAudio.Play("ring9", true);
-		mGameAudio.Resume("music");
-	}
 
 	if (GetAsyncKeyState('4') & 0x8000)
 	{
@@ -333,13 +334,11 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	if (GetAsyncKeyState('V') & 0x8000)		///Change key in future
 		mCombatController.PlayerAttack(mAllRitems);
 
-
 	if (GetAsyncKeyState('Z') & 0x08000)
 		mStateManager.ChangeState("foo");
 	
 	if (GetAsyncKeyState('X') & 0x08000)
 		mStateManager.ChangeState("bar");
-
 
 	mPlayer.Move(mAllRitems, gt);
 	mCamera.UpdateViewMatrix();
@@ -695,6 +694,92 @@ void GameApp::BuildBoxGeometry()
 	mGeometries["boxGeo"] = std::move(geo);
 }
 
+void GameApp::BuildObjGeometry(const std::string& filepath, const std::string& meshName, const std::string& subMeshName)
+{
+	struct VertexConversion
+	{
+		Vertex operator()(const objl::Vertex& v)
+		{
+			return
+			{
+				{v.Position.X,v.Position.Y,v.Position.Z},
+				{v.Normal.X,v.Normal.Y,v.Normal.Z},
+				{v.TextureCoordinate.X,v.TextureCoordinate.Y}
+			};
+		}
+	};
+
+	struct IndexConversion
+	{
+		int operator()(const unsigned int & i)
+		{
+			return static_cast<int>(i);
+		}
+	};
+
+	struct MeshConvertion
+	{
+		std::vector<Vertex> vertices;
+		std::vector<std::int32_t> indices;
+
+		void operator()(const objl::Mesh& mesh)
+		{
+			std::transform(mesh.Vertices.begin(), mesh.Vertices.end(), std::back_inserter(vertices), VertexConversion());
+			std::transform(mesh.Indices.begin(), mesh.Indices.end(), std::back_inserter(indices), IndexConversion());
+		}
+	};
+
+	objl::Loader loader;
+
+	bool loadout = loader.LoadFile(filepath);
+	
+	if (loadout)
+	{
+		MeshConvertion meshConvert;
+
+		// converts vertex and index formats from objl to local
+		std::for_each(loader.LoadedMeshes.begin(), loader.LoadedMeshes.end(), std::ref(meshConvert));
+
+		const UINT vbByteSize = (UINT)meshConvert.vertices.size() * sizeof(Vertex);
+		const UINT ibByteSize = (UINT)meshConvert.indices.size() * sizeof(std::int32_t);
+
+		auto geo = std::make_unique<MeshGeometry>();
+		geo->Name = meshName;
+
+		ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
+		CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), meshConvert.vertices.data(), vbByteSize);
+
+		ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
+		CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), meshConvert.indices.data(), ibByteSize);
+
+		geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+			mCommandList.Get(), meshConvert.vertices.data(), vbByteSize, geo->VertexBufferUploader);
+
+		geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+			mCommandList.Get(), meshConvert.indices.data(), ibByteSize, geo->IndexBufferUploader);
+
+		geo->VertexByteStride = sizeof(Vertex);
+		geo->VertexBufferByteSize = vbByteSize;
+		geo->IndexFormat = DXGI_FORMAT_R32_UINT;
+		geo->IndexBufferByteSize = ibByteSize;
+
+		SubmeshGeometry submesh;
+		submesh.IndexCount = (UINT)meshConvert.indices.size();
+		submesh.StartIndexLocation = 0;
+		submesh.BaseVertexLocation = 0;
+
+		geo->DrawArgs[subMeshName] = submesh; 
+
+		mGeometries[geo->Name] = std::move(geo);
+	}
+	else
+	{
+		//file not found
+		assert(false);
+	}
+
+}
+
 void GameApp::BuildSwordGeometry()
 {
 	GeometryGenerator geoGen;
@@ -739,9 +824,9 @@ void GameApp::BuildSwordGeometry()
 	submesh.StartIndexLocation = 0;
 	submesh.BaseVertexLocation = 0;
 
-	geo->DrawArgs["swordGeo"] = submesh;
+	geo->DrawArgs["sword"] = submesh;
 
-	mGeometries["swordGeo"] = std::move(geo);
+	mGeometries[geo->Name] = std::move(geo);
 }
 
 void GameApp::BuildPlayerGeometry()
@@ -788,9 +873,9 @@ void GameApp::BuildPlayerGeometry()
 	submesh.StartIndexLocation = 0;
 	submesh.BaseVertexLocation = 0;
 
-	geo->DrawArgs["playerGeo"] = submesh;
+	geo->DrawArgs["player"] = submesh;
 
-	mGeometries["playerGeo"] = std::move(geo);
+	mGeometries[geo->Name] = std::move(geo);
 }
 
 
@@ -877,13 +962,13 @@ void GameApp::BuildRenderItems()
 	boxRitem->TexTransform = MathHelper::Identity4x4();
 	boxRitem->ObjCBIndex = 0;
 	boxRitem->Mat = mMaterials["tile0"].get();
-	boxRitem->Geo = mGeometries["boxGeo"].get();
+	boxRitem->Geo = mGeometries["floorTileGeo"].get();
 	boxRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	boxRitem->InstanceCount = 0;
-	boxRitem->IndexCount = boxRitem->Geo->DrawArgs["box"].IndexCount;
-	boxRitem->StartIndexLocation = boxRitem->Geo->DrawArgs["box"].StartIndexLocation;
-	boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["box"].BaseVertexLocation;
-	boxRitem->Bounds = boxRitem->Geo->DrawArgs["box"].Bounds;
+	boxRitem->IndexCount = boxRitem->Geo->DrawArgs["floorTile"].IndexCount;
+	boxRitem->StartIndexLocation = boxRitem->Geo->DrawArgs["floorTile"].StartIndexLocation;
+	boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["floorTile"].BaseVertexLocation;
+	boxRitem->Bounds = boxRitem->Geo->DrawArgs["floorTile"].Bounds;
 
 	const int n = 32; // USED TO CHOOSE SIZE OF GRID
 	mInstanceCount = n * n;
@@ -920,38 +1005,40 @@ void GameApp::BuildRenderItems()
 	swordRitem->World = MathHelper::Identity4x4();
 	swordRitem->ObjCBIndex = 1;
 	swordRitem->InstanceCount = 0;
-	swordRitem->Mat = mMaterials["tile0"].get();
-	swordRitem->Geo = mGeometries["swordGeo"].get();
+	swordRitem->Mat = mMaterials["ice0"].get();
+	swordRitem->Geo = mGeometries["tempSwordGeo"].get(); //"swordGeo"
 	swordRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	swordRitem->IndexCount = swordRitem->Geo->DrawArgs["swordGeo"].IndexCount;
-	swordRitem->StartIndexLocation = swordRitem->Geo->DrawArgs["swordGeo"].StartIndexLocation;
-	swordRitem->BaseVertexLocation = swordRitem->Geo->DrawArgs["swordGeo"].BaseVertexLocation;
+	swordRitem->IndexCount = swordRitem->Geo->DrawArgs["tempSword"].IndexCount;//"swordGeo"
+	swordRitem->StartIndexLocation = swordRitem->Geo->DrawArgs["tempSword"].StartIndexLocation;//"swordGeo"
+	swordRitem->BaseVertexLocation = swordRitem->Geo->DrawArgs["tempSword"].BaseVertexLocation;//"swordGeo"
 	swordRitem->Instances.resize(1);
+	swordRitem->Instances[0].MaterialIndex = 2;
+
+	//"tempSwordGeo", "tempSword"
 
 	auto playerRitem = std::make_unique<RenderItem>();
 	playerRitem->World = MathHelper::Identity4x4();
 	playerRitem->ObjCBIndex = 2;
 	playerRitem->InstanceCount = 0;
-	playerRitem->Mat = mMaterials["ice0"].get();
-	playerRitem->Geo = mGeometries["playerGeo"].get();
+	playerRitem->Geo = mGeometries["tempPlayerGeo"].get();//playerGeo
 	playerRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	playerRitem->IndexCount = playerRitem->Geo->DrawArgs["playerGeo"].IndexCount;
-	playerRitem->StartIndexLocation = playerRitem->Geo->DrawArgs["playerGeo"].StartIndexLocation;
-	playerRitem->BaseVertexLocation = playerRitem->Geo->DrawArgs["playerGeo"].BaseVertexLocation;
+	playerRitem->IndexCount = playerRitem->Geo->DrawArgs["tempPlayer"].IndexCount;//player
+	playerRitem->StartIndexLocation = playerRitem->Geo->DrawArgs["tempPlayer"].StartIndexLocation;//player
+	playerRitem->BaseVertexLocation = playerRitem->Geo->DrawArgs["tempPlayer"].BaseVertexLocation;//player
 	playerRitem->Instances.resize(1);
+	playerRitem->Instances.front().MaterialIndex = 2;
 
 	auto enemyRitem = std::make_unique<RenderItem>();
 	enemyRitem->World = MathHelper::Identity4x4();
 	enemyRitem->ObjCBIndex = 3;
 	enemyRitem->InstanceCount = 0;
-	enemyRitem->Mat = mMaterials["ice0"].get();
-	enemyRitem->Geo = mGeometries["boxGeo"].get();
+	enemyRitem->Geo = mGeometries["tempPlayerGeo"].get();
 	enemyRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	enemyRitem->IndexCount = enemyRitem->Geo->DrawArgs["box"].IndexCount;				//Just for testing, will give enemy its own geo eventually
-	enemyRitem->StartIndexLocation = enemyRitem->Geo->DrawArgs["box"].StartIndexLocation;
-	enemyRitem->BaseVertexLocation = enemyRitem->Geo->DrawArgs["box"].BaseVertexLocation;
+	enemyRitem->IndexCount = enemyRitem->Geo->DrawArgs["tempPlayer"].IndexCount;				//Just for testing, will give enemy its own geo eventually
+	enemyRitem->StartIndexLocation = enemyRitem->Geo->DrawArgs["tempPlayer"].StartIndexLocation;
+	enemyRitem->BaseVertexLocation = enemyRitem->Geo->DrawArgs["tempPlayer"].BaseVertexLocation;
 	enemyRitem->Instances.resize(1);
-
+	enemyRitem->Instances.front().MaterialIndex = 3;
 	mAllRitems["Tiles"] = std::move(boxRitem);
 	mAllRitems["Weapon"] = std::move(swordRitem);
 	mAllRitems["Player"] = std::move(playerRitem);

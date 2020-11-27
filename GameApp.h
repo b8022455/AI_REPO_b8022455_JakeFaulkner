@@ -47,6 +47,7 @@ private:
 	void BuildDescriptorHeaps();
 	void BuildShadersAndInputLayout();
 	void BuildBoxGeometry();
+	void BuildObjGeometry(const std::string& filepath, const std::string& geoName,const std::string& subMeshName);
 	void BuildSwordGeometry();
 	void BuildPlayerGeometry();
 	void BuildPSOs();
