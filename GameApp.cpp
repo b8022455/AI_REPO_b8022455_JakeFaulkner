@@ -320,6 +320,9 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	if (GetAsyncKeyState('V') & 0x8000)		///Change key in future
 		mCombatController.PlayerAttack(mAllRitems);
 
+	if (GetAsyncKeyState('B') & 0x8000)
+		mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 4;		//Changes enemy material
+
 	mPlayer.Move(mAllRitems, gt);
 	mCamera.UpdateViewMatrix();
 }
@@ -919,9 +922,22 @@ void GameApp::BuildRenderItems()
 	playerRitem->BaseVertexLocation = playerRitem->Geo->DrawArgs["playerGeo"].BaseVertexLocation;
 	playerRitem->Instances.resize(1);
 
+	auto enemyRitem = std::make_unique<RenderItem>();
+	enemyRitem->World = MathHelper::Identity4x4();
+	enemyRitem->ObjCBIndex = 3;
+	enemyRitem->InstanceCount = 0;
+	enemyRitem->Mat = mMaterials["ice0"].get();
+	enemyRitem->Geo = mGeometries["playerGeo"].get();
+	enemyRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	enemyRitem->IndexCount = enemyRitem->Geo->DrawArgs["playerGeo"].IndexCount;				//Just for testing, will give enemy its own geo eventually
+	enemyRitem->StartIndexLocation = enemyRitem->Geo->DrawArgs["playerGeo"].StartIndexLocation;
+	enemyRitem->BaseVertexLocation = enemyRitem->Geo->DrawArgs["playerGeo"].BaseVertexLocation;
+	enemyRitem->Instances.resize(1);
+
 	mAllRitems["Tiles"] = std::move(boxRitem);
 	mAllRitems["Weapon"] = std::move(swordRitem);
 	mAllRitems["Player"] = std::move(playerRitem);
+	mAllRitems["Enemy"] = std::move(enemyRitem);
 
 	//Comment this out if wanting to use all of the tile instances 
 	#pragma region Weapon Collision Checking
