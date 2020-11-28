@@ -18,6 +18,7 @@ public:
   void GetPos(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems);
 
 
+
 private:
   void DamageEnemy();		
   void DamagePlayer();

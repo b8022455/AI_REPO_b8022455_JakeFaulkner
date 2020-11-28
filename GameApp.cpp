@@ -175,6 +175,7 @@ void GameApp::Update(const GameTimer& gt)
 		else
 			mGameAudio.Play("ring9", nullptr, true);
 	}
+
 }
 
 void GameApp::Draw(const GameTimer& gt)
@@ -356,6 +357,7 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
 
 	mCombatController.Update(mAllRitems);		//Continues rotating the weapon if the player has attacked
+	mPlayer.GetPos(mAllRitems);
 
 	//Checks if weapon is colliding w/ example box
 	if (mCombatController.CheckCollision(mAllRitems["Enemy"]->Instances.at(0).World._41, mAllRitems["Enemy"]->Instances.at(0).World._42,
