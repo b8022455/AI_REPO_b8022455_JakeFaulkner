@@ -2,7 +2,6 @@
 
 #include "Common/d3dApp.h"
 #include "Common/GeometryGenerator.h"
-#include "Common/Camera.h"
 #include "FrameResource.h"
 #include "RenderItem.h"
 

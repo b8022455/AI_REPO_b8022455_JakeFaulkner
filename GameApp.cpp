@@ -267,11 +267,11 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
 
-	if (GetAsyncKeyState('W') & 0x8000)
-		mCamera.Elevate(20.0f*dt);
+	if (GetAsyncKeyState(VK_UP) & 0x8000)
+		mCamera.Elevate(5.0f * dt);
 
-	if (GetAsyncKeyState('S') & 0x8000)
-		mCamera.Elevate(-20.0f*dt);
+	if (GetAsyncKeyState(VK_DOWN) & 0x8000)
+		mCamera.Elevate(-5.0f * dt);
 
 	if (GetAsyncKeyState('I') & 0x8000)
 		mCamera.Walk(20.0f * dt);
@@ -279,11 +279,11 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	if (GetAsyncKeyState('O') & 0x8000)
 		mCamera.Walk(-20.0f * dt);
 
-	if (GetAsyncKeyState('A') & 0x8000)
-		mCamera.Strafe(-20.0f*dt);
+	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+		mCamera.Strafe(-5.0f * dt);
 
-	if (GetAsyncKeyState('D') & 0x8000)
-		mCamera.Strafe(20.0f*dt);
+	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+		mCamera.Strafe(5.0f * dt);
 
 	if (GetAsyncKeyState('P') & 0x8000)
 		mCamera.SetPosition(0.0f, 50.0f, 0.0f);
