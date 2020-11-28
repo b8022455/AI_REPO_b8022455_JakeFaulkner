@@ -5,6 +5,17 @@ void Player::Initialize()
   health = 100;
 }
 
+
+void Player::GetPos(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
+{
+  float playerXPos = mAllRitems["Player"]->Instances.at(0).World._41;
+  float playerYPos = mAllRitems["Player"]->Instances.at(0).World._42;
+  float playerZPos = mAllRitems["Player"]->Instances.at(0).World._43;
+
+  XMFLOAT3 playerPos = XMFLOAT3(playerXPos, playerYPos, playerZPos);
+}
+
+
 void Player::Move(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems, const GameTimer& gt)
 {
   const float dt = gt.DeltaTime();

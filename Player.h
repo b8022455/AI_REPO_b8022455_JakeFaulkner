@@ -15,13 +15,14 @@ public:
 
   void Initialize();
   void Move(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems, const GameTimer& gt);
+  void GetPos(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems);
 
 
 private:
   void DamageEnemy();		
   void DamagePlayer();
 
-
+  XMFLOAT3 pos;
   int health = 100;
 
  

@@ -958,18 +958,18 @@ void GameApp::BuildRenderItems()
 	mAllRitems["Enemy"] = std::move(enemyRitem);
 
 	//Uncomment this if testing weapon collision
-	//#pragma region Weapon Collision Checking
+	#pragma region Weapon Collision Checking
 
-	//mAllRitems["Enemy"]->Instances.at(0).World = 
-	//{
-	//	1.0f, 0.0f, 0.0f, 0.0f,
-	//	0.0f, 1.0f, 0.0f, 0.0f,
-	//	0.0f, 0.0f, 1.0f, 0.0f,
-	//	1.0f, 1.0f, 5.0f, 1.0f
-	//};
-	//mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 3;
+	mAllRitems["Enemy"]->Instances.at(0).World = 
+	{
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		1.0f, 1.0f, 5.0f, 1.0f
+	};
+	mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 3;
 
-	//#pragma endregion
+	#pragma endregion
 
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)
