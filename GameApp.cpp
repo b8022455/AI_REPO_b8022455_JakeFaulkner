@@ -364,6 +364,11 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 		mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 5;			//Visual representation for collision
 	}
 
+	//Interaction stuff
+	//if(checking collision between player and enemys positions)
+		//player gets damaged
+	
+
 	int i = 0;					//Makes sure each object with a different geo is using a different instance buffer
 	for (auto& e : mAllRitems)
 	{
@@ -958,18 +963,18 @@ void GameApp::BuildRenderItems()
 	mAllRitems["Enemy"] = std::move(enemyRitem);
 
 	//Uncomment this if testing weapon collision
-	//#pragma region Weapon Collision Checking
+	#pragma region Weapon Collision Checking
 
-	//mAllRitems["Enemy"]->Instances.at(0).World = 
-	//{
-	//	1.0f, 0.0f, 0.0f, 0.0f,
-	//	0.0f, 1.0f, 0.0f, 0.0f,
-	//	0.0f, 0.0f, 1.0f, 0.0f,
-	//	1.0f, 1.0f, 5.0f, 1.0f
-	//};
-	//mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 3;
+	mAllRitems["Enemy"]->Instances.at(0).World = 
+	{
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		1.0f, 1.0f, 5.0f, 1.0f
+	};
+	mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 3;
 
-	//#pragma endregion
+	#pragma endregion
 
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)
