@@ -356,7 +356,7 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 {
 	XMMATRIX view = mCamera.GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
-
+	
 	mCombatController.Update(mAllRitems);		//Continues rotating the weapon if the player has attacked
 	mPlayer.UpdatePos(mAllRitems);
 
@@ -374,13 +374,13 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 	if (mCombatController.CheckCollision(mPlayer.GetPos(mAllRitems), enemyPos))			//Checks the distance between the player and the enemy objects
 	{
 	  mPlayer.health -= 5;
-	  XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation((mPlayer.GetPos(mAllRitems).x - 20.0f) *  gt.DeltaTime(), 0.0f, 0.0f));
+	  XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation((mPlayer.GetPos(mAllRitems).x - 5.0f), 0.0f, 0.0f));
 	  XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World);
 	  transform = XMMatrixMultiply(current, transform);
 	  XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
-
+	  mCamera.Strafe(-5.0f * gt.DeltaTime());
+	  mCamera.UpdateViewMatrix();
 	}
-	
 
 	int i = 0;					//Makes sure each object with a different geo is using a different instance buffer
 	for (auto& e : mAllRitems)
