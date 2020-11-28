@@ -15,7 +15,8 @@ public:
 
   void Initialize();
   void Move(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems, const GameTimer& gt);
-  void GetPos(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems);
+  void UpdatePos(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems);
+  XMFLOAT3 GetPos(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems);
 
 
 
