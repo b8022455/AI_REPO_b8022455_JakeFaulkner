@@ -34,7 +34,6 @@ void Camera::SetPosition(float x, float y, float z)
 void Camera::SetPosition(const XMFLOAT3& v)
 {
 	mPosition = v;
-	mPosition.y += 50.0f;
 	mViewDirty = true;
 }
 

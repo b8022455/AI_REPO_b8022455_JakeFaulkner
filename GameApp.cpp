@@ -294,11 +294,11 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	if (GetAsyncKeyState('O') & 0x8000)
 		mCamera.Walk(-20.0f * dt);
 
-	//if (GetAsyncKeyState(VK_LEFT) & 0x8000)
-	//	mCamera.Strafe(-5.0f * dt);
+	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+		mCamera.Strafe(-5.0f * dt);
 
-	//if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-	//	mCamera.Strafe(5.0f * dt);
+	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+		mCamera.Strafe(5.0f * dt);
 
 	if (GetAsyncKeyState('P') & 0x8000)
 		mCamera.SetPosition(0.0f, 50.0f, 0.0f);
@@ -342,7 +342,7 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	if (GetAsyncKeyState('X') & 0x08000)
 		mStateManager.ChangeState("bar");
 
-	mCamera.SetPosition(mPlayer.GetPos(mAllRitems));
+	mCamera.SetPosition(mPlayer.GetPos(mAllRitems).x, mCamera.GetPosition3f().y, mPlayer.GetPos(mAllRitems).z);
 
 	mPlayer.Move(mAllRitems, gt);
 	mCamera.UpdateViewMatrix();
