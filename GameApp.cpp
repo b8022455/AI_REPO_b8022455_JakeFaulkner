@@ -366,6 +366,8 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 		mAllRitems["Enemy"]->Instances.at(0).World._43))
 	{
 		mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 5;			//Visual representation for collision
+		enemyHealth -= 5;
+		mAllRitems["Enemy"]->Instances.at(0).World._41 += 5.0f;			///Pushes enemy back after being hit by sword, In future have enemy move back based on which way player is facing !!!
 	}
 
 	///Enemy Pos, Remove into Enemy class in future!!!
