@@ -23,7 +23,6 @@ XMFLOAT3 Player::GetPos(std::unordered_map<std::string, std::unique_ptr<RenderIt
 
   XMFLOAT3 playerPos = XMFLOAT3(playerXPos, playerYPos, playerZPos);
 
-
   return playerPos;
 }
 

@@ -281,8 +281,9 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
 
+
 	if (GetAsyncKeyState(VK_UP) & 0x8000)
-		mCamera.Elevate(5.0f * dt);
+		mCamera.Elevate((5.0f + mPlayer.GetPos(mAllRitems).z) * dt);
 
 	if (GetAsyncKeyState(VK_DOWN) & 0x8000)
 		mCamera.Elevate(-5.0f * dt);
@@ -373,6 +374,11 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 	if (mCombatController.CheckCollision(mPlayer.GetPos(mAllRitems), enemyPos))			//Checks the distance between the player and the enemy objects
 	{
 	  mPlayer.health -= 5;
+	  XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation((mPlayer.GetPos(mAllRitems).x - 20.0f) *  gt.DeltaTime(), 0.0f, 0.0f));
+	  XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World);
+	  transform = XMMatrixMultiply(current, transform);
+	  XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
+
 	}
 	
 
@@ -482,7 +488,7 @@ void GameApp::UpdateMainPassCB(const GameTimer& gt)
 		mMainPassCB.Lights[0].Strength = { sin(gt.TotalTime()) / 2 + 0.5f ,0.0f,0.0f };
 	}
 
-	else
+	else 
 	{
 		mMainPassCB.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
 	}
