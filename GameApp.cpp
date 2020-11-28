@@ -372,7 +372,7 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 	//Interaction stuff
 	if (mCombatController.CheckCollision(mPlayer.GetPos(mAllRitems), enemyPos))			//Checks the distance between the player and the enemy objects
 	{
-		int i = 0;//damage player
+	  mPlayer.health -= 5;
 	}
 	
 
@@ -477,12 +477,12 @@ void GameApp::UpdateMainPassCB(const GameTimer& gt)
 	mMainPassCB.Lights[0].Direction = { 0.57735f, -0.57735f, 0.57735f };
 
 	//flashing red for low health
-	if (GetAsyncKeyState('L') & 0x8000)
+	if (mPlayer.health <= 95)
 	{
 		mMainPassCB.Lights[0].Strength = { sin(gt.TotalTime()) / 2 + 0.5f ,0.0f,0.0f };
 	}
 
-	else if (GetAsyncKeyState('M') & 0x8000)
+	else
 	{
 		mMainPassCB.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
 	}

@@ -17,7 +17,7 @@ public:
   void Move(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems, const GameTimer& gt);
   void UpdatePos(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems);
   XMFLOAT3 GetPos(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems);
-
+  int health = 100;
 
 
 private:
@@ -25,7 +25,7 @@ private:
   void DamagePlayer();
 
   XMFLOAT3 pos;
-  int health = 100;
+  
 
  
 };
