@@ -366,6 +366,11 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 		mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 5;			//Visual representation for collision
 	}
 
+	//Interaction stuff
+	//if(checking collision between player and enemys positions)
+		//player gets damaged
+	
+
 	int i = 0;					//Makes sure each object with a different geo is using a different instance buffer
 	for (auto& e : mAllRitems)
 	{
