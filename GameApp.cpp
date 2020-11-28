@@ -366,9 +366,14 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 		mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 5;			//Visual representation for collision
 	}
 
+	///Enemy Pos, Remove into Enemy class in future!!!
+	XMFLOAT3 enemyPos = XMFLOAT3(mAllRitems["Enemy"]->Instances.at(0).World._41, mAllRitems["Enemy"]->Instances.at(0).World._42, mAllRitems["Enemy"]->Instances.at(0).World._43);
+
 	//Interaction stuff
-	//if(checking collision between player and enemys positions)
-		//player gets damaged
+	if (mCombatController.CheckCollision(mPlayer.GetPos(mAllRitems), enemyPos))			//Checks the distance between the player and the enemy objects
+	{
+		int i = 0;//damage player
+	}
 	
 
 	int i = 0;					//Makes sure each object with a different geo is using a different instance buffer
