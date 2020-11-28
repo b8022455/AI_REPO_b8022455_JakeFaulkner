@@ -181,6 +181,7 @@ void GameApp::Update(const GameTimer& gt)
 		else
 			mGameAudio.Play("ring9", nullptr, true);
 	}
+
 }
 
 void GameApp::Draw(const GameTimer& gt)
@@ -294,23 +295,26 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 
 	const float dt = gt.DeltaTime();
 
-	if (GetAsyncKeyState(up) & 0x8000)
-		mCamera.Elevate(camSpeed*dt);
+	if (GetAsyncKeyState('W') & 0x8000)
+		mCamera.Elevate(20.0f*dt);
 
-	if (GetAsyncKeyState(down) & 0x8000)
-		mCamera.Elevate(-camSpeed *dt);
+	if (GetAsyncKeyState(VK_UP) & 0x8000)
+		mCamera.Elevate((5.0f + mPlayer.GetPos(mAllRitems).z) * dt);
 
-	if (GetAsyncKeyState(forward) & 0x8000)
-		mCamera.Walk(camSpeed* dt);
+	if (GetAsyncKeyState(VK_DOWN) & 0x8000)
+		mCamera.Elevate(-5.0f * dt);
+
+	if (GetAsyncKeyState('I') & 0x8000)
+		mCamera.Walk(20.0f * dt);
 
 	if (GetAsyncKeyState(back) & 0x8000)
 		mCamera.Walk(-camSpeed * dt);
 
-	if (GetAsyncKeyState(left) & 0x8000)
-		mCamera.Strafe(-camSpeed *dt);
+	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
+		mCamera.Strafe(-5.0f * dt);
 
-	if (GetAsyncKeyState(right) & 0x8000)
-		mCamera.Strafe(camSpeed*dt);
+	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
+		mCamera.Strafe(5.0f * dt);
 
 	if (GetAsyncKeyState('P') & 0x8000)
 		mCamera.SetPosition(0.0f, 50.0f, 0.0f);
@@ -340,6 +344,8 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	if (GetAsyncKeyState('X') & 0x08000)
 		mStateManager.ChangeState("bar");
 
+	mCamera.SetPosition(mPlayer.GetPos(mAllRitems).x, mCamera.GetPosition3f().y, mPlayer.GetPos(mAllRitems).z);
+
 	mPlayer.Move(mAllRitems, gt);
 	mCamera.UpdateViewMatrix();
 }
@@ -353,14 +359,32 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 {
 	XMMATRIX view = mCamera.GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
-
+	
 	mCombatController.Update(mAllRitems);		//Continues rotating the weapon if the player has attacked
+	mPlayer.UpdatePos(mAllRitems);
 
 	//Checks if weapon is colliding w/ example box
 	if (mCombatController.CheckCollision(mAllRitems["Enemy"]->Instances.at(0).World._41, mAllRitems["Enemy"]->Instances.at(0).World._42,
 		mAllRitems["Enemy"]->Instances.at(0).World._43))
 	{
 		mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 5;			//Visual representation for collision
+		enemyHealth -= 5;
+		mAllRitems["Enemy"]->Instances.at(0).World._41 += 5.0f;			///Pushes enemy back after being hit by sword, In future have enemy move back based on which way player is facing !!!
+	}
+
+	///Enemy Pos, Remove into Enemy class in future!!!
+	XMFLOAT3 enemyPos = XMFLOAT3(mAllRitems["Enemy"]->Instances.at(0).World._41, mAllRitems["Enemy"]->Instances.at(0).World._42, mAllRitems["Enemy"]->Instances.at(0).World._43);
+
+	//Interaction stuff
+	if (mCombatController.CheckCollision(mPlayer.GetPos(mAllRitems), enemyPos))			//Checks the distance between the player and the enemy objects
+	{
+	  mPlayer.health -= 5;
+	  XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation((mPlayer.GetPos(mAllRitems).x - 5.0f), 0.0f, 0.0f));
+	  XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World);
+	  transform = XMMatrixMultiply(current, transform);
+	  XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
+	  mCamera.Strafe(-5.0f * gt.DeltaTime());
+	  mCamera.UpdateViewMatrix();
 	}
 
 	int i = 0;					//Makes sure each object with a different geo is using a different instance buffer
@@ -464,12 +488,12 @@ void GameApp::UpdateMainPassCB(const GameTimer& gt)
 	mMainPassCB.Lights[0].Direction = { 0.57735f, -0.57735f, 0.57735f };
 
 	//flashing red for low health
-	if (GetAsyncKeyState('L') & 0x8000)
+	if (mPlayer.health <= 95)
 	{
 		mMainPassCB.Lights[0].Strength = { sin(gt.TotalTime()) / 2 + 0.5f ,0.0f,0.0f };
 	}
 
-	else if (GetAsyncKeyState('M') & 0x8000)
+	else 
 	{
 		mMainPassCB.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
 	}
@@ -1045,18 +1069,18 @@ void GameApp::BuildRenderItems()
 	mAllRitems["Enemy"] = std::move(enemyRitem);
 
 	//Uncomment this if testing weapon collision
-	//#pragma region Weapon Collision Checking
+	#pragma region Weapon Collision Checking
 
-	//mAllRitems["Enemy"]->Instances.at(0).World = 
-	//{
-	//	1.0f, 0.0f, 0.0f, 0.0f,
-	//	0.0f, 1.0f, 0.0f, 0.0f,
-	//	0.0f, 0.0f, 1.0f, 0.0f,
-	//	1.0f, 1.0f, 5.0f, 1.0f
-	//};
-	//mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 3;
+	mAllRitems["Enemy"]->Instances.at(0).World = 
+	{
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		1.0f, 1.0f, 5.0f, 1.0f
+	};
+	mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 3;
 
-	//#pragma endregion
+	#pragma endregion
 
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)

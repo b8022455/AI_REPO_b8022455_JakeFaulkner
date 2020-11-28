@@ -2,7 +2,6 @@
 
 #include "Common/d3dApp.h"
 #include "Common/GeometryGenerator.h"
-#include "Common/Camera.h"
 #include "FrameResource.h"
 #include "RenderItem.h"
 
@@ -16,13 +15,17 @@ public:
 
   void Initialize();
   void Move(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems, const GameTimer& gt);
+  void UpdatePos(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems);
+  XMFLOAT3 GetPos(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems);
+  int health = 100;
 
 
 private:
   void DamageEnemy();		
   void DamagePlayer();
 
-  int health = 100;
+  XMFLOAT3 pos;
+  
 
  
 };

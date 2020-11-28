@@ -108,4 +108,7 @@ private:
 	//States
 	StateManager mStateManager;
 
+	///Will be moved into its own class, just left here for ease of testing !!!Move in future
+	int enemyHealth = 100;
+
 };
