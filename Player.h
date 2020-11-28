@@ -2,7 +2,6 @@
 
 #include "Common/d3dApp.h"
 #include "Common/GeometryGenerator.h"
-#include "Common/Camera.h"
 #include "FrameResource.h"
 #include "RenderItem.h"
 
@@ -21,6 +20,8 @@ public:
 private:
   void DamageEnemy();		
   void DamagePlayer();
+
+  Camera mCamera;
 
   int health = 100;
 
