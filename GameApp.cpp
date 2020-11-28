@@ -285,18 +285,8 @@ void GameApp::OnMouseMove(WPARAM btnState, int x, int y)
 
 void GameApp::OnKeyboardInput(const GameTimer& gt)
 {
-	int forward =	'W';
-	int back =		'S';
-	int left =		'A';
-	int right =		'D';
-	int up =		'E';
-	int down =		'Q';
-	float camSpeed = 20.0f;
-
 	const float dt = gt.DeltaTime();
 
-	if (GetAsyncKeyState('W') & 0x8000)
-		mCamera.Elevate(20.0f*dt);
 
 	if (GetAsyncKeyState(VK_UP) & 0x8000)
 		mCamera.Elevate((5.0f + mPlayer.GetPos(mAllRitems).z) * dt);
