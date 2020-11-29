@@ -231,17 +231,12 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
 	
+	// CAMERA MOVEMENT - WASD
 	if (GetAsyncKeyState('W') & 0x8000)
 		mCamera.Elevate(20.0f * dt);
 
 	if (GetAsyncKeyState('S') & 0x8000)
 		mCamera.Elevate(-20.0f * dt);
-
-	if (GetAsyncKeyState('I') & 0x8000) 
-		mCamera.Walk(20.0f*dt);
-
-	if(GetAsyncKeyState('O') & 0x8000)
-		mCamera.Walk(-20.0f*dt);
 
 	if(GetAsyncKeyState('A') & 0x8000)
 		mCamera.Strafe(-20.0f*dt);
@@ -249,15 +244,54 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	if(GetAsyncKeyState('D') & 0x8000)
 		mCamera.Strafe(20.0f*dt);
 
+	// ZOOM FUNCTION
+	if (GetAsyncKeyState('I') & 0x8000)
+		mCamera.Walk(20.0f * dt);
+
+	if (GetAsyncKeyState('O') & 0x8000)
+		mCamera.Walk(-20.0f * dt);
+
+	// RESET CAMERA POSITION
+	if (GetAsyncKeyState('R') & 0x8000){
+		mCamera.SetPosition(0.0f, 50.0f, 0.0f);
+		//float dy = XMConvertToRadians(90.0f);
+		//mCamera.Pitch(dy); // SETS CAMERA TO FACE DOWN
+		// TODO: REMOVE MOUSE CAMERA ROTATION 
+	}
+
 	if(GetAsyncKeyState('1') & 0x8000)
 		mFrustumCullingEnabled = true;
 
 	if(GetAsyncKeyState('2') & 0x8000)
 		mFrustumCullingEnabled = false;
 
-	if (GetAsyncKeyState('4') & 0x8000)
-	{
-		// TODO: WORKING MOVEMENT TEST LOCATED HERE
+	// PLAYER MOVEMENT -UHJK
+	if (GetAsyncKeyState('U') & 0x8000)
+	{ // UP
+		XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(0.0f, 0.0f, 5.0f * dt));
+		XMMATRIX current = XMLoadFloat4x4(&mAllRitems.at(0)->Instances.at(0).World);
+		transform = XMMatrixMultiply(current, transform);
+		XMStoreFloat4x4(&mAllRitems.at(0)->Instances.at(0).World, transform);
+	}
+
+	if (GetAsyncKeyState('H') & 0x8000)
+	{ // LEFT
+		XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(-5.0f * dt, 0.0f, 0.0f));
+		XMMATRIX current = XMLoadFloat4x4(&mAllRitems.at(0)->Instances.at(0).World);
+		transform = XMMatrixMultiply(current, transform);
+		XMStoreFloat4x4(&mAllRitems.at(0)->Instances.at(0).World, transform);
+	}
+
+	if (GetAsyncKeyState('J') & 0x8000)
+	{ // DOWN
+		XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(0.0f, 0.0f, -5.0f * dt));
+		XMMATRIX current = XMLoadFloat4x4(&mAllRitems.at(0)->Instances.at(0).World);
+		transform = XMMatrixMultiply(current, transform);
+		XMStoreFloat4x4(&mAllRitems.at(0)->Instances.at(0).World, transform);
+	}
+
+	if (GetAsyncKeyState('K') & 0x8000)
+	{ // RIGHT
 		XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(5.0f * dt, 0.0f, 0.0f));
 		XMMATRIX current = XMLoadFloat4x4(&mAllRitems.at(0)->Instances.at(0).World);
 		transform = XMMatrixMultiply(current, transform);
