@@ -5,7 +5,6 @@ void Player::Initialize()
   health = 100;
 }
 
-
 void Player::UpdatePos(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
 {
   float playerXPos = mAllRitems["Player"]->Instances.at(0).World._41;

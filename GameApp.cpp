@@ -115,10 +115,10 @@ bool GameApp::Initialize()
 	BuildDescriptorHeaps();
 	BuildShadersAndInputLayout();
 	BuildBoxGeometry();
-	BuildObjGeometry("Data/Models/tempSword.obj", "tempSwordGeo", "tempSword");// loads obj
-	BuildObjGeometry("Data/Models/tempPlayer.obj", "tempPlayerGeo", "tempPlayer");
-	BuildObjGeometry("Data/Models/tempEnemy.obj", "tempEnemyGeo", "tempEnemy");
-	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" );
+	BuildObjGeometry("Data/Models/tempSword.objm", "tempSwordGeo", "tempSword");// loads obj
+	BuildObjGeometry("Data/Models/tempPlayer.objm", "tempPlayerGeo", "tempPlayer");
+	BuildObjGeometry("Data/Models/tempEnemy.objm", "tempEnemyGeo", "tempEnemy");
+	BuildObjGeometry("Data/Models/flatTile.objm","floorTileGeo", "floorTile" );
 	BuildSwordGeometry();
 	BuildPlayerGeometry();
 	BuildMaterials();
@@ -287,24 +287,26 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
 
+	float moveSpeed = 5.0f;
+	float zoomSpeed = 20.0f;
 
 	if (GetAsyncKeyState(VK_UP) & 0x8000)
-		mCamera.Elevate((5.0f + mPlayer.GetPos(mAllRitems).z) * dt);
+		mCamera.Elevate((moveSpeed + mPlayer.GetPos(mAllRitems).z) * dt);
 
 	if (GetAsyncKeyState(VK_DOWN) & 0x8000)
-		mCamera.Elevate(-5.0f * dt);
-
-	if (GetAsyncKeyState('I') & 0x8000)
-		mCamera.Walk(20.0f * dt);
-
-	if (GetAsyncKeyState(back) & 0x8000)
-		mCamera.Walk(-camSpeed * dt);
+		mCamera.Elevate(-moveSpeed * dt);
 
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
-		mCamera.Strafe(-5.0f * dt);
+		mCamera.Strafe(-moveSpeed * dt);
 
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-		mCamera.Strafe(5.0f * dt);
+		mCamera.Strafe(moveSpeed * dt);
+
+	if (GetAsyncKeyState('E') & 0x8000)
+		mCamera.Walk(zoomSpeed * dt);
+
+	if (GetAsyncKeyState('Q') & 0x8000)
+		mCamera.Walk(-zoomSpeed * dt);
 
 	if (GetAsyncKeyState('P') & 0x8000)
 		mCamera.SetPosition(0.0f, 50.0f, 0.0f);
