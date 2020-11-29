@@ -61,6 +61,17 @@ public:
 
 	virtual bool Initialize()override;
 
+	static bool DEBUG;
+
+	const float RIGHTBOUND = 100.0f;
+	const float LEFTBOUND = -100.0f;
+
+	const float YBOUNDLOW = 50.0f;
+	const float YBOUNDHIGH = 300.0f;
+	
+	const float UPBOUND = 100.0f;
+	const float DOWNBOUND = -100.0f;
+
 private:
 	virtual void OnResize()override;
 	virtual void Update(const GameTimer& gt)override;

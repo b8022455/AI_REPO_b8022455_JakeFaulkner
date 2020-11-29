@@ -13,6 +13,8 @@ using namespace DirectX::PackedVector;
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "D3D12.lib")
 
+bool GameApp::DEBUG = false;
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
     PSTR cmdLine, int showCmd)
 {
@@ -213,7 +215,7 @@ void GameApp::OnMouseUp(WPARAM btnState, int x, int y)
 
 void GameApp::OnMouseMove(WPARAM btnState, int x, int y) // TODO: MOUSE ROTATING CAMERA HERE
 {
-    if((btnState & MK_LBUTTON) != 0)
+    if(((btnState & MK_LBUTTON) != 0) && DEBUG != false)
     {
 		// Make each pixel correspond to a quarter of a degree.
 		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - mLastMousePos.x));
@@ -233,30 +235,36 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	
 	// CAMERA MOVEMENT - WASD
 	if (GetAsyncKeyState('W') & 0x8000)
-		mCamera.Elevate(20.0f * dt);
+		// TODO: IMPLEMENT CAMERA BOUNDARIES, MAY NEED TO BE DONE IN CAMERA FUNCTION ITSELF?
+		if (mCamera.GetPosition3f().z <= UPBOUND)
+			mCamera.Elevate(20.0f * dt);
 
 	if (GetAsyncKeyState('S') & 0x8000)
-		mCamera.Elevate(-20.0f * dt);
+		if (mCamera.GetPosition3f().z >= DOWNBOUND)
+			mCamera.Elevate(-20.0f * dt);
 
 	if(GetAsyncKeyState('A') & 0x8000)
+		if (mCamera.GetPosition3f().x >= LEFTBOUND)
 		mCamera.Strafe(-20.0f*dt);
 
 	if(GetAsyncKeyState('D') & 0x8000)
+		if (mCamera.GetPosition3f().x <= RIGHTBOUND)
 		mCamera.Strafe(20.0f*dt);
 
 	// ZOOM FUNCTION
 	if (GetAsyncKeyState('I') & 0x8000)
+		if (mCamera.GetPosition3f().y >= YBOUNDLOW)
 		mCamera.Walk(20.0f * dt);
 
 	if (GetAsyncKeyState('O') & 0x8000)
+		if (mCamera.GetPosition3f().y <= YBOUNDHIGH)
 		mCamera.Walk(-20.0f * dt);
 
 	// RESET CAMERA POSITION
 	if (GetAsyncKeyState('R') & 0x8000){
 		mCamera.SetPosition(0.0f, 50.0f, 0.0f);
 		//float dy = XMConvertToRadians(90.0f);
-		//mCamera.Pitch(dy); // SETS CAMERA TO FACE DOWN
-		// TODO: REMOVE MOUSE CAMERA ROTATION 
+		//mCamera.Pitch(dy); // SETS CAMERA TO FACE DOWN 
 	}
 
 	if(GetAsyncKeyState('1') & 0x8000)
@@ -268,34 +276,50 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	// PLAYER MOVEMENT -UHJK
 	if (GetAsyncKeyState('U') & 0x8000)
 	{ // UP
-		XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(0.0f, 0.0f, 5.0f * dt));
-		XMMATRIX current = XMLoadFloat4x4(&mAllRitems.at(0)->Instances.at(0).World);
-		transform = XMMatrixMultiply(current, transform);
-		XMStoreFloat4x4(&mAllRitems.at(0)->Instances.at(0).World, transform);
+		XMMATRIX current = XMLoadFloat4x4(&mAllRitems.at(0)->Instances.at(0).World); // ORIGINAL MOVEMENT
+		XMFLOAT4X4 test;
+		XMStoreFloat4x4(&test, current);
+		if (test._43 <= UPBOUND) {
+			XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(0.0f, 0.0f, 20.0f * dt));
+			transform = XMMatrixMultiply(current, transform);
+			XMStoreFloat4x4(&mAllRitems.at(0)->Instances.at(0).World, transform);
+		}
 	}
 
 	if (GetAsyncKeyState('H') & 0x8000)
 	{ // LEFT
-		XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(-5.0f * dt, 0.0f, 0.0f));
-		XMMATRIX current = XMLoadFloat4x4(&mAllRitems.at(0)->Instances.at(0).World);
-		transform = XMMatrixMultiply(current, transform);
-		XMStoreFloat4x4(&mAllRitems.at(0)->Instances.at(0).World, transform);
+		XMMATRIX current = XMLoadFloat4x4(&mAllRitems.at(0)->Instances.at(0).World); // ORIGINAL MOVEMENT
+		XMFLOAT4X4 test;
+		XMStoreFloat4x4(&test, current);
+		if (test._41 >= LEFTBOUND) {
+			XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(-20.0f * dt, 0.0f, 0.0f));
+			transform = XMMatrixMultiply(current, transform);
+			XMStoreFloat4x4(&mAllRitems.at(0)->Instances.at(0).World, transform);
+		}
 	}
 
 	if (GetAsyncKeyState('J') & 0x8000)
 	{ // DOWN
-		XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(0.0f, 0.0f, -5.0f * dt));
-		XMMATRIX current = XMLoadFloat4x4(&mAllRitems.at(0)->Instances.at(0).World);
-		transform = XMMatrixMultiply(current, transform);
-		XMStoreFloat4x4(&mAllRitems.at(0)->Instances.at(0).World, transform);
+		XMMATRIX current = XMLoadFloat4x4(&mAllRitems.at(0)->Instances.at(0).World); // ORIGINAL MOVEMENT
+		XMFLOAT4X4 test;
+		XMStoreFloat4x4(&test, current);
+		if (test._43 >= DOWNBOUND) {
+			XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(0.0f, 0.0f, -20.0f * dt));
+			transform = XMMatrixMultiply(current, transform);
+			XMStoreFloat4x4(&mAllRitems.at(0)->Instances.at(0).World, transform);
+		}
 	}
 
 	if (GetAsyncKeyState('K') & 0x8000)
 	{ // RIGHT
-		XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(5.0f * dt, 0.0f, 0.0f));
-		XMMATRIX current = XMLoadFloat4x4(&mAllRitems.at(0)->Instances.at(0).World);
-		transform = XMMatrixMultiply(current, transform);
-		XMStoreFloat4x4(&mAllRitems.at(0)->Instances.at(0).World, transform);
+		XMMATRIX current = XMLoadFloat4x4(&mAllRitems.at(0)->Instances.at(0).World); // ORIGINAL MOVEMENT
+		XMFLOAT4X4 test;
+		XMStoreFloat4x4(&test, current);
+		if (test._41 <= RIGHTBOUND) {
+			XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(20.0f * dt, 0.0f, 0.0f));
+			transform = XMMatrixMultiply(current, transform);
+			XMStoreFloat4x4(&mAllRitems.at(0)->Instances.at(0).World, transform);
+		}
 	}
 
 	if (GetAsyncKeyState('Q') & 0x08000)

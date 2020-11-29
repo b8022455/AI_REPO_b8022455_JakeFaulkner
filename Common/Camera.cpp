@@ -198,7 +198,6 @@ void Camera::Walk(float d)
 	mViewDirty = true;
 }
 
-//TODO: ADD VOID TO CHANGE CAMERA Y POSITION
 void Camera::Elevate(float d) {
 	XMVECTOR s = XMVectorReplicate(d);
 	XMVECTOR u = XMLoadFloat3(&mUp);
