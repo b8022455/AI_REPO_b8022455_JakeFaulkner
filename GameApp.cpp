@@ -115,10 +115,10 @@ bool GameApp::Initialize()
 	BuildDescriptorHeaps();
 	BuildShadersAndInputLayout();
 	BuildBoxGeometry();
-	BuildObjGeometry("Data/Models/tempSword.objm", "tempSwordGeo", "tempSword");// loads obj
-	BuildObjGeometry("Data/Models/tempPlayer.objm", "tempPlayerGeo", "tempPlayer");
-	BuildObjGeometry("Data/Models/tempEnemy.objm", "tempEnemyGeo", "tempEnemy");
-	BuildObjGeometry("Data/Models/flatTile.objm","floorTileGeo", "floorTile" );
+	BuildObjGeometry("Data/Models/tempSword.obj", "tempSwordGeo", "tempSword");// loads obj
+	BuildObjGeometry("Data/Models/tempPlayer.obj", "tempPlayerGeo", "tempPlayer");
+	BuildObjGeometry("Data/Models/tempEnemy.obj", "tempEnemyGeo", "tempEnemy");
+	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" );
 	BuildSwordGeometry();
 	BuildPlayerGeometry();
 	BuildMaterials();
@@ -565,7 +565,7 @@ void GameApp::BuildRootSignature()
 		serializedRootSig->GetBufferSize(),
 		IID_PPV_ARGS(mRootSignature.GetAddressOf())));
 }
-
+ 
 void GameApp::BuildDescriptorHeaps()
 {
 	//
@@ -990,18 +990,30 @@ void GameApp::BuildRenderItems()
 	mInstanceCount = n * n;
 	boxRitem->Instances.resize(mInstanceCount);
 
-	float width = 32.0f;
-	float height = 32.0f;
-	float depth = 32.0f;
+	float width = 30.0f;
+	float height = 30.0f;
+	float depth = 30.0f;
 	float x = -0.5f*width;
 	float z = -0.5f*depth;
 	float dx = width / (n - 1);
 	float dz = depth / (n - 1);
+
+	struct mapData { // STRUCT FOR MAP TEXTURE AND TILE DATA
+		int texIndex; //texture index from texture buffer for tile 
+		//int x; // horizontal component - WIP FOR 3D
+		//int y; // vertical component - WIP FOR 3D
+	};
+
+	mapData mapDataArray[n][n];
+
 	for (int k = 0; k < n; ++k)
 	{
 		for (int j = 0; j < n; ++j)
 		{
 			int index = k * n + j;
+			mapDataArray[j][k].texIndex = rand() % mMaterials.size(); 
+			//Selects random index from array of textures WIP - will be using auto generated clumping 2d array
+			
 			// Position instanced along a 3D grid.
 			boxRitem->Instances[index].World = XMFLOAT4X4(
 				1.0f, 0.0f, 0.0f, 0.0f,
@@ -1011,8 +1023,8 @@ void GameApp::BuildRenderItems()
 
 			XMStoreFloat4x4(&boxRitem->Instances[index].TexTransform, XMMatrixScaling(1.0f, 1.0f, 1.0f));
 			//boxRitem->Instances[index].MaterialIndex = index % mMaterials.size();
-			boxRitem->Instances[index].MaterialIndex = 1;
-			// not sure of syntax to pull [1] index from this array so cheaty way to get this
+			//boxRitem->Instances[index].MaterialIndex = 1;
+			boxRitem->Instances[index].MaterialIndex = mapDataArray[j][k].texIndex; // set tile texture to struct data
 		}
 	}
 
