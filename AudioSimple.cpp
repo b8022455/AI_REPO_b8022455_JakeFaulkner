@@ -25,10 +25,10 @@ void AudioSimple::Init()
 
 
 #ifdef _DEBUG
-	eflags =  eflags | DirectX::AudioEngine_Debug;
+	eflags = eflags | DirectX::AudioEngine_Debug;
 #endif
 	//Setup engine
-	mAudioEngine = std::make_unique<DirectX::AudioEngine>(eflags,nullptr,nullptr, AudioCategory_GameEffects);
+	mAudioEngine = std::make_unique<DirectX::AudioEngine>(eflags, nullptr, nullptr, AudioCategory_GameEffects);
 
 	// Cone setup for directional sound
 	mCone = X3DAudioDefault_DirectionalCone; //// { X3DAUDIO_PI / 2, X3DAUDIO_PI, 1.0f, 0.708f, 0.0f, 0.25f, 0.708f, 1.0f };
@@ -68,27 +68,27 @@ void AudioSimple::Update(const GameTimer& gt, const DirectX::XMFLOAT3& camPos, c
 void AudioSimple::Load(const std::string& name, const std::wstring& filename)
 {
 	SoundPair soundPair;
-	soundPair.first = std::make_unique<DirectX::SoundEffect>(mAudioEngine.get(), filename.c_str() );
+	soundPair.first = std::make_unique<DirectX::SoundEffect>(mAudioEngine.get(), filename.c_str());
 	assert(soundPair.first);
-	
+
 	mSounds[name] = std::move(soundPair);
-	
+
 }
 
-void AudioSimple::Play(const std::string& name, bool loop, float volume, float pitch , float pan )
+void AudioSimple::Play(const std::string& name, bool loop, float volume, float pitch, float pan)
 {
 	assert(mSounds[name].first);
 
 	DirectX::SOUND_EFFECT_INSTANCE_FLAGS iflags =
-		DirectX::SoundEffectInstance_Default 
+		DirectX::SoundEffectInstance_Default
 		|
-		DirectX::SoundEffectInstance_Use3D 
+		DirectX::SoundEffectInstance_Use3D
 		;
 
 	mSounds[name].second = std::move(mSounds[name].first->CreateInstance(iflags));
 
 	mSounds[name].second->Play(loop);
-	mSounds[name].second->Apply3D(mListener,mEmitter);
+	mSounds[name].second->Apply3D(mListener, mEmitter);
 	mSounds[name].second->SetVolume(volume);
 	//mSounds[name].second->SetPitch(pitch);
 	//mSounds[name].second->SetPan(pan);
@@ -106,7 +106,7 @@ void AudioSimple::Resume()
 
 void AudioSimple::SetReverbRandom()
 {
-	mAudioEngine->SetReverb((DirectX::AUDIO_ENGINE_REVERB)(rand()% DirectX::AUDIO_ENGINE_REVERB::Reverb_MAX));
+	mAudioEngine->SetReverb((DirectX::AUDIO_ENGINE_REVERB)(rand() % DirectX::AUDIO_ENGINE_REVERB::Reverb_MAX));
 }
 
 
@@ -151,18 +151,18 @@ void SfxEngine::Update(const GameTimer & gt)
 			assert(false);
 		}
 	}
-	
+
 }
 
 void SfxEngine::Play(const std::string & soundName, DirectX::AudioEmitter * emitter, bool loop, float volume, float pitch, float pan)
 {
 	bool play = true;
 
-	if (mCache.size() >= max(mCacheLimit,1) )
+	if (mCache.size() >= max(mCacheLimit, 1))
 	{
 		if (mForceAudio)
 			//if(mCache.size() > 0)
-				mCache.pop_back();
+			mCache.pop_back();
 		else
 			play = false;
 	}
@@ -197,10 +197,10 @@ void SfxEngine::Play(const std::string & soundName, DirectX::AudioEmitter * emit
 	}
 
 
-	
-	
 
-	
+
+
+
 }
 
 void SfxEngine::ForceAudio(bool force)
@@ -227,17 +227,17 @@ void MusicEngine::Init()
 #endif
 	//Setup engine for music and ambience
 	mAudioEngine = std::make_unique<DirectX::AudioEngine>(eflags, nullptr, nullptr, AudioCategory_GameMedia);
-	
+
 	assert(mCache.size() == 0);
 
-	std::generate_n(std::back_inserter(mCache), mCacheLimit, []() 
+	std::generate_n(std::back_inserter(mCache), mCacheLimit, []()
 	{
-		
+
 		return std::unique_ptr<DirectX::SoundEffectInstance>{};
 	});
-	
-	
-	
+
+
+
 }
 
 void MusicEngine::Update(const GameTimer & gt)
@@ -272,7 +272,7 @@ void MusicEngine::Update(const GameTimer & gt)
 		}
 	}
 
-	
+
 
 }
 
@@ -295,7 +295,7 @@ void MusicEngine::Play(const std::string & soundName, DirectX::AudioEmitter * em
 	//Set properties
 	if (emitter && pListener)
 	{
-		mCache.front()->Apply3D(*pListener,*emitter);
+		mCache.front()->Apply3D(*pListener, *emitter);
 	}
 	else
 	{
@@ -331,7 +331,7 @@ bool GameAudio::ValidEngine(const std::string & name)
 bool GameAudio::ValidKeys(const std::string & engineName, const std::string & soundName)
 {
 	bool b = false;
-	
+
 	if (mkeys.count(soundName) == 1)
 	{
 		if (mkeys[soundName] == engineName)
@@ -407,7 +407,7 @@ void GameAudio::Play(const std::string & soundName, DirectX::AudioEmitter * emit
 {
 	if (mkeys.count(soundName) == 1)
 	{
-		mEngines[mkeys[soundName]]->Play(soundName, emitter, loop,volume,pitch,pan);
+		mEngines[mkeys[soundName]]->Play(soundName, emitter, loop, volume, pitch, pan);
 	}
 	else
 	{
@@ -416,7 +416,7 @@ void GameAudio::Play(const std::string & soundName, DirectX::AudioEmitter * emit
 		assert(false);
 	}
 
-	
+
 }
 
 void GameAudio::Pause(const std::string & engineName)
@@ -474,7 +474,7 @@ void GameAudio::LoadSound(const std::string & engineName, const std::string & so
 	{
 		std::string debug = "Warning - Audio already loaded: " + soundName + "on engine " + engineName + "\n";
 	}
-	
+
 	OutputDebugStringA(debug.c_str());
 }
 
@@ -507,13 +507,13 @@ void GameAudio::SetFade(const std::string & name, float secs)
 {
 	if (ValidEngine(name))
 	{
-		
+
 		switch (mEngines[name]->GetType())
 		{
 		case AUDIO_ENGINE_TYPE::MUSIC:	mEngines[name]->SetFade(secs); break;
 		case AUDIO_ENGINE_TYPE::SFX:	OutputDebugStringA("Warning - SFX audio engines do not support fading.\n"); break;
 		}
-		
+
 	}
 }
 

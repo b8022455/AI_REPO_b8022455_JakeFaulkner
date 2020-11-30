@@ -12,6 +12,7 @@
 #include "RenderItem.h"
 #include "CombatController.h"
 #include "Player.h"
+#include "State.h"
 
 const int gNumFrameResources = 3;
 
@@ -46,6 +47,7 @@ private:
 	void BuildDescriptorHeaps();
 	void BuildShadersAndInputLayout();
 	void BuildBoxGeometry();
+	void BuildObjGeometry(const std::string& filepath, const std::string& geoName, const std::string& subMeshName);
 	void BuildSwordGeometry();
 	void BuildPlayerGeometry();
 	void BuildPSOs();
@@ -102,5 +104,11 @@ private:
 	//Combat
 	CombatController mCombatController;
 	Player mPlayer;
+
+	//States
+	StateManager mStateManager;
+
+	///Will be moved into its own class, just left here for ease of testing !!!Move in future
+	int enemyHealth = 100;
 
 };
