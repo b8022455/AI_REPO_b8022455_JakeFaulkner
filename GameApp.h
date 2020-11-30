@@ -14,7 +14,6 @@
 #include "Player.h"
 #include "State.h"
 
-const int gNumFrameResources = 3;
 
 class GameApp : public D3DApp
 {

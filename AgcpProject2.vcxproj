@@ -160,6 +160,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="State.cpp" />
+    <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AudioSImple.h">
@@ -180,6 +181,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="OBJ_Loader.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Singleton.h" />
     <ClInclude Include="State.h" />
   </ItemGroup>
   <ItemGroup>
