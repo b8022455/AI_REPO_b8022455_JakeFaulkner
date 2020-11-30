@@ -1,5 +1,6 @@
 #include "State.h"
 #include <assert.h>
+#include "GameApp.h"
 
 bool StateManager::IsValidState(const std::string stateName)
 {
@@ -7,6 +8,8 @@ bool StateManager::IsValidState(const std::string stateName)
 }
 void StateManager::Update(const GameTimer & gt)
 {
+	auto test = GameApp::Get().AspectRatio(); //todo remove. Example of accessing GameApp
+
 	if (IsValidState(mCurrentState))
 	{
 		mStates[mCurrentState]->Update(gt);
@@ -66,4 +69,11 @@ void StateManager::ChangeState(const std::string & name)
 	{
 		assert(false);
 	}
+}
+
+
+void StateB::DeleteThis()
+{
+	//auto moo = GameApp::Get().MainWnd();
+
 }

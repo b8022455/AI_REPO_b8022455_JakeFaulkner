@@ -15,6 +15,8 @@ using namespace DirectX::PackedVector;
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "D3D12.lib")
 
+const int gNumFrameResources = 3; //todo move to GC namespace in its own header
+
 bool GameApp::DEBUG = false;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
