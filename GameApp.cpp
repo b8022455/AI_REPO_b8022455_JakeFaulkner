@@ -355,26 +355,29 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 	mCombatController.Update(mAllRitems);		//Continues rotating the weapon if the player has attacked
 	mPlayer.UpdatePos(mAllRitems);
 
+	///Enemy Pos, Remove into Enemy class in future!!!
+	XMFLOAT3 enemyPos = XMFLOAT3(mAllRitems["Enemy"]->Instances.at(0).World._41, mAllRitems["Enemy"]->Instances.at(0).World._42, mAllRitems["Enemy"]->Instances.at(0).World._43);
+	
 	//Checks if weapon is colliding w/ example box
-	if (mCombatController.CheckCollision(mAllRitems["Enemy"]->Instances.at(0).World._41, mAllRitems["Enemy"]->Instances.at(0).World._42,
-		mAllRitems["Enemy"]->Instances.at(0).World._43))
+	if (mCombatController.CheckCollision(enemyPos.x, enemyPos.y, enemyPos.z))
 	{
 		mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 5;			//Visual representation for collision
 		enemyHealth -= 5;
-		mAllRitems["Enemy"]->Instances.at(0).World._41 += 5.0f;			///Pushes enemy back after being hit by sword, In future have enemy move back based on which way player is facing !!!
+		enemyPos.x += 5.0f;
+		mAllRitems["Enemy"]->Instances.at(0).World._41 = enemyPos.x;			///Pushes enemy back after being hit by sword, In future have enemy move back based on which way player is facing !!!
 	}
 
-	///Enemy Pos, Remove into Enemy class in future!!!
-	XMFLOAT3 enemyPos = XMFLOAT3(mAllRitems["Enemy"]->Instances.at(0).World._41, mAllRitems["Enemy"]->Instances.at(0).World._42, mAllRitems["Enemy"]->Instances.at(0).World._43);
 
 	//Interaction stuff
 	if (mCombatController.CheckCollision(mPlayer.GetPos(mAllRitems), enemyPos))			//Checks the distance between the player and the enemy objects
 	{
 		mPlayer.health -= 5;
-		XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation((mPlayer.GetPos(mAllRitems).x - 5.0f), 0.0f, 0.0f));
-		XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World);
-		transform = XMMatrixMultiply(current, transform);
-		XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
+		mAllRitems["Player"]->Instances.at(0).World._41 -= 5.0f;			//Current working method of giving player blowback, underneath doesn't work on negative values
+
+		//XMMATRIX transform = XMMatrixTranslation(mPlayer.GetPos(mAllRitems).x - 5.0f, 0.0f, 0.0f);
+		//XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World);
+		//transform *= current;
+		//XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
 		mCamera.Strafe(-5.0f * gt.DeltaTime());
 		mCamera.UpdateViewMatrix();
 	}
@@ -1080,7 +1083,7 @@ void GameApp::BuildRenderItems()
 		1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, 5.0f, 1.0f
+		10.0f, 1.0f, 5.0f, 1.0f
 	};
 	mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 3;
 
