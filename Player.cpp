@@ -26,48 +26,69 @@ XMFLOAT3 Player::GetPos(std::unordered_map<std::string, std::unique_ptr<RenderIt
 }
 
 
-void Player::Move(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems, const GameTimer& gt)
+void Player::MoveUp(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems, const GameTimer& gt) 
 {
   const float dt = gt.DeltaTime();
+  const float moveSpeed = 5.0f;
 
+  XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World); // ORIGINAL MOVEMENT
+  XMFLOAT4X4 test;
+  XMStoreFloat4x4(&test, current);
+  if (test._43 <= PLAYER_UPBOUND) {
+	  XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(0.0f, 0.0f, moveSpeed * dt));
+	  transform = XMMatrixMultiply(current, transform);
+	  XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
+  }
   // cant move diagonally, 2 key presses at once just does first key
   //TODO: make camera follow player
-  if (GetAsyncKeyState(VK_LEFT) & 0x8000)
-  {
-	// TODO: WORKING MOVEMENT TEST LOCATED HERE
-	XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(-5.0f * dt, 0.0f, 0.0f));
-	XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World);
-	transform = XMMatrixMultiply(current, transform);
-	XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
-  }
-
-  if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-  {
-	// TODO: WORKING MOVEMENT TEST LOCATED HERE
-	XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(5.0f * dt, 0.0f, 0.0f));
-	XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World);
-	transform = XMMatrixMultiply(current, transform);
-	XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
-  }
-
-
-  if (GetAsyncKeyState(VK_UP) & 0x8000)
-  {
-	// TODO: WORKING MOVEMENT TEST LOCATED HERE
-	XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(0.0f, 0.0f, 5.0f * dt));
-	XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World);
-	transform = XMMatrixMultiply(current, transform);
-	XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
-  }
-
-  if (GetAsyncKeyState(VK_DOWN) & 0x8000)
-  {
-	// TODO: WORKING MOVEMENT TEST LOCATED HERE
-	XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(0.0f, 0.0f, -5.0f * dt));
-	XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World);
-	transform = XMMatrixMultiply(current, transform);
-	XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
-  }
-
-
 }
+
+void Player::MoveDown(std::unordered_map<std::string, std::unique_ptr<RenderItem>>& mAllRitems, const GameTimer& gt)
+{
+	const float dt = gt.DeltaTime();
+	const float moveSpeed = 5.0f;
+
+	XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World); // ORIGINAL MOVEMENT
+	XMFLOAT4X4 test;
+	XMStoreFloat4x4(&test, current);
+
+	if (test._43 >= PLAYER_DOWNBOUND) {
+			XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(0.0f, 0.0f, -moveSpeed * dt));
+			transform = XMMatrixMultiply(current, transform);
+			XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
+	}
+}
+
+void Player::MoveLeft(std::unordered_map<std::string, std::unique_ptr<RenderItem>>& mAllRitems, const GameTimer& gt)
+{
+	const float dt = gt.DeltaTime();
+	const float moveSpeed = 5.0f;
+
+	XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World); // ORIGINAL MOVEMENT
+	XMFLOAT4X4 test;
+	XMStoreFloat4x4(&test, current);
+
+	if (test._41 >= PLAYER_LEFTBOUND) {
+		XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(-moveSpeed * dt, 0.0f, 0.0f));
+		transform = XMMatrixMultiply(current, transform);
+		XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
+	}
+}
+
+void Player::MoveRight(std::unordered_map<std::string, std::unique_ptr<RenderItem>>& mAllRitems, const GameTimer& gt)
+{
+	const float dt = gt.DeltaTime();
+	const float moveSpeed = 5.0f;
+
+	XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World); // ORIGINAL MOVEMENT
+	XMFLOAT4X4 test;
+	XMStoreFloat4x4(&test, current);
+
+	if (test._41 <= PLAYER_RIGHTBOUND) {
+		XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(moveSpeed * dt, 0.0f, 0.0f));
+		transform = XMMatrixMultiply(current, transform);
+		XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
+	}
+}
+
+

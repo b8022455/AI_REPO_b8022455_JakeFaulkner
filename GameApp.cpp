@@ -15,6 +15,8 @@ using namespace DirectX::PackedVector;
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "D3D12.lib")
 
+bool GameApp::DEBUG = false;
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 	PSTR cmdLine, int showCmd)
 {
@@ -269,7 +271,7 @@ void GameApp::OnMouseUp(WPARAM btnState, int x, int y)
 
 void GameApp::OnMouseMove(WPARAM btnState, int x, int y)
 {
-	if ((btnState & MK_LBUTTON) != 0)
+	if (((btnState & MK_LBUTTON) != 0) && DEBUG != false)
 	{
 		// Make each pixel correspond to a quarter of a degree.
 		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - mLastMousePos.x));
@@ -290,17 +292,24 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	float moveSpeed = 5.0f;
 	float zoomSpeed = 20.0f;
 
-	if (GetAsyncKeyState(VK_UP) & 0x8000)
-		mCamera.Elevate((moveSpeed + mPlayer.GetPos(mAllRitems).z) * dt);
+	bool playerMoved = false;
 
-	if (GetAsyncKeyState(VK_DOWN) & 0x8000)
-		mCamera.Elevate(-moveSpeed * dt);
+	// CAMERA MOVEMENT
+	if (GetAsyncKeyState(/*VK_UP*/'W') & 0x8000) // implement boundaries
+		if (mCamera.GetPosition3f().z <= UPBOUND)
+			mCamera.Elevate(moveSpeed * dt);
 
-	if (GetAsyncKeyState(VK_LEFT) & 0x8000)
-		mCamera.Strafe(-moveSpeed * dt);
+	if (GetAsyncKeyState(/*VK_DOWN*/'S') & 0x8000)
+		if (mCamera.GetPosition3f().z >= DOWNBOUND)
+			mCamera.Elevate(-moveSpeed * dt);
 
-	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
-		mCamera.Strafe(moveSpeed * dt);
+	if (GetAsyncKeyState(/*VK_LEFT*/'A') & 0x8000)
+		if (mCamera.GetPosition3f().x >= LEFTBOUND)
+			mCamera.Strafe(-moveSpeed * dt);
+
+	if (GetAsyncKeyState(/*VK_RIGHT*/'D') & 0x8000)
+		if (mCamera.GetPosition3f().x <= RIGHTBOUND)
+			mCamera.Strafe(moveSpeed * dt);
 
 	if (GetAsyncKeyState('E') & 0x8000)
 		mCamera.Walk(zoomSpeed * dt);
@@ -308,23 +317,39 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	if (GetAsyncKeyState('Q') & 0x8000)
 		mCamera.Walk(-zoomSpeed * dt);
 
-	if (GetAsyncKeyState('P') & 0x8000)
-		mCamera.SetPosition(0.0f, 50.0f, 0.0f);
+	if (GetAsyncKeyState('P') & 0x8000) // RESETS CAMERA TO ABOVE PLAYER
+		mCamera.SetPosition(mPlayer.GetPos(mAllRitems).x, mCamera.GetPosition3f().y, mPlayer.GetPos(mAllRitems).z);
+
+	// PLAYER MOVEMENT
+	if (GetAsyncKeyState(VK_UP/*W*/) & 0x8000) { // Player movement
+		 //retool for camera
+		mPlayer.MoveUp(mAllRitems, gt);
+		mCamera.SetPosition(mPlayer.GetPos(mAllRitems).x, mCamera.GetPosition3f().y, mPlayer.GetPos(mAllRitems).z);
+	}
+
+	if (GetAsyncKeyState(VK_DOWN/*S*/) & 0x8000)
+	{
+		mPlayer.MoveDown(mAllRitems, gt);
+		mCamera.SetPosition(mPlayer.GetPos(mAllRitems).x, mCamera.GetPosition3f().y, mPlayer.GetPos(mAllRitems).z);
+	}
+
+	if (GetAsyncKeyState(VK_LEFT/*A*/) & 0x8000)
+	{
+		mPlayer.MoveLeft(mAllRitems, gt);
+		mCamera.SetPosition(mPlayer.GetPos(mAllRitems).x, mCamera.GetPosition3f().y, mPlayer.GetPos(mAllRitems).z);
+	}
+
+	if (GetAsyncKeyState(VK_RIGHT/*D*/) & 0x8000)
+	{
+		mPlayer.MoveDown(mAllRitems, gt);
+		mCamera.SetPosition(mPlayer.GetPos(mAllRitems).x, mCamera.GetPosition3f().y, mPlayer.GetPos(mAllRitems).z);
+	}
 
 	if (GetAsyncKeyState('1') & 0x8000)
 		mFrustumCullingEnabled = true;
 
 	if (GetAsyncKeyState('2') & 0x8000)
 		mFrustumCullingEnabled = false;
-
-	if (GetAsyncKeyState('4') & 0x8000)
-	{
-		// TODO: WORKING MOVEMENT TEST LOCATED HERE
-		XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(5.0f * dt, 0.0f, 0.0f));
-		XMMATRIX current = XMLoadFloat4x4(&mAllRitems.at(0)->Instances.at(0).World);
-		transform = XMMatrixMultiply(current, transform);
-		XMStoreFloat4x4(&mAllRitems.at(0)->Instances.at(0).World, transform);
-	}
 
 	//Checks input when attacking
 	if (GetAsyncKeyState('V') & 0x8000)		///Change key in future
@@ -336,9 +361,6 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	if (GetAsyncKeyState('X') & 0x08000)
 		mStateManager.ChangeState("bar");
 
-	mCamera.SetPosition(mPlayer.GetPos(mAllRitems).x, mCamera.GetPosition3f().y, mPlayer.GetPos(mAllRitems).z);
-
-	mPlayer.Move(mAllRitems, gt);
 	mCamera.UpdateViewMatrix();
 }
 
