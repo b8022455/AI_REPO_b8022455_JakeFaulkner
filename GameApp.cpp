@@ -2,12 +2,11 @@
 // InstancingAndCullingApp.cpp by Frank Luna (C) 2015 All Rights Reserved.
 //***************************************************************************************
 
-#include "GameApp.h"
-
 #include <xaudio2.h>
+#include <functional>
+#include "GameApp.h"
 #include "SimpleMath.h"
 #include "OBJ_Loader.h"
-#include <functional>
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -42,13 +41,6 @@ bool GameApp::Initialize()
 	if (!D3DApp::Initialize())
 		return false;
 
-
-	mStateManager.Init();
-	mStateManager.AddState("foo", std::make_unique<StateA>());
-	mStateManager.AddState("bar", std::make_unique<StateB>());
-
-	mStateManager.ChangeState("bar");
-	//mStateManager.RemoveState("foo");
 
 
 	// Reset the command list to prep for initialization commands.
@@ -92,8 +84,6 @@ bool GameApp::Initialize()
 		mGameAudio.SetEngineVolume("sfx", 0.005f);
 	}
 
-	mCombatController.Initialize();
-	mPlayer.Initialize();
 
 	
 
@@ -113,6 +103,12 @@ bool GameApp::Initialize()
 	BuildFrameResources();
 	BuildPSOs();
 
+	mCombatController.Initialize();
+	mPlayer.Initialize("Player");
+	
+	mStateManager.Init(); 
+
+
 	// Execute the initialization commands.
 	ThrowIfFailed(mCommandList->Close());
 	ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
@@ -122,6 +118,27 @@ bool GameApp::Initialize()
 	FlushCommandQueue();
 
 	return true;
+}
+
+InstanceData* GameApp::AddRenderItemInstance(const std::string & renderItemName)
+{
+	//resize vector + 1... make sure vector has reserved size so its not reallocated
+	//
+
+	//
+	if (mAllRitems.count(renderItemName) == 1)
+	{
+		mAllRitems[renderItemName]->Instances.resize(mAllRitems[renderItemName]->Instances.size() + 1);
+
+		return &mAllRitems[renderItemName]->Instances.back();
+
+	}
+	else
+	{
+		OutputDebugStringA("renderItemName doesnt exist");
+		assert(false);
+		return nullptr;
+	}
 }
 
 void GameApp::OnResize()
@@ -329,7 +346,7 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 
 	if (GetAsyncKeyState(VK_RIGHT/*D*/) & 0x8000)
 	{
-		mPlayer.MoveDown(mAllRitems, gt);
+		mPlayer.MoveRight(mAllRitems, gt);
 		mCamera.SetPosition(mPlayer.GetPos(mAllRitems).x, mCamera.GetPosition3f().y, mPlayer.GetPos(mAllRitems).z);
 	}
 
@@ -343,11 +360,11 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 	if (GetAsyncKeyState('V') & 0x8000)		///Change key in future
 		mCombatController.PlayerAttack(mAllRitems);
 
-	if (GetAsyncKeyState('Z') & 0x08000)
-		mStateManager.ChangeState("foo");
-	
-	if (GetAsyncKeyState('X') & 0x08000)
-		mStateManager.ChangeState("bar");
+	//if (GetAsyncKeyState('Z') & 0x08000)
+	//	mStateManager.ChangeState("foo");
+	//
+	//if (GetAsyncKeyState('X') & 0x08000)
+	//	mStateManager.ChangeState("bar");
 
 	mCamera.UpdateViewMatrix();
 }
@@ -1079,8 +1096,10 @@ void GameApp::BuildRenderItems()
 	playerRitem->IndexCount = playerRitem->Geo->DrawArgs["tempPlayer"].IndexCount;//player
 	playerRitem->StartIndexLocation = playerRitem->Geo->DrawArgs["tempPlayer"].StartIndexLocation;//player
 	playerRitem->BaseVertexLocation = playerRitem->Geo->DrawArgs["tempPlayer"].BaseVertexLocation;//player
-	playerRitem->Instances.resize(1);
-	playerRitem->Instances.front().MaterialIndex = 2;
+	//playerRitem->Instances.reserve(10);
+
+	//playerRitem->Instances.resize(1);
+	//playerRitem->Instances.front().MaterialIndex = 2;
 
 	auto enemyRitem = std::make_unique<RenderItem>();
 	enemyRitem->World = MathHelper::Identity4x4();
@@ -1093,6 +1112,7 @@ void GameApp::BuildRenderItems()
 	enemyRitem->BaseVertexLocation = enemyRitem->Geo->DrawArgs["tempPlayer"].BaseVertexLocation;
 	enemyRitem->Instances.resize(1);
 	enemyRitem->Instances.front().MaterialIndex = 3;
+
 	mAllRitems["Tiles"] = std::move(boxRitem);
 	mAllRitems["Weapon"] = std::move(swordRitem);
 	mAllRitems["Player"] = std::move(playerRitem);

@@ -161,6 +161,7 @@
     <ClCompile Include="GameApp.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="State.cpp" />
     <ClCompile Include="WinMain.cpp" />
     <ClCompile Include="SpriteManager.cpp" />
@@ -185,12 +186,14 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="OBJ_Loader.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayState.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="SpriteManager.h" />
     <ClInclude Include="TextConsole.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="Shaders\Default.hlsl">
       <FileType>Document</FileType>
     </None>

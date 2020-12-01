@@ -17,7 +17,7 @@
 #include "State.h"
 
 
-class GameApp : public D3DApp
+class GameApp : public D3DApp, public Singleton<GameApp>
 {
 public:
 	GameApp(HINSTANCE hInstance);
@@ -37,6 +37,10 @@ public:
 
 	const float UPBOUND = 15.0f;
 	const float DOWNBOUND = -15.0f;
+
+	// Access to instance data from states and gameobjects
+	InstanceData* AddRenderItemInstance(const std::string & renderItemName);
+	GameApp& GetGameApp() { return *this; }
 
 private:
 	virtual void OnResize()override;
@@ -68,6 +72,7 @@ private:
 	void BuildMaterials();
 	void BuildRenderItems();
 	void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems);
+
 
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GetStaticSamplers();
 

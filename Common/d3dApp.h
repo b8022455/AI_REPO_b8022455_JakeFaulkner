@@ -19,7 +19,7 @@
 #pragma comment(lib, "D3D12.lib")
 #pragma comment(lib, "dxgi.lib")
 
-class D3DApp : public Singleton<D3DApp>
+class D3DApp //: public Singleton<D3DApp>
 {
 protected:
 

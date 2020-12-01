@@ -1,5 +1,6 @@
 #pragma once
-
+#include <deque>
+#include <list>
 // Lightweight structure stores parameters to draw a shape.  This will
 // vary from app-to-app.
 struct RenderItem
@@ -30,7 +31,7 @@ struct RenderItem
 	D3D12_PRIMITIVE_TOPOLOGY PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	DirectX::BoundingBox Bounds;
-	std::vector<InstanceData> Instances;
+	std::deque<InstanceData> Instances;
 
 	// DrawIndexedInstanced parameters.
 	UINT IndexCount = 0;

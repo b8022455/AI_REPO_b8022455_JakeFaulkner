@@ -5,15 +5,13 @@
 #include "FrameResource.h"
 #include "RenderItem.h"
 #include "Common/Camera.h"
+#include "GameObject.h"
 
 using namespace DirectX;
 
-class Player
+class Player : public GameObject
 {
 public:
-  Player() {};	//Default Constructor
-
-  void Initialize();
   void MoveUp(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems, const GameTimer& gt);
   void MoveDown(std::unordered_map<std::string, std::unique_ptr<RenderItem>>& mAllRitems, const GameTimer& gt);
   void MoveLeft(std::unordered_map<std::string, std::unique_ptr<RenderItem>>& mAllRitems, const GameTimer& gt);

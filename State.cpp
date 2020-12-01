@@ -1,10 +1,18 @@
 #include "State.h"
 #include <assert.h>
 #include "GameApp.h"
+#include "PlayState.h"
 
 bool StateManager::IsValidState(const std::string stateName)
 {
 	return mStates.count(stateName) == 1;
+}
+void StateManager::Init()
+{
+	AddState("foo", std::make_unique<PlayState>());
+
+	std::for_each(mStates.begin(), mStates.end(), [](auto& s) { s.second->Initialize(); });
+
 }
 void StateManager::Update(const GameTimer & gt)
 {
@@ -71,9 +79,3 @@ void StateManager::ChangeState(const std::string & name)
 	}
 }
 
-
-void StateB::DeleteThis()
-{
-	//auto moo = GameApp::Get().MainWnd();
-
-}

@@ -5,6 +5,7 @@
 #include <memory>
 #include <map>
 #include <string>
+#include "GameObject.h"
 
 class GameTimer;
 
@@ -12,7 +13,7 @@ class GameTimer;
 class State
 {
 public:
-	virtual void Init() = 0;
+	virtual void Initialize() = 0;
 	virtual void Update(const GameTimer& gt) = 0;
 	virtual void Draw(const GameTimer& gt) = 0;
 };
@@ -22,7 +23,7 @@ class StateA : public State
 {
 	int a = 7;
 public:
-	virtual void Init() override {};
+	virtual void Initialize() override {};
 	virtual void Update(const GameTimer& gt) override {};
 	virtual void Draw(const GameTimer& gt) override {};
 };
@@ -36,7 +37,8 @@ class StateManager
 	// Validate state exists
 	bool IsValidState(const std::string stateName);
 public:
-	void Init() {};
+	// Adds the game states
+	void Init() ;
 	void Update(const GameTimer& gt);
 	void Draw(const GameTimer& gt);
 
@@ -53,9 +55,7 @@ class StateB : public State
 {
 	char b = 7;
 public:
-	virtual void Init() override {};
+	virtual void Initialize() override ;
 	virtual void Update(const GameTimer& gt) override {};
 	virtual void Draw(const GameTimer& gt) override {};
-
-	void DeleteThis();
 };
