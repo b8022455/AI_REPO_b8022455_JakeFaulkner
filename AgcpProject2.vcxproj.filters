@@ -66,6 +66,12 @@
     <ClCompile Include="CombatController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SpriteManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextConsole.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -77,12 +83,6 @@
     </ClCompile>
     <ClCompile Include="WinMain.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SpriteManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TextConsole.cpp">
-      <Filter>Source Files\Utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
