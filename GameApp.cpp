@@ -5,6 +5,7 @@
 #include "GameApp.h"
 
 #include <xaudio2.h>
+#include "SimpleMath.h"
 #include "OBJ_Loader.h"
 #include <functional>
 
@@ -109,10 +110,13 @@ bool GameApp::Initialize()
 		mGameAudio.Play("ring9", nullptr, true);
 		// Is that better?
 		mGameAudio.SetEngineVolume("music", 0.005f);
+		mGameAudio.SetEngineVolume("sfx", 0.005f);
 	}
 
 	mCombatController.Initialize();
 	mPlayer.Initialize();
+
+	
 
 	LoadTextures();
 	BuildRootSignature();
@@ -202,7 +206,7 @@ void GameApp::Draw(const GameTimer& gt)
 
 	mCommandList->RSSetViewports(1, &mScreenViewport);
 	mCommandList->RSSetScissorRects(1, &mScissorRect);
-
+	
 	// Indicate a state transition on the resource usage.
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
 		D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
@@ -214,8 +218,10 @@ void GameApp::Draw(const GameTimer& gt)
 	// Specify the buffers we are going to render to.
 	mCommandList->OMSetRenderTargets(1, &CurrentBackBufferView(), true, &DepthStencilView());
 
+
 	ID3D12DescriptorHeap* descriptorHeaps[] = { mSrvDescriptorHeap.Get() };
 	mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+
 
 	mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 
@@ -231,6 +237,7 @@ void GameApp::Draw(const GameTimer& gt)
 	mCommandList->SetGraphicsRootDescriptorTable(3, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
 	DrawRenderItems(mCommandList.Get(), mOpaqueRitems);
+	mSprites.Draw(mCommandList.Get(), mScreenViewport);
 
 	mStateManager.Draw(gt);
 
@@ -240,11 +247,11 @@ void GameApp::Draw(const GameTimer& gt)
 
 	// Done recording commands.
 	ThrowIfFailed(mCommandList->Close());
-
 	// Add the command list to the queue for execution.
 	ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
 	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
+	//mSprites.DrawEnd();
 	// Swap the back and front buffers
 	ThrowIfFailed(mSwapChain->Present(0, 0));
 	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
@@ -553,7 +560,7 @@ void GameApp::LoadTextures()
 void GameApp::BuildRootSignature()
 {
 	CD3DX12_DESCRIPTOR_RANGE texTable;
-	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 7, 0, 0);
+	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 8, 0, 0);
 
 	// Root parameter can be a table, root descriptor or root constants.
 	CD3DX12_ROOT_PARAMETER slotRootParameter[4];
@@ -596,7 +603,7 @@ void GameApp::BuildDescriptorHeaps()
 	// Create the SRV heap.
 	//
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-	srvHeapDesc.NumDescriptors = 7;
+	srvHeapDesc.NumDescriptors = 8;
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&mSrvDescriptorHeap)));
@@ -604,7 +611,8 @@ void GameApp::BuildDescriptorHeaps()
 	//
 	// Fill out the heap with actual descriptors.
 	//
-	CD3DX12_CPU_DESCRIPTOR_HANDLE hDescriptor(mSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	CD3DX12_CPU_DESCRIPTOR_HANDLE hCpuDescriptor(mSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+	CD3DX12_GPU_DESCRIPTOR_HANDLE hGpuDescriptor(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
 	auto bricksTex = mTextures["bricksTex"]->Resource;
 	auto stoneTex = mTextures["stoneTex"]->Resource;
@@ -621,49 +629,64 @@ void GameApp::BuildDescriptorHeaps()
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.MipLevels = bricksTex->GetDesc().MipLevels;
 	srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
-	md3dDevice->CreateShaderResourceView(bricksTex.Get(), &srvDesc, hDescriptor);
+	md3dDevice->CreateShaderResourceView(bricksTex.Get(), &srvDesc, hCpuDescriptor);
 
 	// next descriptor
-	hDescriptor.Offset(1, mCbvSrvDescriptorSize);
-
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	
 	srvDesc.Format = stoneTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = stoneTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(stoneTex.Get(), &srvDesc, hDescriptor);
+	md3dDevice->CreateShaderResourceView(stoneTex.Get(), &srvDesc, hCpuDescriptor);
 
 	// next descriptor
-	hDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
 	srvDesc.Format = tileTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = tileTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(tileTex.Get(), &srvDesc, hDescriptor);
+	md3dDevice->CreateShaderResourceView(tileTex.Get(), &srvDesc, hCpuDescriptor);
 
 	// next descriptor
-	hDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
 	srvDesc.Format = crateTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = crateTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(crateTex.Get(), &srvDesc, hDescriptor);
+	md3dDevice->CreateShaderResourceView(crateTex.Get(), &srvDesc, hCpuDescriptor);
 
 	// next descriptor
-	hDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
 	srvDesc.Format = iceTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = iceTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(iceTex.Get(), &srvDesc, hDescriptor);
+	md3dDevice->CreateShaderResourceView(iceTex.Get(), &srvDesc, hCpuDescriptor);
 
 	// next descriptor
-	hDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
 	srvDesc.Format = grassTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = grassTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(grassTex.Get(), &srvDesc, hDescriptor);
+	md3dDevice->CreateShaderResourceView(grassTex.Get(), &srvDesc, hCpuDescriptor);
 
 	// next descriptor
-	hDescriptor.Offset(1, mCbvSrvDescriptorSize);
-
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	
 	srvDesc.Format = defaultTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = defaultTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(defaultTex.Get(), &srvDesc, hDescriptor);
+	md3dDevice->CreateShaderResourceView(defaultTex.Get(), &srvDesc, hCpuDescriptor);
+	md3dDevice->CreateShaderResourceView(defaultTex.Get(), &srvDesc, hCpuDescriptor);
+	
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+
+	{
+		mSprites.Init(md3dDevice.Get(), mCommandQueue.Get(), mCbvSrvDescriptorSize, mBackBufferFormat, mDepthStencilFormat, hCpuDescriptor,hGpuDescriptor);
+	}
+
 }
 
 void GameApp::BuildShadersAndInputLayout()

@@ -11,6 +11,8 @@
 #include "AudioSImple.h"
 #include "RenderItem.h"
 #include "CombatController.h"
+#include "SpriteManager.h"
+#include "TextConsole.h"
 #include "Player.h"
 #include "State.h"
 
@@ -120,5 +122,9 @@ private:
 
 	///Will be moved into its own class, just left here for ease of testing !!!Move in future
 	int enemyHealth = 100;
+
+	//Viewport Sprites
+	SpriteManager mSprites;
+	//std::unique_ptr<DX::TextConsole> mConsole;
 
 };
