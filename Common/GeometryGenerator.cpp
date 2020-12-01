@@ -193,6 +193,49 @@ GeometryGenerator::MeshData GeometryGenerator::CreateSword(float width, float he
 	return meshData;
 }
 
+GeometryGenerator::MeshData GeometryGenerator::CreateTile(float width, float height, float depth, uint32 numSubdivisions)
+{
+	MeshData meshData;
+
+	//
+	// Create the vertices.
+	//
+
+	Vertex v[6];
+
+	float w2 = 0.5f * width;
+	float h2 = 0.1f * height;
+	float d2 = 0.1f * depth;
+
+	// Fill in the top face vertex data.
+	v[0] = Vertex(-w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+	v[1] = Vertex(-w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	v[2] = Vertex(+w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+	v[3] = Vertex(+w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+
+	meshData.Vertices.assign(&v[0], &v[4]);
+
+	//
+	// Create the indices.
+	//
+
+	uint32 i[6];
+
+	// Fill in the top face index data
+	i[0] = 0; i[1] = 1; i[2] = 2;
+	i[3] = 0; i[4] = 2; i[5] = 3;
+
+	meshData.Indices32.assign(&i[0], &i[6]);
+
+	// Put a cap on the number of subdivisions.
+	numSubdivisions = std::min<uint32>(numSubdivisions, 6u);
+
+	for (uint32 i = 0; i < numSubdivisions; ++i)
+		Subdivide(meshData);
+
+	return meshData;
+}
+
 
 GeometryGenerator::MeshData GeometryGenerator::CreatePlayer(float width, float height, float depth, uint32 numSubdivisions)
 {

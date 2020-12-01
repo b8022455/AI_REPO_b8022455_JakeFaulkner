@@ -82,6 +82,8 @@ public:
 
 	MeshData CreateSword(float width, float height, float depth, uint32 numSubdivisions);
 
+	MeshData CreateTile(float width, float height, float depth, uint32 numSubdivisions);
+
 	MeshData CreatePlayer(float width, float height, float depth, uint32 numSubdivisions);
 
 	///<summary>

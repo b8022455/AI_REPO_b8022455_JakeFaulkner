@@ -105,7 +105,7 @@ bool GameApp::Initialize()
 	BuildObjGeometry("Data/Models/tempSword.obj", "tempSwordGeo", "tempSword");// loads obj
 	BuildObjGeometry("Data/Models/tempPlayer.obj", "tempPlayerGeo", "tempPlayer");
 	BuildObjGeometry("Data/Models/tempEnemy.obj", "tempEnemyGeo", "tempEnemy");
-	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" );
+	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" ); //quad rather than cube
 	BuildSwordGeometry();
 	BuildPlayerGeometry();
 	BuildMaterials();
@@ -820,6 +820,55 @@ void GameApp::BuildObjGeometry(const std::string& filepath, const std::string& m
 
 }
 
+void GameApp::BuildTileGeometry()
+{
+	GeometryGenerator geoGen;
+	GeometryGenerator::MeshData tile = geoGen.CreateTile(1.0f, 1.0f, 1.0f, 1.0f);
+
+	std::vector<Vertex> vertices(tile.Vertices.size());
+	for (size_t i = 0; i < tile.Vertices.size(); ++i)
+	{
+		auto& p = tile.Vertices[i].Position;
+		vertices[i].Pos = p;
+		vertices[i].Normal = tile.Vertices[i].Normal;
+		vertices[i].TexC = tile.Vertices[i].TexC;
+	}
+
+	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
+
+	std::vector<std::uint16_t> indices = tile.GetIndices16();
+	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
+
+	auto geo = std::make_unique<MeshGeometry>();
+	geo->Name = "tileGeo";
+
+	ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
+	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
+
+	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
+	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
+
+	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+		mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
+
+	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+		mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
+
+	geo->VertexByteStride = sizeof(Vertex);
+	geo->VertexBufferByteSize = vbByteSize;
+	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
+	geo->IndexBufferByteSize = ibByteSize;
+
+	SubmeshGeometry submesh;
+	submesh.IndexCount = (UINT)indices.size();
+	submesh.StartIndexLocation = 0;
+	submesh.BaseVertexLocation = 0;
+
+	geo->DrawArgs["tile"] = submesh;
+
+	mGeometries[geo->Name] = std::move(geo);
+}
+
 void GameApp::BuildSwordGeometry()
 {
 	GeometryGenerator geoGen;
@@ -1001,7 +1050,6 @@ void GameApp::BuildRenderItems()
 	boxRitem->World = MathHelper::Identity4x4();
 	boxRitem->TexTransform = MathHelper::Identity4x4();
 	boxRitem->ObjCBIndex = 0;
-	boxRitem->Mat = mMaterials["tile0"].get();
 	boxRitem->Geo = mGeometries["floorTileGeo"].get();
 	boxRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	boxRitem->InstanceCount = 0;
