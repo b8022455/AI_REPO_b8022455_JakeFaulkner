@@ -20,6 +20,9 @@
 
 void SpriteManager::Init(ID3D12Device * device, ID3D12CommandQueue* commandQueue, UINT srvDescSize,DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthStencilFormat, CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle)
 {
+
+	graphicsMemory = std::make_unique<DirectX::GraphicsMemory>(device);
+
 	DirectX::ResourceUploadBatch resourceUpload(device);
 
 	resourceUpload.Begin();

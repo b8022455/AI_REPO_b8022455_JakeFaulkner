@@ -10,7 +10,7 @@
 #include <wrl.h>
 #include "TextConsole.h"
 #include "Common/d3dx12.h"
-
+#include <GraphicsMemory.h>
 
 // Handles fonts and viewport sprites
 class SpriteManager
@@ -19,6 +19,10 @@ class SpriteManager
 	std::array<std::unique_ptr<DirectX::SpriteFont>, FONT_SIZE> mSpriteFont;
 	//Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mSpriteSrvDescriptorHeap = nullptr;
 	//std::unique_ptr<DirectX::DescriptorHeap> mDescriptorHeap = nullptr;
+
+
+	std::unique_ptr<DirectX::GraphicsMemory> graphicsMemory;
+
 
 public:
 	void Init2();

@@ -121,7 +121,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="Shaders\Default.hlsl">
       <Filter>Resource Files</Filter>
     </None>
