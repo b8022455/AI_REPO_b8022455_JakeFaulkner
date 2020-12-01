@@ -329,7 +329,7 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 
 	if (GetAsyncKeyState(VK_RIGHT/*D*/) & 0x8000)
 	{
-		mPlayer.MoveDown(mAllRitems, gt);
+		mPlayer.MoveRight(mAllRitems, gt);
 		mCamera.SetPosition(mPlayer.GetPos(mAllRitems).x, mCamera.GetPosition3f().y, mPlayer.GetPos(mAllRitems).z);
 	}
 
@@ -381,10 +381,8 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 	if (mCombatController.CheckCollision(mPlayer.GetPos(mAllRitems), enemyPos))			//Checks the distance between the player and the enemy objects
 	{
 	  mPlayer.health -= 5;
-	  XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation((mPlayer.GetPos(mAllRitems).x - 5.0f), 0.0f, 0.0f));
-	  XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World);
-	  transform = XMMatrixMultiply(current, transform);
-	  XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
+	  mAllRitems["Player"]->Instances.at(0).World._41 -= 5.0f;		///Find way to connect this to player class !!!
+
 	  mCamera.Strafe(-5.0f * gt.DeltaTime());
 	  mCamera.UpdateViewMatrix();
 	}
