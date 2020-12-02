@@ -67,15 +67,6 @@ void Player::MoveRight(std::unordered_map<std::string, std::unique_ptr<RenderIte
 		mpInstance->World._41 += moveSpeed * dt;
 	}
 
-	//XMMATRIX current = XMLoadFloat4x4(&mAllRitems["Player"]->Instances.at(0).World); // ORIGINAL MOVEMENT
-	//XMFLOAT4X4 test;
-	//XMStoreFloat4x4(&test, current);
-
-	//if (test._41 <= PLAYER_RIGHTBOUND) {
-	//	XMMATRIX transform = XMMatrixMultiply(XMMatrixIdentity(), XMMatrixTranslation(moveSpeed * dt, 0.0f, 0.0f));
-	//	transform = XMMatrixMultiply(current, transform);
-	//	XMStoreFloat4x4(&mAllRitems["Player"]->Instances.at(0).World, transform);
-	//}
 }
 
 

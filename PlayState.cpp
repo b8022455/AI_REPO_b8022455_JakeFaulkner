@@ -2,9 +2,8 @@
 
 void PlayState::Initialize()
 {
-	mGameObject.Initialize("Player");
-
-
+	mPlayer.Initialize("Player"); // todo adapt GameApp mPlayer to this state
+	mGameObject.Initialize("Weapon");
 
 }
 
