@@ -11,6 +11,8 @@ void StateManager::Init()
 {
 	AddState("foo", std::make_unique<PlayState>());
 
+
+	
 	std::for_each(mStates.begin(), mStates.end(), [](auto& s) { s.second->Initialize(); });
 
 }

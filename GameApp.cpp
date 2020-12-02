@@ -104,7 +104,7 @@ bool GameApp::Initialize()
 	BuildPSOs();
 
 	mCombatController.Initialize();
-	mPlayer.Initialize("Player");
+	//mPlayer.Initialize("Player");
 	
 	mStateManager.Init(); 
 
@@ -122,14 +122,12 @@ bool GameApp::Initialize()
 
 InstanceData* GameApp::AddRenderItemInstance(const std::string & renderItemName)
 {
-	//resize vector + 1... make sure vector has reserved size so its not reallocated
-	//
-
-	//
 	if (mAllRitems.count(renderItemName) == 1)
 	{
+		// Had an issue with pushback so using resize. 
+		//Todo need to test large number of instances since using a deque. 
 		mAllRitems[renderItemName]->Instances.resize(mAllRitems[renderItemName]->Instances.size() + 1);
-
+		++mAllRitems[renderItemName]->InstanceCount;
 		return &mAllRitems[renderItemName]->Instances.back();
 
 	}
