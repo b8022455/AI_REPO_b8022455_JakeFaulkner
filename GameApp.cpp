@@ -838,7 +838,7 @@ void GameApp::BuildObjGeometry(const std::string& filepath, const std::string& m
 void GameApp::BuildTileGeometry()
 {
 	GeometryGenerator geoGen;
-	GeometryGenerator::MeshData tile = geoGen.CreateTile(1.0f, 1.0f, 1.0f, 1.0f);
+	GeometryGenerator::MeshData tile = geoGen.CreateTile(1.0f, 1.0f, 1.0f, 1);
 
 	std::vector<Vertex> vertices(tile.Vertices.size());
 	for (size_t i = 0; i < tile.Vertices.size(); ++i)
@@ -1162,7 +1162,7 @@ void GameApp::BuildRenderItems()
 	mAllRitems["Player"] = std::move(playerRitem);
 	mAllRitems["Enemy"] = std::move(enemyRitem);
 
-	//Uncomment this if testing weapon collision
+	//Uncomment this if testing weapon collision, will be removed once the function in enemy class is available in GameApp
 	#pragma region Weapon Collision Checking
 
 	mAllRitems["Enemy"]->Instances.at(0).World = 
