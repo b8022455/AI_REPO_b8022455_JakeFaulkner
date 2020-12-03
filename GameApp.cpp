@@ -50,12 +50,8 @@ bool GameApp::Initialize()
 	// so we have to query this information.
 	mCbvSrvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-	//mCamera.SetPosition(0.0f, 2.0f, -15.0f);
 
-	mCamera.SetPosition(0.0f, 50.0f, 0.0f);
-
-	float dy = XMConvertToRadians(90.0f);
-	mCamera.Pitch(dy); // SETS CAMERA TO FACE DOWN
+	
 
 	//Audio setup
 	{
@@ -103,8 +99,6 @@ bool GameApp::Initialize()
 	BuildFrameResources();
 	BuildPSOs();
 
-	mCombatController.Initialize();
-	mPlayer.Initialize("Player");
 	
 	mStateManager.Init(); 
 
@@ -141,15 +135,19 @@ InstanceData* GameApp::AddRenderItemInstance(const std::string & renderItemName)
 
 void GameApp::OnResize()
 {
+	assert(mpActiveCamera);
 	D3DApp::OnResize();
 
-	mCamera.SetLens(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
+	//todo 
+	mpActiveCamera->SetLens(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
 
-	BoundingFrustum::CreateFromMatrix(mCamFrustum, mCamera.GetProj());
+	BoundingFrustum::CreateFromMatrix(mCamFrustum, mpActiveCamera->GetProj());
 }
 
 void GameApp::Update(const GameTimer& gt)
 {
+	assert(mpActiveCamera);
+
 	OnKeyboardInput(gt);
 
 	// Cycle through the circular frame resource array.
@@ -173,7 +171,7 @@ void GameApp::Update(const GameTimer& gt)
 
 	mStateManager.Update(gt);
 
-	mGameAudio.Update(gt, mCamera.GetPosition3f(), mCamera.GetLook3f(), mCamera.GetUp3f());
+	mGameAudio.Update(gt, mpActiveCamera->GetPosition3f(), mpActiveCamera->GetLook3f(), mpActiveCamera->GetUp3f());
 	//Music fades every 6 seconds
 	if (mAudioTimer.HasTimeElapsed(gt.DeltaTime(), 6.0f))
 	{
@@ -233,7 +231,7 @@ void GameApp::Draw(const GameTimer& gt)
 	DrawRenderItems(mCommandList.Get(), mOpaqueRitems);
 	mSprites.Draw(mCommandList.Get(), mScreenViewport);
 
-	mStateManager.Draw(gt);
+	//mStateManager.Draw(gt);
 
 	// Indicate a state transition on the resource usage.
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
@@ -270,19 +268,15 @@ void GameApp::OnMouseDown(WPARAM btnState, int x, int y)
 void GameApp::OnMouseUp(WPARAM btnState, int x, int y)
 {
 	ReleaseCapture();
+
+	mStateManager.OnMouseUp(btnState, x, y);
 }
 
 void GameApp::OnMouseMove(WPARAM btnState, int x, int y)
 {
-	if (((btnState & MK_LBUTTON) != 0) && DEBUG != false)
-	{
-		// Make each pixel correspond to a quarter of a degree.
-		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - mLastMousePos.x));
-		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - mLastMousePos.y));
+	assert(mpActiveCamera);
 
-		mCamera.Pitch(dy);
-		mCamera.RotateY(dx);
-	}
+	mStateManager.OnMouseMove(btnState, x, y);
 
 	mLastMousePos.x = x;
 	mLastMousePos.y = y;
@@ -292,79 +286,14 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
 
-	float moveSpeed = 5.0f;
-	float zoomSpeed = 20.0f;
-
-	bool playerMoved = false;
-
-	// CAMERA MOVEMENT
-	if (GetAsyncKeyState(/*VK_UP*/'W') & 0x8000) // implement boundaries
-		if (mCamera.GetPosition3f().z <= UPBOUND)
-			mCamera.Elevate(moveSpeed * dt);
-
-	if (GetAsyncKeyState(/*VK_DOWN*/'S') & 0x8000)
-		if (mCamera.GetPosition3f().z >= DOWNBOUND)
-			mCamera.Elevate(-moveSpeed * dt);
-
-	if (GetAsyncKeyState(/*VK_LEFT*/'A') & 0x8000)
-		if (mCamera.GetPosition3f().x >= LEFTBOUND)
-			mCamera.Strafe(-moveSpeed * dt);
-
-	if (GetAsyncKeyState(/*VK_RIGHT*/'D') & 0x8000)
-		if (mCamera.GetPosition3f().x <= RIGHTBOUND)
-			mCamera.Strafe(moveSpeed * dt);
-
-	if (GetAsyncKeyState('E') & 0x8000)
-		mCamera.Walk(zoomSpeed * dt);
-
-	if (GetAsyncKeyState('Q') & 0x8000)
-		mCamera.Walk(-zoomSpeed * dt);
-
-	if (GetAsyncKeyState('P') & 0x8000) // RESETS CAMERA TO ABOVE PLAYER
-		mCamera.SetPosition(mPlayer.GetPos(mAllRitems).x, mCamera.GetPosition3f().y, mPlayer.GetPos(mAllRitems).z);
-
-	// PLAYER MOVEMENT
-	if (GetAsyncKeyState(VK_UP/*W*/) & 0x8000) { // Player movement
-		 //retool for camera
-		mPlayer.MoveUp(mAllRitems, gt);
-		mCamera.SetPosition(mPlayer.GetPos(mAllRitems).x, mCamera.GetPosition3f().y, mPlayer.GetPos(mAllRitems).z);
-	}
-
-	if (GetAsyncKeyState(VK_DOWN/*S*/) & 0x8000)
-	{
-		mPlayer.MoveDown(mAllRitems, gt);
-		mCamera.SetPosition(mPlayer.GetPos(mAllRitems).x, mCamera.GetPosition3f().y, mPlayer.GetPos(mAllRitems).z);
-	}
-
-	if (GetAsyncKeyState(VK_LEFT/*A*/) & 0x8000)
-	{
-		mPlayer.MoveLeft(mAllRitems, gt);
-		mCamera.SetPosition(mPlayer.GetPos(mAllRitems).x, mCamera.GetPosition3f().y, mPlayer.GetPos(mAllRitems).z);
-	}
-
-	if (GetAsyncKeyState(VK_RIGHT/*D*/) & 0x8000)
-	{
-		mPlayer.MoveRight(mAllRitems, gt);
-		mCamera.SetPosition(mPlayer.GetPos(mAllRitems).x, mCamera.GetPosition3f().y, mPlayer.GetPos(mAllRitems).z);
-	}
-
+	mStateManager.OnKeyboardInput(gt);
+	
 	if (GetAsyncKeyState('1') & 0x8000)
 		mFrustumCullingEnabled = true;
 
 	if (GetAsyncKeyState('2') & 0x8000)
 		mFrustumCullingEnabled = false;
 
-	//Checks input when attacking
-	if (GetAsyncKeyState('V') & 0x8000)		///Change key in future
-		mCombatController.PlayerAttack(mAllRitems);
-
-	//if (GetAsyncKeyState('Z') & 0x08000)
-	//	mStateManager.ChangeState("foo");
-	//
-	//if (GetAsyncKeyState('X') & 0x08000)
-	//	mStateManager.ChangeState("bar");
-
-	mCamera.UpdateViewMatrix();
 }
 
 void GameApp::AnimateMaterials(const GameTimer& gt)
@@ -374,33 +303,14 @@ void GameApp::AnimateMaterials(const GameTimer& gt)
 
 void GameApp::UpdateInstanceData(const GameTimer& gt)
 {
-	XMMATRIX view = mCamera.GetView();
+	assert(mpActiveCamera);
+	XMMATRIX view = mpActiveCamera->GetView();
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
 	
-	mCombatController.Update(mAllRitems);		//Continues rotating the weapon if the player has attacked
-	mPlayer.UpdatePos(mAllRitems);
+	//mCombatController.Update(mAllRitems);		//Continues rotating the weapon if the player has attacked
+	//mPlayer.UpdatePos(mAllRitems);
 
-	//Checks if weapon is colliding w/ example box
-	if (mCombatController.CheckCollision(mAllRitems["Enemy"]->Instances.at(0).World._41, mAllRitems["Enemy"]->Instances.at(0).World._42,
-		mAllRitems["Enemy"]->Instances.at(0).World._43))
-	{
-		mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 5;			//Visual representation for collision
-		enemyHealth -= 5;
-		mAllRitems["Enemy"]->Instances.at(0).World._41 += 5.0f;			///Pushes enemy back after being hit by sword, In future have enemy move back based on which way player is facing !!!
-	}
-
-	///Enemy Pos, Remove into Enemy class in future!!!
-	XMFLOAT3 enemyPos = XMFLOAT3(mAllRitems["Enemy"]->Instances.at(0).World._41, mAllRitems["Enemy"]->Instances.at(0).World._42, mAllRitems["Enemy"]->Instances.at(0).World._43);
-
-	//Interaction stuff
-	if (mCombatController.CheckCollision(mPlayer.GetPos(mAllRitems), enemyPos))			//Checks the distance between the player and the enemy objects
-	{
-	  mPlayer.health -= 5;
-	  mAllRitems["Player"]->Instances.at(0).World._41 -= 5.0f;		///Find way to connect this to player class !!!
-
-	  mCamera.Strafe(-5.0f * gt.DeltaTime());
-	  mCamera.UpdateViewMatrix();
-	}
+	
 
 	int i = 0;					//Makes sure each object with a different geo is using a different instance buffer
 	for (auto& e : mAllRitems)
@@ -477,8 +387,10 @@ void GameApp::UpdateMaterialBuffer(const GameTimer& gt)
 
 void GameApp::UpdateMainPassCB(const GameTimer& gt)
 {
-	XMMATRIX view = mCamera.GetView();
-	XMMATRIX proj = mCamera.GetProj();
+	assert(mpActiveCamera);
+
+	XMMATRIX view = mpActiveCamera->GetView();
+	XMMATRIX proj = mpActiveCamera->GetProj();
 
 	XMMATRIX viewProj = XMMatrixMultiply(view, proj);
 	XMMATRIX invView = XMMatrixInverse(&XMMatrixDeterminant(view), view);
@@ -491,7 +403,7 @@ void GameApp::UpdateMainPassCB(const GameTimer& gt)
 	XMStoreFloat4x4(&mMainPassCB.InvProj, XMMatrixTranspose(invProj));
 	XMStoreFloat4x4(&mMainPassCB.ViewProj, XMMatrixTranspose(viewProj));
 	XMStoreFloat4x4(&mMainPassCB.InvViewProj, XMMatrixTranspose(invViewProj));
-	mMainPassCB.EyePosW = mCamera.GetPosition3f();
+	mMainPassCB.EyePosW = mpActiveCamera->GetPosition3f();
 	mMainPassCB.RenderTargetSize = XMFLOAT2((float)mClientWidth, (float)mClientHeight);
 	mMainPassCB.InvRenderTargetSize = XMFLOAT2(1.0f / mClientWidth, 1.0f / mClientHeight);
 	mMainPassCB.NearZ = 1.0f;
@@ -501,18 +413,6 @@ void GameApp::UpdateMainPassCB(const GameTimer& gt)
 	mMainPassCB.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
 
 	mMainPassCB.Lights[0].Direction = { 0.57735f, -0.57735f, 0.57735f };
-
-	//flashing red for low health
-	if (mPlayer.health <= 95)
-	{
-		mMainPassCB.Lights[0].Strength = { sin(gt.TotalTime()) / 2 + 0.5f ,0.0f,0.0f };
-	}
-
-	else 
-	{
-		mMainPassCB.Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
-	}
-
 
 	mMainPassCB.Lights[1].Direction = { -0.57735f, -0.57735f, 0.57735f };
 	mMainPassCB.Lights[1].Strength = { 0.4f, 0.4f, 0.4f };
@@ -1257,3 +1157,8 @@ std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GameApp::GetStaticSamplers()
 		linearWrap, linearClamp,
 		anisotropicWrap, anisotropicClamp };
 }
+
+PassConstants * GameApp::GetMainPassCB()
+{
+	return &mMainPassCB;
+};

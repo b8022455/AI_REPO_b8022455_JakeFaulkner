@@ -1,17 +1,17 @@
 #include "Player.h"
 
 
-void Player::UpdatePos(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
+void Player::UpdatePos()
 {
-  float playerXPos = mAllRitems["Player"]->Instances.at(0).World._41;
-  float playerYPos = mAllRitems["Player"]->Instances.at(0).World._42;
-  float playerZPos = mAllRitems["Player"]->Instances.at(0).World._43;
-
-  XMFLOAT3 playerPos = XMFLOAT3(playerXPos, playerYPos, playerZPos); // todo: Whats this? It's an unused temp variable. Should this be pos?
+  //float playerXPos = mAllRitems["Player"]->Instances.at(0).World._41;
+  //float playerYPos = mAllRitems["Player"]->Instances.at(0).World._42;
+  //float playerZPos = mAllRitems["Player"]->Instances.at(0).World._43;
+  //
+  //XMFLOAT3 playerPos = XMFLOAT3(playerXPos, playerYPos, playerZPos); // todo: Whats this? It's an unused temp variable. Should this be pos?
 }
 
 //todo remove map param
-XMFLOAT3 Player::GetPos(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
+XMFLOAT3 Player::GetPos()
 {
 
   return { 
@@ -22,7 +22,7 @@ XMFLOAT3 Player::GetPos(std::unordered_map<std::string, std::unique_ptr<RenderIt
 }
 
 
-void Player::MoveUp(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems, const GameTimer& gt) 
+void Player::MoveUp( const GameTimer& gt) 
 {
   const float dt = gt.DeltaTime();
   const float moveSpeed = 5.0f;
@@ -33,7 +33,7 @@ void Player::MoveUp(std::unordered_map<std::string, std::unique_ptr<RenderItem>>
   }
 }
 
-void Player::MoveDown(std::unordered_map<std::string, std::unique_ptr<RenderItem>>& mAllRitems, const GameTimer& gt)
+void Player::MoveDown( const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
 	const float moveSpeed = 5.0f;
@@ -45,7 +45,7 @@ void Player::MoveDown(std::unordered_map<std::string, std::unique_ptr<RenderItem
 
 }
 
-void Player::MoveLeft(std::unordered_map<std::string, std::unique_ptr<RenderItem>>& mAllRitems, const GameTimer& gt)
+void Player::MoveLeft( const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
 	const float moveSpeed = 5.0f;
@@ -57,7 +57,7 @@ void Player::MoveLeft(std::unordered_map<std::string, std::unique_ptr<RenderItem
 
 }
 
-void Player::MoveRight(std::unordered_map<std::string, std::unique_ptr<RenderItem>>& mAllRitems, const GameTimer& gt)
+void Player::MoveRight( const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
 	const float moveSpeed = 5.0f;

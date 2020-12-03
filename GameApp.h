@@ -29,18 +29,22 @@ public:
 
 	static bool DEBUG;
 
-	const float RIGHTBOUND = 15.0f;
-	const float LEFTBOUND = -15.0f;
-
-	const float YBOUNDLOW = 50.0f;
-	const float YBOUNDHIGH = 300.0f;
-
-	const float UPBOUND = 15.0f;
-	const float DOWNBOUND = -15.0f;
-
 	// Access to instance data from states and gameobjects
 	InstanceData* AddRenderItemInstance(const std::string & renderItemName);
 	GameApp& GetGameApp() { return *this; }
+	// For access to lights,camera projection, fog
+	PassConstants* GetMainPassCB();
+
+	const POINT& GetLastMousePos()
+	{
+		return mLastMousePos;
+	}
+	// Set a camera from a state.
+	void SetActiveCamera(Camera* cam)
+	{
+		assert(cam);
+		mpActiveCamera = cam;
+	}
 
 private:
 	virtual void OnResize()override;
@@ -76,7 +80,9 @@ private:
 
 
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GetStaticSamplers();
-
+	
+	
+	
 private:
 
 	std::vector<std::unique_ptr<FrameResource>> mFrameResources;
@@ -111,7 +117,8 @@ private:
 
 	PassConstants mMainPassCB;
 
-	Camera mCamera;
+	//Camera mCamera;
+	Camera* mpActiveCamera = nullptr;
 
 	POINT mLastMousePos;
 
@@ -120,8 +127,8 @@ private:
 	DeltaTimer mAudioTimer; //Changing track after a while
 
 	//Combat
-	CombatController mCombatController;
-	Player mPlayer;
+	//CombatController mCombatController;
+	//Player mPlayer;
 
 	//States
 	StateManager mStateManager;

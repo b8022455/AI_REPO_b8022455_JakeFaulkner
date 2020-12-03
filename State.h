@@ -15,7 +15,13 @@ class State
 public:
 	virtual void Initialize() = 0;
 	virtual void Update(const GameTimer& gt) = 0;
-	virtual void Draw(const GameTimer& gt) = 0;
+	//virtual void Draw(const GameTimer& gt) = 0; // todo check this isnt needed
+
+
+	virtual void OnMouseDown(WPARAM btnState, int x, int y) = 0;
+	virtual void OnMouseUp(WPARAM btnState, int x, int y) = 0;
+	virtual void OnMouseMove(WPARAM btnState, int x, int y) = 0;
+	virtual void OnKeyboardInput(const GameTimer& gt) = 0;
 };
 
 // State starting point
@@ -25,7 +31,7 @@ class StateA : public State
 public:
 	virtual void Initialize() override {};
 	virtual void Update(const GameTimer& gt) override {};
-	virtual void Draw(const GameTimer& gt) override {};
+	//virtual void Draw(const GameTimer& gt) override {};
 };
 
 class StateManager
@@ -40,7 +46,7 @@ public:
 	// Adds the game states
 	void Init() ;
 	void Update(const GameTimer& gt);
-	void Draw(const GameTimer& gt);
+	//void Draw(const GameTimer& gt);
 
 	// Add unique_ptr of derived State class.
 	void AddState(const std::string& name, std::unique_ptr<State> newState);
@@ -48,6 +54,12 @@ public:
 	void RemoveState(const std::string& name);
 	// Switch between states
 	void ChangeState(const std::string& name);
+	
+	void OnMouseDown(WPARAM btnState, int x, int y);
+	void OnMouseUp(WPARAM btnState, int x, int y);
+	void OnMouseMove(WPARAM btnState, int x, int y);
+	void OnKeyboardInput(const GameTimer& gt);
+
 };
 
 // State starting point
@@ -57,5 +69,5 @@ class StateB : public State
 public:
 	virtual void Initialize() override ;
 	virtual void Update(const GameTimer& gt) override {};
-	virtual void Draw(const GameTimer& gt) override {};
+	//virtual void Draw(const GameTimer& gt) override {};
 };
