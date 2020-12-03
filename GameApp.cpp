@@ -19,6 +19,34 @@ const int gNumFrameResources = 3; //todo move to GC namespace in its own header
 
 bool GameApp::DEBUG = false;
 
+std::string PrintMatrix(XMMATRIX& xmm)
+{
+	XMFLOAT4X4 m;
+	DirectX::XMStoreFloat4x4(&m, xmm);
+
+	std::ostringstream o;
+
+	o
+		<< m._11 << "      "
+		<< m._12 << "      "
+		<< m._13 << "      "
+		<< m._14 << "\n"
+		<< m._21 << "      "
+		<< m._22 << "      "
+		<< m._23 << "      "
+		<< m._24 << "\n"
+		<< m._31 << "      "
+		<< m._32 << "      "
+		<< m._33 << "      "
+		<< m._34 << "\n"
+		<< m._41 << "      "
+		<< m._42 << "      "
+		<< m._43 << "      "
+		<< m._44 << "\n"
+		;
+	return o.str();
+}
+
 
 
 GameApp::GameApp(HINSTANCE hInstance)
@@ -99,9 +127,15 @@ bool GameApp::Initialize()
 	BuildFrameResources();
 	BuildPSOs();
 
-	
+	// Sets up all states. Requires render items
 	mStateManager.Init(); 
 
+	// Normally called OnSize() at start but no camera is created until states initialised.
+	if (mpActiveCamera)
+	{
+		mpActiveCamera->SetLens(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
+		BoundingFrustum::CreateFromMatrix(mCamFrustum, mpActiveCamera->GetProj());
+	}
 
 	// Execute the initialization commands.
 	ThrowIfFailed(mCommandList->Close());
@@ -169,12 +203,12 @@ void GameApp::Update(const GameTimer& gt)
 		CloseHandle(eventHandle);
 	}
 
+	mStateManager.Update(gt);
 	AnimateMaterials(gt);
 	UpdateInstanceData(gt);
 	UpdateMaterialBuffer(gt);
 	UpdateMainPassCB(gt);
 
-	mStateManager.Update(gt);
 
 	mGameAudio.Update(gt, mpActiveCamera->GetPosition3f(), mpActiveCamera->GetLook3f(), mpActiveCamera->GetUp3f());
 	//Music fades every 6 seconds
@@ -186,6 +220,9 @@ void GameApp::Update(const GameTimer& gt)
 		else
 			mGameAudio.Play("ring9", nullptr, true);
 	}
+
+	mDebugLog << PrintMatrix(mpActiveCamera->GetView());
+
 
 }
 
@@ -267,6 +304,8 @@ void GameApp::OnMouseDown(WPARAM btnState, int x, int y)
 	mLastMousePos.x = x;
 	mLastMousePos.y = y;
 
+	mStateManager.OnMouseDown(btnState, x, y);
+
 	SetCapture(mhMainWnd);
 }
 
@@ -289,7 +328,6 @@ void GameApp::OnMouseMove(WPARAM btnState, int x, int y)
 
 void GameApp::OnKeyboardInput(const GameTimer& gt)
 {
-	const float dt = gt.DeltaTime();
 
 	mStateManager.OnKeyboardInput(gt);
 	
@@ -1031,10 +1069,6 @@ void GameApp::BuildRenderItems()
 	swordRitem->IndexCount = swordRitem->Geo->DrawArgs["tempSword"].IndexCount;//"swordGeo"
 	swordRitem->StartIndexLocation = swordRitem->Geo->DrawArgs["tempSword"].StartIndexLocation;//"swordGeo"
 	swordRitem->BaseVertexLocation = swordRitem->Geo->DrawArgs["tempSword"].BaseVertexLocation;//"swordGeo"
-	swordRitem->Instances.resize(1);
-	swordRitem->Instances[0].MaterialIndex = 2;
-
-	//"tempSwordGeo", "tempSword"
 
 	auto playerRitem = std::make_unique<RenderItem>();
 	playerRitem->World = MathHelper::Identity4x4();
@@ -1047,9 +1081,6 @@ void GameApp::BuildRenderItems()
 	playerRitem->BaseVertexLocation = playerRitem->Geo->DrawArgs["tempPlayer"].BaseVertexLocation;//player
 	//playerRitem->Instances.reserve(10);
 
-	//playerRitem->Instances.resize(1);
-	//playerRitem->Instances.front().MaterialIndex = 2;
-
 	auto enemyRitem = std::make_unique<RenderItem>();
 	enemyRitem->World = MathHelper::Identity4x4();
 	enemyRitem->ObjCBIndex = 3;
@@ -1059,8 +1090,6 @@ void GameApp::BuildRenderItems()
 	enemyRitem->IndexCount = enemyRitem->Geo->DrawArgs["tempPlayer"].IndexCount;				//Just for testing, will give enemy its own geo eventually
 	enemyRitem->StartIndexLocation = enemyRitem->Geo->DrawArgs["tempPlayer"].StartIndexLocation;
 	enemyRitem->BaseVertexLocation = enemyRitem->Geo->DrawArgs["tempPlayer"].BaseVertexLocation;
-	enemyRitem->Instances.resize(1);
-	enemyRitem->Instances.front().MaterialIndex = 3;
 
 	mAllRitems["Tiles"] = std::move(boxRitem);
 	mAllRitems["Weapon"] = std::move(swordRitem);
@@ -1069,16 +1098,6 @@ void GameApp::BuildRenderItems()
 
 	//Uncomment this if testing weapon collision, will be removed once the function in enemy class is available in GameApp
 	#pragma region Weapon Collision Checking
-
-	mAllRitems["Enemy"]->Instances.at(0).World = 
-	{
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, 5.0f, 1.0f
-	};
-	mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 3;
-
 	#pragma endregion
 
 	// All the render items are opaque.

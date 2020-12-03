@@ -46,8 +46,11 @@ public:
 		mpActiveCamera = cam;
 	}
 
-private:
 	virtual void OnResize()override;
+
+	// Output to viewport
+	std::ostringstream mDebugLog;
+private:
 	virtual void Update(const GameTimer& gt)override;
 	virtual void Draw(const GameTimer& gt)override;
 
@@ -81,7 +84,7 @@ private:
 
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GetStaticSamplers();
 	
-	
+
 	
 private:
 

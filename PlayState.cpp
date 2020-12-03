@@ -3,6 +3,12 @@
 
 void PlayState::Initialize()
 {
+	GameApp::Get().SetActiveCamera(&mCamera);
+
+	mCamera.SetPosition(0.0f, 50.0f, 0.0f);
+
+	//GameApp::Get().OnResize();
+
 	mPlayer.Initialize("Player"); // todo adapt GameApp mPlayer to this state
 	mPlayerWeapon.Initialize("Weapon");
 	
@@ -10,20 +16,27 @@ void PlayState::Initialize()
 	{
 		// inserts n of enemies
 		mEnemies.push_back(Enemy());
-
+		mEnemies.push_back(Enemy());
+		mEnemies.push_back(Enemy());
 		//Init all enemies
 		std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e) 
 		{ 
 			e.Initialize("Enemy"); 
+
+			e.SetPosition({
+			static_cast<float>(rand() % 10 + 2.0f),
+			1.0f,
+			static_cast<float>(rand() % 10 + 2.0f)
+				});
 		});
 
+		
 	}
 
 	mCombatController.Initialize(&mPlayer,&mPlayerWeapon,&mEnemies);
 
 	mCamera.Pitch(XMConvertToRadians(90.0f)); // SETS CAMERA TO FACE DOWN
 	
-	GameApp::Get().SetActiveCamera(&mCamera);
 	
 }
 
@@ -47,33 +60,17 @@ void PlayState::Update(const GameTimer & gt)
 			e.mpInstance->World._41 += 5.0f;			///Pushes enemy back after being hit by sword, In future have enemy move back based on which way player is facing !!!
 		}
 		
-		
 		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetPosition()))
 		{
 			float x = -5.0f;
-		
 			mPlayer.mpInstance->World._41 -= x;		///Find way to connect this to player class !!!
 			mPlayer.health -= 5;						//todo damage based on enemy
 			mCamera.Strafe(-x * gt.DeltaTime());
 			mCamera.UpdateViewMatrix();
-		
 		}
 	
 	});
 
-
-	///Enemy Pos, Remove into Enemy class in future!!!
-	//XMFLOAT3 enemyPos = XMFLOAT3(mAllRitems["Enemy"]->Instances.at(0).World._41, mAllRitems["Enemy"]->Instances.at(0).World._42, mAllRitems["Enemy"]->Instances.at(0).World._43);
-
-	//Interaction stuff
-	//if (mCombatController.CheckCollision(mPlayer.GetPos(), enemyPos))			//Checks the distance between the player and the enemy objects
-	//{
-	//	mPlayer.health -= 5;
-	//	mAllRitems["Player"]->Instances.at(0).World._41 -= 5.0f;		///Find way to connect this to player class !!!
-
-	//	mCamera.Strafe(-5.0f * gt.DeltaTime());
-	//	mCamera.UpdateViewMatrix();
-	//}
 
 	PassConstants* pMainPassCB = GameApp::Get().GetMainPassCB();
 
@@ -88,10 +85,9 @@ void PlayState::Update(const GameTimer & gt)
 		pMainPassCB->Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
 	}
 
-
+	//mCamera.SetPosition(0, 50, 0);
 
 	mCamera.UpdateViewMatrix();
-
 
 }
 

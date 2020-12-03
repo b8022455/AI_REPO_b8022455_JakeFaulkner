@@ -4,7 +4,7 @@
 
 #include "Common/d3dUtil.h"
 #include "Common/d3dx12.h"
-
+#include "GameApp.h"
 #define IID_PPV_ARGS(ppType) __uuidof(**(ppType)), IID_PPV_ARGS_Helper(ppType)
 
 
@@ -66,13 +66,18 @@ void SpriteManager::Draw(ID3D12GraphicsCommandList * commandList, const D3D12_VI
 
 	mSpriteBatch->Begin(commandList);
 	
+
+	
 	//demo
-	mSpriteFont.at(0)->DrawString(mSpriteBatch.get(), L"SpriteFontString0", DirectX::XMFLOAT2(1.0f, 1.0f));
+	//mSpriteFont.at(0)->DrawString(mSpriteBatch.get(), L"SpriteFontString0", DirectX::XMFLOAT2(1.0f, 1.0f));
+	mSpriteFont.at(0)->DrawString(mSpriteBatch.get(), GameApp::Get().mDebugLog.str().c_str(), DirectX::XMFLOAT2(1.0f, 1.0f));
 	//mSpriteFont.at(1)->DrawString(mSpriteBatch.get(), L"SpriteFontString1",DirectX::XMFLOAT2(1.0f,32.0f));
 
 	
 	mSpriteBatch->End();
 
+	// clears stream
+	GameApp::Get().mDebugLog.str(std::string());
 
 }
 
