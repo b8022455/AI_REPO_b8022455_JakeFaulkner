@@ -1,34 +1,39 @@
 #include "CombatController.h"
 
-void CombatController::Initialize()
+void CombatController::Initialize(Player* player, PlayerWeapon* playerWeapon, std::vector<Enemy>* enemies)
 {
-	mPlayerWeapon.Initialize();
-	collisionPoint = mPlayerWeapon.collisionPos;
+	assert(player && enemies && playerWeapon);
+
+	mpPlayer = player;
+	mpEnemies = enemies;
+	mpPlayerWeapon = playerWeapon;
+
+	collisionPoint = mpPlayerWeapon->collisionPos;
 }
 
-void CombatController::Update(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
+void CombatController::Update()
 {
 	isAttacking = CheckIfAttackIsFinished();		//Stops the attack
-	collisionPoint = mPlayerWeapon.collisionPos;	//Updates to check positions of objects in case of collision
+	collisionPoint = mpPlayerWeapon->collisionPos;	//Updates to check positions of objects in case of collision
 
 	if (isAttacking)
-		mPlayerWeapon.SwingWeapon(mAllRitems);
+		mpPlayerWeapon->SwingWeapon();
 	//else												//Code for weapon follwing player at all times, move updateWeaponMatrix to public in order to work
 	//{
 	//	mPlayerWeapon.UpdateWeaponMatrix(mAllRitems);
 	//}
 
-	mPlayerWeapon.UpdateTimer();					//Keeps timer updated regardless of key input
+	mpPlayerWeapon->UpdateTimer();					//Keeps timer updated regardless of key input
 }
 
-void CombatController::PlayerAttack(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
+void CombatController::PlayerAttack()
 {
-	mPlayerWeapon.Attack(mAllRitems);
+	mpPlayerWeapon->Attack();
 }
 
 bool CombatController::CheckIfAttackIsFinished()
 {
-	return mPlayerWeapon.GetAttackStatus();
+	return mpPlayerWeapon->GetAttackStatus();
 }
 
 void CombatController::DamageEnemy()
@@ -85,11 +90,15 @@ bool CombatController::CheckCollision(XMFLOAT3 Obj1, XMFLOAT3 Obj2, float xMin, 
 }
 
 
-void PlayerWeapon::Initialize()
+void PlayerWeapon::Initialize(const std::string& renderItemName)
 {
+	// Setup a render item
+	AddRenderItemInstance("Weapon");
+
 	times.timeAtNow = time(0);
 	times.nextAtkTime = 0;
 	times.err = localtime_s(&times.currentTime, &times.timeAtNow);		//Gets current time from system and stores in currentTime struct
+
 
 	weaponRotation = -1.39626f;
 	attacking = false;
@@ -97,42 +106,42 @@ void PlayerWeapon::Initialize()
 	//Collision point stuff
 	collisionPos = weaponPositionMatrix2;
 	collisionPos._41 += 0.1f;
-
 }
 
-void PlayerWeapon::Attack(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
+void PlayerWeapon::Attack()
 {
 	if (times.currentTime.tm_sec > times.nextAtkTime)
 	{
-		PositionWeapon(mAllRitems);
+		PositionWeapon();
 
-		SwingWeapon(mAllRitems);
+		SwingWeapon();
 	}
 
 }
 
-void PlayerWeapon::PositionWeapon(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
+void PlayerWeapon::PositionWeapon()
 {
 	times.nextAtkTime = times.currentTime.tm_sec + times.AttackDelay;	//Resets timer on attack delay (Currentime + 1 sec)
 	attacking = true;
 	weaponRotation = -1.39626f;		//Sets rotation to default -80 degree angle
-	UpdateWeaponMatrix(mAllRitems);
+	UpdateWeaponMatrix();
 
 	//Positions the first instance (Only instance) of the 'weapon' to the correct position
-	mAllRitems["Weapon"]->Instances.at(0).MaterialIndex = 4;
-	mAllRitems["Weapon"]->Instances.at(0).World = weaponPositionMatrix2;
+
+	mpInstance->MaterialIndex = 4;
+	mpInstance->World = weaponPositionMatrix2;
 }
 
-void PlayerWeapon::SwingWeapon(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
+void PlayerWeapon::SwingWeapon()
 {
 	if (weaponRotation > 1.39626f)		//80 degrees, not final until final sword/player models are in
-		ResetWeaponPosition(mAllRitems);
+		ResetWeaponPosition();
 	else
 	{
 		weaponRotation += 0.03f;		///Could replace into its own variable
-		UpdateWeaponMatrix(mAllRitems);		//Updates to show the new rotation
+		UpdateWeaponMatrix();		//Updates to show the new rotation
 
-		mAllRitems["Weapon"]->Instances.at(0).World = weaponPositionMatrix2;
+		mpInstance->World = weaponPositionMatrix2;
 	}
 
 	//Sets collision point to the edge of the sword
@@ -140,7 +149,7 @@ void PlayerWeapon::SwingWeapon(std::unordered_map<std::string, std::unique_ptr<R
 	collisionPos._41 += 0.1f;
 }
 
-void PlayerWeapon::ResetWeaponPosition(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
+void PlayerWeapon::ResetWeaponPosition()
 {
 	weaponRotation = -1.39626f;			//Resets rotation to -80 degrees
 	attacking = false;
@@ -148,7 +157,7 @@ void PlayerWeapon::ResetWeaponPosition(std::unordered_map<std::string, std::uniq
 	weaponPositionMatrix = XMMatrixTranslation(0.0f, -5.0f, 2.0f);		//Resets the sword back underneath the map until attack is used again
 	XMStoreFloat4x4(&weaponPositionMatrix2, weaponPositionMatrix);
 
-	mAllRitems["Weapon"]->Instances.at(0).World = weaponPositionMatrix2;
+	mpInstance->World = weaponPositionMatrix2;
 }
 
 void PlayerWeapon::UpdateTimer()
@@ -158,14 +167,17 @@ void PlayerWeapon::UpdateTimer()
 	if (times.currentTime.tm_sec == 0)	times.nextAtkTime = 0;		//Prevents it from doing multiple attacks per frame once hit 60 secs
 }
 
-void PlayerWeapon::UpdateWeaponMatrix(std::unordered_map<std::string, std::unique_ptr<RenderItem>> &mAllRitems)
+void PlayerWeapon::UpdateWeaponMatrix()
 {
 	///Find way to do rotation around a point using 1 matrix
 	weaponPositionMatrix = XMMatrixTranslation(1.4f, 0.0f, 0.0f);
 	weaponPositionMatrix *= XMMatrixRotationY(weaponRotation);
 	//Positions the weapon at the players position + offset
-	weaponPositionMatrix *= XMMatrixTranslation(mAllRitems["Player"]->Instances.at(0).World._41 + 0.2f,
-		mAllRitems["Player"]->Instances.at(0).World._42 + 1.0f, mAllRitems["Player"]->Instances.at(0).World._43);
+	weaponPositionMatrix *= XMMatrixTranslation(
+		mpInstance->World._41 + 0.2f,
+		mpInstance->World._42 + 1.0f, 
+		mpInstance->World._43
+	);
 
 	XMStoreFloat4x4(&weaponPositionMatrix2, weaponPositionMatrix);		//Stores above calculated matrix into the matrix which is assigned to the Objs World position
 }

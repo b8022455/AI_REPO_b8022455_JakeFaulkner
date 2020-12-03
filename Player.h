@@ -31,7 +31,6 @@ private:
   void DamageEnemy();		
   void DamagePlayer();
 
-  
 
   XMFLOAT3 pos;
   

@@ -135,13 +135,18 @@ InstanceData* GameApp::AddRenderItemInstance(const std::string & renderItemName)
 
 void GameApp::OnResize()
 {
-	assert(mpActiveCamera);
 	D3DApp::OnResize();
 
-	//todo 
-	mpActiveCamera->SetLens(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
+	//assert(mpActiveCamera);
 
-	BoundingFrustum::CreateFromMatrix(mCamFrustum, mpActiveCamera->GetProj());
+	if (mpActiveCamera)
+	{
+		//todo 
+		mpActiveCamera->SetLens(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
+
+		BoundingFrustum::CreateFromMatrix(mCamFrustum, mpActiveCamera->GetProj());
+
+	}
 }
 
 void GameApp::Update(const GameTimer& gt)

@@ -1,17 +1,16 @@
 #pragma once
 #include "State.h"
 //#include "GameObject.h"
-#include "Player.h"
-#include "Enemy.h"
 #include "CombatController.h"
 #include "Common/Camera.h"
 
 
 class PlayState : public State
 {
-	GameObject mGameObject;
 	Player mPlayer;
-	Enemy mEnemy;
+	PlayerWeapon mPlayerWeapon;
+	std::vector<Enemy> mEnemies;
+
 	CombatController mCombatController;
 	Camera mCamera;
 

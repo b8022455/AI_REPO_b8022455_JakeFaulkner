@@ -4,10 +4,22 @@
 void PlayState::Initialize()
 {
 	mPlayer.Initialize("Player"); // todo adapt GameApp mPlayer to this state
-	mGameObject.Initialize("Weapon");
-	mCombatController.Initialize();
+	mPlayerWeapon.Initialize("Weapon");
+	
+	// Setup temp enemies
+	{
+		// inserts n of enemies
+		mEnemies.push_back(Enemy());
 
-	mEnemy.Initialize("Enemy");
+		//Init all enemies
+		std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e) 
+		{ 
+			e.Initialize("Enemy"); 
+		});
+
+	}
+
+	mCombatController.Initialize(&mPlayer,&mPlayerWeapon,&mEnemies);
 
 	mCamera.Pitch(XMConvertToRadians(90.0f)); // SETS CAMERA TO FACE DOWN
 	
@@ -18,33 +30,50 @@ void PlayState::Initialize()
 void PlayState::Update(const GameTimer & gt)
 {
 
-	mGameObject.Update(gt);
-	mCombatController.Update(mAllRitems);
-	mEnemy.Update(gt);
+	mPlayer.Update(gt);
+	mCombatController.Update();
 
-
-	//Checks if weapon is colliding w/ example box
-	if (mCombatController.CheckCollision(mAllRitems["Enemy"]->Instances.at(0).World._41, mAllRitems["Enemy"]->Instances.at(0).World._42,
-		mAllRitems["Enemy"]->Instances.at(0).World._43))
-	{
-		mAllRitems["Enemy"]->Instances.at(0).MaterialIndex = 5;			//Visual representation for collision
+	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
+	{ 
+		e.Update(gt); 
 		
-		enemyHealth -= 5;
-		mAllRitems["Enemy"]->Instances.at(0).World._41 += 5.0f;			///Pushes enemy back after being hit by sword, In future have enemy move back based on which way player is facing !!!
-	}
+		if (mCombatController.CheckCollision(
+			e.mpInstance->World._41,
+			e.mpInstance->World._42,
+			e.mpInstance->World._43 ))
+		{
+			e.mpInstance->MaterialIndex = 5;//Visual representation for collision
+			//todo decrease enemy health
+			e.mpInstance->World._41 += 5.0f;			///Pushes enemy back after being hit by sword, In future have enemy move back based on which way player is facing !!!
+		}
+		
+		
+		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetPosition()))
+		{
+			float x = -5.0f;
+		
+			mPlayer.mpInstance->World._41 -= x;		///Find way to connect this to player class !!!
+			mPlayer.health -= 5;						//todo damage based on enemy
+			mCamera.Strafe(-x * gt.DeltaTime());
+			mCamera.UpdateViewMatrix();
+		
+		}
+	
+	});
+
 
 	///Enemy Pos, Remove into Enemy class in future!!!
-	XMFLOAT3 enemyPos = XMFLOAT3(mAllRitems["Enemy"]->Instances.at(0).World._41, mAllRitems["Enemy"]->Instances.at(0).World._42, mAllRitems["Enemy"]->Instances.at(0).World._43);
+	//XMFLOAT3 enemyPos = XMFLOAT3(mAllRitems["Enemy"]->Instances.at(0).World._41, mAllRitems["Enemy"]->Instances.at(0).World._42, mAllRitems["Enemy"]->Instances.at(0).World._43);
 
 	//Interaction stuff
-	if (mCombatController.CheckCollision(mPlayer.GetPos(), enemyPos))			//Checks the distance between the player and the enemy objects
-	{
-		mPlayer.health -= 5;
-		mAllRitems["Player"]->Instances.at(0).World._41 -= 5.0f;		///Find way to connect this to player class !!!
+	//if (mCombatController.CheckCollision(mPlayer.GetPos(), enemyPos))			//Checks the distance between the player and the enemy objects
+	//{
+	//	mPlayer.health -= 5;
+	//	mAllRitems["Player"]->Instances.at(0).World._41 -= 5.0f;		///Find way to connect this to player class !!!
 
-		mCamera.Strafe(-5.0f * gt.DeltaTime());
-		mCamera.UpdateViewMatrix();
-	}
+	//	mCamera.Strafe(-5.0f * gt.DeltaTime());
+	//	mCamera.UpdateViewMatrix();
+	//}
 
 	PassConstants* pMainPassCB = GameApp::Get().GetMainPassCB();
 
@@ -121,7 +150,7 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 	}
 
 	if (GetAsyncKeyState('V') & 0x8000)		///Change key in future
-		mCombatController.PlayerAttack(mAllRitems);
+		mCombatController.PlayerAttack();
 
 
 	// CAMERA MOVEMENT
