@@ -19,28 +19,28 @@ const int gNumFrameResources = 3; //todo move to GC namespace in its own header
 
 bool GameApp::DEBUG = false;
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
-	PSTR cmdLine, int showCmd)
-{
-	// Enable run-time memory check for debug builds.
-#if defined(DEBUG) | defined(_DEBUG)
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
-	try
-	{
-		GameApp theApp(hInstance);
-		if (!theApp.Initialize())
-			return 0;
-
-		return theApp.Run();
-	}
-	catch (DxException& e)
-	{
-		MessageBox(nullptr, e.ToString().c_str(), L"HR Failed", MB_OK);
-		return 0;
-	}
-}
+//int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
+//	PSTR cmdLine, int showCmd)
+//{
+//	// Enable run-time memory check for debug builds.
+//#if defined(DEBUG) | defined(_DEBUG)
+//	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+//#endif
+//
+//	try
+//	{
+//		GameApp theApp(hInstance);
+//		if (!theApp.Initialize())
+//			return 0;
+//
+//		return theApp.Run();
+//	}
+//	catch (DxException& e)
+//	{
+//		MessageBox(nullptr, e.ToString().c_str(), L"HR Failed", MB_OK);
+//		return 0;
+//	}
+//}
 
 GameApp::GameApp(HINSTANCE hInstance)
 	: D3DApp(hInstance)
@@ -343,7 +343,7 @@ void GameApp::OnKeyboardInput(const GameTimer& gt)
 
 	if (GetAsyncKeyState(VK_RIGHT/*D*/) & 0x8000)
 	{
-		mPlayer.MoveDown(mAllRitems, gt);
+		mPlayer.MoveRight(mAllRitems, gt);
 		mCamera.SetPosition(mPlayer.GetPos(mAllRitems).x, mCamera.GetPosition3f().y, mPlayer.GetPos(mAllRitems).z);
 	}
 
@@ -402,6 +402,8 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 	  mCamera.Strafe(-5.0f * gt.DeltaTime());
 	  mCamera.UpdateViewMatrix();
 	}
+
+	// TODO: (NOTE) CHECK AREA HAZARDS HERE
 
 	int i = 0;					//Makes sure each object with a different geo is using a different instance buffer
 	for (auto& e : mAllRitems)
