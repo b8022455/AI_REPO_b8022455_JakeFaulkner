@@ -404,6 +404,8 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 	}
 
 	// TODO: (NOTE) CHECK AREA HAZARDS HERE
+	// if player.x & player.z are within the tile x & z, cause effects
+
 
 	int i = 0;					//Makes sure each object with a different geo is using a different instance buffer
 	for (auto& e : mAllRitems)
