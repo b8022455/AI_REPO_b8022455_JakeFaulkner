@@ -3,16 +3,21 @@
 //#include "GameObject.h"
 #include "CombatController.h"
 #include "Common/Camera.h"
+#include "Tile.h"
 
 
 class PlayState : public State
 {
+	//Tile mTile;
+	
 	Player mPlayer;
 	PlayerWeapon mPlayerWeapon;
 	std::vector<Enemy> mEnemies;
 
+	TileManager mTileManager;
 	CombatController mCombatController;
 	Camera mCamera;
+	
 
 	virtual void Initialize() override;
 	virtual void Update(const GameTimer& gt) override;

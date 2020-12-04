@@ -124,11 +124,11 @@ bool GameApp::Initialize()
 	BuildPlayerGeometry();
 	BuildMaterials();
 	BuildRenderItems();
+	// Sets up all states. Requires render items
+	mStateManager.Init(); 
 	BuildFrameResources();
 	BuildPSOs();
 
-	// Sets up all states. Requires render items
-	mStateManager.Init(); 
 
 	// Normally called OnSize() at start but no camera is created until states initialised.
 	if (mpActiveCamera)
@@ -156,6 +156,7 @@ InstanceData* GameApp::AddRenderItemInstance(const std::string & renderItemName)
 		//Todo: need to test large number of instances since using a deque. 
 		mAllRitems[renderItemName]->Instances.resize(mAllRitems[renderItemName]->Instances.size() + 1);
 		++mAllRitems[renderItemName]->InstanceCount;
+		++mInstanceCount;
 		return &mAllRitems[renderItemName]->Instances.back();
 
 	}
@@ -220,9 +221,6 @@ void GameApp::Update(const GameTimer& gt)
 		else
 			mGameAudio.Play("ring9", nullptr, true);
 	}
-
-	mDebugLog << PrintMatrix(mpActiveCamera->GetView());
-
 
 }
 
@@ -1005,9 +1003,12 @@ void GameApp::BuildRenderItems()
 	// Generate instance data.
 
 	auto boxRitem = std::make_unique<RenderItem>();
+
+
 	boxRitem->World = MathHelper::Identity4x4();
 	boxRitem->TexTransform = MathHelper::Identity4x4();
 	boxRitem->ObjCBIndex = 0;
+	boxRitem->Mat = mMaterials["ice0"].get();
 	boxRitem->Geo = mGeometries["floorTileGeo"].get();
 	boxRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	boxRitem->InstanceCount = 0;
@@ -1015,48 +1016,6 @@ void GameApp::BuildRenderItems()
 	boxRitem->StartIndexLocation = boxRitem->Geo->DrawArgs["floorTile"].StartIndexLocation;
 	boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["floorTile"].BaseVertexLocation;
 	boxRitem->Bounds = boxRitem->Geo->DrawArgs["floorTile"].Bounds;
-
-	const int n = 32; // USED TO CHOOSE SIZE OF GRID
-	mInstanceCount = n * n;
-	boxRitem->Instances.resize(mInstanceCount);
-
-	float width = 30.0f;
-	float height = 30.0f;
-	float depth = 30.0f;
-	float x = -0.5f*width;
-	float z = -0.5f*depth;
-	float dx = width / (n - 1);
-	float dz = depth / (n - 1);
-
-	struct mapData { // STRUCT FOR MAP TEXTURE AND TILE DATA
-		int texIndex; //texture index from texture buffer for tile 
-		//int x; // horizontal component - WIP FOR 3D
-		//int y; // vertical component - WIP FOR 3D
-	};
-
-	mapData mapDataArray[n][n];
-
-	for (int k = 0; k < n; ++k)
-	{
-		for (int j = 0; j < n; ++j)
-		{
-			int index = k * n + j;
-			mapDataArray[j][k].texIndex = rand() % mMaterials.size(); 
-			//Selects random index from array of textures WIP - will be using auto generated clumping 2d array
-			
-			// Position instanced along a 3D grid.
-			boxRitem->Instances[index].World = XMFLOAT4X4(
-				1.0f, 0.0f, 0.0f, 0.0f,
-				0.0f, 1.0f, 0.0f, 0.0f,
-				0.0f, 0.0f, 1.0f, 0.0f,
-				x + j * dx, 0.0f, z + k * dz, 1.0f);
-
-			XMStoreFloat4x4(&boxRitem->Instances[index].TexTransform, XMMatrixScaling(1.0f, 1.0f, 1.0f));
-			//boxRitem->Instances[index].MaterialIndex = index % mMaterials.size();
-			//boxRitem->Instances[index].MaterialIndex = 1;
-			boxRitem->Instances[index].MaterialIndex = mapDataArray[j][k].texIndex; // set tile texture to struct data
-		}
-	}
 
 	///Generic box used as the weapon default for now
 	auto swordRitem = std::make_unique<RenderItem>();

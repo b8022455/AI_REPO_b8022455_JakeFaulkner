@@ -1,28 +1,14 @@
 #include "Player.h"
+#include "GameApp.h"
 
 
-void Player::UpdatePos()
+
+void Player::Update(const GameTimer & gt)
 {
-  //float playerXPos = mAllRitems["Player"]->Instances.at(0).World._41;
-  //float playerYPos = mAllRitems["Player"]->Instances.at(0).World._42;
-  //float playerZPos = mAllRitems["Player"]->Instances.at(0).World._43;
-  //
-  //XMFLOAT3 playerPos = XMFLOAT3(playerXPos, playerYPos, playerZPos); // todo: Whats this? It's an unused temp variable. Should this be pos?
+	GameApp::Get().mDebugLog << "Health:" << health << "\n";
 }
 
-//todo remove map param
-XMFLOAT3 Player::GetPos()
-{
-
-  return { 
-	  mpInstance->World._41 , 
-	  mpInstance->World._42 ,
-	  mpInstance->World._43 
-  };
-}
-
-
-void Player::MoveUp( const GameTimer& gt) 
+void Player::MoveUp( const GameTimer& gt)
 {
   const float dt = gt.DeltaTime();
   const float moveSpeed = 5.0f;

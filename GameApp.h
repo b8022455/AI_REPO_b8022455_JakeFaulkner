@@ -50,6 +50,8 @@ public:
 
 	// Output to viewport
 	std::ostringstream mDebugLog;
+	UINT mInstanceCount = 0;
+
 private:
 	virtual void Update(const GameTimer& gt)override;
 	virtual void Draw(const GameTimer& gt)override;
@@ -112,7 +114,6 @@ private:
 	// Render items divided by PSO.
 	std::vector<RenderItem*> mOpaqueRitems;
 
-	UINT mInstanceCount = 0;
 
 	bool mFrustumCullingEnabled = true;
 

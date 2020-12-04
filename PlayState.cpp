@@ -5,13 +5,18 @@ void PlayState::Initialize()
 {
 	GameApp::Get().SetActiveCamera(&mCamera);
 
-	mCamera.SetPosition(0.0f, 50.0f, 0.0f);
+	//mTile.Initialize("Tiles");
+	mTileManager.Initialize();
+
+	mCamera.SetPosition(0.0f, 25.0f, 0.0f);
 
 	//GameApp::Get().OnResize();
 
 	mPlayer.Initialize("Player"); // todo adapt GameApp mPlayer to this state
 	mPlayerWeapon.Initialize("Weapon");
 	
+
+
 	// Setup temp enemies
 	{
 		// inserts n of enemies
@@ -42,7 +47,7 @@ void PlayState::Initialize()
 
 void PlayState::Update(const GameTimer & gt)
 {
-
+	//mTileManager.Update(gt);
 	mPlayer.Update(gt);
 	mCombatController.Update();
 

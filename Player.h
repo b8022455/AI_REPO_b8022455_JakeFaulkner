@@ -13,12 +13,13 @@ using namespace DirectX;
 class Player : public GameObject
 {
 public:
+
+	void Update(const GameTimer& gt);
   void MoveUp		( const GameTimer& gt);
   void MoveDown		( const GameTimer& gt);
   void MoveLeft		( const GameTimer& gt);
   void MoveRight	( const GameTimer& gt);
-  void UpdatePos	();
-  XMFLOAT3 GetPos();
+
   int health = 100;
 
   const float PLAYER_RIGHTBOUND = 15.0f;
