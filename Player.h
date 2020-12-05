@@ -20,6 +20,8 @@ public:
   void MoveLeft		( const GameTimer& gt);
   void MoveRight	( const GameTimer& gt);
 
+  void DamagePlayer(int damage);
+
   int health = 100;
 
   float hazardTimer = 0; // needs to be set as needed, used to apply hazard effects (not every frame)
@@ -32,10 +34,11 @@ public:
   const float PLAYER_UPBOUND = 15.0f;
   const float PLAYER_DOWNBOUND = -15.0f;
 
+  bool facingLeft = false;
+  bool facingRight = true;
+
 private:
   void DamageEnemy();		
-  void DamagePlayer();
-
 
   XMFLOAT3 pos;
   

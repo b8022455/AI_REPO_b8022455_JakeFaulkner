@@ -8,20 +8,27 @@ void CombatController::Initialize(Player* player, PlayerWeapon* playerWeapon, st
 	mpEnemies = enemies;
 	mpPlayerWeapon = playerWeapon;
 
-	collisionPoint = mpPlayerWeapon->collisionPos;
+	//Sets up the collision point for the weapon
+	collisionPoint = mpPlayerWeapon->mpInstance->World;
+	collisionPoint._41 += 0.1f;
 }
 
 void CombatController::Update()
 {
+	mpPlayerWeapon->playerPos = mpPlayer->mpInstance->World;
 	isAttacking = CheckIfAttackIsFinished();		//Stops the attack
-	collisionPoint = mpPlayerWeapon->collisionPos;	//Updates to check positions of objects in case of collision
+
+	//Updates the collision point when the weapon is rotating
+	collisionPoint = mpPlayerWeapon->mpInstance->World;
+	collisionPoint._41 += 0.1f;
 
 	if (isAttacking)
 		mpPlayerWeapon->SwingWeapon();
-	//else												//Code for weapon follwing player at all times, move updateWeaponMatrix to public in order to work
-	//{
-	//	mPlayerWeapon.UpdateWeaponMatrix(mAllRitems);
-	//}
+	else
+	{
+		mpPlayerWeapon->facingLeft = mpPlayer->facingLeft;
+		mpPlayerWeapon->facingRight = mpPlayer->facingRight;
+	}
 
 	mpPlayerWeapon->UpdateTimer();					//Keeps timer updated regardless of key input
 }
@@ -34,16 +41,6 @@ void CombatController::PlayerAttack()
 bool CombatController::CheckIfAttackIsFinished()
 {
 	return mpPlayerWeapon->GetAttackStatus();
-}
-
-void CombatController::DamageEnemy()
-{
-	//Take health from enemy
-}
-
-void CombatController::DamagePlayer()
-{
-	//Take health from player
 }
 
 bool CombatController::CheckCollision(float ObjX, float ObjY, float ObjZ)
@@ -89,7 +86,6 @@ bool CombatController::CheckCollision(XMFLOAT3 Obj1, XMFLOAT3 Obj2, float xMin, 
 	return false;				//If the distance between the objects is not within the boundaries, there is no collision
 }
 
-
 void PlayerWeapon::Initialize(const std::string& renderItemName)
 {
 	// Setup a render item
@@ -97,15 +93,10 @@ void PlayerWeapon::Initialize(const std::string& renderItemName)
 
 	times.timeAtNow = time(0);
 	times.nextAtkTime = 0;
-	times.err = localtime_s(&times.currentTime, &times.timeAtNow);		//Gets current time from system and stores in currentTime struct
+	times.storeLocaltime = localtime_s(&times.currentTime, &times.timeAtNow);		//Gets current time from system and stores in currentTime struct
 
-
-	weaponRotation = -1.39626f;
+	weaponRotation = weaponStartingRotation;		//Sets to -80 degrees
 	attacking = false;
-
-	//Collision point stuff
-	collisionPos = weaponPositionMatrix2;
-	collisionPos._41 += 0.1f;
 }
 
 void PlayerWeapon::Attack()
@@ -113,73 +104,71 @@ void PlayerWeapon::Attack()
 	if (times.currentTime.tm_sec > times.nextAtkTime)
 	{
 		PositionWeapon();
-
 		SwingWeapon();
 	}
-
 }
 
 void PlayerWeapon::PositionWeapon()
 {
 	times.nextAtkTime = times.currentTime.tm_sec + times.AttackDelay;	//Resets timer on attack delay (Currentime + 1 sec)
 	attacking = true;
-	weaponRotation = -1.39626f;		//Sets rotation to default -80 degree angle
 	UpdateWeaponMatrix();
 
-	//Positions the first instance (Only instance) of the 'weapon' to the correct position
-
 	mpInstance->MaterialIndex = 4;
-	mpInstance->World = weaponPositionMatrix2;
 }
 
 void PlayerWeapon::SwingWeapon()
 {
-	if (weaponRotation > 1.39626f)		//80 degrees, not final until final sword/player models are in
+	if (weaponRotation > weaponEndRotation)		//80 degrees, not final until final sword/player models are in
 		ResetWeaponPosition();
 	else
 	{
-		weaponRotation += 0.03f;		///Could replace into its own variable
+		weaponRotation += weaponIncrementRotationAmount;
 		UpdateWeaponMatrix();		//Updates to show the new rotation
-
-		mpInstance->World = weaponPositionMatrix2;
 	}
-
-	//Sets collision point to the edge of the sword
-	collisionPos = weaponPositionMatrix2;
-	collisionPos._41 += 0.1f;
 }
 
 void PlayerWeapon::ResetWeaponPosition()
 {
-	weaponRotation = -1.39626f;			//Resets rotation to -80 degrees
+	weaponRotation = weaponStartingRotation;			//Resets rotation to -80 degrees
 	attacking = false;
 
 	weaponPositionMatrix = XMMatrixTranslation(0.0f, -5.0f, 2.0f);		//Resets the sword back underneath the map until attack is used again
-	XMStoreFloat4x4(&weaponPositionMatrix2, weaponPositionMatrix);
-
-	mpInstance->World = weaponPositionMatrix2;
+	XMStoreFloat4x4(&mpInstance->World, weaponPositionMatrix);
 }
 
 void PlayerWeapon::UpdateTimer()
 {
 	times.timeAtNow = time(0);
-	times.err = localtime_s(&times.currentTime, &times.timeAtNow);
+	times.storeLocaltime = localtime_s(&times.currentTime, &times.timeAtNow);
 	if (times.currentTime.tm_sec == 0)	times.nextAtkTime = 0;		//Prevents it from doing multiple attacks per frame once hit 60 secs
 }
 
 void PlayerWeapon::UpdateWeaponMatrix()
 {
+	float playerPosOffsetX = 0.0f;
+
+	if (facingLeft)
+	{
+		playerPosOffsetX = -0.2f;
+		weaponPositionMatrix = XMMatrixTranslation(-0.5f, 0.0f, 0.0f);
+	}
+	else if (facingRight)
+	{
+		playerPosOffsetX = 0.2f;
+		weaponPositionMatrix = XMMatrixTranslation(1.4f, 0.0f, 0.0f);
+	}
+
 	///Find way to do rotation around a point using 1 matrix
-	weaponPositionMatrix = XMMatrixTranslation(1.4f, 0.0f, 0.0f);
 	weaponPositionMatrix *= XMMatrixRotationY(weaponRotation);
 	//Positions the weapon at the players position + offset
 	weaponPositionMatrix *= XMMatrixTranslation(
-		mpInstance->World._41 + 0.2f,
-		mpInstance->World._42 + 1.0f, 
-		mpInstance->World._43
+		playerPos._41 + playerPosOffsetX,
+		playerPos._42 + 1.0f,
+		playerPos._43
 	);
 
-	XMStoreFloat4x4(&weaponPositionMatrix2, weaponPositionMatrix);		//Stores above calculated matrix into the matrix which is assigned to the Objs World position
+	XMStoreFloat4x4(&mpInstance->World, weaponPositionMatrix);		//Stores above calculated matrix into the world matrix for the obj
 }
 
 bool PlayerWeapon::GetAttackStatus()
