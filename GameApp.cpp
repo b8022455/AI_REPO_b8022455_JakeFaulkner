@@ -351,36 +351,6 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 	//mCombatController.Update(mAllRitems);		//Continues rotating the weapon if the player has attacked
 	//mPlayer.UpdatePos(mAllRitems);
 
-	
-
-	// TODO: (NOTE) CHECK AREA HAZARDS HERE
-	// if player.x & player.z are within the tile.x & tile.z, cause effects, for now DEBUG logic
-	
-	// reset hazard timer for tile hazards 
-	if (mpInstance.hazardTimer >= 0) {
-		mpInstance.hazardTimer -= gt.DeltaTime();
-	}
-
-	// damage player over time, needs a wait between effect activations
-	if (mpInstance.GetPos(mAllRitems).x >= 10.0f) {
-		if (mpInstance.hazardTimer <= 0) { // if hazard should be active
-			mpInstance.health -= 5;
-			mpInstance.hazardTimer = 3; // reset hazard timer
-		}
-	}
-
-	// slow player until they leave the tile
-	// while player is not on a slow tile movespeed is normal? (for possible use when applied to tile object)
-	// if player is on a slow tile
-	if (mpInstance->GetPos(mAllRitems).z >= 10.0f) {
-		mpInstance.Slowed = true;
-
-	}
-	// if player is not on a slow tile
-	if ((mpInstance.GetPos(mAllRitems).z <= 10.0f) && mpInstance.Slowed == true) {
-		mpInstance.Slowed = false;
-	}
-
 	int i = 0;					//Makes sure each object with a different geo is using a different instance buffer
 	for (auto& e : mAllRitems)
 	{

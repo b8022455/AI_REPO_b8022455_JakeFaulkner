@@ -15,7 +15,6 @@
 #include "TextConsole.h"
 #include "Player.h"
 #include "State.h"
-#include "GameObject.h"
 
 
 class GameApp : public D3DApp, public Singleton<GameApp>

@@ -51,6 +51,34 @@ void PlayState::Update(const GameTimer & gt)
 	mPlayer.Update(gt);
 	mCombatController.Update();
 
+	// TODO: (NOTE) CHECK AREA HAZARDS HERE
+	// if player.x & player.z are within the tile.x & tile.z, cause effects, for now DEBUG logic
+
+	// reset hazard timer for tile hazards 
+	if (mPlayer.hazardTimer >= 0) {
+		mPlayer.hazardTimer -= gt.DeltaTime();
+	}
+
+	// damage player over time, needs a wait between effect activations
+	if (mPlayer.GetPos().x >= 10.0f) {
+		if (mPlayer.hazardTimer <= 0) { // if hazard should be active
+			mPlayer.health -= 5;
+			mPlayer.hazardTimer = 3; // reset hazard timer
+		}
+	}
+
+	// slow player until they leave the tile
+	// while player is not on a slow tile movespeed is normal? (for possible use when applied to tile object)
+	// if player is on a slow tile
+	if (mPlayer.GetPos().z >= 10.0f) {
+		mPlayer.Slowed = true;
+
+	}
+	// if player is not on a slow tile
+	if ((mPlayer.GetPos().z <= 10.0f) && mPlayer.Slowed == true) {
+		mPlayer.Slowed = false;
+	}
+
 	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
 	{ 
 		e.Update(gt); 
