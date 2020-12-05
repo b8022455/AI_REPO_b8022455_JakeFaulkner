@@ -233,6 +233,7 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 
 	if (GetAsyncKeyState('G') & 0x8000)
 	{
+	  mEnemies.push_back(Enemy());
 
 	  std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
 	  {
