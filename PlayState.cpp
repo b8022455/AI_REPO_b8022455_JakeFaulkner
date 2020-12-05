@@ -23,6 +23,7 @@ void PlayState::Initialize()
 		mEnemies.push_back(Enemy());
 		mEnemies.push_back(Enemy());
 		mEnemies.push_back(Enemy());
+
 		//Init all enemies
 		std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e) 
 		{ 
@@ -231,5 +232,17 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 	{
 		mPlayer.MoveRight( gt);
 		mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
+	}
+
+	if (GetAsyncKeyState('G') & 0x8000)
+	{
+
+	  std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
+	  {
+		e.Initialize("Enemy");
+
+		e.SetRandomPosition();
+	  });
+
 	}
 }

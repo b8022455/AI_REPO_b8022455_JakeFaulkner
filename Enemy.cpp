@@ -16,6 +16,22 @@ void Enemy::SetPosition(const DirectX::XMFLOAT3& newPosition)
 	mpInstance->World._43 = newPosition.z;
 }
 
+void Enemy::SetRandomPosition()
+{
+	int min = -15;
+	int max = 15;
+	std::random_device rd;     // only used once to initialise (seed) engine
+	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+    std::uniform_int_distribution<int> uni(min, max); // guaranteed unbiased
+
+	auto random_integer = uni(rng);
+	auto random_integer2 = uni(rng);
+
+	mpInstance->World._41 = random_integer;
+	mpInstance->World._42 = 0;
+	mpInstance->World._43 = random_integer2;
+}
+
 DirectX::XMFLOAT3 Enemy::GetPosition()
 {
 	return {
