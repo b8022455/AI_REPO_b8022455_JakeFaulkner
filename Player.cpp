@@ -8,20 +8,20 @@ void Player::Update(const GameTimer & gt)
 	GameApp::Get().mDebugLog << "Health:" << health << "\n";
 }
 
-void Player::MoveUp( const GameTimer& gt)
+void Player::MoveUp(const GameTimer& gt)
 {
-  const float dt = gt.DeltaTime();
+	const float dt = gt.DeltaTime();
 
-  if (mpInstance->World._43 <= PLAYER_UPBOUND)
-  {
-	  if (Slowed == true) 
-		mpInstance->World._43 += (0.5f * MOVE) * dt;
-	  if (Slowed == false)
-		  mpInstance->World._43 += MOVE * dt;
-  }
+	if (mpInstance->World._43 <= PLAYER_UPBOUND)
+	{
+		if (Slowed == true)
+			mpInstance->World._43 += (0.5f * MOVE) * dt;
+		if (Slowed == false)
+			mpInstance->World._43 += MOVE * dt;
+	}
 }
 
-void Player::MoveDown( const GameTimer& gt)
+void Player::MoveDown(const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
 
@@ -35,7 +35,7 @@ void Player::MoveDown( const GameTimer& gt)
 
 }
 
-void Player::MoveLeft( const GameTimer& gt)
+void Player::MoveLeft(const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
 
@@ -45,11 +45,14 @@ void Player::MoveLeft( const GameTimer& gt)
 			mpInstance->World._41 -= (0.5f * MOVE) * dt;
 		if (Slowed == false)
 			mpInstance->World._41 -= MOVE * dt;
+
+		facingLeft = true;
+		facingRight = false;
 	}
 
 }
 
-void Player::MoveRight( const GameTimer& gt)
+void Player::MoveRight(const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
 
@@ -59,8 +62,16 @@ void Player::MoveRight( const GameTimer& gt)
 			mpInstance->World._41 += (0.5f * MOVE) * dt;
 		if (Slowed == false)
 			mpInstance->World._41 += MOVE * dt;
+
+		facingRight = true;
+		facingLeft = false;
 	}
 
 }
 
-
+void Player::DamagePlayer(int damage)			//When enemy hits with player
+{
+	float x = 5.0f;
+	mpInstance->World._41 -= x;
+	health -= damage;
+}

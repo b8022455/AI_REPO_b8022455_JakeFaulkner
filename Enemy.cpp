@@ -41,4 +41,9 @@ DirectX::XMFLOAT3 Enemy::GetPosition()
 	};
 }
 
-
+void Enemy::DamageEnemy(int dmg)
+{
+	health -= dmg;
+	mpInstance->MaterialIndex = 5;		//Visual check, remove eventually
+	mpInstance->World._41 += 5.0f;
+}

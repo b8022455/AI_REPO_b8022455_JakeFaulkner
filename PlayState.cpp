@@ -89,16 +89,13 @@ void PlayState::Update(const GameTimer & gt)
 			e.mpInstance->World._42,
 			e.mpInstance->World._43 ))
 		{
-			e.mpInstance->MaterialIndex = 5;//Visual representation for collision
-			//todo decrease enemy health
-			e.mpInstance->World._41 += 5.0f;			///Pushes enemy back after being hit by sword, In future have enemy move back based on which way player is facing !!!
+			e.DamageEnemy(5);		//Takes away health from enemy + blowsback enemy position
 		}
 		
 		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetPosition()))
 		{
-			float x = -5.0f;
-			mPlayer.mpInstance->World._41 -= x;		///Find way to connect this to player class !!!
-			mPlayer.health -= 5;						//todo damage based on enemy
+			float x = 5.0f;
+			mPlayer.DamagePlayer(5);
 			mCamera.Strafe(-x * gt.DeltaTime());
 			mCamera.UpdateViewMatrix();
 		}

@@ -130,15 +130,8 @@ private:
 	GameAudio mGameAudio;
 	DeltaTimer mAudioTimer; //Changing track after a while
 
-	//Combat
-	//CombatController mCombatController;
-	//Player mPlayer;
-
 	//States
 	StateManager mStateManager;
-
-	///Will be moved into its own class, just left here for ease of testing !!!Move in future
-	int enemyHealth = 100;
 
 	//Viewport Sprites
 	SpriteManager mSprites;

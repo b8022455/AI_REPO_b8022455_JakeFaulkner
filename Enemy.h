@@ -11,6 +11,7 @@ public:
 	void InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int materialIndex);	//Sets up the enemy
 	void SetPosition(const DirectX::XMFLOAT3& newPosition);										//Sets position to something new locally and globally
 	void Enemy::SetRandomPosition();
+	void DamageEnemy(int damage);		//When enemy gets hit by weapon
 	DirectX::XMFLOAT3 GetPosition();														//Returns local instance of position
 private:
 	void UpdatePosition();				//Updates local instance of position each update
