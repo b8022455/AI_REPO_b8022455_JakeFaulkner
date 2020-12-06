@@ -24,9 +24,9 @@ public:
 
 	//XMFLOAT4X4 collisionPos;		//Passed to Combat Controller class for ease of access for now
 	XMFLOAT4X4 playerPos;
+	
+	int playerDirection;			//Gets enum value of which way player is facing
 
-	bool facingLeft = false;
-	bool facingRight = true;
 private:
 	void PositionWeapon();
 	void ResetWeaponPosition();		///Positions weapon out of sight when done swinging, Find better way to do this!!!
@@ -34,9 +34,9 @@ private:
 
 	int damage;		///Not sure if needed in future
 	XMMATRIX weaponPositionMatrix;
-	const float weaponStartingRotation = -1.39626f;		//-80 degrees starting point for rotation
+	float weaponStartingRotation = -1.39626f;		//-80 degrees starting point for rotation
 	float weaponRotation;
-	const float weaponEndRotation = 1.39626f;			//80 degress ending point for rotation
+	float weaponEndRotation = 1.39626f;			//80 degress ending point for rotation
 	const float weaponIncrementRotationAmount = 0.03f;
 	bool attacking;
 

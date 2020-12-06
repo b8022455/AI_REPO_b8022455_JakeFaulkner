@@ -10,6 +10,8 @@
 
 using namespace DirectX;
 
+enum PlayerFacingDirection {Left, Right, Up, Down};
+
 class Player : public GameObject
 {
 public:
@@ -34,8 +36,7 @@ public:
   const float PLAYER_UPBOUND = 15.0f;
   const float PLAYER_DOWNBOUND = -15.0f;
 
-  bool facingLeft = false;
-  bool facingRight = true;
+  PlayerFacingDirection playerDir = PlayerFacingDirection::Right;
 
 private:
   void DamageEnemy();		

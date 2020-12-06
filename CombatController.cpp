@@ -25,10 +25,7 @@ void CombatController::Update()
 	if (isAttacking)
 		mpPlayerWeapon->SwingWeapon();
 	else
-	{
-		mpPlayerWeapon->facingLeft = mpPlayer->facingLeft;
-		mpPlayerWeapon->facingRight = mpPlayer->facingRight;
-	}
+		mpPlayerWeapon->playerDirection = mpPlayer->playerDir;		//gets direction the player is facing, doesn't detect when attacking to prevent sword switching positions
 
 	mpPlayerWeapon->UpdateTimer();					//Keeps timer updated regardless of key input
 }
@@ -112,6 +109,20 @@ void PlayerWeapon::PositionWeapon()
 {
 	times.nextAtkTime = times.currentTime.tm_sec + times.AttackDelay;	//Resets timer on attack delay (Currentime + 1 sec)
 	attacking = true;
+
+	if (playerDirection > 1)		//If the player direction is Up (2 in the enum) or Down (3 in the enum)
+	{
+		weaponStartingRotation = 0.349066f;		//Sets new starting to rotation to 20 degrees for up/down
+		weaponEndRotation = 2.79253f;			//Sets new end rotation to 160 degrees
+	}
+	else if(playerDirection <= 1)				//If player direction is Left (0 in the enum) or Right (1 in the enum)
+	{
+		weaponStartingRotation = -1.39626f;
+		weaponEndRotation = 1.39626f;
+	}
+
+	weaponRotation = weaponStartingRotation;
+
 	UpdateWeaponMatrix();
 
 	mpInstance->MaterialIndex = 4;
@@ -147,16 +158,33 @@ void PlayerWeapon::UpdateTimer()
 void PlayerWeapon::UpdateWeaponMatrix()
 {
 	float playerPosOffsetX = 0.0f;
+	float playerPosOffsetZ = 0.0f;
 
-	if (facingLeft)
+	switch (playerDirection)
 	{
-		playerPosOffsetX = -0.2f;
-		weaponPositionMatrix = XMMatrixTranslation(-0.5f, 0.0f, 0.0f);
-	}
-	else if (facingRight)
-	{
-		playerPosOffsetX = 0.2f;
-		weaponPositionMatrix = XMMatrixTranslation(1.4f, 0.0f, 0.0f);
+		case 0:						//Left
+			playerPosOffsetX = -0.2f;
+			weaponPositionMatrix = XMMatrixTranslation(-0.5f, 0.0f, 0.0f);
+			break;
+
+		case 1:						//Right
+			playerPosOffsetX = 0.2f;
+			weaponPositionMatrix = XMMatrixTranslation(1.4f, 0.0f, 0.0f);
+			break;
+
+		case 2:						//Up
+			playerPosOffsetZ = 0.2f;
+			weaponPositionMatrix = XMMatrixTranslation(-0.5f, 0.0f, 0.0f);
+			break;
+
+		case 3:						//Down
+			playerPosOffsetZ = -0.2f;
+			weaponPositionMatrix = XMMatrixTranslation(1.4f, 0.0f, 0.0f);
+			break;
+
+		default:
+			assert(playerDirection);
+				break;
 	}
 
 	///Find way to do rotation around a point using 1 matrix
@@ -165,7 +193,7 @@ void PlayerWeapon::UpdateWeaponMatrix()
 	weaponPositionMatrix *= XMMatrixTranslation(
 		playerPos._41 + playerPosOffsetX,
 		playerPos._42 + 1.0f,
-		playerPos._43
+		playerPos._43 + playerPosOffsetZ
 	);
 
 	XMStoreFloat4x4(&mpInstance->World, weaponPositionMatrix);		//Stores above calculated matrix into the world matrix for the obj

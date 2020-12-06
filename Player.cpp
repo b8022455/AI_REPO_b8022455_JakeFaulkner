@@ -18,6 +18,8 @@ void Player::MoveUp(const GameTimer& gt)
 			mpInstance->World._43 += (0.5f * MOVE) * dt;
 		if (Slowed == false)
 			mpInstance->World._43 += MOVE * dt;
+
+		playerDir = PlayerFacingDirection::Up;
 	}
 }
 
@@ -31,6 +33,8 @@ void Player::MoveDown(const GameTimer& gt)
 			mpInstance->World._43 -= (0.5f * MOVE) * dt;
 		if (Slowed == false)
 			mpInstance->World._43 -= MOVE * dt;
+
+		playerDir = PlayerFacingDirection::Down;
 	}
 
 }
@@ -46,8 +50,7 @@ void Player::MoveLeft(const GameTimer& gt)
 		if (Slowed == false)
 			mpInstance->World._41 -= MOVE * dt;
 
-		facingLeft = true;
-		facingRight = false;
+		playerDir = PlayerFacingDirection::Left;
 	}
 
 }
@@ -63,8 +66,7 @@ void Player::MoveRight(const GameTimer& gt)
 		if (Slowed == false)
 			mpInstance->World._41 += MOVE * dt;
 
-		facingRight = true;
-		facingLeft = false;
+		playerDir = PlayerFacingDirection::Right;
 	}
 
 }
