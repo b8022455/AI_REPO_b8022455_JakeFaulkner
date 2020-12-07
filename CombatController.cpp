@@ -25,7 +25,15 @@ void CombatController::Update()
 	if (isAttacking)
 		mpPlayerWeapon->SwingWeapon();
 	else
+	{
 		mpPlayerWeapon->playerDirection = mpPlayer->playerDir;		//gets direction the player is facing, doesn't detect when attacking to prevent sword switching positions
+		
+		std::for_each(mpEnemies->begin(), mpEnemies->end(), [&](Enemy& e)
+		{
+			e.playerDirection = mpPlayer->playerDir;				//Gets direction player is facing into the enemy class to correctly blowback the enemy from the player
+		});
+
+	}
 
 	mpPlayerWeapon->UpdateTimer();					//Keeps timer updated regardless of key input
 }
@@ -47,9 +55,9 @@ bool CombatController::CheckCollision(float ObjX, float ObjY, float ObjZ)
 	float yDistance = ObjY - collisionPoint._42;
 	float zDistance = ObjZ - collisionPoint._43;
 
-	if (xDistance > -1.0f && xDistance < 1.0f)							//If distance between X coordinate is within boundaries (-1.0 < X < 1.0)
+	if (xDistance > -1.5f && xDistance < 1.0f)							//If distance between X coordinate is within boundaries (-1.5 < X < 1.0)
 		if (yDistance > -1.5f && yDistance < 1.5f)						//If distance between Y coordinate is within boundaries (-1.5 < Y < 1.5)
-			if (zDistance > -1.0f && zDistance < 1.0f)					//If distance between Z coordinate is within boundaries (-1.0f < Z < 1.0f)
+			if (zDistance > -1.0f && zDistance < 2.0f)					//If distance between Z coordinate is within boundaries (-1.0f < Z < 2.0f)
 				return true;				//There is a collision between the 2 objects
 
 	return false;				//If the distance between the objects is not within the boundaries, there is no collision

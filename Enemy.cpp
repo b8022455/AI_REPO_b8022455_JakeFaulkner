@@ -24,8 +24,8 @@ void Enemy::SetRandomPosition()
 	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
     std::uniform_int_distribution<int> uni(min, max); // guaranteed unbiased
 
-	auto random_integer = uni(rng);
-	auto random_integer2 = uni(rng);
+	float random_integer = (float)uni(rng);
+	float random_integer2 = (float)uni(rng);
 
 	mpInstance->World._41 = random_integer;
 	mpInstance->World._42 = 0;
@@ -45,5 +45,30 @@ void Enemy::DamageEnemy(int dmg)
 {
 	health -= dmg;
 	mpInstance->MaterialIndex = 5;		//Visual check, remove eventually
-	mpInstance->World._41 += 5.0f;
+
+	float x = 0.0f;
+	float z = 0.0f;
+
+	//Blows back enemy based on what position the enemy was hit from
+	switch (playerDirection)
+	{
+	case 0:										//Left
+		x = -5.0f;
+		break;
+
+	case 1:										//Right
+		x = 5.0f;
+		break;
+
+	case 2:										//Up
+		z = 5.0f;
+		break;
+
+	case 3:										//Down
+		z = -5.0f;
+		break;
+	}
+
+	mpInstance->World._41 += x;
+	mpInstance->World._43 += z;
 }

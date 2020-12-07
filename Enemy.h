@@ -13,6 +13,7 @@ public:
 	void Enemy::SetRandomPosition();
 	void DamageEnemy(int damage);		//When enemy gets hit by weapon
 	DirectX::XMFLOAT3 GetPosition();														//Returns local instance of position
+	int playerDirection;			//Gets enum value of which way player is facing
 private:
 	void UpdatePosition();				//Updates local instance of position each update
 	

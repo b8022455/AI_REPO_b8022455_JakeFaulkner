@@ -73,7 +73,29 @@ void Player::MoveRight(const GameTimer& gt)
 
 void Player::DamagePlayer(int damage)			//When enemy hits with player
 {
-	float x = 5.0f;
-	mpInstance->World._41 -= x;
+	float x = 0.0f;
+	float z = 0.0f;
 	health -= damage;
+
+	switch (playerDir)
+	{
+	case 0:									//Left
+		x = 5.0f;
+		break;
+
+	case 1:									//Right
+		x = -5.0f;
+		break;
+
+	case 2:									//Up
+		z = -5.0f;
+		break;
+
+	case 3:									//Down
+		z = 5.0f;
+		break;
+	}
+
+	mpInstance->World._41 += x;
+	mpInstance->World._43 += z;
 }
