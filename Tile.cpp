@@ -42,7 +42,6 @@ void TileManager::Initialize()
 		mTileGrid.push_back(std::move(tl));
 	
 	}
-
 }
 
 void TileManager::Update(const GameTimer & gt)
@@ -60,3 +59,50 @@ void TileManager::SetTile(int x, int y, const Tile & tile)
 	mTileGrid.at(y).at(x) = tile; //todo x,y may need swapping around
 
 }
+//----------------INDIVIDUAL TILE CODE-----------------------------------------------//
+
+void Tile::Initialize(const std::string& renderItemName)
+{
+	AddRenderItemInstance("Tile");
+}
+
+void Tile::InitTilePosition(int instance, DirectX::XMFLOAT3 position, int textIndex)
+{
+	mpInstance->MaterialIndex = textIndex;
+	mpInstance->World._41 = position.x;
+	mpInstance->World._42 = position.y;
+	mpInstance->World._43 = position.z;
+}
+
+void Tile::SetPosition(const DirectX::XMFLOAT3& newPosition)
+{
+	//Updates position on the object
+	mpInstance->World._41 = newPosition.x;
+	mpInstance->World._42 = newPosition.y;
+	mpInstance->World._43 = newPosition.z;
+}
+
+void Tile::SetRandomPosition()
+{
+	int min = -15;
+	int max = 15;
+	std::random_device rd;								// only used once to initialise (seed) engine
+	std::mt19937 rng(rd());								// random-number engine used (Mersenne-Twister in this case)
+	std::uniform_int_distribution<int> uni(min, max);	// guaranteed unbiased
+
+	float random_integer = (float)uni(rng);
+	float random_integer2 = (float)uni(rng);
+
+	mpInstance->World._41 = random_integer;
+	mpInstance->World._42 = 0;
+	mpInstance->World._43 = random_integer2;
+}
+
+//DirectX::XMFLOAT3 Tile::GetPos() // inherited member not allowed?
+//{
+//	return {
+//		mpInstance->World._41,
+//		mpInstance->World._42,
+//		mpInstance->World._43
+//	};
+//}

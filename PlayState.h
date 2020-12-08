@@ -4,16 +4,14 @@
 #include "CombatController.h"
 #include "Common/Camera.h"
 #include "Tile.h"
-
+using namespace std;
 
 class PlayState : public State
 {
-	//Tile mTile;
-	
 	Player mPlayer;
 	PlayerWeapon mPlayerWeapon;
 	std::vector<Enemy> mEnemies;
-
+	Tile mTile;
 	TileManager mTileManager;
 	CombatController mCombatController;
 	Camera mCamera;

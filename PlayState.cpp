@@ -4,8 +4,6 @@
 void PlayState::Initialize()
 {
 	GameApp::Get().SetActiveCamera(&mCamera);
-
-	//mTile.Initialize("Tiles");
 	mTileManager.Initialize();
 
 	mCamera.SetPosition(0.0f, 25.0f, 0.0f);
@@ -15,7 +13,28 @@ void PlayState::Initialize()
 	mPlayer.Initialize("Player"); // todo adapt GameApp mPlayer to this state
 	mPlayerWeapon.Initialize("Weapon");
 	
+	mTile.Initialize("Tile");
+	{
+		mTile.InitTilePosition
+		(
+			1, // temp instance
+			{
+				static_cast<float>(2.0f),
+				1.0f,
+				static_cast<float>(2.0f) //temp init position
+			},
+			2
+		); // temp texture index
 
+		mTile.SetPosition(
+			{
+				static_cast<float>(rand() % 10 + 2.0f),
+				1.0f,
+				static_cast<float>(rand() % 10 + 2.0f)
+			});
+
+		mTile.SetRandomPosition();
+	}
 
 	// Setup temp enemies
 	{
@@ -243,4 +262,12 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 	  });
 
 	}
+
+	/*if (GetAsyncKeyState('T') & 0x8000) //testing
+	{
+		mTile.Initialize("Tiles");
+
+		mTile.SetRandomPosition();
+
+	}*/
 }
