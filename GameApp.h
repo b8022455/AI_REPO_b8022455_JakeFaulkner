@@ -32,7 +32,7 @@ public:
 	// Access to instance data from states and gameobjects
 	InstanceData* AddRenderItemInstance(const std::string & renderItemName);
 	GameApp& GetGameApp() { return *this; }
-	// For access to lights,camera projection, fog
+	// For access to lights, camera projection, fog
 	PassConstants* GetMainPassCB();
 
 	const POINT& GetLastMousePos()
