@@ -1,5 +1,7 @@
 #include "PlayState.h"
 #include "GameApp.h"
+#include "XmfloatOverload.h"
+#include "SimpleMath.h"
 
 void PlayState::Initialize()
 {
@@ -67,6 +69,9 @@ void PlayState::Update(const GameTimer & gt)
 			mPlayer.hazardTimer = 3; // reset hazard timer
 		}
 	}
+
+
+	mCamera.SetPosition(Lerp(mCamera.GetPosition(), mPlayer.GetPos() + CAM_OFFSET,  0.9999f * gt.DeltaTime()));
 
 	// slow player until they leave the tile
 	// while player is not on a slow tile movespeed is normal? (for possible use when applied to tile object)
@@ -180,7 +185,6 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 		mCombatController.PlayerAttack();
 
 
-	mCamera.SetPosition(CAM_OFFSET + mPlayer.GetPos());
 
 	// CAMERA MOVEMENT
 	if (GetAsyncKeyState(/*VK_UP*/'W') & 0x8000) // implement boundaries
@@ -212,25 +216,25 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 	if (GetAsyncKeyState(VK_UP/*W*/) & 0x8000) { // Player movement
 		 //retool for camera
 		mPlayer.MoveUp( gt);
-		mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
+		//mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
 	}
 
 	if (GetAsyncKeyState(VK_DOWN/*S*/) & 0x8000)
 	{
 		mPlayer.MoveDown( gt);
-		mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
+		//mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
 	}
 
 	if (GetAsyncKeyState(VK_LEFT/*A*/) & 0x8000)
 	{
 		mPlayer.MoveLeft(gt);
-		mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
+		//mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
 	}
 
 	if (GetAsyncKeyState(VK_RIGHT/*D*/) & 0x8000)
 	{
 		mPlayer.MoveRight( gt);
-		mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
+		//mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
 	}
 
 	if (GetAsyncKeyState('G') & 0x8000)
