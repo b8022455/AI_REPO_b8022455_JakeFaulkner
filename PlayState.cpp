@@ -15,23 +15,7 @@ void PlayState::Initialize()
 	
 	mTile.Initialize("Tiles");
 	{
-		mTile.InitTilePosition
-		(
-			1, // temp instance
-			{
-				static_cast<float>(2.0f),
-				1.0f,
-				static_cast<float>(2.0f) //temp init position
-			},
-			2
-		); // temp texture index
-
-		mTile.SetPosition(
-			{
-				static_cast<float>(rand() % 10 + 2.0f),
-				1.0f,
-				static_cast<float>(rand() % 10 + 2.0f)
-			});
+		mTile.mpInstance->MaterialIndex = 4;
 
 		mTile.SetRandomPosition();
 	}

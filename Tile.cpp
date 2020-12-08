@@ -94,7 +94,7 @@ void Tile::SetRandomPosition()
 	float random_integer2 = (float)uni(rng);
 
 	mpInstance->World._41 = random_integer;
-	mpInstance->World._42 = 0;
+	mpInstance->World._42 = 5.0f; // todo change back to 0.0f
 	mpInstance->World._43 = random_integer2;
 }
 
