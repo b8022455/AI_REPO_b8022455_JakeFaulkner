@@ -41,7 +41,7 @@ void PlayState::Initialize()
 
 	mCombatController.Initialize(&mPlayer,&mPlayerWeapon,&mEnemies);
 
-	mCamera.Pitch(XMConvertToRadians(90.0f)); // SETS CAMERA TO FACE DOWN
+	mCamera.Pitch(XMConvertToRadians(45.0f)); // SETS CAMERA TO FACE DOWN
 	
 	
 }
@@ -179,6 +179,8 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 	if (GetAsyncKeyState('V') & 0x8000)		///Change key in future
 		mCombatController.PlayerAttack();
 
+
+	mCamera.SetPosition(CAM_OFFSET + mPlayer.GetPos());
 
 	// CAMERA MOVEMENT
 	if (GetAsyncKeyState(/*VK_UP*/'W') & 0x8000) // implement boundaries
