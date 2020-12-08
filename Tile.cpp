@@ -63,7 +63,7 @@ void TileManager::SetTile(int x, int y, const Tile & tile)
 
 void Tile::Initialize(const std::string& renderItemName)
 {
-	AddRenderItemInstance("Tile");
+	AddRenderItemInstance("Tiles");
 }
 
 void Tile::InitTilePosition(int instance, DirectX::XMFLOAT3 position, int textIndex)

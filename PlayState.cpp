@@ -13,7 +13,7 @@ void PlayState::Initialize()
 	mPlayer.Initialize("Player"); // todo adapt GameApp mPlayer to this state
 	mPlayerWeapon.Initialize("Weapon");
 	
-	mTile.Initialize("Tile");
+	mTile.Initialize("Tiles");
 	{
 		mTile.InitTilePosition
 		(
