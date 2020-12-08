@@ -11,8 +11,6 @@ void StateManager::Init()
 {
 	AddState("foo", std::make_unique<PlayState>());
 
-
-	
 	std::for_each(mStates.begin(), mStates.end(), [](auto& s) { s.second->Initialize(); });
 
 }
@@ -30,17 +28,18 @@ void StateManager::Update(const GameTimer & gt)
 	}
 
 }
-//void StateManager::Draw(const GameTimer& gt)
-//{
-//	if (IsValidState(mCurrentState))
-//	{
-//		mStates[mCurrentState]->Draw(gt);
-//	}
-//	else
-//	{
-//		assert(false);
-//	}
-//}
+void StateManager::Draw(const GameTimer & gt)
+{
+	if (IsValidState(mCurrentState))
+	{
+		mStates[mCurrentState]->Draw(gt);
+	}
+	else
+	{
+		assert(false);
+	}
+}
+
 void StateManager::AddState(const std::string & name, std::unique_ptr<State> newState)
 {
 	//Check the a state of the same name doesn't exist

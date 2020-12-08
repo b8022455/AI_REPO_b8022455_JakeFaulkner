@@ -1,5 +1,6 @@
 #include "PlayState.h"
 #include "GameApp.h"
+#include <unordered_map>
 
 void PlayState::Initialize()
 {
@@ -30,10 +31,10 @@ void PlayState::Initialize()
 			e.Initialize("Enemy"); 
 
 			e.SetPosition({
-			static_cast<float>(rand() % 10 + 2.0f),
-			1.0f,
-			static_cast<float>(rand() % 10 + 2.0f)
-				});
+				static_cast<float>(rand() % 10 + 2.0f),
+				1.0f,
+				static_cast<float>(rand() % 10 + 2.0f)
+			});
 		});
 
 		
@@ -43,6 +44,18 @@ void PlayState::Initialize()
 
 	mCamera.Pitch(XMConvertToRadians(90.0f)); // SETS CAMERA TO FACE DOWN
 	
+	// Sprites
+	{
+		Sprite spriteSample;
+
+		spriteSample.Initialise("tileTex");
+		mSprites["testSpriteFirst"] = spriteSample;
+
+		spriteSample.Initialise("stoneTex");
+		mSprites["testSpriteSecond"] = spriteSample;
+
+		
+	}
 	
 }
 
@@ -118,7 +131,21 @@ void PlayState::Update(const GameTimer & gt)
 
 	//mCamera.SetPosition(0, 50, 0);
 
+	// Sprite update
+	mSprites["testSpriteFirst"].rotation = cosf(gt.TotalTime()) * 0.1f;
+	mSprites["testSpriteSecond"].rotation = sinf(gt.TotalTime());
+
 	mCamera.UpdateViewMatrix();
+
+}
+
+void PlayState::Draw(const GameTimer & gt)
+{
+
+	std::for_each(mSprites.begin(), mSprites.end(), [](auto& sp)
+	{
+		sp.second.Draw();
+	});
 
 }
 
