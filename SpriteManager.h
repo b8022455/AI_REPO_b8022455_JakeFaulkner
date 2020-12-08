@@ -48,6 +48,26 @@ struct Sprite
 	void Draw();
 };
 
+class Button
+{
+	enum Action {
+		NO_ACTION,
+		GOTO_MAIN_MENU,
+		GOTO_GAME
+	};
+	Sprite sprite;
+	std::string text;
+	Action action;
+	bool enabled = true;
+
+public:
+	Button() {};
+	Button(const Sprite& s, const std::string& t, const Action& a);
+	void SetPos(const DirectX::XMFLOAT2& pos);
+
+	void Activate();
+};
+
 // Handles fonts and viewport sprites
 class SpriteManager
 {

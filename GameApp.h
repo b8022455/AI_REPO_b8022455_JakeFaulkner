@@ -60,6 +60,8 @@ public:
 		mSpriteManager.DrawFont(i, output);
 	}
 
+	void ChangeState(const std::string& name);
+
 	// Output to viewport
 	std::ostringstream mDebugLog;
 	UINT mInstanceCount = 0;

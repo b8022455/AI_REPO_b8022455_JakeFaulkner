@@ -124,3 +124,34 @@ void Sprite::Draw()
 {
 	GameApp::Get().DrawSprite(*this);
 }
+
+Button::Button(const Sprite & s, const std::string & t, const Action & a)
+	:
+	sprite(s),
+	text(t),
+	action(a)
+{
+	
+}
+
+void Button::SetPos(const XMFLOAT2 & pos)
+{
+	//todo postion text and sprite
+}
+
+void Button::Activate()
+{
+	switch (action)
+	{
+	case Button::NO_ACTION:
+		break;
+	case Button::GOTO_MAIN_MENU:
+		GameApp::Get().ChangeState("");
+		break;
+	case Button::GOTO_GAME:
+		GameApp::Get().ChangeState("");
+		break;
+	default:
+		break;
+	}
+}

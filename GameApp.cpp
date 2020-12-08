@@ -47,8 +47,6 @@ std::string PrintMatrix(XMMATRIX& xmm)
 	return o.str();
 }
 
-
-
 GameApp::GameApp(HINSTANCE hInstance)
 	: D3DApp(hInstance)
 {
@@ -182,6 +180,11 @@ void GameApp::OnResize()
 		BoundingFrustum::CreateFromMatrix(mCamFrustum, mpActiveCamera->GetProj());
 
 	}
+}
+
+void GameApp::ChangeState(const std::string & name)
+{
+	mStateManager.ChangeState(name);
 }
 
 void GameApp::Update(const GameTimer& gt)
