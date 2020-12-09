@@ -27,9 +27,9 @@ void PlayState::Initialize()
 	// Setup temp enemies
 	{
 		// inserts n of enemies
-		mEnemies.push_back(Enemy());
-		mEnemies.push_back(Enemy());
-		mEnemies.push_back(Enemy());
+		mEnemies.push_back(Enemy({ "EnemyType1", 0 }));
+		mEnemies.push_back(Enemy({ "EnemyType1", 0 }));
+		mEnemies.push_back(Enemy({ "EnemyType1", 0 }));
 
 		//Init all enemies
 		std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e) 

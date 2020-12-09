@@ -8,6 +8,11 @@ class Enemy : public GameObject
 public:
 	Enemy() {};		//Default Constructor
 
+	Enemy(std::pair<std::string, int> type)			//Gives enemy its type
+	{
+		enemyType = type;
+	};
+
 	void InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int materialIndex);	//Sets up the enemy
 	void SetPosition(const DirectX::XMFLOAT3& newPosition);										//Sets position to something new locally and globally
 	void Enemy::SetRandomPosition();
@@ -19,20 +24,13 @@ public:
 private:
 	void UpdatePosition();				//Updates local instance of position each update
 
-	int enemyType = 0;			///Can be changed to string to make it easier to understand, used to get correct drops from table
+	std::pair<std::string, int> enemyType;
 	
 	//Order of items is from Most Common -> Rarest
 	std::vector<std::pair<std::string, std::vector<std::string>>> lookupTable = 
 	{
 		{"EnemyType1", {"Common Sword", "Potion", "Uncommon Sword", "Elysian Whip", "Rare Sword"}},
-		{"EnemyType2", {"Item1", "Item2", "Item3", "Item4", "Item5"}}
+		{"EnemyType2", {"Potion", "Potion", "Uncommon Sword", "Rare Sword", "Cocaine"}}
 	};
 
-
-
-
-	//std::pair<std::string, std::vector<std::string>> lookUpTable = 
-	//{ 
-	//	"EnemyType1", {"Common Sword", "Uncommon Sword", "Rare Sword", "Potion", "Elysian Whip"}
-	//};
 };

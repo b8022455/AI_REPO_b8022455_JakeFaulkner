@@ -84,19 +84,19 @@ std::string Enemy::GetDropItem()
 	std::string droppedItem;
 
 	if(drop >= 60)				//Between 60 - 100
-		droppedItem = lookupTable.at(enemyType).second.at(0);		//Most Common item drop
+		droppedItem = lookupTable.at(enemyType.second).second.at(0);		//Most Common item drop
 
 	else if(drop >= 30)			//Between 30 - 59
-		droppedItem = lookupTable.at(enemyType).second.at(1);		//2nd most common item drop
+		droppedItem = lookupTable.at(enemyType.second).second.at(1);		//2nd most common item drop
 
 	else if(drop >= 15)			//Between 15 - 29
-		droppedItem = lookupTable.at(enemyType).second.at(2);		//3rd most common item drop
+		droppedItem = lookupTable.at(enemyType.second).second.at(2);		//3rd most common item drop
 
 	else if(drop >= 5)			//Between 5 - 14
-		droppedItem = lookupTable.at(enemyType).second.at(3);		//4th most common item drop
+		droppedItem = lookupTable.at(enemyType.second).second.at(3);		//4th most common item drop
 
 	else															//Rarest item drop
-		droppedItem = lookupTable.at(enemyType).second.at(4);
+		droppedItem = lookupTable.at(enemyType.second).second.at(4);
 	
 	return droppedItem;
 }
