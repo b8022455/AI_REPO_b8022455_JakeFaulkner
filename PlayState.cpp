@@ -275,4 +275,7 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 	  });
 
 	}
+
+	Inventory.push_back({ "Potion" });
+	Inventory.push_back({ "Berry" });
 }
