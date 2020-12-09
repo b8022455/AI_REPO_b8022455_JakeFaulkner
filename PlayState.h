@@ -4,6 +4,7 @@
 #include "CombatController.h"
 #include "Common/Camera.h"
 #include "Tile.h"
+#include <array>
 
 
 class PlayState : public State
@@ -16,7 +17,19 @@ class PlayState : public State
 
 	TileManager mTileManager;
 	CombatController mCombatController;
-	Camera mCamera;
+
+	enum CAMERA_TYPE
+	{
+		GAME = 0,
+		DEBUG = 1,
+		SIZE //Always last
+	};
+
+	CAMERA_TYPE mCamType = CAMERA_TYPE::GAME;
+
+	std::array<Camera, CAMERA_TYPE::SIZE> mCameras;
+	//Camera mCamera;
+	//Camera mCameraDebug;
 	
 
 	virtual void Initialize() override;

@@ -46,6 +46,7 @@ public:
 		mpActiveCamera = cam;
 	}
 
+
 	virtual void OnResize()override;
 
 	// Output to viewport
