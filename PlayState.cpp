@@ -101,6 +101,10 @@ void PlayState::Update(const GameTimer & gt)
 			e.mpInstance->World._43 ))
 		{
 			e.DamageEnemy(5);		//Takes away health from enemy + blowsback enemy position
+			if (e.health < 0)
+			{
+				Inventory.push_back({ e.GetDropItem() });		//Gets an item from the dropdown table
+			}
 		}
 		
 		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetPosition()))
@@ -276,6 +280,6 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 
 	}
 
-	Inventory.push_back({ "Potion" });
-	Inventory.push_back({ "Berry" });
+	//Inventory.push_back({ "Potion" });
+	//Inventory.push_back({ "Berry" });
 }

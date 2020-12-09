@@ -72,3 +72,31 @@ void Enemy::DamageEnemy(int dmg)
 	mpInstance->World._41 += x;
 	mpInstance->World._43 += z;
 }
+
+std::string Enemy::GetDropItem()
+{
+	std::random_device rd;     // only used once to initialise (seed) engine
+	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+	std::uniform_int_distribution<int> uni(0, 100); // guaranteed unbiased
+
+	int drop = uni(rng);		//Generates number between 1 and 100
+
+	std::string droppedItem;
+
+	if(drop >= 60)				//Between 60 - 100
+		droppedItem = lookupTable.at(enemyType).second.at(0);		//Most Common item drop
+
+	else if(drop >= 30)			//Between 30 - 59
+		droppedItem = lookupTable.at(enemyType).second.at(1);		//2nd most common item drop
+
+	else if(drop >= 15)			//Between 15 - 29
+		droppedItem = lookupTable.at(enemyType).second.at(2);		//3rd most common item drop
+
+	else if(drop >= 5)			//Between 5 - 14
+		droppedItem = lookupTable.at(enemyType).second.at(3);		//4th most common item drop
+
+	else															//Rarest item drop
+		droppedItem = lookupTable.at(enemyType).second.at(4);
+	
+	return droppedItem;
+}
