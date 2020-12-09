@@ -4,10 +4,17 @@
 
 #include "d3dApp.h"
 #include <WindowsX.h>
+#include <Keyboard.h>
+#include <GamePad.h>
+#include "../Input.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace std;
 using namespace DirectX;
+
+
+
+
 
 
 LRESULT CALLBACK
@@ -106,6 +113,7 @@ int D3DApp::Run()
 }
 
 bool D3DApp::Initialize()
+	
 {
 	if(!InitMainWindow())
 		return false;
@@ -240,6 +248,25 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch( msg )
 	{
+		//DXTK Keyboard
+	case WM_ACTIVATEAPP:
+		Keyboard::ProcessMessage(msg, wParam, lParam);
+		break;
+	case WM_KEYDOWN:
+	case WM_SYSKEYDOWN:
+	case WM_KEYUP:
+		if (wParam == VK_ESCAPE)
+		{
+			PostQuitMessage(0);
+		}
+		else if ((int)wParam == VK_F2)
+			Set4xMsaaState(!m4xMsaaState);
+		
+		/*return 0;*/
+	case WM_SYSKEYUP:
+		Keyboard::ProcessMessage(msg, wParam, lParam);
+		break;
+
 	// WM_ACTIVATE is sent when the window is activated or deactivated.  
 	// We pause the game when the window is deactivated and unpause it 
 	// when it becomes active.  
@@ -359,15 +386,7 @@ LRESULT D3DApp::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_MOUSEMOVE:
 		OnMouseMove(wParam, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		return 0;
-    case WM_KEYUP:
-        if(wParam == VK_ESCAPE)
-        {
-            PostQuitMessage(0);
-        }
-        else if((int)wParam == VK_F2)
-            Set4xMsaaState(!m4xMsaaState);
-
-        return 0;
+    
 	}
 
 	return DefWindowProc(hwnd, msg, wParam, lParam);

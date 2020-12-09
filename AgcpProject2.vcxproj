@@ -161,6 +161,7 @@
     <ClCompile Include="FrameResource.cpp" />
     <ClCompile Include="GameApp.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="State.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="FrameResource.h" />
     <ClInclude Include="GameApp.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="OBJ_Loader.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayState.h" />

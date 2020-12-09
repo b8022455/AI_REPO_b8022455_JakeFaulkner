@@ -16,6 +16,10 @@
 #include "Player.h"
 #include "State.h"
 
+#include "Input.h"
+
+
+
 
 class GameApp : public D3DApp, public Singleton<GameApp>
 {
@@ -137,5 +141,11 @@ private:
 	//Viewport Sprites
 	SpriteManager mSprites;
 	//std::unique_ptr<DX::TextConsole> mConsole;
+	public:
+	//Input input ;
+
+	/*static std::unique_ptr<DirectX::Keyboard> sKeyboard;
+	static std::unique_ptr<DirectX::GamePad> sGamepad;*/
+	
 
 };

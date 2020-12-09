@@ -2,6 +2,10 @@
 #include "GameApp.h"
 #include "XmfloatOverload.h"
 #include "SimpleMath.h"
+//#include "Input.h"
+
+using ButtonState = GamePad::ButtonStateTracker::ButtonState;
+
 
 void PlayState::Initialize()
 {
@@ -55,6 +59,30 @@ void PlayState::Initialize()
 void PlayState::Update(const GameTimer & gt)
 {
 	//mTileManager.Update(gt);
+	if(Input::Get().KeyPressed(Keyboard::Keys::A))
+	{
+		GameApp::Get().mDebugLog << "One frame only";
+	}
+
+	if (Input::Get().KeyHeld(Keyboard::Keys::A)  )
+	{
+		GameApp::Get().mDebugLog << "KeyBoard HOLD ";
+	}
+
+	if (Input::Get().GamePadConnected())
+	{
+
+		if (Input::Get().GamePad().leftTrigger == ButtonState::HELD)
+		{
+			GameApp::Get().mDebugLog << "Gamepad HOLD ";
+
+		}
+
+		Input::Get().SetVibration(0.0f, 0.0f);
+	}
+
+	GameApp::Get().mDebugLog << " \n" << Input::Get().LeftStickF2().x << "  " << Input::Get().LeftStickF2().y;
+
 	mPlayer.Update(gt);
 	mCombatController.Update();
 
@@ -273,6 +301,5 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 	  {
 		e.SetRandomPosition();
 	  });
-
 	}
 }

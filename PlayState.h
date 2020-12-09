@@ -51,6 +51,6 @@ class PlayState : public State
 	const float DOWNBOUND = -UPBOUND;
 
 	const float CAM_ANGLE = 45.0f;
-	const DirectX::XMFLOAT3 CAM_OFFSET{ 0.0f,10.0f,-10.0f };
+	const DirectX::XMFLOAT3 CAM_OFFSET{ 0.0f,10.0f,-10.0f }; 
 };
 

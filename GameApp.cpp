@@ -19,6 +19,7 @@ const int gNumFrameResources = 3; //todo move to GC namespace in its own header
 
 bool GameApp::DEBUG = false;
 
+
 std::string PrintMatrix(XMMATRIX& xmm)
 {
 	XMFLOAT4X4 m;
@@ -79,7 +80,6 @@ bool GameApp::Initialize()
 	mCbvSrvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 
-	
 
 	//Audio setup
 	{
@@ -128,6 +128,8 @@ bool GameApp::Initialize()
 	mStateManager.Init(); 
 	BuildFrameResources();
 	BuildPSOs();
+
+	Input::Get().Initialize();
 
 
 	// Normally called OnSize() at start but no camera is created until states initialised.
@@ -189,6 +191,7 @@ void GameApp::Update(const GameTimer& gt)
 	assert(mpActiveCamera);
 
 	OnKeyboardInput(gt);
+	Input::Get().Update();
 
 	// Cycle through the circular frame resource array.
 	mCurrFrameResourceIndex = (mCurrFrameResourceIndex + 1) % gNumFrameResources;

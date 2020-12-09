@@ -20,6 +20,8 @@ void StateManager::Update(const GameTimer & gt)
 {
 	auto test = GameApp::Get().AspectRatio(); //todo remove. Example of accessing GameApp
 
+	//GameApp::Get().input.Update();
+
 	if (IsValidState(mCurrentState))
 	{
 		mStates[mCurrentState]->Update(gt);
