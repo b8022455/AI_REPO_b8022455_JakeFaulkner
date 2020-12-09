@@ -11,6 +11,21 @@ struct Item				///Should this be a struct or its own class based off GameObject 
 	std::string name;
 };
 
+//class Item : public GameObject			///Alternative method to above struct
+//{
+//public:
+//	Item() {};	//Default Constructor
+//
+//	Item(std::string nm)		//Alternative Constructor
+//	{
+//		name = nm;
+//	}
+//
+//
+//private:
+//	std::string name;
+//};
+
 class PlayState : public State
 {
 	//Tile mTile;
