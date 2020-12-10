@@ -123,6 +123,7 @@ bool GameApp::Initialize()
 	BuildMaterials();
 	BuildRenderItems();
 	// Sets up all states. Requires render items
+
 	mStateManager.Init(); 
 	BuildFrameResources();
 	BuildPSOs();
@@ -182,9 +183,21 @@ void GameApp::OnResize()
 	}
 }
 
+void GameApp::DrawFont(size_t i, const std::string & output, const XMFLOAT2 & pos)
+{
+	mSpriteManager.DrawFont(i, output.c_str(), pos);
+
+	
+}
+
 void GameApp::ChangeState(const std::string & name)
 {
 	mStateManager.ChangeState(name);
+}
+
+XMFLOAT2 GameApp::GetClientSize()
+{
+	return {(float)mClientWidth, (float)mClientHeight};
 }
 
 void GameApp::Update(const GameTimer& gt)
@@ -937,8 +950,6 @@ void GameApp::BuildPlayerGeometry()
 
 	mGeometries[geo->Name] = std::move(geo);
 }
-
-
 
 void GameApp::BuildPSOs()
 {

@@ -19,10 +19,12 @@ struct Sprite
 	std::string textureName; //lookup gpu handle
 	D3D12_GPU_DESCRIPTOR_HANDLE texture;
 	DirectX::XMUINT2 textureSize = DirectX::XMUINT2(128,128);
-	RECT destinationRectangle = {0,0,128,128};
+	DirectX::XMFLOAT2 position = { 20.0f,20.0f };
+	//RECT destinationRectangle = {0,0,128,128};
 	RECT sourceRectangle = {0,0,128,128 };   //todo array for animations?
 	DirectX::FXMVECTOR color = DirectX::Colors::White;
 	float rotation = 0.0f;
+	float scale = 1.0f;
 	DirectX::XMFLOAT2 origin = DirectX::XMFLOAT2(0.0f, 0.0f);
 	DirectX::SpriteEffects effects = DirectX::SpriteEffects::SpriteEffects_None;
 	
@@ -34,9 +36,11 @@ struct Sprite
 		textureName = s.textureName;
 		textureSize = s.textureSize;
 		texture = s.texture;
-		destinationRectangle = s.destinationRectangle;
+		position = s.position;
+		//destinationRectangle = s.destinationRectangle;
 		sourceRectangle = s.sourceRectangle;
 		rotation = s.rotation;
+		scale = s.scale;
 		origin = s.origin;
 		effects = s.effects;
 		//color = s.color;
@@ -50,11 +54,13 @@ struct Sprite
 
 class Button
 {
+public:
 	enum Action {
 		NO_ACTION,
 		GOTO_MAIN_MENU,
 		GOTO_GAME
 	};
+private:
 	Sprite sprite;
 	std::string text;
 	Action action;
@@ -63,7 +69,9 @@ class Button
 public:
 	Button() {};
 	Button(const Sprite& s, const std::string& t, const Action& a);
+	void Draw();
 	void SetPos(const DirectX::XMFLOAT2& pos);
+
 
 	void Activate();
 };
@@ -90,6 +98,6 @@ public:
 	// Called in State::Draw method. Begin and End methods are called in GameApp::Draw
 	void DrawSprite(const Sprite& sprite);
 	// Called in State::Draw method. Begin and End methods are called in GameApp::Draw
-	void DrawFont(size_t i, const std::string& output);
+	void DrawFont(size_t i, const std::string& output, const DirectX::XMFLOAT2& pos);
 };
 

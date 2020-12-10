@@ -5,6 +5,8 @@
 #include "Common/d3dUtil.h"
 #include "Common/d3dx12.h"
 #include "GameApp.h"
+
+
 #define IID_PPV_ARGS(ppType) __uuidof(**(ppType)), IID_PPV_ARGS_Helper(ppType)
 
 
@@ -68,7 +70,7 @@ void SpriteManager::DrawBegin(ID3D12GraphicsCommandList * commandList, const D3D
 void SpriteManager::DrawEnd()
 {
 	// Prints debug string
-	mSpriteFont.at(0)->DrawString(mSpriteBatch.get(), GameApp::Get().mDebugLog.str().c_str(), DirectX::XMFLOAT2(1.0f, 1.0f));
+	mSpriteFont.at(0)->DrawString(mSpriteBatch.get(), GameApp::Get().mDebugLog.str().c_str(), DirectX::XMFLOAT2(10.0f, 10.0f));
 
 	//Ends spritebatch
 	mSpriteBatch->End();
@@ -84,23 +86,26 @@ void SpriteManager::DrawSprite(const std::string & textureName)
 
 void SpriteManager::DrawSprite(const Sprite & s)
 {
+	
 	mSpriteBatch->Draw(
 		s.texture, 
 		s.textureSize, 
-		s.destinationRectangle, 
+		s.position,
+		//s.destinationRectangle, 
 		&s.sourceRectangle, 
 		s.color, 
 		s.rotation, 
 		s.origin, 
+		s.scale,
 		s.effects
 	);
 }
 
-void SpriteManager::DrawFont(size_t i, const std::string & output)
+void SpriteManager::DrawFont(size_t i, const std::string & output, const DirectX::XMFLOAT2& pos)
 {
 	if (i < mSpriteFont.size())
 	{
-		mSpriteFont.at(0)->DrawString(mSpriteBatch.get(), GameApp::Get().mDebugLog.str().c_str(), DirectX::XMFLOAT2(1.0f, 1.0f));
+		mSpriteFont.at(0)->DrawString(mSpriteBatch.get(), output.c_str(), pos);
 	}
 	else
 	{
@@ -118,6 +123,8 @@ Sprite::Sprite(const std::string & textureName)
 void Sprite::Initialise(const std::string & textureName)
 {
 	texture = GameApp::Get().GetSpriteGpuDescHandle(textureName);
+	origin.x = 0.5f * (float)(sourceRectangle.right - sourceRectangle.left);
+	origin.y = 0.0f * (float)(sourceRectangle.bottom - sourceRectangle.top);
 }
 
 void Sprite::Draw()
@@ -134,8 +141,16 @@ Button::Button(const Sprite & s, const std::string & t, const Action & a)
 	
 }
 
+
+void Button::Draw()
+{
+	sprite.Draw();
+	GameApp::Get().DrawFont(0, text,sprite.position);
+}
+
 void Button::SetPos(const XMFLOAT2 & pos)
 {
+	sprite.position = pos;
 	//todo postion text and sprite
 }
 
@@ -146,10 +161,10 @@ void Button::Activate()
 	case Button::NO_ACTION:
 		break;
 	case Button::GOTO_MAIN_MENU:
-		GameApp::Get().ChangeState("");
+		GameApp::Get().ChangeState("MainMenu");
 		break;
 	case Button::GOTO_GAME:
-		GameApp::Get().ChangeState("");
+		GameApp::Get().ChangeState("GameState");
 		break;
 	default:
 		break;

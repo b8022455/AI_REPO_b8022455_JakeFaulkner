@@ -55,13 +55,13 @@ public:
 		mSpriteManager.DrawSprite(sprite);
 	}
 
-	void DrawFont(size_t i, const std::string& output)
-	{
-		mSpriteManager.DrawFont(i, output);
-	}
+	void DrawFont(size_t i, const std::string& output, const XMFLOAT2& pos);
+
 
 	void ChangeState(const std::string& name);
 
+
+	XMFLOAT2 GetClientSize();
 	// Output to viewport
 	std::ostringstream mDebugLog;
 	UINT mInstanceCount = 0;

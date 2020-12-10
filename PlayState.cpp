@@ -56,6 +56,11 @@ void PlayState::Initialize()
 
 		
 	}
+
+
+	// needed in init for dirty frame
+	mCamera.UpdateViewMatrix();
+
 	
 }
 

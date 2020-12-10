@@ -2,6 +2,7 @@
 #include <assert.h>
 #include "GameApp.h"
 #include "PlayState.h"
+#include "MenuState.h"
 
 bool StateManager::IsValidState(const std::string stateName)
 {
@@ -9,7 +10,15 @@ bool StateManager::IsValidState(const std::string stateName)
 }
 void StateManager::Init()
 {
-	AddState("foo", std::make_unique<PlayState>());
+	Sprite buttonBg;
+	buttonBg.Initialise("iceTex");
+	
+	Button btn(buttonBg, "Button text", Button::Action::GOTO_GAME);
+
+
+	AddState("MainMenu", std::make_unique<MenuState>(btn,btn,btn,btn));
+	AddState("GameState", std::make_unique<PlayState>());
+
 
 	std::for_each(mStates.begin(), mStates.end(), [](auto& s) { s.second->Initialize(); });
 

@@ -38,7 +38,7 @@ public:
 class StateManager
 {
 	// Holds states
-	std::map<std::string, std::unique_ptr<State> > mStates;
+	std::unordered_map<std::string, std::unique_ptr<State> > mStates;
 	// Key to the state that will update and render
 	std::string mCurrentState;
 	// Validate state exists
