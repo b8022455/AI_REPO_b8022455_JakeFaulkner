@@ -41,6 +41,8 @@ class PlayState : public State
 	virtual void OnMouseMove(WPARAM btnState, int x, int y) override;
 	virtual void OnKeyboardInput(const GameTimer& gt)		override;
 
+	void Controls(const GameTimer& gt);
+
 
 	//todo move to constants header in GC namespace
 	const float RIGHTBOUND = 15.0f;

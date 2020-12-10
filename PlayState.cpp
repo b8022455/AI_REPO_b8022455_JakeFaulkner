@@ -3,6 +3,7 @@
 #include "XmfloatOverload.h"
 #include "SimpleMath.h"
 //#include "Input.h"
+#include "Constants.h"
 
 using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
@@ -26,8 +27,6 @@ void PlayState::Initialize()
 	mPlayer.Initialize("Player"); // todo adapt GameApp mPlayer to this state
 	mPlayerWeapon.Initialize("Weapon");
 	
-
-
 	// Setup temp enemies
 	{
 		// inserts n of enemies
@@ -59,29 +58,7 @@ void PlayState::Initialize()
 void PlayState::Update(const GameTimer & gt)
 {
 	//mTileManager.Update(gt);
-	if(Input::Get().KeyPressed(Keyboard::Keys::A))
-	{
-		GameApp::Get().mDebugLog << "One frame only";
-	}
-
-	if (Input::Get().KeyHeld(Keyboard::Keys::A)  )
-	{
-		GameApp::Get().mDebugLog << "KeyBoard HOLD ";
-	}
-
-	if (Input::Get().GamePadConnected())
-	{
-
-		if (Input::Get().GamePad().leftTrigger == ButtonState::HELD)
-		{
-			GameApp::Get().mDebugLog << "Gamepad HOLD ";
-
-		}
-
-		Input::Get().SetVibration(0.0f, 0.0f);
-	}
-
-	GameApp::Get().mDebugLog << " \n" << Input::Get().LeftStickF2().x << "  " << Input::Get().LeftStickF2().y;
+	
 
 	mPlayer.Update(gt);
 	mCombatController.Update();
@@ -145,9 +122,17 @@ void PlayState::Update(const GameTimer & gt)
 	PassConstants* pMainPassCB = GameApp::Get().GetMainPassCB();
 
 	//flashing red for low health
-	if (mPlayer.health <= 95)
+	if (mPlayer.health <= GC::PLAYER_LOW_HEALTH)
 	{
-		pMainPassCB->Lights[0].Strength = { sin(gt.TotalTime()) / 2 + 0.5f ,0.0f,0.0f };
+		float strength = sin(gt.TotalTime()) * 0.5f + 0.5f;
+
+		pMainPassCB->Lights[0].Strength = { strength ,0.0f,0.0f };
+
+		// Less intense vibration
+		strength *= 0.5f;
+
+		Input::Get().SetVibration(strength, strength);
+
 	}
 
 	else
@@ -192,6 +177,9 @@ void PlayState::OnMouseMove(WPARAM btnState, int x, int y)
 
 void PlayState::OnKeyboardInput(const GameTimer & gt)
 {
+	// todo adapt input with velocity into controls
+	//Controls(gt);
+	
 	const float dt = gt.DeltaTime();
 
 	float moveSpeed = 5.0f;
@@ -199,6 +187,7 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 
 	bool playerMoved = false;
 
+	
 	// Player movement
 	if (GetAsyncKeyState(VK_UP/*W*/) & 0x8000) 
 	{
@@ -302,4 +291,167 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 		e.SetRandomPosition();
 	  });
 	}
+}
+
+void PlayState::Controls(const GameTimer & gt)
+{
+
+	const float dt = gt.DeltaTime();
+
+	float moveSpeed = 5.0f;
+	float zoomSpeed = 20.0f;
+
+	bool playerMoved = false;
+
+	//Gamepad
+	if (Input::Get().GamePadConnected())
+	{
+
+		//Dpad
+		if (Input::Get().GamePad().dpadUp == ButtonState::HELD)
+		{
+			mPlayer.MoveUp(gt);
+		}
+		if (Input::Get().GamePad().dpadDown == ButtonState::HELD)
+		{
+			mPlayer.MoveDown(gt);
+		}
+		if (Input::Get().GamePad().dpadRight == ButtonState::HELD)
+		{
+			mPlayer.MoveRight(gt);
+		}
+		if (Input::Get().GamePad().dpadLeft == ButtonState::HELD)
+		{
+			mPlayer.MoveLeft(gt);
+		}
+		// Attack
+		if (Input::Get().GamePad().rightTrigger == ButtonState::UP)
+		{
+			mCombatController.PlayerAttack();
+		}
+
+
+		//todo example remove
+		GameApp::Get().mDebugLog << " \n" << Input::Get().LeftStickF2().x << "  " << Input::Get().LeftStickF2().y;
+	}
+	else // Keyboard controls. Game/Debug cam
+	{
+		switch (mCamType)
+		{
+		case CAMERA_TYPE::GAME:
+		{
+			//Player keyboard movement
+			if (Input::Get().KeyHeld(GC::KEY_FW))
+			{
+				mPlayer.MoveUp(gt);
+			}
+
+			if (Input::Get().KeyHeld(GC::KEY_BK))
+			{
+				mPlayer.MoveDown(gt);
+			}
+
+			if (Input::Get().KeyHeld(GC::KEY_RT))
+			{
+				mPlayer.MoveRight(gt);
+			}
+
+			if (Input::Get().KeyHeld(GC::KEY_LT))
+			{
+				mPlayer.MoveLeft(gt);
+			}
+
+			//Player attack
+			if (Input::Get().KeyReleased(GC::KEY_ATTACK))
+			{
+				mCombatController.PlayerAttack();
+			}
+
+			//Switch to debug cam
+			if (Input::Get().KeyReleased(GC::KEY_CAM))
+			{
+				mCamType = CAMERA_TYPE::DEBUG;
+
+				//Set debug cam to game position to avoid getting lost
+				mCameras.at(CAMERA_TYPE::DEBUG).SetPosition(mCameras.at(CAMERA_TYPE::GAME).GetPosition3f());
+
+				//Update active camera
+				GameApp::Get().SetActiveCamera(&mCameras.at(CAMERA_TYPE::DEBUG));
+			}
+		}
+		break;
+		case CAMERA_TYPE::DEBUG:
+		{
+			//dpad debug cam
+			if (Input::Get().KeyHeld(GC::KEY_FW))
+			{
+				mCameras.at(CAMERA_TYPE::DEBUG).Walk(zoomSpeed * dt);
+			}
+
+			if (Input::Get().KeyHeld(GC::KEY_BK))
+			{
+				mCameras.at(CAMERA_TYPE::DEBUG).Walk(-zoomSpeed * dt);
+			}
+
+			if (Input::Get().KeyHeld(GC::KEY_RT))
+			{
+				mCameras.at(CAMERA_TYPE::DEBUG).Strafe(moveSpeed * dt);
+			}
+
+			if (Input::Get().KeyHeld(GC::KEY_LT))
+			{
+				mCameras.at(CAMERA_TYPE::DEBUG).Strafe(-moveSpeed * dt);
+			}
+
+			if (Input::Get().KeyHeld(GC::KEY_RAISE))
+			{
+				mCameras.at(CAMERA_TYPE::DEBUG).Elevate(moveSpeed * dt);
+			}
+
+			if (Input::Get().KeyHeld(GC::KEY_LOWER))
+			{
+				mCameras.at(CAMERA_TYPE::DEBUG).Elevate(-moveSpeed * dt);
+			}
+
+			// Switch to game camera
+			if (Input::Get().KeyReleased(GC::KEY_CAM))
+			{
+				mCamType = CAMERA_TYPE::GAME;
+				//Update active camera
+				GameApp::Get().SetActiveCamera(&mCameras.at(CAMERA_TYPE::GAME));
+			}
+
+
+			// Debug random enemy pos
+			if (Input::Get().KeyReleased(GC::KEY_DEBUG_ENEMY_POS))
+			{
+				mEnemies.push_back(Enemy());
+				mEnemies.back().Initialize("Enemy");
+
+				std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
+				{
+					e.SetRandomPosition();
+				});
+			}
+		}
+		break;
+		}
+
+		//todo example remove
+		if (Input::Get().KeyPressed(Keyboard::Keys::P))
+		{
+			GameApp::Get().mDebugLog << "One frame only";
+		}
+
+		//todo example remove
+		if (Input::Get().KeyHeld(Keyboard::Keys::L))
+		{
+			GameApp::Get().mDebugLog << "KeyBoard HOLD ";
+		}
+
+	}
+
+	
+	
+
 }
