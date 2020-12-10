@@ -18,19 +18,21 @@ public:
 	void Enemy::SetRandomPosition();
 	void DamageEnemy(int damage);		//When enemy gets hit by weapon
 	DirectX::XMFLOAT3 GetPosition();														//Returns local instance of position
-	int playerDirection;			//Gets enum value of which way player is facing
-	int health = 1;
 	std::string GetDropItem();
+	int GetHealth() { return health; }
+
+	int playerDirection;			//Gets enum value of which way player is facing
 private:
 	void UpdatePosition();				//Updates local instance of position each update
 
+	int health = 1;
 	std::pair<std::string, int> enemyType;
 	
 	//Order of items is from Most Common -> Rarest
 	std::vector<std::pair<std::string, std::vector<std::string>>> lookupTable = 
 	{
 		{"EnemyType1", {"Common Sword", "Potion", "Uncommon Sword", "Elysian Whip", "Rare Sword"}},
-		{"EnemyType2", {"Potion", "Potion", "Uncommon Sword", "Rare Sword", "Cocaine"}}
+		{"EnemyType2", {"Potion", "Potion", "Uncommon Sword", "Rare Sword", "Magical Seeds"}}
 	};
 
 };

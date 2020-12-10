@@ -92,7 +92,7 @@ void PlayState::Update(const GameTimer & gt)
 	}
 
 	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
-	{ 
+	{  
 		e.Update(gt); 
 		
 		if (mCombatController.CheckCollision(
@@ -101,9 +101,11 @@ void PlayState::Update(const GameTimer & gt)
 			e.mpInstance->World._43 ))
 		{
 			e.DamageEnemy(5);		//Takes away health from enemy + blowsback enemy position
-			if (e.health < 0)
+			if (e.GetHealth() < 0)
 			{
 				Inventory.push_back({ e.GetDropItem() });		//Gets an item from the dropdown table
+				//Delete instance of enemy 
+				e.mpInstance->World._42 -= 5.0f;
 			}
 		}
 		
@@ -269,17 +271,23 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 		mPlayer.MoveRight( gt);
 	}
 
-	if (GetAsyncKeyState('G') & 0x8000)
+	if (GetAsyncKeyState('I') & 0x8000)
 	{
-	  mEnemies.push_back(Enemy());
-
-	  std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
-	  {
-		e.SetRandomPosition();
-	  });
-
+		for (size_t i = 0; i < Inventory.size(); i++)
+			GameApp::Get().mDebugLog << Inventory.at(i).name << "\n";		//Shows inventory on screen
 	}
 
-	//Inventory.push_back({ "Potion" });
-	//Inventory.push_back({ "Berry" });
+	if (GetAsyncKeyState('G') & 0x8000)
+	{
+		mEnemies.push_back(Enemy({ "EnemyType2", 1 }));
+		mEnemies.back().Initialize("Enemy");
+		mEnemies.back().SetRandomPosition();
+
+		//Don't think all of the enemies need change position
+	 // std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
+	 // {
+		//e.SetRandomPosition();
+	 // });
+
+	}
 }
