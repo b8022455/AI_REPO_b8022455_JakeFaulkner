@@ -209,7 +209,7 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 		mPlayer.MoveRight(gt);
 	}
 
-	if (GetAsyncKeyState('V') & 0x8000)		///Change key in future
+	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 		mCombatController.PlayerAttack();
 
 	// Switch to debug camera
