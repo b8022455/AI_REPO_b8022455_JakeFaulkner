@@ -8,7 +8,7 @@ class Enemy : public GameObject
 public:
 	Enemy() {};		//Default Constructor
 
-	Enemy(std::pair<std::string, int> type)			//Gives enemy its type
+	Enemy(int type)			//Gives enemy its type
 	{
 		enemyType = type;
 	};
@@ -26,7 +26,7 @@ private:
 	void UpdatePosition();				//Updates local instance of position each update
 
 	int health = 1;
-	std::pair<std::string, int> enemyType;
+	int enemyType;
 	
 	//Order of items is from Most Common -> Rarest
 	std::vector<std::pair<std::string, std::vector<std::string>>> lookupTable = 

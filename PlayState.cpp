@@ -27,9 +27,9 @@ void PlayState::Initialize()
 	// Setup temp enemies
 	{
 		// inserts n of enemies
-		mEnemies.push_back(Enemy({ "EnemyType1", 0 }));
-		mEnemies.push_back(Enemy({ "EnemyType1", 0 }));
-		mEnemies.push_back(Enemy({ "EnemyType1", 0 }));
+		mEnemies.push_back(Enemy(0));
+		mEnemies.push_back(Enemy(0));
+		mEnemies.push_back(Enemy(0));
 
 		//Init all enemies
 		std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e) 
@@ -293,7 +293,7 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 
 	if (GetAsyncKeyState('G') & 0x8000)
 	{
-		mEnemies.push_back(Enemy({ "EnemyType2", 1 }));
+		mEnemies.push_back(Enemy(1));
 		mEnemies.back().Initialize("Enemy");
 		mEnemies.back().SetRandomPosition();
 
