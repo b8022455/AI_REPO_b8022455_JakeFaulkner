@@ -187,6 +187,7 @@
     <ClInclude Include="FrameResource.h" />
     <ClInclude Include="GameApp.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Item.h" />
     <ClInclude Include="OBJ_Loader.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayState.h" />

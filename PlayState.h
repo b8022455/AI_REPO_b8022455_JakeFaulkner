@@ -4,12 +4,8 @@
 #include "CombatController.h"
 #include "Common/Camera.h"
 #include "Tile.h"
+#include "Item.h"
 #include <array>
-
-struct Item				
-{
-	std::string name;
-};
 
 class PlayState : public State
 {

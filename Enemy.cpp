@@ -73,7 +73,7 @@ void Enemy::DamageEnemy(int dmg)
 	mpInstance->World._43 += z;
 }
 
-std::string Enemy::GetDropItem()
+Item Enemy::GetDropItem()
 {
 	std::random_device rd;     // only used once to initialise (seed) engine
 	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
@@ -83,7 +83,7 @@ std::string Enemy::GetDropItem()
 
 	///Could add money to be dropped if a currency is going to be in the game
 
-	std::string droppedItem;
+	Item droppedItem;
 
 	if(drop >= 60)				//Between 60 - 100
 		droppedItem = lookupTable.at(enemyType).second.at(0);		//Most Common item drop

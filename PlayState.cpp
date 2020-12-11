@@ -21,8 +21,6 @@ void PlayState::Initialize()
 
 	mPlayer.Initialize("Player"); // todo adapt GameApp mPlayer to this state
 	mPlayerWeapon.Initialize("Weapon");
-	
-
 
 	// Setup temp enemies
 	{
@@ -111,24 +109,24 @@ void PlayState::Update(const GameTimer & gt)
 			if (e.GetHealth() < 0)
 			{
 				//Could be put into an exists function
-				std::string droppedItem = e.GetDropItem();		//Gets loot item from enemy when killed
+				Item droppedItem = e.GetDropItem();		//Gets loot item from enemy when killed
 				bool itemExists = false;
 				//Inventory.push_back({ e.GetDropItem() });		//Gets an item from the dropdown table
 
 				for (size_t i = 0; i < Inventory.size(); i++)	//Loops through inventory to check if the item already exists
 				{
-					if (Inventory.at(i).name == droppedItem)
+					if (Inventory.at(i).name == droppedItem.name)
+					{
+						Inventory.at(i).amount++;
 						itemExists = true;
+					}
 				}
 
 				if (!itemExists)
 					Inventory.push_back({ droppedItem });		//If the item won't be a duplicate, add it in
 
-				//Delete instance of enemy 
-				//Resize the mEnemies vector
-				//e.mpInstance->World._42 -= 5.0f;
-				e.mpInstance = nullptr;
-				mEnemies.erase(mEnemies.begin() + i);
+				e.mpInstance = nullptr;					//Delete instance of enemy
+				mEnemies.erase(mEnemies.begin() + i);	//Resize the mEnemies vector
 			}
 		}
 		i++;
@@ -290,7 +288,7 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 	if (GetAsyncKeyState('I') & 0x8000)
 	{
 		for (size_t i = 0; i < Inventory.size(); i++)
-			GameApp::Get().mDebugLog << Inventory.at(i).name << "\n";		//Shows inventory on screen
+			GameApp::Get().mDebugLog << Inventory.at(i).name  << " : " << Inventory.at(i).amount << "\n";		//Shows inventory on screen
 	}
 
 	if (GetAsyncKeyState('G') & 0x8000)
