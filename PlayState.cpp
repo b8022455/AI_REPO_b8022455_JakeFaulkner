@@ -90,10 +90,17 @@ void PlayState::Update(const GameTimer & gt)
 	if ((mPlayer.GetPos().z <= 10.0f) && mPlayer.Slowed == true) {
 		mPlayer.Slowed = false;
 	}
-
+	int i = 0;
 	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
 	{  
 		e.Update(gt); 
+		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetPosition()))
+		{
+			float x = 5.0f;
+			mPlayer.DamagePlayer(5);
+			/*mCamera.Strafe(-x * gt.DeltaTime());
+			mCamera.UpdateViewMatrix();*/
+		}
 		
 		if (mCombatController.CheckCollision(
 			e.mpInstance->World._41,
@@ -119,17 +126,12 @@ void PlayState::Update(const GameTimer & gt)
 
 				//Delete instance of enemy 
 				//Resize the mEnemies vector
-				e.mpInstance->World._42 -= 5.0f;
+				//e.mpInstance->World._42 -= 5.0f;
+				e.mpInstance = nullptr;
+				mEnemies.erase(mEnemies.begin() + i);
 			}
 		}
-		
-		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetPosition()))
-		{
-			float x = 5.0f;
-			mPlayer.DamagePlayer(5);
-			/*mCamera.Strafe(-x * gt.DeltaTime());
-			mCamera.UpdateViewMatrix();*/
-		}
+		i++;
 	
 	});
 
