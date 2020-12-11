@@ -68,8 +68,10 @@ void PlayState::Initialize()
 
 
 	// needed in init for dirty frame
-	mCamera.UpdateViewMatrix();
-
+	for (auto& c : mCameras)
+	{
+		c.UpdateViewMatrix();
+	}
 	
 }
 
@@ -162,14 +164,11 @@ void PlayState::Update(const GameTimer & gt)
 	mSprites["testSpriteFirst"].rotation = cosf(gt.TotalTime()) * 0.1f;
 	mSprites["testSpriteSecond"].rotation = sinf(gt.TotalTime());
 
-	mCamera.UpdateViewMatrix();
-	//mCamera.UpdateViewMatrix();
-
+	// for dirty frame
 	for (auto& c : mCameras)
 	{
 		c.UpdateViewMatrix();
 	}
-
 }
 
 void PlayState::Draw(const GameTimer & gt)
@@ -296,25 +295,25 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 	if (GetAsyncKeyState(VK_UP/*W*/) & 0x8000) { // Player movement
 		 //retool for camera
 		mPlayer.MoveUp( gt);
-		mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
+		//mCameras.at().SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
 	}
 
 	if (GetAsyncKeyState(VK_DOWN/*S*/) & 0x8000)
 	{
 		mPlayer.MoveDown( gt);
-		mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
+		//mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
 	}
 
 	if (GetAsyncKeyState(VK_LEFT/*A*/) & 0x8000)
 	{
 		mPlayer.MoveLeft(gt);
-		mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
+		//mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
 	}
 
 	if (GetAsyncKeyState(VK_RIGHT/*D*/) & 0x8000)
 	{
 		mPlayer.MoveRight( gt);
-		mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
+		//mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
 	}
 
 	if (GetAsyncKeyState('G') & 0x8000)

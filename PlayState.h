@@ -6,6 +6,7 @@
 #include "Tile.h"
 #include <array>
 #include "SpriteManager.h"
+#include <unordered_map>
 
 
 class PlayState : public State
@@ -16,6 +17,7 @@ class PlayState : public State
 
 	TileManager mTileManager;
 	CombatController mCombatController;
+	std::unordered_map<std::string, Sprite> mSprites;
 
 	enum CAMERA_TYPE
 	{
