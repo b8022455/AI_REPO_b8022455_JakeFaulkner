@@ -177,7 +177,8 @@ void PlayerWeapon::UpdateWeaponMatrix()
 
 		case 1:						//Right
 			playerPosOffsetX = 0.2f;
-			weaponPositionMatrix = XMMatrixTranslation(1.4f, 0.0f, 0.0f);
+			weaponPositionMatrix = XMMatrixRotationZ(3.14159f);
+			weaponPositionMatrix *= XMMatrixTranslation(0.5f, 0.0f, 0.0f);
 			break;
 
 		case 2:						//Up
@@ -187,7 +188,8 @@ void PlayerWeapon::UpdateWeaponMatrix()
 
 		case 3:						//Down
 			playerPosOffsetZ = -0.2f;
-			weaponPositionMatrix = XMMatrixTranslation(1.4f, 0.0f, 0.0f);
+			weaponPositionMatrix = XMMatrixRotationZ(3.14159f);
+			weaponPositionMatrix *= XMMatrixTranslation(0.5f, 0.0f, 0.0f);
 			break;
 
 		default:

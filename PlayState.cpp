@@ -45,9 +45,6 @@ void PlayState::Initialize()
 	}
 
 	mCombatController.Initialize(&mPlayer,&mPlayerWeapon,&mEnemies);
-
-	
-	
 }
 
 void PlayState::Update(const GameTimer & gt)
@@ -105,7 +102,7 @@ void PlayState::Update(const GameTimer & gt)
 			e.mpInstance->World._42,
 			e.mpInstance->World._43 ))
 		{
-			e.DamageEnemy(5);		//Takes away health from enemy + blowsback enemy position
+			e.DamageEnemy(25);		//Takes away health from enemy + blowsback enemy position
 			if (e.GetHealth() < 0)
 			{
 				//Could be put into an exists function
@@ -125,6 +122,7 @@ void PlayState::Update(const GameTimer & gt)
 				if (!itemExists)
 					Inventory.push_back({ droppedItem });		//If the item won't be a duplicate, add it in
 
+				e.mpInstance->World._42 -= 200.0f;		//Placeholder for actually deleting the thing
 				e.mpInstance = nullptr;					//Delete instance of enemy
 				mEnemies.erase(mEnemies.begin() + i);	//Resize the mEnemies vector
 			}

@@ -35,22 +35,22 @@ private:
 		{
 			"EnemyType1",										//Type of the enemy, not used but makes it easier to understand which enemy drops what
 			{
-				{"Common Sword", ItemCategory::Weapons},		//Items the enemy can drop
-				{"Potion", ItemCategory::Healing}, 
-				{"Uncommon Sword", ItemCategory::Weapons}, 
-				{"Elysian Whip", ItemCategory::Healing}, 
-				{"Rare Sword", ItemCategory::Weapons}
+				{"Common Sword", ItemCategory::Weapons, 1.0},		//Items the enemy can drop
+				{"Potion", ItemCategory::Healing, 2.5}, 
+				{"Uncommon Sword", ItemCategory::Weapons, 3.5}, 
+				{"Elysian Whip", ItemCategory::Healing, 5.0}, 
+				{"Rare Sword", ItemCategory::Weapons, 10.0}
 			}
 		},
 
 		{
 			"EnemyType2",
 			{
-				{"Potion", ItemCategory::Healing},
-				{"Potion", ItemCategory::Healing},
-				{"Uncommon Sword", ItemCategory::Weapons},
-				{"Rare Sword", ItemCategory::Weapons},
-				{"Magical Seeds", ItemCategory::Farming}
+				{"Potion", ItemCategory::Healing, 2.5},
+				{"Potion", ItemCategory::Healing, 2.5},
+				{"Uncommon Sword", ItemCategory::Weapons, 3.5},
+				{"Rare Sword", ItemCategory::Weapons, 10.0},
+				{"Magical Seeds", ItemCategory::Farming, 20.0}
 			}
 		}
 
