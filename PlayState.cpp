@@ -103,8 +103,22 @@ void PlayState::Update(const GameTimer & gt)
 			e.DamageEnemy(5);		//Takes away health from enemy + blowsback enemy position
 			if (e.GetHealth() < 0)
 			{
-				Inventory.push_back({ e.GetDropItem() });		//Gets an item from the dropdown table
+				//Could be put into an exists function
+				std::string droppedItem = e.GetDropItem();		//Gets loot item from enemy when killed
+				bool itemExists = false;
+				//Inventory.push_back({ e.GetDropItem() });		//Gets an item from the dropdown table
+
+				for (size_t i = 0; i < Inventory.size(); i++)	//Loops through inventory to check if the item already exists
+				{
+					if (Inventory.at(i).name == droppedItem)
+						itemExists = true;
+				}
+
+				if (!itemExists)
+					Inventory.push_back({ droppedItem });		//If the item won't be a duplicate, add it in
+
 				//Delete instance of enemy 
+				//Resize the mEnemies vector
 				e.mpInstance->World._42 -= 5.0f;
 			}
 		}
