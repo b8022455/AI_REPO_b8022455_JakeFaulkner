@@ -55,31 +55,41 @@ void PlayState::Update(const GameTimer & gt)
 	mPlayer.Update(gt);
 	mCombatController.Update();
 
-	// TODO: (NOTE) CHECK AREA HAZARDS HERE
-	// if player.x & player.z are within the tile.x & tile.z, cause effects, for now DEBUG logic
-
 	// reset hazard timer for tile hazards 
 	if (mPlayer.hazardTimer >= 0) {
 		mPlayer.hazardTimer -= gt.DeltaTime();
 	}
 
-	// damage player over time, needs a wait between effect activations
-	if (mPlayer.GetPos().x >= 10.0f) {
+	// MUST CHECK BOTH METHODS
+	// currently -15 to 15 on both (BOUNDARIES SHOULD BE PUBLIC AND USED TO CALCULATE)
+	// tiles are 32 by 32
+	// 0.0f is middle of grid
+	// each tile is 0.9375 of a world position
+	// player position + half max tile * (MaxWorldPos / MaxTile) to find current tile (REPEAT FOR X & Y APPROPRIATELY)
+	// LAST COMPONENT OF THE CALCULATION WILL CAUSE PROBLEMS IF SIZE OF EACH TILE ITSELF INCREASED
+	
+	const float diff2 = 30.0f / float(mTileManager.MaxGen);
+	int underX = round(mPlayer.GetPos().x); // worldspace position does not correspond to tilemap coordinate
+	int underZ = round(mPlayer.GetPos().z);
+	float tileX = (underX + (0.5f * (mTileManager.MaxGen)));
+	float tileZ = (underZ + (0.5f *(mTileManager.MaxGen)));
+	float tileX2 = (underX + (0.5f * (mTileManager.MaxGen)) * diff2);
+	float tileZ2 = (underZ + (0.5f * (mTileManager.MaxGen)) * diff2);
+
+	// if the player is over a poison/damage tile
+	if (mTileManager.GetIndex(tileX, tileZ) == 5 || mTileManager.GetIndex(tileX2, tileZ2) == 5) {
 		if (mPlayer.hazardTimer <= 0) { // if hazard should be active
 			mPlayer.health -= 5;
 			mPlayer.hazardTimer = 3; // reset hazard timer
 		}
 	}
 
-	// slow player until they leave the tile
-	// while player is not on a slow tile movespeed is normal? (for possible use when applied to tile object)
-	// if player is on a slow tile
-	if (mPlayer.GetPos().z >= 10.0f) {
+	// if the player is over a slow tile
+	if (mTileManager.GetIndex(tileX, tileZ) == 6 || mTileManager.GetIndex(tileX2, tileZ2) == 6) {
 		mPlayer.Slowed = true;
-
 	}
-	// if player is not on a slow tile
-	if ((mPlayer.GetPos().z <= 10.0f) && mPlayer.Slowed == true) {
+
+	if (mTileManager.GetIndex(tileX, tileZ) != 6 && mTileManager.GetIndex(tileX2, tileZ2) != 6) {
 		mPlayer.Slowed = false;
 	}
 

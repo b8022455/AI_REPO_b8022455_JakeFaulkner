@@ -462,6 +462,8 @@ void GameApp::UpdateMainPassCB(const GameTimer& gt)
 	currPassCB->CopyData(0, mMainPassCB);
 }
 
+// **************************** TEXTURES ****************************************************
+
 void GameApp::LoadTexture(const std::string & name, const std::wstring & filename)
 {
 	auto texture = std::make_unique<Texture>();
@@ -484,6 +486,7 @@ void GameApp::LoadTextures()
 	LoadTexture("crateTex", L"Data/Textures/WoodCrate01.dds");
 	LoadTexture("iceTex", L"Data/Textures/ice.dds");
 	LoadTexture("grassTex", L"Data/Textures/grass.dds");
+	LoadTexture("mudTex", L"Data/Textures/LostMeadow_dirt.dds");
 	LoadTexture("defaultTex", L"Data/Textures/white1x1.dds");
 
 }
@@ -491,7 +494,7 @@ void GameApp::LoadTextures()
 void GameApp::BuildRootSignature()
 {
 	CD3DX12_DESCRIPTOR_RANGE texTable;
-	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 8, 0, 0);
+	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 9, 0, 0);
 
 	// Root parameter can be a table, root descriptor or root constants.
 	CD3DX12_ROOT_PARAMETER slotRootParameter[4];
@@ -534,7 +537,7 @@ void GameApp::BuildDescriptorHeaps()
 	// Create the SRV heap.
 	//
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-	srvHeapDesc.NumDescriptors = 8;
+	srvHeapDesc.NumDescriptors = 9;
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&mSrvDescriptorHeap)));
@@ -551,6 +554,7 @@ void GameApp::BuildDescriptorHeaps()
 	auto crateTex = mTextures["crateTex"]->Resource;
 	auto iceTex = mTextures["iceTex"]->Resource;
 	auto grassTex = mTextures["grassTex"]->Resource;
+	auto mudTex = mTextures["mudTex"]->Resource;
 	auto defaultTex = mTextures["defaultTex"]->Resource;
 
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -558,6 +562,7 @@ void GameApp::BuildDescriptorHeaps()
 	srvDesc.Format = bricksTex->GetDesc().Format;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
+
 	srvDesc.Texture2D.MipLevels = bricksTex->GetDesc().MipLevels;
 	srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 	md3dDevice->CreateShaderResourceView(bricksTex.Get(), &srvDesc, hCpuDescriptor);
@@ -601,6 +606,14 @@ void GameApp::BuildDescriptorHeaps()
 	srvDesc.Format = grassTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = grassTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(grassTex.Get(), &srvDesc, hCpuDescriptor);
+
+	// next descriptor
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+
+	srvDesc.Format = mudTex->GetDesc().Format;
+	srvDesc.Texture2D.MipLevels = mudTex->GetDesc().MipLevels;
+	md3dDevice->CreateShaderResourceView(mudTex.Get(), &srvDesc, hCpuDescriptor);
 
 	// next descriptor
 	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);

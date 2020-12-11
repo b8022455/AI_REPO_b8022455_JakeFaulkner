@@ -51,9 +51,10 @@ class TileManager
 	const std::string mRenderItemName = "Tiles";
 
 public:
+	int MaxGen;
 	void Initialize();
 	void Update(const GameTimer& gt);
 	Tile& GetTile(int x, int y);
 	void SetTile(int x, int y, const Tile& tile);
-
+	int GetIndex(int x, int y); // maybe remove 
 };

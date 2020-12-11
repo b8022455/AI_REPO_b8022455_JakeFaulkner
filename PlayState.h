@@ -4,6 +4,7 @@
 #include "CombatController.h"
 #include "Common/Camera.h"
 #include "Tile.h"
+#include <math.h>
 using namespace std;
 
 class PlayState : public State
