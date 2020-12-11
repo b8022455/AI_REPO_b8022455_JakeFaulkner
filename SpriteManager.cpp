@@ -101,11 +101,21 @@ void SpriteManager::DrawSprite(const Sprite & s)
 	);
 }
 
-void SpriteManager::DrawFont(size_t i, const std::string & output, const DirectX::XMFLOAT2& pos)
+void SpriteManager::DrawFont(size_t i, const std::string & output, const DirectX::XMFLOAT2& pos, bool centre)
 {
 	if (i < mSpriteFont.size())
 	{
-		mSpriteFont.at(0)->DrawString(mSpriteBatch.get(), output.c_str(), pos);
+		XMFLOAT2 position;
+		if (centre)
+		{
+			// gets centre point in string
+			XMStoreFloat2(&position, mSpriteFont.at(i)->MeasureString(output.c_str(),true) *-0.5f);
+		}
+		// Applies position
+		position.x += pos.x;
+		position.y += pos.y;
+
+		mSpriteFont.at(i)->DrawString(mSpriteBatch.get(), output.c_str(), position);
 	}
 	else
 	{
@@ -120,11 +130,15 @@ Sprite::Sprite(const std::string & textureName)
 	Initialise(textureName);
 }
 
-void Sprite::Initialise(const std::string & textureName)
+void Sprite::Initialise(const std::string & textureName, bool centreOrigin)
 {
 	texture = GameApp::Get().GetSpriteGpuDescHandle(textureName);
-	origin.x = 0.5f * (float)(sourceRectangle.right - sourceRectangle.left);
-	origin.y = 0.0f * (float)(sourceRectangle.bottom - sourceRectangle.top);
+
+	if (centreOrigin)
+	{
+		origin.x = 0.5f * (float)(sourceRectangle.right - sourceRectangle.left);
+		origin.y = 0.5f * (float)(sourceRectangle.bottom - sourceRectangle.top);
+	}
 }
 
 void Sprite::Draw()
@@ -145,12 +159,14 @@ Button::Button(const Sprite & s, const std::string & t, const Action & a)
 void Button::Draw()
 {
 	sprite.Draw();
-	GameApp::Get().DrawFont(0, text,sprite.position);
+
+	GameApp::Get().DrawFont(0, text,sprite.position, true);
 }
 
 void Button::SetPos(const XMFLOAT2 & pos)
 {
 	sprite.position = pos;
+
 	//todo postion text and sprite
 }
 

@@ -10,16 +10,21 @@ bool StateManager::IsValidState(const std::string stateName)
 }
 void StateManager::Init()
 {
+
+	// Set up menu buttons
 	Sprite buttonBg;
-	buttonBg.Initialise("iceTex");
+	buttonBg.Initialise("iceTex",true);
 	
-	Button btn(buttonBg, "Button text", Button::Action::GOTO_GAME);
+	Button btnW(buttonBg, "W Play", Button::Action::GOTO_GAME);
+	Button btnA(buttonBg, "A Play", Button::Action::GOTO_GAME);
+	Button btnD(buttonBg, "D Play", Button::Action::GOTO_GAME);
+	Button btnS(buttonBg, "S Play", Button::Action::GOTO_GAME);
 
-
-	AddState("MainMenu", std::make_unique<MenuState>(btn,btn,btn,btn));
+	// New states
+	AddState("MainMenu", std::make_unique<MenuState>(btnW, btnA, btnD, btnS));
 	AddState("GameState", std::make_unique<PlayState>());
 
-
+	// Init all states
 	std::for_each(mStates.begin(), mStates.end(), [](auto& s) { s.second->Initialize(); });
 
 }

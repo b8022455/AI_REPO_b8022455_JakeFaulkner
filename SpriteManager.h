@@ -47,7 +47,7 @@ struct Sprite
 	}
 
 	// Give a valid texture name
-	void Initialise(const std::string& textureName);
+	void Initialise(const std::string& textureName, bool centreOrigin = false);
 
 	void Draw();
 };
@@ -98,6 +98,6 @@ public:
 	// Called in State::Draw method. Begin and End methods are called in GameApp::Draw
 	void DrawSprite(const Sprite& sprite);
 	// Called in State::Draw method. Begin and End methods are called in GameApp::Draw
-	void DrawFont(size_t i, const std::string& output, const DirectX::XMFLOAT2& pos);
+	void DrawFont(size_t i, const std::string& output, const DirectX::XMFLOAT2& pos, bool centre = false);
 };
 

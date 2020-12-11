@@ -183,11 +183,9 @@ void GameApp::OnResize()
 	}
 }
 
-void GameApp::DrawFont(size_t i, const std::string & output, const XMFLOAT2 & pos)
+void GameApp::DrawFont(size_t i, const std::string & output, const XMFLOAT2 & pos, bool centre)
 {
-	mSpriteManager.DrawFont(i, output.c_str(), pos);
-
-	
+	mSpriteManager.DrawFont(i, output.c_str(), pos, centre);
 }
 
 void GameApp::ChangeState(const std::string & name)
