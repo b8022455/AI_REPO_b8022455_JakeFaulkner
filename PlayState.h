@@ -5,12 +5,11 @@
 #include "Common/Camera.h"
 #include "Tile.h"
 #include <array>
+#include "SpriteManager.h"
 
 
 class PlayState : public State
 {
-	//Tile mTile;
-	
 	Player mPlayer;
 	PlayerWeapon mPlayerWeapon;
 	std::vector<Enemy> mEnemies;
@@ -34,7 +33,7 @@ class PlayState : public State
 
 	virtual void Initialize() override;
 	virtual void Update(const GameTimer& gt) override;
-	//virtual void Draw(const GameTimer& gt) override; // todo not needed
+	virtual void Draw(const GameTimer& gt) override;
 
 	virtual void OnMouseDown(WPARAM btnState, int x, int y) override;
 	virtual void OnMouseUp(WPARAM btnState, int x, int y)	override;

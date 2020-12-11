@@ -2,6 +2,7 @@
 #include <assert.h>
 #include "GameApp.h"
 #include "PlayState.h"
+#include "MenuState.h"
 
 bool StateManager::IsValidState(const std::string stateName)
 {
@@ -9,10 +10,21 @@ bool StateManager::IsValidState(const std::string stateName)
 }
 void StateManager::Init()
 {
-	AddState("foo", std::make_unique<PlayState>());
 
-
+	// Set up menu buttons
+	Sprite buttonBg;
+	buttonBg.Initialise("iceTex",true);
 	
+	Button btnW(buttonBg, "W Play", Button::Action::GOTO_GAME);
+	Button btnA(buttonBg, "A Play", Button::Action::GOTO_GAME);
+	Button btnD(buttonBg, "D Play", Button::Action::GOTO_GAME);
+	Button btnS(buttonBg, "S Play", Button::Action::GOTO_GAME);
+
+	// New states
+	AddState("MainMenu", std::make_unique<MenuState>(btnW, btnA, btnD, btnS));
+	AddState("GameState", std::make_unique<PlayState>());
+
+	// Init all states
 	std::for_each(mStates.begin(), mStates.end(), [](auto& s) { s.second->Initialize(); });
 
 }
@@ -32,17 +44,18 @@ void StateManager::Update(const GameTimer & gt)
 	}
 
 }
-//void StateManager::Draw(const GameTimer& gt)
-//{
-//	if (IsValidState(mCurrentState))
-//	{
-//		mStates[mCurrentState]->Draw(gt);
-//	}
-//	else
-//	{
-//		assert(false);
-//	}
-//}
+void StateManager::Draw(const GameTimer & gt)
+{
+	if (IsValidState(mCurrentState))
+	{
+		mStates[mCurrentState]->Draw(gt);
+	}
+	else
+	{
+		assert(false);
+	}
+}
+
 void StateManager::AddState(const std::string & name, std::unique_ptr<State> newState)
 {
 	//Check the a state of the same name doesn't exist

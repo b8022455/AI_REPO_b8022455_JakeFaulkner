@@ -48,8 +48,6 @@ std::string PrintMatrix(XMMATRIX& xmm)
 	return o.str();
 }
 
-
-
 GameApp::GameApp(HINSTANCE hInstance)
 	: D3DApp(hInstance)
 {
@@ -125,6 +123,7 @@ bool GameApp::Initialize()
 	BuildMaterials();
 	BuildRenderItems();
 	// Sets up all states. Requires render items
+
 	mStateManager.Init(); 
 	BuildFrameResources();
 	BuildPSOs();
@@ -184,6 +183,21 @@ void GameApp::OnResize()
 		BoundingFrustum::CreateFromMatrix(mCamFrustum, mpActiveCamera->GetProj());
 
 	}
+}
+
+void GameApp::DrawFont(size_t i, const std::string & output, const XMFLOAT2 & pos, bool centre)
+{
+	mSpriteManager.DrawFont(i, output.c_str(), pos, centre);
+}
+
+void GameApp::ChangeState(const std::string & name)
+{
+	mStateManager.ChangeState(name);
+}
+
+XMFLOAT2 GameApp::GetClientSize()
+{
+	return {(float)mClientWidth, (float)mClientHeight};
 }
 
 void GameApp::Update(const GameTimer& gt)
@@ -272,9 +286,16 @@ void GameApp::Draw(const GameTimer& gt)
 	mCommandList->SetGraphicsRootDescriptorTable(3, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
 	DrawRenderItems(mCommandList.Get(), mOpaqueRitems);
-	mSprites.Draw(mCommandList.Get(), mScreenViewport);
 
-	//mStateManager.Draw(gt);
+	// Sprite drawing
+	mSpriteManager.DrawBegin(mCommandList.Get(), mScreenViewport);
+
+	// Draws sprites and fonts based on current state
+	mStateManager.Draw(gt);
+
+	mSpriteManager.DrawEnd();
+
+
 
 	// Indicate a state transition on the resource usage.
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
@@ -556,6 +577,7 @@ void GameApp::BuildDescriptorHeaps()
 	auto grassTex = mTextures["grassTex"]->Resource;
 	auto defaultTex = mTextures["defaultTex"]->Resource;
 
+	//Brick 0
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.Format = bricksTex->GetDesc().Format;
@@ -569,6 +591,7 @@ void GameApp::BuildDescriptorHeaps()
 	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	
+	// Stone 1
 	srvDesc.Format = stoneTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = stoneTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(stoneTex.Get(), &srvDesc, hCpuDescriptor);
@@ -577,6 +600,7 @@ void GameApp::BuildDescriptorHeaps()
 	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
+	// Tile 2
 	srvDesc.Format = tileTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = tileTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(tileTex.Get(), &srvDesc, hCpuDescriptor);
@@ -585,6 +609,7 @@ void GameApp::BuildDescriptorHeaps()
 	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
+	// Crate 3
 	srvDesc.Format = crateTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = crateTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(crateTex.Get(), &srvDesc, hCpuDescriptor);
@@ -593,6 +618,7 @@ void GameApp::BuildDescriptorHeaps()
 	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
+	// Ice 4
 	srvDesc.Format = iceTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = iceTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(iceTex.Get(), &srvDesc, hCpuDescriptor);
@@ -601,6 +627,7 @@ void GameApp::BuildDescriptorHeaps()
 	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
+	// Grass 5
 	srvDesc.Format = grassTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = grassTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(grassTex.Get(), &srvDesc, hCpuDescriptor);
@@ -609,6 +636,7 @@ void GameApp::BuildDescriptorHeaps()
 	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	
+	// Default 6
 	srvDesc.Format = defaultTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = defaultTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(defaultTex.Get(), &srvDesc, hCpuDescriptor);
@@ -618,7 +646,7 @@ void GameApp::BuildDescriptorHeaps()
 	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
 	{
-		mSprites.Init(md3dDevice.Get(), mCommandQueue.Get(), mCbvSrvDescriptorSize, mBackBufferFormat, mDepthStencilFormat, hCpuDescriptor,hGpuDescriptor);
+		mSpriteManager.Init(md3dDevice.Get(), mCommandQueue.Get(), mCbvSrvDescriptorSize, mBackBufferFormat, mDepthStencilFormat, hCpuDescriptor,hGpuDescriptor);
 	}
 
 }
@@ -924,8 +952,6 @@ void GameApp::BuildPlayerGeometry()
 	mGeometries[geo->Name] = std::move(geo);
 }
 
-
-
 void GameApp::BuildPSOs()
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC opaquePsoDesc;
@@ -1083,6 +1109,20 @@ void GameApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vec
 
 		cmdList->DrawIndexedInstanced(ri->IndexCount, ri->InstanceCount, ri->StartIndexLocation, ri->BaseVertexLocation, 0);
 	}
+}
+
+CD3DX12_GPU_DESCRIPTOR_HANDLE GameApp::GetSpriteGpuDescHandle(const std::string & textureName)
+{
+	// get gpu start
+	CD3DX12_GPU_DESCRIPTOR_HANDLE hGpuDescriptor(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+
+	//find offset distance
+	const int distance = (int)std::distance(mTextures.begin(), mTextures.find(textureName));
+
+	//offset desc
+	hGpuDescriptor.Offset(distance, mCbvSrvUavDescriptorSize);
+
+	return hGpuDescriptor;
 }
 
 std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GameApp::GetStaticSamplers()

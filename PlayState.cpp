@@ -4,6 +4,7 @@
 #include "SimpleMath.h"
 //#include "Input.h"
 #include "Constants.h"
+#include <unordered_map>
 
 using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
@@ -40,10 +41,10 @@ void PlayState::Initialize()
 			e.Initialize("Enemy"); 
 
 			e.SetPosition({
-			static_cast<float>(rand() % 10 + 2.0f),
-			1.0f,
-			static_cast<float>(rand() % 10 + 2.0f)
-				});
+				static_cast<float>(rand() % 10 + 2.0f),
+				1.0f,
+				static_cast<float>(rand() % 10 + 2.0f)
+			});
 		});
 
 		
@@ -52,14 +53,29 @@ void PlayState::Initialize()
 	mCombatController.Initialize(&mPlayer,&mPlayerWeapon,&mEnemies);
 
 	
+	// Sprites
+	{
+		Sprite spriteSample;
+
+		spriteSample.Initialise("tileTex");
+		mSprites["testSpriteFirst"] = spriteSample;
+
+		spriteSample.Initialise("stoneTex");
+		mSprites["testSpriteSecond"] = spriteSample;
+
+		
+	}
+
+
+	// needed in init for dirty frame
+	mCamera.UpdateViewMatrix();
+
 	
 }
 
 void PlayState::Update(const GameTimer & gt)
 {
 	//mTileManager.Update(gt);
-	
-
 	mPlayer.Update(gt);
 	mCombatController.Update();
 
@@ -142,12 +158,27 @@ void PlayState::Update(const GameTimer & gt)
 
 	//mCamera.SetPosition(0, 50, 0);
 
+	// Sprite update
+	mSprites["testSpriteFirst"].rotation = cosf(gt.TotalTime()) * 0.1f;
+	mSprites["testSpriteSecond"].rotation = sinf(gt.TotalTime());
+
+	mCamera.UpdateViewMatrix();
 	//mCamera.UpdateViewMatrix();
 
 	for (auto& c : mCameras)
 	{
 		c.UpdateViewMatrix();
 	}
+
+}
+
+void PlayState::Draw(const GameTimer & gt)
+{
+
+	std::for_each(mSprites.begin(), mSprites.end(), [](auto& sp)
+	{
+		sp.second.Draw();
+	});
 
 }
 
@@ -265,21 +296,25 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 	if (GetAsyncKeyState(VK_UP/*W*/) & 0x8000) { // Player movement
 		 //retool for camera
 		mPlayer.MoveUp( gt);
+		mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
 	}
 
 	if (GetAsyncKeyState(VK_DOWN/*S*/) & 0x8000)
 	{
 		mPlayer.MoveDown( gt);
+		mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
 	}
 
 	if (GetAsyncKeyState(VK_LEFT/*A*/) & 0x8000)
 	{
 		mPlayer.MoveLeft(gt);
+		mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
 	}
 
 	if (GetAsyncKeyState(VK_RIGHT/*D*/) & 0x8000)
 	{
 		mPlayer.MoveRight( gt);
+		mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
 	}
 
 	if (GetAsyncKeyState('G') & 0x8000)

@@ -50,9 +50,22 @@ public:
 		mpActiveCamera = cam;
 	}
 
-
 	virtual void OnResize()override;
 
+	CD3DX12_GPU_DESCRIPTOR_HANDLE GetSpriteGpuDescHandle(const std::string& textureName);
+
+	void DrawSprite(const Sprite& sprite)
+	{
+		mSpriteManager.DrawSprite(sprite);
+	}
+
+	void DrawFont(size_t i, const std::string& output, const XMFLOAT2& pos, bool centre = false);
+
+
+	void ChangeState(const std::string& name);
+
+
+	XMFLOAT2 GetClientSize();
 	// Output to viewport
 	std::ostringstream mDebugLog;
 	UINT mInstanceCount = 0;
@@ -87,8 +100,7 @@ private:
 	void BuildMaterials();
 	void BuildRenderItems();
 	void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems);
-
-
+	
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GetStaticSamplers();
 	
 
@@ -139,13 +151,5 @@ private:
 	StateManager mStateManager;
 
 	//Viewport Sprites
-	SpriteManager mSprites;
-	//std::unique_ptr<DX::TextConsole> mConsole;
-	public:
-	//Input input ;
-
-	/*static std::unique_ptr<DirectX::Keyboard> sKeyboard;
-	static std::unique_ptr<DirectX::GamePad> sGamepad;*/
-	
-
+	SpriteManager mSpriteManager;
 };
