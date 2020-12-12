@@ -67,30 +67,43 @@ void PlayState::Update(const GameTimer & gt)
 	// each tile is 0.9375 of a world position
 	// player position + half max tile * (MaxWorldPos / MaxTile) to find current tile (REPEAT FOR X & Y APPROPRIATELY)
 	// LAST COMPONENT OF THE CALCULATION WILL CAUSE PROBLEMS IF SIZE OF EACH TILE ITSELF INCREASED
-	
+
 	const float diff2 = 30.0f / float(mTileManager.MaxGen);
 	int underX = round(mPlayer.GetPos().x); // worldspace position does not correspond to tilemap coordinate
 	int underZ = round(mPlayer.GetPos().z);
-	float tileX = (underX + (0.5f * (mTileManager.MaxGen)));
-	float tileZ = (underZ + (0.5f *(mTileManager.MaxGen)));
-	float tileX2 = (underX + (0.5f * (mTileManager.MaxGen)) * diff2);
-	float tileZ2 = (underZ + (0.5f * (mTileManager.MaxGen)) * diff2);
+	float tileX = (underX + (0.5f * (mTileManager.MaxGen))); // greater
+	float tileZ = (underZ + (0.5f *(mTileManager.MaxGen))); // greater
+	float tileX2 = (underX + (0.5f * (mTileManager.MaxGen)) * diff2); //lesser
+	float tileZ2 = (underZ + (0.5f * (mTileManager.MaxGen)) * diff2); // lesser
 
-	// if the player is over a poison/damage tile
-	if (mTileManager.GetIndex(tileX, tileZ) == 5 || mTileManager.GetIndex(tileX2, tileZ2) == 5) {
-		if (mPlayer.hazardTimer <= 0) { // if hazard should be active
-			mPlayer.health -= 5;
-			mPlayer.hazardTimer = 3; // reset hazard timer
+	// USED FOR DEBUGGING THE SAFETY NET FOR THE PLAYER GRID CHECKER - KEEP IF ERRORS ARISE LATER
+	//if ((tileX < 0 || tileZ < 0 || tileX > mTileManager.MaxGen || tileZ > mTileManager.MaxGen) ||
+	//	(tileX2 < 0 || tileZ2 < 0 || tileX2 > mTileManager.MaxGen || tileZ2 > mTileManager.MaxGen)) {
+	//
+	//	int r = 0;
+	//}
+
+	// if player over the grid execute the grid check 
+	if ((tileX > 0 && tileZ > 0 && tileX < mTileManager.MaxGen && tileZ < mTileManager.MaxGen) && 
+		(tileX2 >= 0 && tileZ2 >= 0 && tileX2 <= mTileManager.MaxGen && tileZ2 <= mTileManager.MaxGen)) {
+		
+		// if the player is over a poison/damage tile
+		if (mTileManager.GetIndex(tileX, tileZ) == 5 || mTileManager.GetIndex(tileX2, tileZ2) == 5) {
+			if (mPlayer.hazardTimer <= 0) { // if hazard should be active
+				mPlayer.health -= 5;
+				mPlayer.hazardTimer = 3; // reset hazard timer
+			}
 		}
-	}
 
-	// if the player is over a slow tile
-	if (mTileManager.GetIndex(tileX, tileZ) == 6 || mTileManager.GetIndex(tileX2, tileZ2) == 6) {
-		mPlayer.Slowed = true;
-	}
+		// if the player is over a slow tile
+		if (mTileManager.GetIndex(tileX, tileZ) == 6 || mTileManager.GetIndex(tileX2, tileZ2) == 6) {
+			mPlayer.Slowed = true;
+		}
 
-	if (mTileManager.GetIndex(tileX, tileZ) != 6 && mTileManager.GetIndex(tileX2, tileZ2) != 6) {
-		mPlayer.Slowed = false;
+		if (mTileManager.GetIndex(tileX, tileZ) != 6 && mTileManager.GetIndex(tileX2, tileZ2) != 6) {
+			mPlayer.Slowed = false;
+		}
+	
 	}
 
 	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
