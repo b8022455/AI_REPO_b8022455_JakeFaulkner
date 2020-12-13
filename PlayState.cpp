@@ -67,12 +67,12 @@ void PlayState::Update(const GameTimer & gt)
 	// each tile is 0.9375 of a world position
 	// player position + half max tile * (MaxWorldPos / MaxTile) to find current tile (REPEAT FOR X & Y APPROPRIATELY)
 	// LAST COMPONENT OF THE CALCULATION WILL CAUSE PROBLEMS IF SIZE OF EACH TILE ITSELF INCREASED
-
-	const float diff2 = 30.0f / float(mTileManager.MaxGen);
+	//const float diff = float(mTileManager.MaxGen) / 30.0f;
+	const float diff2 = 30.0f / float(mTileManager.MaxGen); // WORLDSPACE / GRID SIZE
 	int underX = round(mPlayer.GetPos().x); // worldspace position does not correspond to tilemap coordinate
 	int underZ = round(mPlayer.GetPos().z);
-	float tileX = (underX + (0.5f * (mTileManager.MaxGen))); // greater
-	float tileZ = (underZ + (0.5f *(mTileManager.MaxGen))); // greater
+	float tileX = (underX + (0.5f * (mTileManager.MaxGen))/* * diff*/); // greater
+	float tileZ = (underZ + (0.5f *(mTileManager.MaxGen)))/* * diff*/; // greater
 	float tileX2 = (underX + (0.5f * (mTileManager.MaxGen)) * diff2); //lesser
 	float tileZ2 = (underZ + (0.5f * (mTileManager.MaxGen)) * diff2); // lesser
 
@@ -87,6 +87,8 @@ void PlayState::Update(const GameTimer & gt)
 	if ((tileX > 0 && tileZ > 0 && tileX < mTileManager.MaxGen && tileZ < mTileManager.MaxGen) && 
 		(tileX2 >= 0 && tileZ2 >= 0 && tileX2 <= mTileManager.MaxGen && tileZ2 <= mTileManager.MaxGen)) {
 		
+		// TODO: POSSIBLE GLITCH HERE (TILE ACTIVE WHEN PLAYER NOT OVER IT, TILE RIGHT / RIGHT&UP)
+		// 
 		// if the player is over a poison/damage tile
 		if (mTileManager.GetIndex(tileX, tileZ) == 5 || mTileManager.GetIndex(tileX2, tileZ2) == 5) {
 			if (mPlayer.hazardTimer <= 0) { // if hazard should be active
