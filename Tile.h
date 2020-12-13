@@ -2,7 +2,7 @@
 #include <vector>
 #include "GameObject.h"
 #include <random>
-
+#include <time.h>
 
 struct mapData { // STRUCT FOR MAP TEXTURE AND TILE DATA
 	int texIndex; //texture index from texture buffer for tile 
@@ -36,6 +36,7 @@ typedef std::vector<TileLine> TileGid; // 2D Tile Array
 class TileManager 
 {
 	const int mDimention = 32;
+	const int dimSquare = mDimention * mDimention;
 	std::vector<std::vector<mapData>> mMapData;
 	const float mUnitSize = 1.0f;
 	TileGid  mTileGrid;
