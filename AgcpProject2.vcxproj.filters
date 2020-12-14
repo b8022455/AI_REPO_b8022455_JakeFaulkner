@@ -188,6 +188,9 @@
     <ClInclude Include="MenuState.h">
       <Filter>Header Files\States</Filter>
     </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Default.hlsl">

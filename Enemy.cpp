@@ -18,14 +18,8 @@ void Enemy::SetPosition(const DirectX::XMFLOAT3& newPosition)
 
 void Enemy::SetRandomPosition()
 {
-	int min = -15;
-	int max = 15;
-	std::random_device rd;     // only used once to initialise (seed) engine
-	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
-    std::uniform_int_distribution<int> uni(min, max); // guaranteed unbiased
-
-	float random_integer = (float)uni(rng);
-	float random_integer2 = (float)uni(rng);
+	float random_integer = (float)GetRandomValue(-15, 15);
+	float random_integer2 = (float)GetRandomValue(-15, 15);
 
 	mpInstance->World._41 = random_integer;
 	mpInstance->World._42 = 0;
@@ -71,4 +65,38 @@ void Enemy::DamageEnemy(int dmg)
 
 	mpInstance->World._41 += x;
 	mpInstance->World._43 += z;
+}
+
+int Enemy::GetRandomValue(int min, int max)
+{
+	std::random_device rd;     // only used once to initialise (seed) engine
+	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+	std::uniform_int_distribution<int> uni(min, max); // guaranteed unbiased
+
+	return uni(rng);
+}
+
+Item Enemy::GetDropItem()
+{
+	int drop = GetRandomValue(0, 100);
+	///Could add money to be dropped if a currency is going to be in the game
+
+	Item droppedItem;
+
+	if (drop >= 60)				//Between 60 - 100
+		droppedItem = lookupTable.at(enemyType).second.at(0);		//Most Common item drop
+
+	else if (drop >= 30)			//Between 30 - 59
+		droppedItem = lookupTable.at(enemyType).second.at(1);		//2nd most common item drop
+
+	else if (drop >= 15)			//Between 15 - 29
+		droppedItem = lookupTable.at(enemyType).second.at(2);		//3rd most common item drop
+
+	else if (drop >= 5)			//Between 5 - 14
+		droppedItem = lookupTable.at(enemyType).second.at(3);		//4th most common item drop
+
+	else															//Rarest item drop
+		droppedItem = lookupTable.at(enemyType).second.at(4);
+
+	return droppedItem;
 }

@@ -31,9 +31,9 @@ void PlayState::Initialize()
 	// Setup temp enemies
 	{
 		// inserts n of enemies
-		mEnemies.push_back(Enemy());
-		mEnemies.push_back(Enemy());
-		mEnemies.push_back(Enemy());
+		mEnemies.push_back(Enemy(0));
+		mEnemies.push_back(Enemy(0));
+		mEnemies.push_back(Enemy(0));
 
 		//Init all enemies
 		std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e) 
@@ -114,18 +114,10 @@ void PlayState::Update(const GameTimer & gt)
 		mPlayer.Slowed = false;
 	}
 
+	int i = 0;
 	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
 	{ 
 		e.Update(gt); 
-		
-		if (mCombatController.CheckCollision(
-			e.mpInstance->World._41,
-			e.mpInstance->World._42,
-			e.mpInstance->World._43 ))
-		{
-			e.DamageEnemy(5);		//Takes away health from enemy + blowsback enemy position
-		}
-		
 		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetPosition()))
 		{
 			float x = 5.0f;
@@ -133,6 +125,36 @@ void PlayState::Update(const GameTimer & gt)
 			/*mCamera.Strafe(-x * gt.DeltaTime());
 			mCamera.UpdateViewMatrix();*/
 		}
+
+		if (mCombatController.CheckCollision(
+			e.mpInstance->World._41,
+			e.mpInstance->World._42,
+			e.mpInstance->World._43 ))
+		{
+			e.DamageEnemy(25);		//Takes away health from enemy + blowsback enemy position
+			if (e.GetHealth() < 0)
+			{
+				//Could be put into an exists function in Inventory Class
+				Item droppedItem = e.GetDropItem();
+				bool itemExists = false;
+				for (size_t i = 0; i < Inventory.size(); i++)
+				{
+					if (Inventory.at(i).name == droppedItem.name)
+					{
+						Inventory.at(i).amount++;
+						itemExists = true;
+					}
+				}
+
+				if (!itemExists)
+					Inventory.push_back({ droppedItem });
+
+				e.mpInstance->World._42 -= 200.0f;
+				e.mpInstance = nullptr;
+				mEnemies.erase(mEnemies.begin() + i);
+			}
+		}
+		i++;
 	
 	});
 
@@ -318,13 +340,20 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 
 	if (GetAsyncKeyState('G') & 0x8000)
 	{
-	  mEnemies.push_back(Enemy());
+	  mEnemies.push_back(Enemy(1));
 	  mEnemies.back().Initialize("Enemy");
 
-	  std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
-	  {
-		e.SetRandomPosition();
-	  });
+	  //Don't think all of the enemies need change position
+	 // std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
+	 // {
+		//e.SetRandomPosition();
+	 // });
+	}
+
+	if (GetAsyncKeyState('I') & 0x8000)
+	{
+		for (size_t i = 0; i < Inventory.size(); i++)
+			GameApp::Get().mDebugLog << Inventory.at(i).name << " : " << Inventory.at(i).amount << "\n";
 	}
 }
 

@@ -4,6 +4,7 @@
 #include "CombatController.h"
 #include "Common/Camera.h"
 #include "Tile.h"
+#include "Item.h"
 #include <array>
 #include "SpriteManager.h"
 #include <unordered_map>
@@ -14,6 +15,7 @@ class PlayState : public State
 	Player mPlayer;
 	PlayerWeapon mPlayerWeapon;
 	std::vector<Enemy> mEnemies;
+	std::vector<Item> Inventory;
 
 	TileManager mTileManager;
 	CombatController mCombatController;
