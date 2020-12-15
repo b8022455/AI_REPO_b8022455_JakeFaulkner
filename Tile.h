@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "GameObject.h"
-
+#include <random>
 
 struct mapData { // STRUCT FOR MAP TEXTURE AND TILE DATA
 	int texIndex; //texture index from texture buffer for tile 
@@ -11,7 +11,13 @@ struct mapData { // STRUCT FOR MAP TEXTURE AND TILE DATA
 
 class Tile : public GameObject
 {
-	//todo specialised tile
+
+public:
+	void Initialize(const std::string& renderItemName);
+	void SetRandomPosition();
+	void CreateTileWallHorizontal(int clumpSize, DirectX::XMFLOAT3& position, int count);
+	void CreateTileWallVertical(int clumpSize, DirectX::XMFLOAT3& position, int count);
+	DirectX::XMFLOAT3 SetRandom();
 };
 
 
@@ -41,5 +47,5 @@ public:
 	void Update(const GameTimer& gt);
 	Tile& GetTile(int x, int y);
 	void SetTile(int x, int y, const Tile& tile);
-
+	
 };

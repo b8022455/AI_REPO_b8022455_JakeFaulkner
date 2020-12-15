@@ -19,6 +19,7 @@ class PlayState : public State
 	std::vector<Item> Inventory;
 
 	TileManager mTileManager;
+	Tile mTile;
 	CombatController mCombatController;
 	std::unordered_map<std::string, Sprite> mSprites;
 
