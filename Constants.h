@@ -15,6 +15,8 @@ namespace GC
 		KEY_RAISE = 'E',
 		KEY_LOWER = 'Q',
 
+		KEY_INVENTORY = 'I',
+
 
 		KEY_ATTACK = 0x20,  //space
 		KEY_PAUSE = 0xD, //enter

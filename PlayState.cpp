@@ -233,26 +233,13 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 
 	Controls(gt); 
 
+
+	
+
 }
 
-	if (GetAsyncKeyState('G') & 0x8000)
-	{
-	  mEnemies.push_back(Enemy(1));
-	  mEnemies.back().Initialize("Enemy");
+	
 
-	  //Don't think all of the enemies need change position
-	 // std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
-	 // {
-		//e.SetRandomPosition();
-	 // });
-	}
-
-	if (GetAsyncKeyState('I') & 0x8000)
-	{
-		for (size_t i = 0; i < Inventory.size(); i++)
-			GameApp::Get().mDebugLog << Inventory.at(i).name << " : " << Inventory.at(i).amount << "\n";
-	}
-}
 
 void PlayState::Controls(const GameTimer & gt)
 {
@@ -268,34 +255,22 @@ void PlayState::Controls(const GameTimer & gt)
 	if (Input::Get().GamePadConnected())
 	{
 
-		//Dpad
-
+		// Left stick
 		mPlayer.Move(  gt, Input::Get().LeftStickXZ()* moveSpeed);
 
-
-		/*if (Input::Get().GamePad().dpadUp == ButtonState::HELD)
-		{
-			mPlayer.MoveUp(gt);
-		}
-		if (Input::Get().GamePad().dpadDown == ButtonState::HELD)
-		{
-			mPlayer.MoveDown(gt);
-		}
-		if (Input::Get().GamePad().dpadRight == ButtonState::HELD)
-		{
-			mPlayer.MoveRight(gt);
-		}
-		if (Input::Get().GamePad().dpadLeft == ButtonState::HELD)
-		{
-			mPlayer.MoveLeft(gt);
-		}*/
 		// Attack
 		if (Input::Get().GamePad().rightTrigger == ButtonState::UP)
 		{
 			mCombatController.PlayerAttack();
 		}
 
+		if (Input::Get().GamePad().y == ButtonState::HELD)
+		{
+			GameApp::Get().mDebugLog << "Inventory:  (size " << Inventory.size() << ")";
 
+			for (auto& i : Inventory)
+				GameApp::Get().mDebugLog << i.name << " : " << i.amount << "\n";
+		}
 		//todo example remove
 		GameApp::Get().mDebugLog << " \n" << Input::Get().LeftStickF2().x << "  " << Input::Get().LeftStickF2().y;
 	}
@@ -402,16 +377,12 @@ void PlayState::Controls(const GameTimer & gt)
 		break;
 		}
 
-		//todo example remove
-		if (Input::Get().KeyPressed(Keyboard::Keys::P))
-		{
-			GameApp::Get().mDebugLog << "One frame only";
-		}
 
-		//todo example remove
-		if (Input::Get().KeyHeld(Keyboard::Keys::L))
+		if (Input::Get().KeyHeld(GC::KEY_INVENTORY))
 		{
-			GameApp::Get().mDebugLog << "KeyBoard HOLD ";
+			GameApp::Get().mDebugLog << "Inventory:  (size " << Inventory.size() << ")";
+			for (auto& i : Inventory)
+				GameApp::Get().mDebugLog << i.name << " : " << i.amount << "\n";
 		}
 
 	}
