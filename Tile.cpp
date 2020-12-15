@@ -60,3 +60,62 @@ void TileManager::SetTile(int x, int y, const Tile & tile)
 	mTileGrid.at(y).at(x) = tile; //todo x,y may need swapping around
 
 }
+//----------------INDIVIDUAL TILE CODE-----------------------------------------------//
+
+void Tile::Initialize(const std::string& renderItemName)
+{
+	AddRenderItemInstance("Tiles");
+}
+
+void Tile::SetRandomPosition()
+{
+	int min = -15;
+	int max = 15;
+	std::random_device rd;								// only used once to initialise (seed) engine
+	std::mt19937 rng(rd());								// random-number engine used (Mersenne-Twister in this case)
+	std::uniform_int_distribution<int> uni(min, max);	// guaranteed unbiased
+
+	float random_integer = (float)uni(rng);
+	float random_integer2 = (float)uni(rng);
+
+
+	mpInstance->World._41 = random_integer;
+	mpInstance->World._42 = 4.0f; // height above ground level
+	mpInstance->World._43 = random_integer2;
+
+}
+
+void Tile::CreateTileWallHorizontal(int clumpSize, DirectX::XMFLOAT3& position, int count)
+{
+	mpInstance->World._41 = position.x + count;
+	mpInstance->World._42 = 2.0f; // height above ground level
+	mpInstance->World._43 = position.z;
+}
+
+void Tile::CreateTileWallVertical(int clumpSize, DirectX::XMFLOAT3& position, int count)
+{
+	mpInstance->World._41 = position.x;
+	mpInstance->World._42 = 2.0f; // height above ground level
+	mpInstance->World._43 = position.z + count;
+}
+
+
+DirectX::XMFLOAT3 Tile::SetRandom()
+{
+	int min = -15;
+	int max = 15;
+	std::random_device rd;
+	std::mt19937 rng(rd());
+	std::uniform_int_distribution<int> uni(min, max);
+
+	float random_integer = (float)uni(rng);
+	float random_integer2 = (float)uni(rng);
+
+
+	return DirectX::XMFLOAT3
+	{
+		random_integer,
+		1,
+		random_integer2
+	};
+}

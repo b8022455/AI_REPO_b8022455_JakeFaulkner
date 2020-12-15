@@ -30,6 +30,23 @@ void PlayState::Initialize()
 	mPlayer.Initialize("Player"); // todo adapt GameApp mPlayer to this state
 	mPlayerWeapon.Initialize("Weapon");
 	
+	int n(0);
+	int clumpSize(5);
+	DirectX::XMFLOAT3 position = mTile.SetRandom();
+
+	while (n <= clumpSize)
+	{
+		mTile.Initialize("Tiles");
+		{
+			mTile.mpInstance->MaterialIndex = 4;
+			//mTile.SetRandomPosition();			
+			mTile.CreateTileWallHorizontal(clumpSize, position, n);
+			//mTile.CreateTileWallVertical(clumpSize, position, n);
+		}
+		n++;
+	}
+
+
 	// Setup temp enemies
 	{
 		// inserts n of enemies
