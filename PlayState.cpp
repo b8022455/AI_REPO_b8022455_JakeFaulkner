@@ -1,10 +1,11 @@
+#include "XmfloatOverload.h"
 #include "PlayState.h"
 #include "GameApp.h"
-#include "XmfloatOverload.h"
 #include "SimpleMath.h"
 //#include "Input.h"
 #include "Constants.h"
 #include <unordered_map>
+
 
 using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
@@ -97,7 +98,7 @@ void PlayState::Update(const GameTimer & gt)
 		}
 	}
 
-
+	// Game Camera follows player
 	mCameras.at(CAMERA_TYPE::GAME).SetPosition(
 		Lerp(mCameras.at(CAMERA_TYPE::GAME).GetPosition(), mPlayer.GetPos() + CAM_OFFSET,  0.9999f * gt.DeltaTime())
 	);
@@ -107,7 +108,6 @@ void PlayState::Update(const GameTimer & gt)
 	// if player is on a slow tile
 	if (mPlayer.GetPos().z >= 10.0f) {
 		mPlayer.Slowed = true;
-
 	}
 	// if player is not on a slow tile
 	if ((mPlayer.GetPos().z <= 10.0f) && mPlayer.Slowed == true) {
@@ -130,8 +130,6 @@ void PlayState::Update(const GameTimer & gt)
 		{
 			float x = 5.0f;
 			mPlayer.DamagePlayer(5);
-			/*mCamera.Strafe(-x * gt.DeltaTime());
-			mCamera.UpdateViewMatrix();*/
 		}
 	
 	});
@@ -142,12 +140,12 @@ void PlayState::Update(const GameTimer & gt)
 	//flashing red for low health
 	if (mPlayer.health <= GC::PLAYER_LOW_HEALTH)
 	{
-		float strength = sin(gt.TotalTime()) * 0.5f + 0.5f;
+		float strength = sin(gt.TotalTime()*5.0f) * 0.5f + 0.5f;
 
 		pMainPassCB->Lights[0].Strength = { strength ,0.0f,0.0f };
 
 		// Less intense vibration
-		strength *= 0.5f;
+		strength *= 0.1f;
 
 		Input::Get().SetVibration(strength, strength);
 
@@ -207,125 +205,9 @@ void PlayState::OnMouseMove(WPARAM btnState, int x, int y)
 
 void PlayState::OnKeyboardInput(const GameTimer & gt)
 {
-	// todo adapt input with velocity into controls
-	//Controls(gt);
-	
-	const float dt = gt.DeltaTime();
 
-	float moveSpeed = 5.0f;
-	float zoomSpeed = 20.0f;
+	Controls(gt); 
 
-	bool playerMoved = false;
-
-	
-	// Player movement
-	if (GetAsyncKeyState(VK_UP/*W*/) & 0x8000) 
-	{
-		mPlayer.MoveUp(gt);
-	}
-
-	if (GetAsyncKeyState(VK_DOWN/*S*/) & 0x8000)
-	{
-		mPlayer.MoveDown(gt);
-	}
-
-	if (GetAsyncKeyState(VK_LEFT/*A*/) & 0x8000)
-	{
-		mPlayer.MoveLeft(gt);
-	}
-
-	if (GetAsyncKeyState(VK_RIGHT/*D*/) & 0x8000)
-	{
-		mPlayer.MoveRight(gt);
-	}
-
-	if (GetAsyncKeyState(VK_SPACE) & 0x8000)
-		mCombatController.PlayerAttack();
-
-	// Switch to debug camera
-	if (GetAsyncKeyState('9') & 0x8000)
-	{
-		mCamType = CAMERA_TYPE::DEBUG;
-		//Set debug cam to game position to avoid getting lost
-		mCameras.at(CAMERA_TYPE::DEBUG).SetPosition(mCameras.at(CAMERA_TYPE::GAME).GetPosition3f());
-
-		//Update active camera
-		GameApp::Get().SetActiveCamera(&mCameras.at(CAMERA_TYPE::DEBUG));
-	}
-
-	// Switch to game camera
-	if (GetAsyncKeyState('8') & 0x8000)
-	{
-		mCamType = CAMERA_TYPE::GAME;
-		//Update active camera
-		GameApp::Get().SetActiveCamera(&mCameras.at(CAMERA_TYPE::GAME));
-	}
-
-	// CAMERA MOVEMENT FOR DEBUG
-	if (mCamType == CAMERA_TYPE::DEBUG)
-	{
-		if (GetAsyncKeyState('E') & 0x8000) // implement boundaries
-			//if (mCameraDebug.GetPosition3f().z <= UPBOUND)
-			mCameras.at(CAMERA_TYPE::DEBUG).Elevate(moveSpeed * dt);
-
-		if (GetAsyncKeyState('Q') & 0x8000)
-			//if (mCameraDebug.GetPosition3f().z >= DOWNBOUND)
-			mCameras.at(CAMERA_TYPE::DEBUG).Elevate(-moveSpeed * dt);
-
-		if (GetAsyncKeyState('A') & 0x8000)
-			//if (mCameraDebug.GetPosition3f().x >= LEFTBOUND)
-			mCameras.at(CAMERA_TYPE::DEBUG).Strafe(-moveSpeed * dt);
-
-		if (GetAsyncKeyState('D') & 0x8000)
-			//if (mCameraDebug.GetPosition3f().x <= RIGHTBOUND)
-			mCameras.at(CAMERA_TYPE::DEBUG).Strafe(moveSpeed * dt);
-
-		if (GetAsyncKeyState('W') & 0x8000)
-			mCameras.at(CAMERA_TYPE::DEBUG).Walk(zoomSpeed * dt);
-
-		if (GetAsyncKeyState('S') & 0x8000)
-			mCameras.at(CAMERA_TYPE::DEBUG).Walk(-zoomSpeed * dt);
-
-		if (GetAsyncKeyState('P') & 0x8000) // RESETS CAMERA TO ABOVE PLAYER
-			mCameras.at(CAMERA_TYPE::DEBUG).SetPosition(mPlayer.GetPos());
-
-	}
-
-	// PLAYER MOVEMENT
-	if (GetAsyncKeyState(VK_UP/*W*/) & 0x8000) { // Player movement
-		 //retool for camera
-		mPlayer.MoveUp( gt);
-		//mCameras.at().SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
-	}
-
-	if (GetAsyncKeyState(VK_DOWN/*S*/) & 0x8000)
-	{
-		mPlayer.MoveDown( gt);
-		//mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
-	}
-
-	if (GetAsyncKeyState(VK_LEFT/*A*/) & 0x8000)
-	{
-		mPlayer.MoveLeft(gt);
-		//mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
-	}
-
-	if (GetAsyncKeyState(VK_RIGHT/*D*/) & 0x8000)
-	{
-		mPlayer.MoveRight( gt);
-		//mCamera.SetPosition(mPlayer.GetPos().x, mCamera.GetPosition3f().y, mPlayer.GetPos().z);
-	}
-
-	if (GetAsyncKeyState('G') & 0x8000)
-	{
-	  mEnemies.push_back(Enemy());
-	  mEnemies.back().Initialize("Enemy");
-
-	  std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
-	  {
-		e.SetRandomPosition();
-	  });
-	}
 }
 
 void PlayState::Controls(const GameTimer & gt)
@@ -338,12 +220,18 @@ void PlayState::Controls(const GameTimer & gt)
 
 	bool playerMoved = false;
 
+	
+
 	//Gamepad
 	if (Input::Get().GamePadConnected())
 	{
 
 		//Dpad
-		if (Input::Get().GamePad().dpadUp == ButtonState::HELD)
+
+		mPlayer.Move(  gt, Input::Get().LeftStickXZ()* moveSpeed);
+
+
+		/*if (Input::Get().GamePad().dpadUp == ButtonState::HELD)
 		{
 			mPlayer.MoveUp(gt);
 		}
@@ -358,7 +246,7 @@ void PlayState::Controls(const GameTimer & gt)
 		if (Input::Get().GamePad().dpadLeft == ButtonState::HELD)
 		{
 			mPlayer.MoveLeft(gt);
-		}
+		}*/
 		// Attack
 		if (Input::Get().GamePad().rightTrigger == ButtonState::UP)
 		{

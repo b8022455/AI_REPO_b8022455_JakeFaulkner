@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-
+#include <DirectXMath.h>
 namespace GC
 {
 	//Keyboard keys
@@ -23,7 +23,7 @@ namespace GC
 		KEY_DEBUG_ENEMY_POS = 'G'
 		; 
 	
-	const int PLAYER_LOW_HEALTH = 95;
+	const int PLAYER_LOW_HEALTH = 50;
 
 
 	const std::string
@@ -32,6 +32,15 @@ namespace GC
 		GO_WEAPON = "Weapon",
 		GO_TILE = "Tiles"
 
+		;
+
+	const DirectX::XMFLOAT3
+		DIRECTION_FWD({ 0.0f,	0.0f,	1.0f }),
+		DIRECTION_BCK({ 0.0f,	0.0f,	-1.0f }),
+		DIRECTION_RGT({ 1.0f,	0.0f,	0.0f }),
+		DIRECTION_LFT({ -1.0f,	0.0f,	0.0f }),
+		DIRECTION_RAISE({ 0.0f,	1.0f,	0.0f }),
+		DIRECTION_LOWER({ 0.0f,	-1.0f,	0.0f })
 		;
 
 }

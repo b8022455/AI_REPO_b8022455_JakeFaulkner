@@ -1,7 +1,7 @@
 #include "Player.h"
 #include "GameApp.h"
 
-
+//#include "XmfloatOverload.h"
 
 void Player::Update(const GameTimer & gt)
 {
@@ -129,6 +129,22 @@ void Player::MoveRight(const GameTimer& gt)
 	//		mpInstance->World._41 += MOVE * dt;
 	//}
 	playerDir = PlayerFacingDirection::Right;
+}
+
+
+
+void Player::Move(const GameTimer & gt, const DirectX::SimpleMath::Vector3 & vec)
+{
+	//todo simplify
+
+	vel.SetVel(vec, 1.0f*gt.DeltaTime());
+	SimpleMath::Vector3 pos = GetPos();
+	SimpleMath::Vector3 v = vel.GetVelocity();
+
+	SetPos(pos + v);
+
+	GameApp::Get().mDebugLog << "\nPos" << pos.x << "\n" << pos.y << "\n" << pos.z << "\n\n";
+	GameApp::Get().mDebugLog << "\nVel" << v.x << "\n" << v.y << "\n" << v.z << "\n\n\n\n";
 }
 
 void Player::DamagePlayer(int damage)			//When enemy hits with player

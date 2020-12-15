@@ -6,6 +6,7 @@
 #include "RenderItem.h"
 #include "Common/Camera.h"
 #include "GameObject.h"
+#include "Velocity.h"
 
 
 using namespace DirectX;
@@ -22,6 +23,9 @@ public:
   void MoveLeft		( const GameTimer& gt);
   void MoveRight	( const GameTimer& gt);
 
+  Velocity vel;
+  // Gamepad
+  void Move(const GameTimer& gt, const DirectX::SimpleMath::Vector3& vec);
   void DamagePlayer(int damage);
 
   int health = 100;

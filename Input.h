@@ -3,6 +3,7 @@
 #include "Singleton.h"
 #include <Keyboard.h>
 #include <GamePad.h>
+#include "SimpleMath.h"
 
 
 class Input : public Singleton<Input>
@@ -80,14 +81,25 @@ public:
 		return		{ mGamePadState.thumbSticks.leftX,	mGamePadState.thumbSticks.leftY };
 	}
 
-	DirectX::XMVECTOR LeftStick()
+	DirectX::XMFLOAT2 LeftStick()
 	{
 		return { mGamePadState.thumbSticks.rightX,	mGamePadState.thumbSticks.rightY };
 	}
 
-	DirectX::XMVECTOR RightStick()
+	DirectX::SimpleMath::Vector3 LeftStickXZ()
+	{
+		return { mGamePadState.thumbSticks.leftX,0.0f,	mGamePadState.thumbSticks.leftY };
+	}
+
+
+	DirectX::XMFLOAT2 RightStick()
 	{
 		return { mGamePadState.thumbSticks.rightX,	mGamePadState.thumbSticks.rightY };
+	}
+
+	DirectX::SimpleMath::Vector3 RightStickXZ()
+	{
+		return { mGamePadState.thumbSticks.rightX,0.0f,	mGamePadState.thumbSticks.rightY };
 	}
 
 	float LeftTrigger()
