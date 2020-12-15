@@ -13,18 +13,18 @@ void TileManager::Initialize()
 	int H1 = 2; // frequency of hazard spots to generate / health
 	int H2 = 1; // frequency of hazard spots to generate / slow
 	int H3 = 1;// frequency of hazard spots to generate / slip?
-	int H1MaxSize; // maximum size of hazard spot / health
-	int H2MaxSize; // maximum size of hazard spot / slow
-	int H3MaxSize; // maximum size of hazard spot / slip?
-	int H1MinSize; // minimum size of hazard spot / health
-	int H2MinSize; // minimum size of hazard spot / slow
-	int H3MinSize; // minimum size of hazard spot / slip?
-	//int H1Dist = 5; // distance between other hazards from central spot / health
-	//int H2Dist = 5; // distance between other hazards from central spot / slow
-	//int H3Dist = 0; // distance between other hazards from central spot / slip?
-	int H1Random; // randomness attributed to hazard generation / health
-	int H2Random; // randomness attributed to hazard generation / slow
-	int H3Random; // randomness attributed to hazard generation / slip?
+	//int H1MaxSize; // maximum size of hazard spot / health - ADVANCED GENERATION
+	//int H2MaxSize; // maximum size of hazard spot / slow - ADVANCED GENERATION
+	//int H3MaxSize; // maximum size of hazard spot / slip? - ADVANCED GENERATION
+	//int H1MinSize; // minimum size of hazard spot / health - ADVANCED GENERATION
+	//int H2MinSize; // minimum size of hazard spot / slow - ADVANCED GENERATION
+	//int H3MinSize; // minimum size of hazard spot / slip? - ADVANCED GENERATION
+	//int H1Dist = 5; // distance between other hazards from central spot / health - ADVANCED GENERATION
+	//int H2Dist = 5; // distance between other hazards from central spot / slow - ADVANCED GENERATION
+	//int H3Dist = 0; // distance between other hazards from central spot / slip? - ADVANCED GENERATION
+	//int H1Random; // randomness attributed to hazard generation / health - ADVANCED GENERATION
+	//int H2Random; // randomness attributed to hazard generation / slow - ADVANCED GENERATION
+	//int H3Random; // randomness attributed to hazard generation / slip? - ADVANCED GENERATION
 
 	std::vector<std::vector<int>> coords(mDimention);
 	for (int u = 0; u < mDimention; u++) {
