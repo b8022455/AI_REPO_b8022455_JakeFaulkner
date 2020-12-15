@@ -1,5 +1,9 @@
 #include "MenuState.h"
 #include "GameApp.h"
+#include "Constants.h"
+
+using ButtonState = GamePad::ButtonStateTracker::ButtonState;
+
 
 MenuState::MenuState(const Button & b0, const Button & b1, const Button & b2, const Button & b3)
 {
@@ -28,22 +32,22 @@ void MenuState::Update(const GameTimer & gt)
 
 	//todo on release
 
-	if (GetAsyncKeyState('W') & 0x8000) // W
+	if (InputUp()) // W
 	{
 		mButtons.at(0).Activate();
 	}
 
-	if (GetAsyncKeyState('A') & 0x8000) // A
+	if (InputLeft()) // A
 	{
 		mButtons.at(1).Activate();
 	}
 	
-	if (GetAsyncKeyState('D') & 0x8000) // D
+	if (InputRight()) // D
 	{
 		mButtons.at(2).Activate();
 	}
 	
-	if (GetAsyncKeyState('S') & 0x8000) // S
+	if (InputDown()) // S
 	{
 		mButtons.at(3).Activate();
 	}
@@ -56,4 +60,33 @@ void MenuState::Draw(const GameTimer & gt)
 	{
 		b.Draw();
 	}
+}
+
+bool MenuState::InputUp()
+{
+	return 
+		Input::Get().KeyHeld(GC::KEY_FW) || 
+		Input::Get().GamePad().dpadUp == ButtonState::RELEASED || 
+		Input::Get().GamePad().y == ButtonState::RELEASED;
+}
+
+bool MenuState::InputDown()
+{
+	return Input::Get().KeyHeld(GC::KEY_BK) ||
+		Input::Get().GamePad().dpadDown == ButtonState::RELEASED ||
+		Input::Get().GamePad().a == ButtonState::RELEASED;
+}
+
+bool MenuState::InputRight()
+{
+	return Input::Get().KeyHeld(GC::KEY_RT) ||
+		Input::Get().GamePad().dpadRight == ButtonState::RELEASED ||
+		Input::Get().GamePad().b == ButtonState::RELEASED;
+}
+
+bool MenuState::InputLeft()
+{
+	return Input::Get().KeyHeld(GC::KEY_LT) ||
+		Input::Get().GamePad().dpadLeft == ButtonState::RELEASED ||
+		Input::Get().GamePad().x == ButtonState::RELEASED;
 }

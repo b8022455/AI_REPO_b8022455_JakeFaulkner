@@ -15,13 +15,20 @@ void StateManager::Init()
 	Sprite buttonBg;
 	buttonBg.Initialise("iceTex",true);
 	
+	// Main menu
 	Button btnW(buttonBg, "W Play", Button::Action::GOTO_GAME);
 	Button btnA(buttonBg, "A Play", Button::Action::GOTO_GAME);
 	Button btnD(buttonBg, "D Play", Button::Action::GOTO_GAME);
 	Button btnS(buttonBg, "S Play", Button::Action::GOTO_GAME);
-
-	// New states
 	AddState("MainMenu", std::make_unique<MenuState>(btnW, btnA, btnD, btnS));
+
+	//PauseMenu
+	btnW = Button(buttonBg, "W Resume", Button::Action::GOTO_GAME);
+	btnA = Button(buttonBg, "A Resume", Button::Action::GOTO_GAME);
+	btnD = Button(buttonBg, "D Resume", Button::Action::GOTO_GAME);
+	btnS = Button(buttonBg, "S Resume", Button::Action::GOTO_GAME);
+	AddState("PauseMenu", std::make_unique<MenuState>(btnW, btnA, btnD, btnS));
+
 	AddState("GameState", std::make_unique<PlayState>());
 
 	// Init all states

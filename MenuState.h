@@ -5,6 +5,7 @@
 class MenuState : public State
 {
 	std::vector<Button> mButtons;
+
 public:
 	MenuState(const Button& b0, const Button& b1, const Button& b2, const Button& b3);
 
@@ -16,6 +17,10 @@ public:
 	virtual void OnMouseUp(WPARAM btnState, int x, int y)	override{};
 	virtual void OnMouseMove(WPARAM btnState, int x, int y) override{};
 	virtual void OnKeyboardInput(const GameTimer& gt)		override{};
+	bool InputUp();
+	bool InputDown();
+	bool InputRight();
+	bool InputLeft();
 };
 
 

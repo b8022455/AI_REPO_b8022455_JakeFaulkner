@@ -239,7 +239,16 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 }
 
 	
+/*
 
+If gamepad
+	gamepad
+else keyboard
+	keyboard
+	switch cam
+		play then keyboard player move 
+		debug then keyboard debug cam move
+*/
 
 void PlayState::Controls(const GameTimer & gt)
 {
@@ -262,6 +271,11 @@ void PlayState::Controls(const GameTimer & gt)
 		if (Input::Get().GamePad().rightTrigger == ButtonState::UP)
 		{
 			mCombatController.PlayerAttack();
+		}
+
+		if (Input::Get().GamePad().start == ButtonState::PRESSED)
+		{
+			GameApp::Get().ChangeState("PauseMenu");
 		}
 
 		if (Input::Get().GamePad().y == ButtonState::HELD)
