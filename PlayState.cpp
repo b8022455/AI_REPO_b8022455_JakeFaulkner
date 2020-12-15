@@ -27,7 +27,7 @@ void PlayState::Initialize()
 
 	//GameApp::Get().OnResize();
 
-	mPlayer.Initialize("Player"); // todo adapt GameApp mPlayer to this state
+	mPlayer.Initialize("Player");					// todo adapt GameApp mPlayer to this state
 	mPlayerWeapon.Initialize("Weapon");
 	
 	int n(0);
