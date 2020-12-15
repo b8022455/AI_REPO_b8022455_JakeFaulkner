@@ -11,26 +11,28 @@ void TileManager::Initialize()
 	//number of sprinkles, size of sprinkles (min,max), distance from other sprinkles of the same type
 
 	int H1 = 2; // frequency of hazard spots to generate / health
-	int H2 = 1; // frequency of hazard spots to generate / slow
+	int H2 = 4; // frequency of hazard spots to generate / slow
 	int H3 = 1;// frequency of hazard spots to generate / slip?
-	//int H1MaxSize; // maximum size of hazard spot / health - ADVANCED GENERATION
-	//int H2MaxSize; // maximum size of hazard spot / slow - ADVANCED GENERATION
-	//int H3MaxSize; // maximum size of hazard spot / slip? - ADVANCED GENERATION
-	//int H1MinSize; // minimum size of hazard spot / health - ADVANCED GENERATION
-	//int H2MinSize; // minimum size of hazard spot / slow - ADVANCED GENERATION
-	//int H3MinSize; // minimum size of hazard spot / slip? - ADVANCED GENERATION
-	//int H1Dist = 5; // distance between other hazards from central spot / health - ADVANCED GENERATION
-	//int H2Dist = 5; // distance between other hazards from central spot / slow - ADVANCED GENERATION
-	//int H3Dist = 0; // distance between other hazards from central spot / slip? - ADVANCED GENERATION
-	//int H1Random; // randomness attributed to hazard generation / health - ADVANCED GENERATION
-	//int H2Random; // randomness attributed to hazard generation / slow - ADVANCED GENERATION
-	//int H3Random; // randomness attributed to hazard generation / slip? - ADVANCED GENERATION
+	int H1MaxSize = 3; // maximum size of hazard spot / health - ADVANCED GENERATION
+	int H2MaxSize = 3; // maximum size of hazard spot / slow - ADVANCED GENERATION
+	int H3MaxSize = 3; // maximum size of hazard spot / slip? - ADVANCED GENERATION
+	int H1MinSize = 2; // minimum size of hazard spot / health - ADVANCED GENERATION
+	int H2MinSize = 2; // minimum size of hazard spot / slow - ADVANCED GENERATION
+	int H3MinSize = 2; // minimum size of hazard spot / slip? - ADVANCED GENERATION
+	int H1Dist = 5; // distance between other hazards from central spot / health - ADVANCED GENERATION
+	int H2Dist = 3; // distance between other hazards from central spot / slow - ADVANCED GENERATION
+	int H3Dist = 3; // distance between other hazards from central spot / slip? - ADVANCED GENERATION
+	int H1Random; // randomness attributed to hazard generation / health - ADVANCED GENERATION
+	int H2Random; // randomness attributed to hazard generation / slow - ADVANCED GENERATION
+	int H3Random; // randomness attributed to hazard generation / slip? - ADVANCED GENERATION
 
 	std::vector<std::vector<int>> coords(mDimention);
 	for (int u = 0; u < mDimention; u++) {
 		coords[u].resize(mDimention);
 	} // setup coords array to grid size
 	
+	//int Max = H1 + H2 + H3; // total number of hazard sources
+
 	// select positions for central hazard spots at random and store in vector
 	// use distance here as well
 
@@ -40,14 +42,57 @@ void TileManager::Initialize()
 			for (int o = 0; o < mDimention; o++) {
 				// calculate random variable to figure out hazard spot
 				int r = rand() % dimSquare;
-				if (r <= 10/* && H1 > 0*/) { // if tile is selected
-					// check whether tile is beyond distance (REMOVED FOR NOW)
-					coords[i][o] = 5;
-					//H1 -= 1;
+				if (r <= 10 && H1 > 0) { // if tile is selected
+					// DISTANCE CHECK HERE
+					// main is central square (number to square)
+					//			  o
+					//	 o		 ooo
+					//	ooo		ooooo
+					//	 o		 ooo
+					//			  o
+					bool SAFE = true;
+					int Cycles = (H1Dist * 2) + 1; // max number / for loop
+					bool odd = true; // whether or not to run odd or even logic
+					int Xcycle = 0; // used for x increase at start (increased after each whole odd cycle) 
+					int Ycycle = 0; // used for y increase at start (increased after each whole even cycle)
+					for (int d = 0; 0 < Cycles; d++) {
+						bool set = false; // TODO: ERROR (PREVENT SEARCHING OUT OF GRID)
+						if (odd == true) { // larger loop
+							for (int x = 0; 0 < (H1Dist + 1); x++) {
+								// xgrid = i -H1Dist + Xcycle + x
+								// ygrid = o + Ycycle - x
+								if (coords[i - H1Dist + Xcycle + x][o + Ycycle - x] == 5)
+									SAFE = false;
+							}
+							Xcycle++;
+						}
+						if (odd == false) { // smaller loop
+							for (int x = 0; 0 < H1Dist; x++) {
+								// xgrid = i(-H1Dist+1) + Xcycle + x
+								// ygrid = o + Ycyle - x
+								if (coords[i -(H1Dist+1) + Xcycle + x][o + Ycycle - x] == 5)
+									SAFE = false;
+							}
+							Ycycle++;
+						}
+						if (odd == true && set == false) {
+							odd = false;
+							set = true;
+						}
+						if (odd == false && set == false) {
+							odd = true;
+							set = true;
+						}
+					}
+
+					if (SAFE == true) {
+						coords[i][o] = 5;
+						H1 -= 1;
+					}
 				}
 			}
 		}
-		H1 -= 1;
+		//H1 -= 1;
 	}
 
 	// hazard type 2 - find hazard spots and check not within distance of other hazard
