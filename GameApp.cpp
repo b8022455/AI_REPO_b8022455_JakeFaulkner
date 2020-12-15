@@ -1025,62 +1025,35 @@ void GameApp::BuildMaterials()
 
 }
 
+std::unique_ptr<RenderItem> GameApp::BuildRenderItem(UINT& objCBindex, const std::string& geoName, const std::string& subGeoName)
+{
+
+	auto rItem = std::make_unique<RenderItem>();
+	rItem->World = MathHelper::Identity4x4();
+	rItem->ObjCBIndex = objCBindex;
+	rItem->InstanceCount = 0;
+	rItem->Geo = mGeometries[geoName].get();
+	rItem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	rItem->IndexCount = rItem->Geo->DrawArgs  [subGeoName].IndexCount;
+	rItem->StartIndexLocation = rItem->Geo->DrawArgs[subGeoName].StartIndexLocation;
+	rItem->BaseVertexLocation = rItem->Geo->DrawArgs[subGeoName].BaseVertexLocation;
+
+	++objCBindex;
+
+	return std::move(rItem);
+}
+
 void GameApp::BuildRenderItems()
 {
 	// Generate instance data.
 
-	auto boxRitem = std::make_unique<RenderItem>();
+	UINT objCbIndex = 0;
 
+	mAllRitems["Tiles"] = BuildRenderItem(objCbIndex, "floorTileGeo", "floorTile");
+	mAllRitems["Weapon"] = BuildRenderItem(objCbIndex, "tempSwordGeo", "tempSword");
+	mAllRitems["Player"] = BuildRenderItem(objCbIndex, "tempPlayerGeo", "tempPlayer");
+	mAllRitems["Enemy"] = BuildRenderItem(objCbIndex, "tempPlayerGeo", "tempPlayer");
 
-	boxRitem->World = MathHelper::Identity4x4();
-	boxRitem->TexTransform = MathHelper::Identity4x4();
-	boxRitem->ObjCBIndex = 0;
-	boxRitem->Mat = mMaterials["ice0"].get();
-	boxRitem->Geo = mGeometries["floorTileGeo"].get();
-	boxRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	boxRitem->InstanceCount = 0;
-	boxRitem->IndexCount = boxRitem->Geo->DrawArgs["floorTile"].IndexCount;
-	boxRitem->StartIndexLocation = boxRitem->Geo->DrawArgs["floorTile"].StartIndexLocation;
-	boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["floorTile"].BaseVertexLocation;
-	boxRitem->Bounds = boxRitem->Geo->DrawArgs["floorTile"].Bounds;
-
-	///Generic box used as the weapon default for now
-	auto swordRitem = std::make_unique<RenderItem>();
-	swordRitem->World = MathHelper::Identity4x4();
-	swordRitem->ObjCBIndex = 1;
-	swordRitem->InstanceCount = 0;
-	swordRitem->Mat = mMaterials["ice0"].get();
-	swordRitem->Geo = mGeometries["tempSwordGeo"].get(); //"swordGeo"
-	swordRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	swordRitem->IndexCount = swordRitem->Geo->DrawArgs["tempSword"].IndexCount;//"swordGeo"
-	swordRitem->StartIndexLocation = swordRitem->Geo->DrawArgs["tempSword"].StartIndexLocation;//"swordGeo"
-	swordRitem->BaseVertexLocation = swordRitem->Geo->DrawArgs["tempSword"].BaseVertexLocation;//"swordGeo"
-
-	auto playerRitem = std::make_unique<RenderItem>();
-	playerRitem->World = MathHelper::Identity4x4();
-	playerRitem->ObjCBIndex = 2;
-	playerRitem->InstanceCount = 0;
-	playerRitem->Geo = mGeometries["tempPlayerGeo"].get();//playerGeo
-	playerRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	playerRitem->IndexCount = playerRitem->Geo->DrawArgs["tempPlayer"].IndexCount;//player
-	playerRitem->StartIndexLocation = playerRitem->Geo->DrawArgs["tempPlayer"].StartIndexLocation;//player
-	playerRitem->BaseVertexLocation = playerRitem->Geo->DrawArgs["tempPlayer"].BaseVertexLocation;//player
-	//playerRitem->Instances.reserve(10);
-
-	auto enemyRitem = std::make_unique<RenderItem>();
-	enemyRitem->World = MathHelper::Identity4x4();
-	enemyRitem->ObjCBIndex = 3;
-	enemyRitem->InstanceCount = 0;
-	enemyRitem->Geo = mGeometries["tempPlayerGeo"].get();
-	enemyRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	enemyRitem->IndexCount = enemyRitem->Geo->DrawArgs["tempPlayer"].IndexCount;				//Just for testing, will give enemy its own geo eventually
-	enemyRitem->StartIndexLocation = enemyRitem->Geo->DrawArgs["tempPlayer"].StartIndexLocation;
-	enemyRitem->BaseVertexLocation = enemyRitem->Geo->DrawArgs["tempPlayer"].BaseVertexLocation;
-
-	mAllRitems["Tiles"] = std::move(boxRitem);
-	mAllRitems["Weapon"] = std::move(swordRitem);
-	mAllRitems["Player"] = std::move(playerRitem);
-	mAllRitems["Enemy"] = std::move(enemyRitem);
 
 	//Uncomment this if testing weapon collision, will be removed once the function in enemy class is available in GameApp
 	#pragma region Weapon Collision Checking
@@ -1090,6 +1063,8 @@ void GameApp::BuildRenderItems()
 	for (auto& e : mAllRitems)
 		mOpaqueRitems.push_back(e.second.get());
 }
+
+
 
 void GameApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems)
 {

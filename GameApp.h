@@ -98,9 +98,12 @@ private:
 	void BuildFrameResources();
 	void BuildMaterial(int& index, int texIndex, const std::string& name, float roughness = 0.5f, const DirectX::XMFLOAT4& diffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f }, const DirectX::XMFLOAT3& fresnel = { 0.05f, 0.05f, 0.05f });
 	void BuildMaterials();
+	//Auto increments obj cb index
+	std::unique_ptr<RenderItem> BuildRenderItem(UINT& objCBindex,const std::string& geoName, const std::string& subGeoName);
 	void BuildRenderItems();
 	void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems);
 	
+
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GetStaticSamplers();
 	
 
