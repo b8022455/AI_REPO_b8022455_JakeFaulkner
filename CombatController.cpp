@@ -27,7 +27,7 @@ void CombatController::Update()
 	else
 	{
 		mpPlayerWeapon->playerDirection = mpPlayer->playerDir;		//gets direction the player is facing, doesn't detect when attacking to prevent sword switching positions
-		
+
 		std::for_each(mpEnemies->begin(), mpEnemies->end(), [&](Enemy& e)
 		{
 			e.playerDirection = mpPlayer->playerDir;				//Gets direction player is facing into the enemy class to correctly blowback the enemy from the player
@@ -170,29 +170,31 @@ void PlayerWeapon::UpdateWeaponMatrix()
 
 	switch (playerDirection)
 	{
-		case 0:						//Left
-			playerPosOffsetX = -0.2f;
-			weaponPositionMatrix = XMMatrixTranslation(-0.5f, 0.0f, 0.0f);
-			break;
+	case 0:						//Left
+		playerPosOffsetX = -0.2f;
+		weaponPositionMatrix = XMMatrixTranslation(-0.5f, 0.0f, 0.0f);
+		break;
 
-		case 1:						//Right
-			playerPosOffsetX = 0.2f;
-			weaponPositionMatrix = XMMatrixTranslation(1.4f, 0.0f, 0.0f);
-			break;
+	case 1:						//Right
+		playerPosOffsetX = 0.2f;
+		weaponPositionMatrix = XMMatrixRotationZ(3.14159f);
+		weaponPositionMatrix *= XMMatrixTranslation(0.5f, 0.0f, 0.0f);
+		break;
 
-		case 2:						//Up
-			playerPosOffsetZ = 0.2f;
-			weaponPositionMatrix = XMMatrixTranslation(-0.5f, 0.0f, 0.0f);
-			break;
+	case 2:						//Up
+		playerPosOffsetZ = 0.2f;
+		weaponPositionMatrix = XMMatrixTranslation(-0.5f, 0.0f, 0.0f);
+		break;
 
-		case 3:						//Down
-			playerPosOffsetZ = -0.2f;
-			weaponPositionMatrix = XMMatrixTranslation(1.4f, 0.0f, 0.0f);
-			break;
+	case 3:						//Down
+		playerPosOffsetZ = -0.2f;
+		weaponPositionMatrix = XMMatrixRotationZ(3.14159f);
+		weaponPositionMatrix *= XMMatrixTranslation(0.5f, 0.0f, 0.0f);
+		break;
 
-		default:
-			assert(playerDirection);
-				break;
+	default:
+		assert(playerDirection);
+		break;
 	}
 
 	///Find way to do rotation around a point using 1 matrix

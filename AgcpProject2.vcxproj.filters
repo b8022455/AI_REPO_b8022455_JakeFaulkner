@@ -191,6 +191,9 @@
     <ClInclude Include="MenuState.h">
       <Filter>Header Files\States</Filter>
     </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Velocity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
