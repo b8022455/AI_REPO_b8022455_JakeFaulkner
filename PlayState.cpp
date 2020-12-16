@@ -154,18 +154,21 @@ void PlayState::Update(const GameTimer & gt)
 			{
 				//Could be put into an exists function in Inventory Class
 				Item droppedItem = e.GetDropItem();
-				bool itemExists = false;
-				for (size_t i = 0; i < Inventory.size(); i++)
+				if (droppedItem.name != "Empty")		//I.e An item was dropped from enemy
 				{
-					if (Inventory.at(i).name == droppedItem.name)
+					bool itemExists = false;
+					for (size_t i = 0; i < Inventory.size(); i++)
 					{
-						Inventory.at(i).amount++;
-						itemExists = true;
+						if (Inventory.at(i).name == droppedItem.name)
+						{
+							Inventory.at(i).amount++;
+							itemExists = true;
+						}
 					}
-				}
 
-				if (!itemExists)
-					Inventory.push_back({ droppedItem });
+					if (!itemExists)
+						Inventory.push_back({ droppedItem });
+				}
 
 				e.mpInstance->World._42 -= 200.0f;
 				e.mpInstance = nullptr;
