@@ -11,6 +11,12 @@
 using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
 
+PlayState::PlayState()
+	:
+	mExperience(0, GC::EXP_EXPONENT, GC::EXP_OFFSET, 0)
+{
+}
+
 void PlayState::Initialize()
 {
 	GameApp::Get().SetActiveCamera(&mCameras.at(CAMERA_TYPE::GAME));
@@ -131,6 +137,7 @@ void PlayState::Update(const GameTimer & gt)
 	if ((mPlayer.GetPos().z <= 10.0f) && mPlayer.Slowed == true) {
 		mPlayer.Slowed = false;
 	}
+	
 
 	int i = 0;
 	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
@@ -152,6 +159,9 @@ void PlayState::Update(const GameTimer & gt)
 			e.DamageEnemy(25);		//Takes away health from enemy + blowsback enemy position
 			if (e.GetHealth() < 0)
 			{
+				// gain exp
+				mExperience.AddExp(GC::EXP_DEFAULT); 
+
 				//Could be put into an exists function in Inventory Class
 				Item droppedItem = e.GetDropItem();
 				bool itemExists = false;
@@ -203,6 +213,13 @@ void PlayState::Update(const GameTimer & gt)
 	// Sprite update
 	mSprites["testSpriteFirst"].rotation = cosf(gt.TotalTime()) * 0.1f;
 	mSprites["testSpriteSecond"].rotation = sinf(gt.TotalTime());
+
+
+	if (mExperience.HasLeveledUp())
+	{
+		GameApp::Get().ChangeState("PauseMenu");
+	}
+
 
 	// for dirty frame
 	for (auto& c : mCameras)
