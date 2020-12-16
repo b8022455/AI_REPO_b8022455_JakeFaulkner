@@ -84,7 +84,7 @@ Item Enemy::GetDropItem()
 	Item droppedItem;
 
 	if (drop >= 60)				//Between 60 - 100
-		droppedItem = lookupTable.at(enemyType).second.at(0);		//Most Common item drop
+		droppedItem = lookupTable.at(enemyType).second.at(0);		//No item is dropped
 
 	else if (drop >= 30)			//Between 30 - 59
 		droppedItem = lookupTable.at(enemyType).second.at(1);		//2nd most common item drop
@@ -95,7 +95,7 @@ Item Enemy::GetDropItem()
 	else if (drop >= 5)			//Between 5 - 14
 		droppedItem = lookupTable.at(enemyType).second.at(3);		//4th most common item drop
 
-	else															//Rarest item drop
+	else															//Rarest item drop (0-5)
 		droppedItem = lookupTable.at(enemyType).second.at(4);
 
 	return droppedItem;

@@ -36,22 +36,22 @@ private:
 		{
 			"EnemyType1",										//Type of the enemy, not used but makes it easier to understand which enemy drops what
 			{
-				{"Common Sword", ItemCategory::Weapons, 1.0},		//Items the enemy can drop
-				{"Potion", ItemCategory::Healing, 2.5},
-				{"Uncommon Sword", ItemCategory::Weapons, 3.5},
-				{"Elysian Whip", ItemCategory::Healing, 5.0},
-				{"Rare Sword", ItemCategory::Weapons, 10.0}
+				{"Empty"},			//All Items enemys can drop
+				{"Potion", ItemCategory::Healing, 2.5},			//heals like 1/4 of health
+				{"Leadpipe", ItemCategory::Weapons, 3.5},		//Damage can be middling
+				{"Super Potion", ItemCategory::Healing, 5.0},	//heals like 1/2 of health
+				{"Nail Bat", ItemCategory::Weapons, 10.0}		//Damage can be high
 			}
 		},
 
 		{
 			"EnemyType2",
 			{
+				{"Empty"},
 				{"Potion", ItemCategory::Healing, 2.5},
-				{"Potion", ItemCategory::Healing, 2.5},
-				{"Uncommon Sword", ItemCategory::Weapons, 3.5},
-				{"Rare Sword", ItemCategory::Weapons, 10.0},
-				{"Magical Seeds", ItemCategory::Farming, 20.0}
+				{"Plastic Spork", ItemCategory::Weapons, 0.5},	//Damage can be v low
+				{"Holy Water", ItemCategory::Farming, 12.0},	//Helps plants grow faster
+				{"Magical Seeds", ItemCategory::Farming, 20.0}	//Grows some good plants?
 			}
 		}
 
