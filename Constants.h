@@ -46,4 +46,10 @@ namespace GC
 		DIRECTION_LOWER({ 0.0f,	-1.0f,	0.0f })
 		;
 
+	const int
+		EXP_EXPONENT = 3,
+		EXP_OFFSET = 5,
+		EXP_DEFAULT = 5; // test value for increasing exp
+
+
 }

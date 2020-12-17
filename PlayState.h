@@ -8,7 +8,8 @@
 #include <array>
 #include "SpriteManager.h"
 #include <unordered_map>
-
+#include "Experience.h"
+#include "Constants.h"
 
 
 class PlayState : public State
@@ -17,6 +18,8 @@ class PlayState : public State
 	PlayerWeapon mPlayerWeapon;
 	std::vector<Enemy> mEnemies;
 	std::vector<Item> Inventory;
+	int inventoryPosition = 0;			//Used to select items from the Inventory (Increments using down key, decrements using up key, loops back around when over inventory size)
+	bool itemMenuOpen = false;			//Debug: only allow item selection when on a menu(either pause or an item menu)
 
 	TileManager mTileManager;
 	Tile mTile;
@@ -35,7 +38,8 @@ class PlayState : public State
 	std::array<Camera, CAMERA_TYPE::SIZE> mCameras;
 	//Camera mCamera;
 	//Camera mCameraDebug;
-	
+public:
+	PlayState();
 
 	virtual void Initialize() override;
 	virtual void Update(const GameTimer& gt) override;
@@ -59,5 +63,7 @@ class PlayState : public State
 
 	const float CAM_ANGLE = 45.0f;
 	const DirectX::XMFLOAT3 CAM_OFFSET{ 0.0f,10.0f,-10.0f }; 
+	Experience mExperience;
+
 };
 

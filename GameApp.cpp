@@ -1052,7 +1052,7 @@ void GameApp::BuildRenderItems()
 	mAllRitems["Tiles"] = BuildRenderItem(objCbIndex, "floorTileGeo", "floorTile");
 	mAllRitems["Weapon"] = BuildRenderItem(objCbIndex, "tempSwordGeo", "tempSword");
 	mAllRitems["Player"] = BuildRenderItem(objCbIndex, "tempPlayerGeo", "tempPlayer");
-	mAllRitems["Enemy"] = BuildRenderItem(objCbIndex, "tempPlayerGeo", "tempPlayer");
+	mAllRitems["Enemy"] = BuildRenderItem(objCbIndex, "tempEnemyGeo", "tempEnemy");
 
 
 	//Uncomment this if testing weapon collision, will be removed once the function in enemy class is available in GameApp

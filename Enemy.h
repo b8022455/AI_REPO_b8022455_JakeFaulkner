@@ -53,6 +53,17 @@ private:
 				{"Holy Water", ItemCategory::Farming, 12.0},	//Helps plants grow faster
 				{"Magical Seeds", ItemCategory::Farming, 20.0}	//Grows some good plants?
 			}
+		},
+
+		{
+			"EnemyType:Boss",
+			{
+				{"Key To Valhalla", ItemCategory::KeyItems, 0.0},		///Find way to ensure this type drops the item!!!
+				{"Key To Valhalla", ItemCategory::KeyItems, 0.0},
+				{"Key To Valhalla", ItemCategory::KeyItems, 0.0},
+				{"Key To Valhalla", ItemCategory::KeyItems, 0.0},
+				{"Key To Valhalla", ItemCategory::KeyItems, 0.0},
+			}
 		}
 
 		//Easier or more confusing?

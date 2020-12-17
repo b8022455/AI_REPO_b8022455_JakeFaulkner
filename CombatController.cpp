@@ -55,9 +55,9 @@ bool CombatController::CheckCollision(float ObjX, float ObjY, float ObjZ)
 	float yDistance = ObjY - collisionPoint._42;
 	float zDistance = ObjZ - collisionPoint._43;
 
-	if (xDistance > -1.5f && xDistance < 1.0f)							//If distance between X coordinate is within boundaries (-1.5 < X < 1.0)
+	if (xDistance > -1.5f && xDistance < 1.5f)							//If distance between X coordinate is within boundaries (-1.5 < X < 1.0)
 		if (yDistance > -1.5f && yDistance < 1.5f)						//If distance between Y coordinate is within boundaries (-1.5 < Y < 1.5)
-			if (zDistance > -1.0f && zDistance < 2.0f)					//If distance between Z coordinate is within boundaries (-1.0f < Z < 2.0f)
+			if (zDistance > -1.5f && zDistance < 1.5f)					//If distance between Z coordinate is within boundaries (-1.0f < Z < 2.0f)
 				return true;				//There is a collision between the 2 objects
 
 	return false;				//If the distance between the objects is not within the boundaries, there is no collision
@@ -120,13 +120,13 @@ void PlayerWeapon::PositionWeapon()
 
 	if (playerDirection > 1)		//If the player direction is Up (2 in the enum) or Down (3 in the enum)
 	{
-		weaponStartingRotation = 0.349066f;		//Sets new starting to rotation to 20 degrees for up/down
-		weaponEndRotation = 2.79253f;			//Sets new end rotation to 160 degrees
+		weaponStartingRotation = 1.5708f;		//Sets new starting to rotation to 90 degrees for up/down
+		weaponEndRotation = 7.85398f;			//Sets new end rotation to 450 degrees
 	}
-	else if(playerDirection <= 1)				//If player direction is Left (0 in the enum) or Right (1 in the enum)
+	else if (playerDirection <= 1)				//If player direction is Left (0 in the enum) or Right (1 in the enum)
 	{
-		weaponStartingRotation = -1.39626f;
-		weaponEndRotation = 1.39626f;
+		weaponStartingRotation = 0.0f;
+		weaponEndRotation = 6.28319f;			//360 degrees
 	}
 
 	weaponRotation = weaponStartingRotation;
@@ -165,31 +165,24 @@ void PlayerWeapon::UpdateTimer()
 
 void PlayerWeapon::UpdateWeaponMatrix()
 {
-	float playerPosOffsetX = 0.0f;
-	float playerPosOffsetZ = 0.0f;
-
 	switch (playerDirection)
 	{
 	case 0:						//Left
-		playerPosOffsetX = -0.2f;
-		weaponPositionMatrix = XMMatrixTranslation(-0.5f, 0.0f, 0.0f);
+		weaponPositionMatrix = XMMatrixTranslation(-1.0f, 0.0f, 0.0f);
 		break;
 
 	case 1:						//Right
-		playerPosOffsetX = 0.2f;
 		weaponPositionMatrix = XMMatrixRotationZ(3.14159f);
-		weaponPositionMatrix *= XMMatrixTranslation(0.5f, 0.0f, 0.0f);
+		weaponPositionMatrix *= XMMatrixTranslation(1.0f, 0.0f, 0.0f);
 		break;
 
 	case 2:						//Up
-		playerPosOffsetZ = 0.2f;
-		weaponPositionMatrix = XMMatrixTranslation(-0.5f, 0.0f, 0.0f);
+		weaponPositionMatrix = XMMatrixTranslation(-1.0f, 0.0f, 0.0f);
 		break;
 
 	case 3:						//Down
-		playerPosOffsetZ = -0.2f;
 		weaponPositionMatrix = XMMatrixRotationZ(3.14159f);
-		weaponPositionMatrix *= XMMatrixTranslation(0.5f, 0.0f, 0.0f);
+		weaponPositionMatrix *= XMMatrixTranslation(1.0f, 0.0f, 0.0f);
 		break;
 
 	default:
@@ -201,9 +194,9 @@ void PlayerWeapon::UpdateWeaponMatrix()
 	weaponPositionMatrix *= XMMatrixRotationY(weaponRotation);
 	//Positions the weapon at the players position + offset
 	weaponPositionMatrix *= XMMatrixTranslation(
-		playerPos._41 + playerPosOffsetX,
+		playerPos._41,
 		playerPos._42 + 1.0f,
-		playerPos._43 + playerPosOffsetZ
+		playerPos._43
 	);
 
 	XMStoreFloat4x4(&mpInstance->World, weaponPositionMatrix);		//Stores above calculated matrix into the world matrix for the obj
