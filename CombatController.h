@@ -34,10 +34,10 @@ private:
 
 	int damage;		///Not sure if needed in future
 	XMMATRIX weaponPositionMatrix;
-	float weaponStartingRotation = -1.39626f;		//-80 degrees starting point for rotation
+	float weaponStartingRotation = 0.0f;		//0 degrees starting point for rotation
 	float weaponRotation;
-	float weaponEndRotation = 1.39626f;			//80 degress ending point for rotation
-	const float weaponIncrementRotationAmount = 0.03f;
+	float weaponEndRotation = 6.28319f;			//80 degress ending point for rotation
+	const float weaponIncrementRotationAmount = 0.05f;
 	bool attacking;
 
 	struct TimeDelay		//All variables used in the timing stuff, kept in struct to keep them close together

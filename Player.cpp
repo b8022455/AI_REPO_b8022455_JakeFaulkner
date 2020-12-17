@@ -135,6 +135,17 @@ void Player::MoveRight(const GameTimer& gt)
 
 void Player::Move(const GameTimer & gt, const DirectX::SimpleMath::Vector3 & vec)
 {
+	//Changes position of sword depending on where player is facing
+	if (vec.x < 0)
+		playerDir = PlayerFacingDirection::Left;
+	else if (vec.x > 0)
+		playerDir = PlayerFacingDirection::Right;
+
+	if (vec.z > 0)
+		playerDir = PlayerFacingDirection::Up;
+	else if (vec.z < 0)
+		playerDir = PlayerFacingDirection::Down;
+
 	//todo simplify
 
 	vel.SetVel(vec, 1.0f*gt.DeltaTime());

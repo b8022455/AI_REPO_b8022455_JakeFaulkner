@@ -24,6 +24,7 @@ void PlayState::Initialize()
 	//mTile.Initialize("Tiles");
 	mTileManager.Initialize();
 
+	Inventory.push_back({ "Potion" });		//Testing Item usage
 
 	for (auto& c : mCameras)
 	{
@@ -181,7 +182,7 @@ void PlayState::Update(const GameTimer & gt)
 				}
 
 				e.mpInstance->World._42 -= 200.0f;
-				e.mpInstance = nullptr;
+				//e.mpInstance = nullptr;
 				mEnemies.erase(mEnemies.begin() + i);
 			}
 		}
@@ -305,7 +306,7 @@ void PlayState::Controls(const GameTimer & gt)
 		mPlayer.Move(  gt, Input::Get().LeftStickXZ()* moveSpeed);
 
 		// Attack
-		if (Input::Get().GamePad().rightTrigger == ButtonState::UP)
+		if (Input::Get().GamePad().rightTrigger == ButtonState::HELD)
 		{
 			mCombatController.PlayerAttack();
 		}
@@ -428,17 +429,62 @@ void PlayState::Controls(const GameTimer & gt)
 		break;
 		}
 
-
-		if (Input::Get().KeyHeld(GC::KEY_INVENTORY))
+		//Scrolling through inventory keys Debug
+		if (Input::Get().KeyReleased(VK_DOWN) & itemMenuOpen)
 		{
-			GameApp::Get().mDebugLog << "Inventory:  (size " << Inventory.size() << ")";
-			for (auto& i : Inventory)
-				GameApp::Get().mDebugLog << i.name << " : " << i.amount << "\n";
+			inventoryPosition++;
+			if (inventoryPosition >= Inventory.size())
+				inventoryPosition = 0;						//Loop back round to top of inventory
 		}
 
+		if (Input::Get().KeyReleased(VK_UP) & itemMenuOpen)
+		{
+			inventoryPosition--;
+			if (inventoryPosition < 0)
+				inventoryPosition = (int)Inventory.size() - 1;	//Loop back round to bottom of inventory
+		}
+
+		//Opens and closes item menu
+		if (Input::Get().KeyReleased(GC::KEY_INVENTORY))
+		{
+			if (!itemMenuOpen)
+				itemMenuOpen = true;		//When the item menu UI pops up on screen
+			else
+				itemMenuOpen = false;
+		}
+
+		if (itemMenuOpen)
+		{
+			GameApp::Get().mDebugLog << "Inventory:  (size " << Inventory.size() << ")\n";
+
+			//Debug purposes: shows which items are in inventory
+			for (size_t i = 0; i < Inventory.size(); i++)
+				GameApp::Get().mDebugLog << Inventory.at(i).name << " x" << Inventory.at(i).amount << "\n";
+
+			//Debug purposes: shows the currently selected item based on inventoryPosition value
+			if (Inventory.size() > 0)
+				GameApp::Get().mDebugLog << "Current Selected Item: " << Inventory.at(inventoryPosition).name << " x" << Inventory.at(inventoryPosition).amount << "\n";
+		}
 	}
 
-	
-	
+	//Use Item Key, change to something else, or only allow when on item/pause menu
+	if (Input::Get().KeyReleased('U') & itemMenuOpen)
+	{
+		if (Inventory.size() > 0)
+		{
+			if (Inventory.at(inventoryPosition).category == ItemCategory::Healing)		//Only items that can be used are healing items (Equipping weapons might be a diff key)
+			{
+				std::string itemName = Inventory.at(inventoryPosition).name;
+				//mPlayer.UseItem(itemName);			//Function that has switch containing item names and uses
+				Inventory.at(inventoryPosition).amount--;
 
+				if (Inventory.at(inventoryPosition).amount <= 0)
+				{
+					Inventory.erase(Inventory.begin() + inventoryPosition);		//Remove selected item if amount has run out
+					if (inventoryPosition >= Inventory.size())					//If selected item was last item in list, reposition selected item value to prevent going out of vector bounds
+						inventoryPosition = 0;
+				}
+			}
+		}
+	}
 }
