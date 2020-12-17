@@ -86,13 +86,6 @@ namespace GC
 		&ITEM_LIST[6],
 	};
 
-	const ItemListPointers ITEMS_ENEMY_2{
-		&ITEM_LIST[0],
-		&ITEM_LIST[4],
-		&ITEM_LIST[5],
-		&ITEM_LIST[6],
-	};
-
 	const ItemListPointers ITEMS_ENEMY_BOSS{
 		&ITEM_LIST[8],
 	};

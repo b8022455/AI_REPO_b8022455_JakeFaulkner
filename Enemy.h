@@ -66,11 +66,5 @@ private:
 				{"Key To Valhalla", ItemCategory::KeyItems, 0.0},
 			}
 		}
-
-		//Easier or more confusing?
-		/*
-		{"EnemyType1", {{"Common Sword", ItemCategory::Weapons}, {"Potion", ItemCategory::Healing}, {"Uncommon Sword", ItemCategory::Weapons}, {"Elysian Whip", ItemCategory::Healing}, {"Rare Sword", ItemCategory::Weapons}}},
-		{"EnemyType2", {{"Potion", ItemCategory::Healing}, {"Potion", ItemCategory::Healing}, {"Uncommon Sword", ItemCategory::Weapons}, {"Rare Sword", ItemCategory::Weapons}, {"Magical Seeds", ItemCategory::Farming}}}
-		*/
 	};
 };

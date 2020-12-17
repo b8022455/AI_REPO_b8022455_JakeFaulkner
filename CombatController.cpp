@@ -91,6 +91,17 @@ bool CombatController::CheckCollision(XMFLOAT3 Obj1, XMFLOAT3 Obj2, float xMin, 
 	return false;				//If the distance between the objects is not within the boundaries, there is no collision
 }
 
+void CombatController::EquipWeapon(std::string weaponName)
+{
+	equippedWeapon = weaponName;		//Sets the equipped weapon
+	mpPlayer->attack = mpPlayer->attack + mpPlayerWeapon->GetWeaponStats(weaponName);			//Updates player attack value to base attack + equipped weapons attack amount
+}
+
+std::string CombatController::GetCurrentWeapon()
+{
+	return equippedWeapon;
+}
+
 void PlayerWeapon::Initialize(const std::string& renderItemName)
 {
 	// Setup a render item
@@ -205,4 +216,32 @@ void PlayerWeapon::UpdateWeaponMatrix()
 bool PlayerWeapon::GetAttackStatus()
 {
 	return attacking;
+}
+
+int PlayerWeapon::GetWeaponStats(std::string equippedWeapon)
+{
+	int attack = 0;
+	if (equippedWeapon == "Stick")
+	{
+		attack = 10;
+		///Find way to change model to something else
+	}
+
+	if (equippedWeapon == "Leadpipe")
+	{
+		attack = 20;
+		//etc.
+	}
+
+	if (equippedWeapon == "Nail Bat")
+	{
+		attack = 40;
+	}
+
+	if (equippedWeapon == "Plastic Spork")
+	{
+		attack = 5;
+	}
+
+	return attack;
 }

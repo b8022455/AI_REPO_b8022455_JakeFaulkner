@@ -24,7 +24,7 @@ void PlayState::Initialize()
 	//mTile.Initialize("Tiles");
 	mTileManager.Initialize();
 
-	Inventory.push_back({ "Potion" });		//Testing Item usage
+	Inventory.push_back({ "Potion", ItemCategory::Healing });		//Testing Item usage
 
 	for (auto& c : mCameras)
 	{
@@ -157,7 +157,7 @@ void PlayState::Update(const GameTimer & gt)
 			e.mpInstance->World._42,
 			e.mpInstance->World._43 ))
 		{
-			e.DamageEnemy(25);		//Takes away health from enemy + blowsback enemy position
+			e.DamageEnemy(mPlayer.attack);		//Takes away health from enemy + blowsback enemy position
 			if (e.GetHealth() < 0)
 			{
 				// gain exp
@@ -505,6 +505,13 @@ void PlayState::Controls(const GameTimer & gt)
 					if (inventoryPosition >= Inventory.size())					//If selected item was last item in list, reposition selected item value to prevent going out of vector bounds
 						inventoryPosition = 0;
 				}
+			}
+
+			else if (Inventory.at(inventoryPosition).category == ItemCategory::Weapons)
+			{
+				std::string weaponName = Inventory.at(inventoryPosition).name;
+				if (mCombatController.GetCurrentWeapon() != weaponName)			//Weapon selected is not already equipped
+					mCombatController.EquipWeapon(weaponName);				//'Equip' to player and update damage output
 			}
 		}
 	}
