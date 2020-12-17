@@ -2,6 +2,7 @@
 #include "Constants.h"
 #include "GameObject.h"
 // NPCS
+// todo inherit from gameobject, change init, add gameobject override functions
 class Trader // : public GameObject
 {
 	ItemListPointers mRequestItems;
@@ -11,6 +12,15 @@ class Trader // : public GameObject
 
 	bool traded = false;
 public:
+
+	Trader(const ItemListPointers& request, const ItemListPointers& reward)
+		:
+		mRequestItems(request),
+		mRewardItems(reward)
+	{
+
+	}
+
 	// Returns item pointers container
 	ItemListPointers* GiveRewards()
 	{

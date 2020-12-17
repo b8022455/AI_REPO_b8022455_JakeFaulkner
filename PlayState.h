@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include "Experience.h"
 #include "Constants.h"
+#include "Trader.h"
 
 
 class PlayState : public State
@@ -18,6 +19,7 @@ class PlayState : public State
 	PlayerWeapon mPlayerWeapon;
 	std::vector<Enemy> mEnemies;
 	std::vector<Item> Inventory;
+	Trader mTempTrader;
 	int inventoryPosition = 0;			//Used to select items from the Inventory (Increments using down key, decrements using up key, loops back around when over inventory size)
 	bool itemMenuOpen = false;			//Debug: only allow item selection when on a menu(either pause or an item menu)
 

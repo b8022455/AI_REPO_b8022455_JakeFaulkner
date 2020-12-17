@@ -97,8 +97,13 @@ namespace GC
 		&ITEM_LIST[8],
 	};
 
+	const ItemListPointers ITEMS_TRADER_REQUEST_1{
+		&ITEM_LIST[2],
+	};
 
-
+	const ItemListPointers ITEMS_TRADER_REWARD_1{
+		&ITEM_LIST[1],
+	};
 
 	
 }

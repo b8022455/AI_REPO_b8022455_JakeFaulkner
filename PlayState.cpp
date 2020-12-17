@@ -10,10 +10,10 @@
 
 using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
-
 PlayState::PlayState()
 	:
-	mExperience(0, GC::EXP_EXPONENT, GC::EXP_OFFSET, 0)
+	mExperience(0, GC::EXP_EXPONENT, GC::EXP_OFFSET, 0),
+	mTempTrader(GC::ITEMS_TRADER_REQUEST_1, GC::ITEMS_TRADER_REWARD_1)
 {
 }
 
@@ -106,6 +106,7 @@ void PlayState::Update(const GameTimer & gt)
 	//mTileManager.Update(gt);
 	mPlayer.Update(gt);
 	mCombatController.Update();
+
 
 	// TODO: (NOTE) CHECK AREA HAZARDS HERE
 	// if player.x & player.z are within the tile.x & tile.z, cause effects, for now DEBUG logic
@@ -507,5 +508,18 @@ void PlayState::Controls(const GameTimer & gt)
 				}
 			}
 		}
+	}
+
+	// trade
+	if (Input::Get().KeyReleased('9'))
+	{
+		// get request
+		//comp to player inventory
+
+		// does player have room for reward - quest item
+
+		// remove request item from player inventory
+		// give items to player inventory
+
 	}
 }
