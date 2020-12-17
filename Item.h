@@ -1,7 +1,7 @@
 #pragma once
 #include <array>
 
-enum ItemCategory { Healing, Weapons, Farming, KeyItems };		//Could be used with a string instead
+enum ItemCategory { None, Healing, Weapons, Farming, KeyItems };		//Could be used with a string instead
 struct Item
 {
 	std::string name;

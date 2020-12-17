@@ -2,6 +2,14 @@
 
 #include <string>
 #include <DirectXMath.h>
+#include "Item.h"
+#include <array>
+#include <vector>
+#include <unordered_map>
+
+typedef const std::vector<Item> ItemList;
+typedef const std::vector<const Item*> ItemListPointers;
+
 namespace GC
 {
 	//Keyboard keys
@@ -51,5 +59,46 @@ namespace GC
 		EXP_OFFSET = 5,
 		EXP_DEFAULT = 5; // test value for increasing exp
 
+	const ItemList ITEM_LIST =
+	{
+		{"Empty"},
+		{"Potion", ItemCategory::Healing, 2.5},
+		{"Leadpipe", ItemCategory::Weapons, 3.5},
+		{"Super Potion", ItemCategory::Healing, 5.0},
+		{"Nail Bat", ItemCategory::Weapons, 10.0},
+		{"Plastic Spork", ItemCategory::Weapons, 0.5},
+		{"Holy Water", ItemCategory::Farming, 12.0},
+		{"Magical Seeds", ItemCategory::Farming, 20.0},
+		{"Key To Valhalla", ItemCategory::KeyItems, 0.0}
+	};
 
+	const ItemListPointers ITEMS_ENEMY_1{
+		&ITEM_LIST[0],
+		&ITEM_LIST[1],
+		&ITEM_LIST[2],
+		&ITEM_LIST[3],
+	};
+
+	const ItemListPointers ITEMS_ENEMY_2{
+		&ITEM_LIST[0],
+		&ITEM_LIST[4],
+		&ITEM_LIST[5],
+		&ITEM_LIST[6],
+	};
+
+	const ItemListPointers ITEMS_ENEMY_2{
+		&ITEM_LIST[0],
+		&ITEM_LIST[4],
+		&ITEM_LIST[5],
+		&ITEM_LIST[6],
+	};
+
+	const ItemListPointers ITEMS_ENEMY_BOSS{
+		&ITEM_LIST[8],
+	};
+
+
+
+
+	
 }

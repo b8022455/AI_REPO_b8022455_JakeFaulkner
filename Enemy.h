@@ -1,7 +1,8 @@
 #pragma once
 #include "GameObject.h"
 #include "RenderItem.h"
-#include "Item.h"			//Need to decide if it can be put in another file rather than its own
+#include "Constants.h"
+//#include "Item.h"			//Need to decide if it can be put in another file rather than its own
 #include <random>
 
 class Enemy : public GameObject
@@ -36,7 +37,7 @@ private:
 		{
 			"EnemyType1",										//Type of the enemy, not used but makes it easier to understand which enemy drops what
 			{
-				{"Empty"},			//All Items enemys can drop
+				{"Empty"},										//All Items enemys can drop
 				{"Potion", ItemCategory::Healing, 2.5},			//heals like 1/4 of health
 				{"Leadpipe", ItemCategory::Weapons, 3.5},		//Damage can be middling
 				{"Super Potion", ItemCategory::Healing, 5.0},	//heals like 1/2 of health
