@@ -168,6 +168,7 @@
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="State.cpp" />
     <ClCompile Include="Tile.cpp" />
+    <ClCompile Include="Trader.cpp" />
     <ClCompile Include="Velocity.cpp" />
     <ClCompile Include="WinMain.cpp" />
     <ClCompile Include="SpriteManager.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="SpriteManager.h" />
     <ClInclude Include="TextConsole.h" />
     <ClInclude Include="Tile.h" />
+    <ClInclude Include="Trader.h" />
     <ClInclude Include="Velocity.h" />
     <ClInclude Include="XmfloatOverload.h" />
   </ItemGroup>
