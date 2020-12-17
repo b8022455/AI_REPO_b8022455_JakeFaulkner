@@ -16,6 +16,7 @@ namespace GC
 		KEY_LOWER = 'Q',
 
 		KEY_INVENTORY = 'I',
+	    KEY_USEITEM = 'B',
 
 
 		KEY_ATTACK = 0x20,  //space

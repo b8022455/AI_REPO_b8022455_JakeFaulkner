@@ -176,8 +176,30 @@ void PlayState::Update(const GameTimer & gt)
 			}
 		}
 		i++;
+
 	
 	});
+
+	if (Input::Get().KeyReleased(GC::KEY_USEITEM))
+	{
+	  for (size_t i = 0; i < Inventory.size(); i++)
+	  {
+
+		if (Inventory.at(i).name == "Potion")
+		{
+		  mPlayer.health += 5;
+		  Inventory.at(i).amount--;
+
+		  if (Inventory.at(i).amount == 0)
+		  {
+			Inventory.erase(Inventory.begin() + i);
+		  }
+
+		}
+
+	  }
+
+	}
 
 
 	PassConstants* pMainPassCB = GameApp::Get().GetMainPassCB();
@@ -418,6 +440,7 @@ void PlayState::Controls(const GameTimer & gt)
 			for (auto& i : Inventory)
 				GameApp::Get().mDebugLog << i.name << " : " << i.amount << "\n";
 		}
+
 
 	}
 
