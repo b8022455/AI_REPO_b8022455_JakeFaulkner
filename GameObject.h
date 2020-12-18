@@ -7,6 +7,7 @@
 
 class GameTimer;
 
+//Initialize needs to be called for every gameobject with render item name
 class GameObject
 {
 protected:

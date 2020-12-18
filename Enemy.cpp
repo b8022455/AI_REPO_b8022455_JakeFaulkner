@@ -37,7 +37,7 @@ DirectX::XMFLOAT3 Enemy::GetPosition()
 
 void Enemy::DamageEnemy(int dmg)
 {
-	health -= dmg;
+	mHealth -= dmg;
 	mpInstance->MaterialIndex = 5;		//Visual check, remove eventually
 
 	float x = 0.0f;
@@ -76,27 +76,25 @@ int Enemy::GetRandomValue(int min, int max)
 	return uni(rng);
 }
 
-Item Enemy::GetDropItem()
+const std::string Enemy::GetDropItem()
 {
-	int drop = GetRandomValue(0, 100);
+	int max = 128;
+	int drop = GetRandomValue(0, max);
 	///Could add money to be dropped if a currency is going to be in the game
 
 	Item droppedItem;
 
-	if (drop >= 60)				//Between 60 - 100
-		droppedItem = lookupTable.at(enemyType).second.at(0);		//No item is dropped
+	int index = 0;
 
-	else if (drop >= 30)			//Between 30 - 59
-		droppedItem = lookupTable.at(enemyType).second.at(1);		//2nd most common item drop
+	for (int i = 0; i < mpDropItems->size(); i++)
+	{
+		max = max >> 1; // divides by 2
+		if (drop >= max)
+		{
+			index = i;
+		}
+	}
 
-	else if (drop >= 15)			//Between 15 - 29
-		droppedItem = lookupTable.at(enemyType).second.at(2);		//3rd most common item drop
+	return mpDropItems->at(index);
 
-	else if (drop >= 5)			//Between 5 - 14
-		droppedItem = lookupTable.at(enemyType).second.at(3);		//4th most common item drop
-
-	else															//Rarest item drop (0-5)
-		droppedItem = lookupTable.at(enemyType).second.at(4);
-
-	return droppedItem;
 }

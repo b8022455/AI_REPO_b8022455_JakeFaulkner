@@ -12,8 +12,8 @@ using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
 PlayState::PlayState()
 	:
-	mExperience(0, GC::EXP_EXPONENT, GC::EXP_OFFSET, 0),
-	mTempTrader(GC::ITEMS_TRADER_REQUEST_1, GC::ITEMS_TRADER_REWARD_1)
+	mExperience(0, GC::EXP_EXPONENT, GC::EXP_OFFSET, 0)
+	//mTempTrader(GC::ITEMS_TRADER_REQUEST_1, GC::ITEMS_TRADER_REWARD_1)
 {
 }
 
@@ -24,7 +24,9 @@ void PlayState::Initialize()
 	//mTile.Initialize("Tiles");
 	mTileManager.Initialize();
 
-	Inventory.push_back({ "Potion" });		//Testing Item usage
+	//Inventory.push_back({ "Potion" });		//Testing Item usage
+	++mInventory["Potion"];
+
 
 	for (auto& c : mCameras)
 	{
@@ -46,9 +48,7 @@ void PlayState::Initialize()
 		mTile.Initialize("Tiles");
 		{
 			mTile.mpInstance->MaterialIndex = 4;
-			//mTile.SetRandomPosition();			
 			mTile.CreateTileWallHorizontal(clumpSize, position, n);
-			//mTile.CreateTileWallVertical(clumpSize, position, n);
 		}
 		n++;
 	}
@@ -165,21 +165,10 @@ void PlayState::Update(const GameTimer & gt)
 				mExperience.AddExp(GC::EXP_DEFAULT); 
 
 				//Could be put into an exists function in Inventory Class
-				Item droppedItem = e.GetDropItem();
-				if (droppedItem.name != "Empty")		//I.e An item was dropped from enemy
+				std::string droppedItem = e.GetDropItem();
+				if (droppedItem != "Empty")		//I.e An item was dropped from enemy
 				{
-					bool itemExists = false;
-					for (size_t i = 0; i < Inventory.size(); i++)
-					{
-						if (Inventory.at(i).name == droppedItem.name)
-						{
-							Inventory.at(i).amount++;
-							itemExists = true;
-						}
-					}
-
-					if (!itemExists)
-						Inventory.push_back({ droppedItem });
+					++mInventory[droppedItem];
 				}
 
 				e.mpInstance->World._42 -= 200.0f;
@@ -193,23 +182,16 @@ void PlayState::Update(const GameTimer & gt)
 
 	if (Input::Get().KeyReleased(GC::KEY_USEITEM))
 	{
-	  for (size_t i = 0; i < Inventory.size(); i++)
-	  {
-
-		if (Inventory.at(i).name == "Potion")
+		// potion exists in inventory
+		if (mInventory.count("Potion") > 0)
 		{
-		  mPlayer.health += 5;
-		  Inventory.at(i).amount--;
-
-		  if (Inventory.at(i).amount == 0)
-		  {
-			Inventory.erase(Inventory.begin() + i);
-		  }
-
+			// has potion
+			if (mInventory.at("Potion") > 0)
+			{
+				--mInventory.at("Potion"); // remove a potion
+				mPlayer.health += GC::HEAL_SMALL;
+			}
 		}
-
-	  }
-
 	}
 
 
@@ -270,18 +252,18 @@ void PlayState::OnMouseDown(WPARAM btnState, int x, int y)
 
 void PlayState::OnMouseUp(WPARAM btnState, int x, int y)
 {
-	if (((btnState & MK_LBUTTON) != 0))
-	{
+	//if (((btnState & MK_LBUTTON) != 0))
+	//{
 
-		POINT lastMousePos = GameApp::Get().GetLastMousePos();
+	//	POINT lastMousePos = GameApp::Get().GetLastMousePos();
 
-		// Make each pixel correspond to a quarter of a degree.
-		float dx = XMConvertToRadians(0.25f*static_cast<float>(x - lastMousePos.x));
-		float dy = XMConvertToRadians(0.25f*static_cast<float>(y - lastMousePos.y));
+	//	// Make each pixel correspond to a quarter of a degree.
+	//	float dx = XMConvertToRadians(0.25f*static_cast<float>(x - lastMousePos.x));
+	//	float dy = XMConvertToRadians(0.25f*static_cast<float>(y - lastMousePos.y));
 
-		mCameras.at(CAMERA_TYPE::GAME).Pitch(dy);
-		mCameras.at(CAMERA_TYPE::GAME).RotateY(dx);
-	}
+	//	mCameras.at(CAMERA_TYPE::GAME).Pitch(dy);
+	//	mCameras.at(CAMERA_TYPE::GAME).RotateY(dx);
+	//}
 }
 
 void PlayState::OnMouseMove(WPARAM btnState, int x, int y)
@@ -340,10 +322,12 @@ void PlayState::Controls(const GameTimer & gt)
 
 		if (Input::Get().GamePad().y == ButtonState::HELD)
 		{
-			GameApp::Get().mDebugLog << "Inventory:  (size " << Inventory.size() << ")";
+			GameApp::Get().mDebugLog << "Inventory:  (size " << mInventory.size() << ")";
 
-			for (auto& i : Inventory)
-				GameApp::Get().mDebugLog << i.name << " : " << i.amount << "\n";
+			std::for_each(mInventory.begin(), mInventory.end(), [&](auto& inv) 
+			{
+				GameApp::Get().mDebugLog << inv.first << " : " << inv.second << "\n";
+			});
 		}
 		//todo example remove
 		GameApp::Get().mDebugLog << " \n" << Input::Get().LeftStickF2().x << "  " << Input::Get().LeftStickF2().y;
@@ -454,16 +438,23 @@ void PlayState::Controls(const GameTimer & gt)
 		//Scrolling through inventory keys Debug
 		if (Input::Get().KeyReleased(VK_DOWN) & itemMenuOpen)
 		{
-			inventoryPosition++;
-			if (inventoryPosition >= Inventory.size())
-				inventoryPosition = 0;						//Loop back round to top of inventory
+
+
+			++inventoryPosition;
+			if (inventoryPosition == mInventory.end())
+				inventoryPosition = mInventory.begin();						//Loop back round to top of inventory
 		}
 
 		if (Input::Get().KeyReleased(VK_UP) & itemMenuOpen)
 		{
-			inventoryPosition--;
-			if (inventoryPosition < 0)
-				inventoryPosition = (int)Inventory.size() - 1;	//Loop back round to bottom of inventory
+			if (inventoryPosition == mInventory.begin())
+			{
+				inventoryPosition = mInventory.rbegin().base(); // last element 
+			}
+			else
+			{
+				--inventoryPosition;
+			}
 		}
 
 		//Opens and closes item menu
@@ -477,35 +468,30 @@ void PlayState::Controls(const GameTimer & gt)
 
 		if (itemMenuOpen)
 		{
-			GameApp::Get().mDebugLog << "Inventory:  (size " << Inventory.size() << ")\n";
+			GameApp::Get().mDebugLog << "Inventory:  (size " << mInventory.size() << ")\n";
 
 			//Debug purposes: shows which items are in inventory
-			for (size_t i = 0; i < Inventory.size(); i++)
-				GameApp::Get().mDebugLog << Inventory.at(i).name << " x" << Inventory.at(i).amount << "\n";
+			std::for_each(mInventory.begin(), mInventory.end(), [&](auto& inv)
+			{
+				GameApp::Get().mDebugLog << inv.first << " : " << inv.second << "\n";
+			});
+
 
 			//Debug purposes: shows the currently selected item based on inventoryPosition value
-			if (Inventory.size() > 0)
-				GameApp::Get().mDebugLog << "Current Selected Item: " << Inventory.at(inventoryPosition).name << " x" << Inventory.at(inventoryPosition).amount << "\n";
+			if (mInventory.size() > 0)
+				GameApp::Get().mDebugLog << "Current Selected Item: " << (*inventoryPosition).first << " x" << (*inventoryPosition).second << "\n";
 		}
 	}
 
 	//Use Item Key, change to something else, or only allow when on item/pause menu
 	if (Input::Get().KeyReleased('U') & itemMenuOpen)
 	{
-		if (Inventory.size() > 0)
+		if (mInventory.size() > 0)
 		{
-			if (Inventory.at(inventoryPosition).category == ItemCategory::Healing)		//Only items that can be used are healing items (Equipping weapons might be a diff key)
+			--(*inventoryPosition).second;
+			if ((*inventoryPosition).second < 0)
 			{
-				std::string itemName = Inventory.at(inventoryPosition).name;
-				//mPlayer.UseItem(itemName);			//Function that has switch containing item names and uses
-				Inventory.at(inventoryPosition).amount--;
-
-				if (Inventory.at(inventoryPosition).amount <= 0)
-				{
-					Inventory.erase(Inventory.begin() + inventoryPosition);		//Remove selected item if amount has run out
-					if (inventoryPosition >= Inventory.size())					//If selected item was last item in list, reposition selected item value to prevent going out of vector bounds
-						inventoryPosition = 0;
-				}
+				mInventory.erase(inventoryPosition);
 			}
 		}
 	}

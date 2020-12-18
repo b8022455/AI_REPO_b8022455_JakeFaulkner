@@ -2,11 +2,13 @@
 #include "State.h"
 #include "SpriteManager.h"
 #include <vector>
+#include "Item.h"
 //
 
 class Player;
 class Trader;
 class Item;
+
 
 class TradeState : public State
 {
@@ -16,7 +18,7 @@ class TradeState : public State
 	//from playstate on resume
 	Trader* mpTrader = nullptr;
 
-	std::vector<Item>* mpInventory;
+	Inventory* mpInventory = nullptr;
 
 public:
 	TradeState(const Button& b0, const Button& b1, const Button& b2, const Button& b3);

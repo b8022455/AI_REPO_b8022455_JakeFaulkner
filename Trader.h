@@ -5,31 +5,26 @@
 // todo inherit from gameobject, change init, add gameobject override functions
 class Trader // : public GameObject
 {
-	ItemListPointers mRequestItems;
-	ItemListPointers mRewardItems;
+	const Items* mRequestItems;
+	const Items* mRewardItems;
 	// Swap when traded
 	std::array<std::string, 2> mDialog; 
 
 	bool traded = false;
 public:
 
-	Trader(const ItemListPointers& request, const ItemListPointers& reward)
-		:
-		mRequestItems(request),
-		mRewardItems(reward)
-	{
-
-	}
+	Trader(const std::string& requestList, const std::string& rewardItems);
+	
 
 	// Returns item pointers container
-	ItemListPointers* GiveRewards()
+	const Items* GiveRewards()
 	{
 		if (!traded)
 		{
 			traded = true;
 			// swap dialog to avoid logic
 			mDialog.front().swap(mDialog.back());
-			return &mRewardItems;
+			return mRewardItems;
 		}
 		else
 		{
@@ -39,9 +34,9 @@ public:
 	}
 
 	// for player to search for in inventory
-	ItemListPointers* GetRequestItems()
+	const Items* GetRequestItems()
 	{
-		return &mRequestItems;
+		return mRequestItems;
 	}
 
 	// Returns dialog before and after trading.

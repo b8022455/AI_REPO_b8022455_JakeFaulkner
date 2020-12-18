@@ -18,11 +18,14 @@ class PlayState : public State
 	Player mPlayer;
 	PlayerWeapon mPlayerWeapon;
 	std::vector<Enemy> mEnemies;
-	std::vector<Item> Inventory;
-	Trader mTempTrader;
+	Inventory mInventory;
+	//std::vector<Item> Inventory;
+	//Trader mTempTrader;
+
+
 	// Trader player is focused on
 	Trader* mpActiveTrader = nullptr;
-	int inventoryPosition = 0;			//Used to select items from the Inventory (Increments using down key, decrements using up key, loops back around when over inventory size)
+	std::map<std::string,int>::iterator inventoryPosition = mInventory.begin();			//Used to select items from the Inventory (Increments using down key, decrements using up key, loops back around when over inventory size)
 	bool itemMenuOpen = false;			//Debug: only allow item selection when on a menu(either pause or an item menu)
 
 	TileManager mTileManager;
@@ -66,10 +69,11 @@ public:
 		return mpActiveTrader;
 	}
 
-	std::vector<Item>* GetInventory()
+	Inventory* GetInventory()
 	{
-		return &Inventory;
+		return &mInventory;
 	}
+
 	
 	//todo move to constants header in GC namespace
 	const float RIGHTBOUND = 15.0f;

@@ -26,7 +26,6 @@ void TradeState::OnResume()
 	mpPlayer = pPlayState->GetPlayer();
 	mpTrader = pPlayState->GetTrader();
 	mpInventory = pPlayState->GetInventory();
-	
 	// if any one element is not present then go back to PlayState
 	if (!mpTrader || !mpPlayer || !mpInventory)
 	{

@@ -7,9 +7,7 @@
 #include <vector>
 #include <map>
 
-typedef const std::vector<Item> ItemList;
-typedef const std::vector<const Item*> ItemListPointers;
-typedef const std::vector<size_t> ItemLookups;
+
 
 
 
@@ -65,36 +63,19 @@ namespace GC
 		EXP_OFFSET = 5,
 		EXP_DEFAULT = 5; // test value for increasing exp
 
-	const ItemList ITEM_LIST =
-	{
-		{"Empty"},
-		{"Potion", ItemCategory::Healing, 2.5},
-		{"Leadpipe", ItemCategory::Weapons, 3.5},
-		{"Super Potion", ItemCategory::Healing, 5.0},
-		{"Nail Bat", ItemCategory::Weapons, 10.0},
-		{"Plastic Spork", ItemCategory::Weapons, 0.5},
-		{"Holy Water", ItemCategory::Farming, 12.0},
-		{"Magical Seeds", ItemCategory::Farming, 20.0},
-		{"Key To Valhalla", ItemCategory::KeyItems, 0.0}
+	const ItemList_v2 ITEM_LIST = {
+		{"Potion",			{ItemCategory::Healing,  20}},
+		{"Leadpipe",		{ItemCategory::Weapons,  30}},
+		{"Super Potion",	{ItemCategory::Healing,  50}},
+		{"Nail Bat",		{ItemCategory::Weapons, 100}},
+		{"Plastic Spork",	{ItemCategory::Weapons,  00}},
+		{"Holy Water",		{ItemCategory::Farming, 120}},
+		{"Magical Seeds",	{ItemCategory::Farming, 200}},
+		{"Key To Valhalla",	{ItemCategory::KeyItems,  0}}
 	};
 
 
-
-	const ItemList_v2 ITEM_LIST =
-	{
-		{"Potion",			{ItemCategory::Healing, 2.5}},
-		{"Leadpipe",		{ItemCategory::Weapons, 3.5}},
-		{"Super Potion",	{ItemCategory::Healing, 5.0}},
-		{"Nail Bat",		{ItemCategory::Weapons, 10.0}},
-		{"Plastic Spork",	{ItemCategory::Weapons, 0.5}},
-		{"Holy Water",		{ItemCategory::Farming, 12.0}},
-		{"Magical Seeds",	{ItemCategory::Farming, 20.0}},
-		{"Key To Valhalla",	{ItemCategory::KeyItems, 0.0}}
-	};
-
-
-	const ItemLookup_v2 ITEM_LOOKUP_ENEMIES =
-	{
+	const ItemLookup_v2 ITEM_LOOKUP_ENEMIES ={
 		//enemy require 4 items
 		{ "EnemyType1",			{ "Empty","Leadpipe","Nail Bat", "Magical Seeds" }   },
 		{ "EnemyType2",			{ "Empty","Leadpipe","Holy Water", "Plastic Spork" }   },
@@ -119,31 +100,10 @@ namespace GC
 		{ "Traveller5",			{}										}, // no reward, charity
 	};
 		 
-	const ItemListPointers ITEMS_ENEMY_2{
-		&ITEM_LIST[0],
-		&ITEM_LIST[4],
-		&ITEM_LIST[5],
-		&ITEM_LIST[6],
-	};
 
-	const ItemListPointers ITEMS_ENEMY_3{
-		&ITEM_LIST[0],
-		&ITEM_LIST[4],
-		&ITEM_LIST[5],
-		&ITEM_LIST[6],
-	};
-
-	const ItemListPointers ITEMS_ENEMY_BOSS{
-		&ITEM_LIST[8],
-	};
-
-	const ItemListPointers ITEMS_TRADER_REQUEST_1{
-		&ITEM_LIST[2],
-	};
-
-	const ItemListPointers ITEMS_TRADER_REWARD_1{
-		&ITEM_LIST[1],
-	};
-
-	
+	const int
+		HEAL_SMALL = 10,
+		HEAL_MED = 50,
+		HEAL_LARGE = 100
+		;
 }
