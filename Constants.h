@@ -63,7 +63,7 @@ namespace GC
 		EXP_OFFSET = 5,
 		EXP_DEFAULT = 5; // test value for increasing exp
 
-	const ItemList_v2 ITEM_LIST = {
+	const ItemMap ITEM_LIST = {
 		{"Potion",			{ItemCategory::Healing,  20}},
 		{"Leadpipe",		{ItemCategory::Weapons,  30}},
 		{"Super Potion",	{ItemCategory::Healing,  50}},
@@ -74,16 +74,15 @@ namespace GC
 		{"Key To Valhalla",	{ItemCategory::KeyItems,  0}}
 	};
 
-
-	const ItemLookup_v2 ITEM_LOOKUP_ENEMIES ={
-		//enemy require 4 items
+	const ItemLookup ITEM_LOOKUP_ENEMIES =
+	{
 		{ "EnemyType1",			{ "Empty","Leadpipe","Nail Bat", "Magical Seeds" }   },
 		{ "EnemyType2",			{ "Empty","Leadpipe","Holy Water", "Plastic Spork" }   },
 		{ "EnemyTypeBoss",		{ "Key To Valhalla","Key To Valhalla","Key To Valhalla", "Key To Valhalla" }   },
 	};
 
 	//Trader requests. upto 3
-	const ItemLookup_v2 ITEM_LOOKUP_REQUEST
+	const ItemLookup ITEM_LOOKUP_REQUEST
 	{
 		{ "Traveller1",			{"Leadpipe" }   },
 		{ "Traveller2",			{"Potion", "Nail Bat", "Holy Water"}   },
@@ -91,7 +90,7 @@ namespace GC
 		{ "Traveller4",			{"Potion", "Nail Bat", "Holy Water"}   }, //todo change
 	};
 
-	const ItemLookup_v2 ITEM_LOOKUP_REWARD
+	const ItemLookup ITEM_LOOKUP_REWARD
 	{
 		{ "Traveller1",			{"Leadpipe" }							},
 		{ "Traveller2",			{"Nail Bat", "Leadpipe", "Holy Water"}  }, //

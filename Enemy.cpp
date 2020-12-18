@@ -82,7 +82,7 @@ const std::string Enemy::GetDropItem()
 	int drop = GetRandomValue(0, max);
 	///Could add money to be dropped if a currency is going to be in the game
 
-	Item droppedItem;
+	//Item droppedItem;
 
 	int index = 0;
 

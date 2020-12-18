@@ -26,6 +26,8 @@ void PlayState::Initialize()
 
 	//Inventory.push_back({ "Potion" });		//Testing Item usage
 	++mInventory["Potion"];
+	++mInventory["Leadpipe"];
+	inventoryPosition = mInventory.begin();
 
 
 	for (auto& c : mCameras)
@@ -57,9 +59,9 @@ void PlayState::Initialize()
 	// Setup temp enemies
 	{
 		// inserts n of enemies
-		mEnemies.push_back(Enemy(0));
-		mEnemies.push_back(Enemy(0));
-		mEnemies.push_back(Enemy(0));
+		mEnemies.push_back(Enemy("EnemyType1"));
+		mEnemies.push_back(Enemy("EnemyType1"));
+		mEnemies.push_back(Enemy("EnemyType1"));
 
 		//Init all enemies
 		std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e) 
@@ -275,12 +277,9 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 
 	Controls(gt); 
 
-
-	
-
 }
 
-	
+
 /*
 
 If gamepad
@@ -438,32 +437,30 @@ void PlayState::Controls(const GameTimer & gt)
 		//Scrolling through inventory keys Debug
 		if (Input::Get().KeyReleased(VK_DOWN) & itemMenuOpen)
 		{
-
-
 			++inventoryPosition;
+
 			if (inventoryPosition == mInventory.end())
+			{
 				inventoryPosition = mInventory.begin();						//Loop back round to top of inventory
+			}
+
 		}
 
 		if (Input::Get().KeyReleased(VK_UP) & itemMenuOpen)
 		{
 			if (inventoryPosition == mInventory.begin())
 			{
+				auto m = mInventory.rbegin().base();
 				inventoryPosition = mInventory.rbegin().base(); // last element 
 			}
-			else
-			{
-				--inventoryPosition;
-			}
+			
+			--inventoryPosition;
 		}
 
 		//Opens and closes item menu
 		if (Input::Get().KeyReleased(GC::KEY_INVENTORY))
 		{
-			if (!itemMenuOpen)
-				itemMenuOpen = true;		//When the item menu UI pops up on screen
-			else
-				itemMenuOpen = false;
+			itemMenuOpen = !itemMenuOpen;
 		}
 
 		if (itemMenuOpen)
@@ -478,7 +475,7 @@ void PlayState::Controls(const GameTimer & gt)
 
 
 			//Debug purposes: shows the currently selected item based on inventoryPosition value
-			if (mInventory.size() > 0)
+			if (inventoryPosition != mInventory.end())
 				GameApp::Get().mDebugLog << "Current Selected Item: " << (*inventoryPosition).first << " x" << (*inventoryPosition).second << "\n";
 		}
 	}
