@@ -40,8 +40,6 @@ class PlayState : public State
 	CAMERA_TYPE mCamType = CAMERA_TYPE::GAME;
 
 	std::array<Camera, CAMERA_TYPE::SIZE> mCameras;
-	//Camera mCamera;
-	//Camera mCameraDebug;
 public:
 	PlayState();
 
@@ -68,7 +66,11 @@ public:
 		return mpActiveTrader;
 	}
 
-
+	std::vector<Item>* GetInventory()
+	{
+		return &Inventory;
+	}
+	
 	//todo move to constants header in GC namespace
 	const float RIGHTBOUND = 15.0f;
 	const float LEFTBOUND = -RIGHTBOUND;

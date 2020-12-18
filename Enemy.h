@@ -57,7 +57,7 @@ private:
 		},
 
 		{
-			"EnemyType:Boss",
+			"EnemyTypeBoss",
 			{
 				{"Key To Valhalla", ItemCategory::KeyItems, 0.0},		///Find way to ensure this type drops the item!!!
 				{"Key To Valhalla", ItemCategory::KeyItems, 0.0},
