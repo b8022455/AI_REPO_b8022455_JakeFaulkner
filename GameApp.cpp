@@ -195,6 +195,11 @@ void GameApp::ChangeState(const std::string & name)
 	mStateManager.ChangeState(name);
 }
 
+State * GameApp::GetState(const std::string & name)
+{
+	return mStateManager.GetState(name);
+}
+
 XMFLOAT2 GameApp::GetClientSize()
 {
 	return {(float)mClientWidth, (float)mClientHeight};

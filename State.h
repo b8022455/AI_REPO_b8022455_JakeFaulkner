@@ -17,22 +17,14 @@ public:
 	virtual void Update(const GameTimer& gt) = 0;
 	// Draw sprites and fonts onto spritebatch
 	virtual void Draw(const GameTimer& gt) = 0; 
+	// Called on state change
+	virtual void OnResume() = 0;
 
 
 	virtual void OnMouseDown(WPARAM btnState, int x, int y) = 0;
 	virtual void OnMouseUp(WPARAM btnState, int x, int y) = 0;
 	virtual void OnMouseMove(WPARAM btnState, int x, int y) = 0;
 	virtual void OnKeyboardInput(const GameTimer& gt) = 0;
-};
-
-// State starting point
-class StateA : public State
-{
-	int a = 7;
-public:
-	virtual void Initialize() override {};
-	virtual void Update(const GameTimer& gt) override {};
-	virtual void Draw(const GameTimer& gt) override {};
 };
 
 class StateManager
@@ -55,20 +47,12 @@ public:
 	void RemoveState(const std::string& name);
 	// Switch between states
 	void ChangeState(const std::string& name);
+	// Access data between states
+	State* GetState(const std::string& name);
 	
 	void OnMouseDown(WPARAM btnState, int x, int y);
 	void OnMouseUp(WPARAM btnState, int x, int y);
 	void OnMouseMove(WPARAM btnState, int x, int y);
 	void OnKeyboardInput(const GameTimer& gt);
 
-};
-
-// State starting point
-class StateB : public State
-{
-	char b = 7;
-public:
-	virtual void Initialize() override {};
-	virtual void Update(const GameTimer& gt) override {};
-	virtual void Draw(const GameTimer& gt) override {};
 };

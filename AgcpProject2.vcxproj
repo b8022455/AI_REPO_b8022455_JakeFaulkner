@@ -169,6 +169,7 @@
     <ClCompile Include="State.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="Trader.cpp" />
+    <ClCompile Include="TradeState.cpp" />
     <ClCompile Include="Velocity.cpp" />
     <ClCompile Include="WinMain.cpp" />
     <ClCompile Include="SpriteManager.cpp" />
@@ -206,6 +207,7 @@
     <ClInclude Include="TextConsole.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="Trader.h" />
+    <ClInclude Include="TradeState.h" />
     <ClInclude Include="Velocity.h" />
     <ClInclude Include="XmfloatOverload.h" />
   </ItemGroup>

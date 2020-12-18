@@ -64,6 +64,8 @@ public:
 
 	void ChangeState(const std::string& name);
 
+	State* GetState(const std::string& name);
+
 
 	XMFLOAT2 GetClientSize();
 	// Output to viewport

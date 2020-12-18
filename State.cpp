@@ -96,10 +96,26 @@ void StateManager::ChangeState(const std::string & name)
 	if (IsValidState(name))
 	{
 		mCurrentState = name;
+		mStates[name]->OnResume();
 	}
 	else
 	{
 		assert(false);
+	}
+}
+
+State * StateManager::GetState(const std::string & name)
+{
+
+	if (IsValidState(name))
+	{
+		return mStates[name].get();
+	}
+	else
+	{
+		// No such state
+		assert(false);
+		return nullptr;
 	}
 }
 

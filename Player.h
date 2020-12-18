@@ -9,7 +9,7 @@
 #include "Velocity.h"
 
 
-using namespace DirectX;
+//using namespace DirectX;
 
 enum PlayerFacingDirection {Left, Right, Up, Down};
 
@@ -45,7 +45,7 @@ public:
 private:
   void DamageEnemy();		
 
-  XMFLOAT3 pos;
+  //XMFLOAT3 pos;
   
   const float MOVE = 5.0f;
   const float MAX_VELOCITY = 5.0f; // change as needed, replace move

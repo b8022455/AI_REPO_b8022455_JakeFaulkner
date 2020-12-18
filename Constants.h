@@ -41,7 +41,10 @@ namespace GC
 		GO_PLAYER = "Player",
 		GO_ENEMY = "Enemy",
 		GO_WEAPON = "Weapon",
-		GO_TILE = "Tiles"
+		GO_TILE = "Tiles",
+
+
+		STATE_PLAY = "PlayState"
 
 		;
 
@@ -86,7 +89,7 @@ namespace GC
 		&ITEM_LIST[6],
 	};
 
-	const ItemListPointers ITEMS_ENEMY_2{
+	const ItemListPointers ITEMS_ENEMY_3{
 		&ITEM_LIST[0],
 		&ITEM_LIST[4],
 		&ITEM_LIST[5],
