@@ -7,6 +7,7 @@ void CombatController::Initialize(Player* player, PlayerWeapon* playerWeapon, st
 	mpPlayer = player;
 	mpEnemies = enemies;
 	mpPlayerWeapon = playerWeapon;
+	mpPlayerWeapon->mpInstance->MaterialIndex = 4;
 
 	//Sets up the collision point for the weapon
 	collisionPoint = mpPlayerWeapon->mpInstance->World;
@@ -143,8 +144,6 @@ void PlayerWeapon::PositionWeapon()
 	weaponRotation = weaponStartingRotation;
 
 	UpdateWeaponMatrix();
-
-	mpInstance->MaterialIndex = 4;
 }
 
 void PlayerWeapon::SwingWeapon()
@@ -224,12 +223,14 @@ int PlayerWeapon::GetWeaponStats(std::string equippedWeapon)
 	if (equippedWeapon == "Stick")
 	{
 		attack = 10;
+		mpInstance->MaterialIndex = 4;		//Visual show of weapons being changed when equipped
 		///Find way to change model to something else
 	}
 
 	if (equippedWeapon == "Leadpipe")
 	{
 		attack = 20;
+		mpInstance->MaterialIndex = 1;
 		//etc.
 	}
 

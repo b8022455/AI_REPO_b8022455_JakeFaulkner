@@ -337,13 +337,55 @@ void PlayState::Controls(const GameTimer & gt)
 			GameApp::Get().ChangeState("PauseMenu");
 		}
 
-		if (Input::Get().GamePad().y == ButtonState::HELD)
+		if (Input::Get().GamePad().y == ButtonState::PRESSED)
 		{
-			GameApp::Get().mDebugLog << "Inventory:  (size " << Inventory.size() << ")";
-
-			for (auto& i : Inventory)
-				GameApp::Get().mDebugLog << i.name << " : " << i.amount << "\n";
+			if (!itemMenuOpen)
+				itemMenuOpen = true;		//When the item menu UI pops up on screen
+			else
+				itemMenuOpen = false;
 		}
+
+		if (Input::Get().GamePad().dpadUp == ButtonState::PRESSED && itemMenuOpen)
+		{
+			inventoryPosition--;
+			if (inventoryPosition < 0)
+				inventoryPosition = (int)Inventory.size() - 1;	//Loop back round to bottom of inventory
+		}
+
+		if (Input::Get().GamePad().dpadDown == ButtonState::PRESSED && itemMenuOpen)
+		{
+			inventoryPosition++;
+			if (inventoryPosition >= Inventory.size())
+				inventoryPosition = 0;						//Loop back round to top of inventory
+		}
+
+		if (Input::Get().GamePad().a == ButtonState::PRESSED && itemMenuOpen)		//Find way to not have to repeat code for this
+		{
+			if (Inventory.size() > 0)
+			{
+				if (Inventory.at(inventoryPosition).category == ItemCategory::Healing)		//Only items that can be used are healing items (Equipping weapons might be a diff key)
+				{
+					std::string itemName = Inventory.at(inventoryPosition).name;
+					//mPlayer.UseItem(itemName);			//Function that has switch containing item names and uses
+					Inventory.at(inventoryPosition).amount--;
+					 
+					if (Inventory.at(inventoryPosition).amount <= 0)
+					{
+						Inventory.erase(Inventory.begin() + inventoryPosition);		//Remove selected item if amount has run out
+						if (inventoryPosition >= Inventory.size())					//If selected item was last item in list, reposition selected item value to prevent going out of vector bounds
+							inventoryPosition = 0;
+					}
+				}
+
+				else if (Inventory.at(inventoryPosition).category == ItemCategory::Weapons)
+				{
+					std::string weaponName = Inventory.at(inventoryPosition).name;
+					if (mCombatController.GetCurrentWeapon() != weaponName)			//Weapon selected is not already equipped
+						mCombatController.EquipWeapon(weaponName);				//'Equip' to player and update damage output
+				}
+			}
+		}
+
 		//todo example remove
 		GameApp::Get().mDebugLog << " \n" << Input::Get().LeftStickF2().x << "  " << Input::Get().LeftStickF2().y;
 	}
@@ -474,18 +516,19 @@ void PlayState::Controls(const GameTimer & gt)
 				itemMenuOpen = false;
 		}
 
-		if (itemMenuOpen)
-		{
-			GameApp::Get().mDebugLog << "Inventory:  (size " << Inventory.size() << ")\n";
+	}
 
-			//Debug purposes: shows which items are in inventory
-			for (size_t i = 0; i < Inventory.size(); i++)
-				GameApp::Get().mDebugLog << Inventory.at(i).name << " x" << Inventory.at(i).amount << "\n";
+	if (itemMenuOpen)
+	{
+		GameApp::Get().mDebugLog << "Inventory:  (size " << Inventory.size() << ")\n";
 
-			//Debug purposes: shows the currently selected item based on inventoryPosition value
-			if (Inventory.size() > 0)
-				GameApp::Get().mDebugLog << "Current Selected Item: " << Inventory.at(inventoryPosition).name << " x" << Inventory.at(inventoryPosition).amount << "\n";
-		}
+		//Debug purposes: shows which items are in inventory
+		for (size_t i = 0; i < Inventory.size(); i++)
+			GameApp::Get().mDebugLog << Inventory.at(i).name << " x" << Inventory.at(i).amount << "\n";
+
+		//Debug purposes: shows the currently selected item based on inventoryPosition value
+		if (Inventory.size() > 0)
+			GameApp::Get().mDebugLog << "Current Selected Item: " << Inventory.at(inventoryPosition).name << " x" << Inventory.at(inventoryPosition).amount << "\n";
 	}
 
 	//Use Item Key, change to something else, or only allow when on item/pause menu
