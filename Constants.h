@@ -64,6 +64,8 @@ namespace GC
 		EXP_DEFAULT = 5; // test value for increasing exp
 
 	const ItemMap ITEM_LIST = {
+		{"Empty",			{ItemCategory::None,	0}}, // 
+		{"Radio",			{ItemCategory::KeyItems,  20}},
 		{"Potion",			{ItemCategory::Healing,  20}},
 		{"Leadpipe",		{ItemCategory::Weapons,  30}},
 		{"Super Potion",	{ItemCategory::Healing,  50}},
@@ -76,27 +78,27 @@ namespace GC
 
 	const ItemLookup ITEM_LOOKUP_ENEMIES =
 	{
-		{ "EnemyType1",			{ "Empty","Leadpipe","Nail Bat", "Magical Seeds" }   },
-		{ "EnemyType2",			{ "Empty","Leadpipe","Holy Water", "Plastic Spork" }   },
-		{ "EnemyTypeBoss",		{ "Key To Valhalla","Key To Valhalla","Key To Valhalla", "Key To Valhalla" }   },
+		{ "EnemyType1",			{ {"Empty",1},	{"Leadpipe",2},{"Nail Bat",2}, {"Magical Seeds",2}	}   },
+		{ "EnemyType2",			{ {"Empty",1},	{"Holy Water",2},{"Potion",2}, {"Plastic Spork",2}	}   },
+		{ "EnemyTypeBoss",		{ {"Key To Valhalla",1}												}   },
 	};
 
 	//Trader requests. upto 3
 	const ItemLookup ITEM_LOOKUP_REQUEST
 	{
-		{ "Traveller1",			{"Leadpipe" }   },
-		{ "Traveller2",			{"Potion", "Nail Bat", "Holy Water"}   },
-		{ "Traveller3",			{"Potion", "Nail Bat", "Holy Water"}   }, //todo change 
-		{ "Traveller4",			{"Potion", "Nail Bat", "Holy Water"}   }, //todo change
+		{ "Traveller1",			{{"Leadpipe",2 }   }},
+		{ "Traveller2",			{{"Potion",2}, {"Plastic Spork",2},{ "Holy Water",2}			}   },
+		{ "Traveller3",			{{"Potion",2}, {"Nail Bat",2},{ "Leadpipe",2}					}   }, //todo change 
+		{ "Traveller4",			{{"Potion",2}, {"Leadpipe",2},{ "Holy Water",2}					}   }, //todo change
 	};
 
 	const ItemLookup ITEM_LOOKUP_REWARD
 	{
-		{ "Traveller1",			{"Leadpipe" }							},
-		{ "Traveller2",			{"Nail Bat", "Leadpipe", "Holy Water"}  }, //
-		{ "Traveller3",			{"Nail Bat", "Nail Bat", "Holy Water"}  }, //todo change 
-		{ "Traveller4",			{"Nail Bat", "Nail Bat", "Holy Water"}  }, //todo change
-		{ "Traveller5",			{}										}, // no reward, charity
+		{ "Traveller1",			{{"Leadpipe",2}													}	},
+		{ "Traveller2",			{{"Potion",2}, {"Leadpipe",2},{ "Holy Water",2}					}	}, //
+		{ "Traveller3",			{{"Potion",2}, {"Holy Water",2},{ "Holy Water",2}				}	}, //todo change 
+		{ "Traveller4",			{{"Potion",2}, {"Nail Bat",2},{ "Holy Water",2}					}	}, //todo change
+		{ "Traveller5",			{}																	}, // no reward, charity
 	};
 		 
 

@@ -5,8 +5,8 @@
 // todo inherit from gameobject, change init, add gameobject override functions
 class Trader // : public GameObject
 {
-	const Items* mRequestItems;
-	const Items* mRewardItems;
+	const InventoryUnordered* mRequestItems;
+	const InventoryUnordered* mRewardItems;
 	// Swap when traded
 	std::array<std::string, 2> mDialog; 
 
@@ -17,7 +17,7 @@ public:
 	
 
 	// Returns item pointers container
-	const Items* GiveRewards()
+	const InventoryUnordered* GiveRewards()
 	{
 		if (!traded)
 		{
@@ -34,7 +34,7 @@ public:
 	}
 
 	// for player to search for in inventory
-	const Items* GetRequestItems()
+	const InventoryUnordered* GetRequestItems()
 	{
 		return mRequestItems;
 	}

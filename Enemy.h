@@ -9,7 +9,6 @@
 class Enemy : public GameObject
 {
 public:
-	Enemy() {};							//Default Constructor
 
 	Enemy(const std::string& type)			//Gives enemy its type
 	{
@@ -34,8 +33,8 @@ private:
 	int mHealth = 1;
 	std::string mEnemyType; // for item lookup
 	
-	const Items* mpDropItems;
 	//Order of items is from Most Common -> Rarest
+	const InventoryUnordered* mpDropItems;
 	
 
 };

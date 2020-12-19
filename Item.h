@@ -1,23 +1,26 @@
 #pragma once
 #include <array>
+#include <unordered_map>
 #include <map>
 #include <string>
 #include <vector>
 
 enum ItemCategory { None, Healing, Weapons, Farming, KeyItems };		//Could be used with a string instead
 
-struct Item_v2
+class Item
 {
+public:
 	ItemCategory category;
 	int itemSellPrice;			//Could be used if trading is in the game
 };
 
-typedef std::map<std::string, Item_v2> ItemMap;
-// Items for enemies, traders
-typedef std::vector<std::string> Items;
+typedef std::map<std::string, Item>							ItemMap;
+//item name and quantity.  ++items["x"] adds one to.
+typedef std::map<std::string, int>							Inventory;
 
+// for look up tables
+// Unordered for item drops rarity. For enemy drops and traders 
+typedef std::unordered_map<std::string, int>				InventoryUnordered;
 //Looks up from Item item through strings
-typedef std::map<std::string, Items> ItemLookup;
+typedef std::unordered_map<std::string, InventoryUnordered> ItemLookup;
 
-//item name and quantity.  ++items["x"] adds one to 
-typedef std::map<std::string, int> Inventory;

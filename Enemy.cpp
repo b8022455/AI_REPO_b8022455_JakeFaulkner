@@ -78,23 +78,36 @@ int Enemy::GetRandomValue(int min, int max)
 
 const std::string Enemy::GetDropItem()
 {
+
+	
 	int max = 128;
 	int drop = GetRandomValue(0, max);
 	///Could add money to be dropped if a currency is going to be in the game
 
-	//Item droppedItem;
+	
+	InventoryUnordered::const_iterator retIt = mpDropItems->begin();
 
 	int index = 0;
+	//Inventory::iterator retIterator = mpDropItems.begin();
 
-	for (int i = 0; i < mpDropItems->size(); i++)
+
+	//halves the changes for each item 
+	for (auto it = mpDropItems->begin();it != mpDropItems->end(); ++it)
 	{
 		max = max >> 1; // divides by 2
 		if (drop >= max)
 		{
-			index = i;
+			retIt = it;
 		}
 	}
 
-	return mpDropItems->at(index);
+	// catch invalid iterator
+	if (retIt == mpDropItems->end())
+	{
+		assert(false);
+		retIt = mpDropItems->begin();
+	}
+
+	return (*retIt).first;
 
 }

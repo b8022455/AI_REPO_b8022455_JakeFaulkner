@@ -74,8 +74,6 @@ void PlayState::Initialize()
 				static_cast<float>(rand() % 10 + 2.0f)
 			});
 		});
-
-		
 	}
 
 	mCombatController.Initialize(&mPlayer,&mPlayerWeapon,&mEnemies);
@@ -90,8 +88,6 @@ void PlayState::Initialize()
 
 		spriteSample.Initialise("stoneTex");
 		mSprites["testSpriteSecond"] = spriteSample;
-
-		
 	}
 
 
@@ -422,7 +418,7 @@ void PlayState::Controls(const GameTimer & gt)
 			// Debug random enemy pos
 			if (Input::Get().KeyReleased(GC::KEY_DEBUG_ENEMY_POS))
 			{
-				mEnemies.push_back(Enemy());
+				mEnemies.push_back(Enemy("EnemyType1"));
 				mEnemies.back().Initialize("Enemy");
 
 				std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
