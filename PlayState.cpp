@@ -105,7 +105,6 @@ void PlayState::Update(const GameTimer & gt)
 	mPlayer.Update(gt);
 	mCombatController.Update();
 
-
 	// TODO: (NOTE) CHECK AREA HAZARDS HERE
 	// if player.x & player.z are within the tile.x & tile.z, cause effects, for now DEBUG logic
 
@@ -156,7 +155,7 @@ void PlayState::Update(const GameTimer & gt)
 			e.mpInstance->World._42,
 			e.mpInstance->World._43 ))
 		{
-			e.DamageEnemy(25);		//Takes away health from enemy + blowsback enemy position
+			e.DamageEnemy(mPlayer.attack);		//Takes away health from enemy + blowsback enemy position
 			if (e.GetHealth() < 0)
 			{
 				// gain exp
@@ -345,6 +344,7 @@ void PlayState::Controls(const GameTimer & gt)
 				GameApp::Get().mDebugLog << inv.first << " : " << inv.second << "\n";
 			});
 		}
+
 		//todo example remove
 		GameApp::Get().mDebugLog << " \n" << Input::Get().LeftStickF2().x << "  " << Input::Get().LeftStickF2().y;
 	}

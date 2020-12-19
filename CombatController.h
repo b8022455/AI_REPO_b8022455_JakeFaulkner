@@ -22,9 +22,11 @@ public:
 	bool GetAttackStatus();			//Lets the Combat Controller class know when the attack has ended
 	void UpdateTimer();				//Keeps track of the time delay for attacking
 
+	int GetWeaponStats(std::string equippedWeap);				//Switches attack amount, model etc. based on what the name of the weapon equipped is
+
 	//XMFLOAT4X4 collisionPos;		//Passed to Combat Controller class for ease of access for now
 	XMFLOAT4X4 playerPos;
-	
+
 	int playerDirection;			//Gets enum value of which way player is facing
 
 private:
@@ -65,6 +67,9 @@ public:
 	bool CheckCollision(XMFLOAT3 Object1, XMFLOAT3 Object2);								//Can be generically used for any type of collision involving 2 objs, need to move it somewhere outside of class
 	bool CheckCollision(XMFLOAT3 Object1, XMFLOAT3 Object2, float xMin, float xMax, float yMin, float yMax, float zMin, float zMax);		//Generic for 2 objects collision but includes changeable coordinate boundaries, again move it out of class
 
+	std::string GetCurrentWeapon();					//Returns name of current weapon to check if selected weapon is already equipped
+	void EquipWeapon(std::string weaponName);		//Passes into SwitchWeapon in playerWeapon, used to get new attack value for player (base + weapon)
+
 	XMFLOAT4X4 collisionPoint;
 private:
 	void DamageEnemy();		///For future use?
@@ -75,4 +80,5 @@ private:
 	std::vector<Enemy>* mpEnemies; //Could be more generic with GameObject. Change collection type to state
 	const float PI = 3.14159265359f;
 	bool isAttacking = false;
+	std::string equippedWeapon = "Stick";		//Default weapon equipped
 };
