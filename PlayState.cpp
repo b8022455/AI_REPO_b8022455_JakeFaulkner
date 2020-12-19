@@ -312,17 +312,14 @@ void PlayState::Controls(const GameTimer & gt)
 
 	const float dt = gt.DeltaTime();
 
-	float moveSpeed = 5.0f;
-	float zoomSpeed = 20.0f;
-
-	bool playerMoved = false;
+	//bool playerMoved = false;
 
 	//Gamepad
 	if (Input::Get().GamePadConnected())
 	{
 
 		// Left stick
-		mPlayer.Move(  gt, Input::Get().LeftStickXZ()* moveSpeed);
+		mPlayer.Move(  gt, Input::Get().LeftStickXZ()* GC::MOVE_SPEED);
 
 		// Attack
 		if (Input::Get().GamePad().rightTrigger == ButtonState::HELD)
@@ -335,18 +332,25 @@ void PlayState::Controls(const GameTimer & gt)
 			GameApp::Get().ChangeState("PauseMenu");
 		}
 
-		if (Input::Get().GamePad().y == ButtonState::HELD)
+		if (Input::Get().GamePad().y == ButtonState::PRESSED)
 		{
-			GameApp::Get().mDebugLog << "Inventory:  (size " << mInventory.size() << ")";
-
-			std::for_each(mInventory.begin(), mInventory.end(), [&](auto& inv) 
-			{
-				GameApp::Get().mDebugLog << inv.first << " : " << inv.second << "\n";
-			});
+			itemMenuOpen = !itemMenuOpen;
 		}
 
-		//todo example remove
-		GameApp::Get().mDebugLog << " \n" << Input::Get().LeftStickF2().x << "  " << Input::Get().LeftStickF2().y;
+		if (Input::Get().GamePad().dpadUp == ButtonState::PRESSED)
+		{
+			InventoryUp();
+		}
+
+		if (Input::Get().GamePad().dpadDown == ButtonState::PRESSED)
+		{
+			InventoryDown();
+		}
+
+		if (Input::Get().GamePad().a == ButtonState::PRESSED)
+		{
+			ItemAction();
+		}
 	}
 	else // Keyboard controls. Game/Debug cam
 	{
@@ -399,32 +403,32 @@ void PlayState::Controls(const GameTimer & gt)
 			//dpad debug cam
 			if (Input::Get().KeyHeld(GC::KEY_FW))
 			{
-				mCameras.at(CAMERA_TYPE::DEBUG).Walk(zoomSpeed * dt);
+				mCameras.at(CAMERA_TYPE::DEBUG).Walk(GC::ZOOM_SPEED * dt);
 			}
 
 			if (Input::Get().KeyHeld(GC::KEY_BK))
 			{
-				mCameras.at(CAMERA_TYPE::DEBUG).Walk(-zoomSpeed * dt);
+				mCameras.at(CAMERA_TYPE::DEBUG).Walk(-GC::ZOOM_SPEED * dt);
 			}
 
 			if (Input::Get().KeyHeld(GC::KEY_RT))
 			{
-				mCameras.at(CAMERA_TYPE::DEBUG).Strafe(moveSpeed * dt);
+				mCameras.at(CAMERA_TYPE::DEBUG).Strafe(GC::MOVE_SPEED * dt);
 			}
 
 			if (Input::Get().KeyHeld(GC::KEY_LT))
 			{
-				mCameras.at(CAMERA_TYPE::DEBUG).Strafe(-moveSpeed * dt);
+				mCameras.at(CAMERA_TYPE::DEBUG).Strafe(-GC::MOVE_SPEED * dt);
 			}
 
 			if (Input::Get().KeyHeld(GC::KEY_RAISE))
 			{
-				mCameras.at(CAMERA_TYPE::DEBUG).Elevate(moveSpeed * dt);
+				mCameras.at(CAMERA_TYPE::DEBUG).Elevate(GC::MOVE_SPEED * dt);
 			}
 
 			if (Input::Get().KeyHeld(GC::KEY_LOWER))
 			{
-				mCameras.at(CAMERA_TYPE::DEBUG).Elevate(-moveSpeed * dt);
+				mCameras.at(CAMERA_TYPE::DEBUG).Elevate(-GC::MOVE_SPEED * dt);
 			}
 
 			// Switch to game camera
@@ -454,24 +458,12 @@ void PlayState::Controls(const GameTimer & gt)
 		//Scrolling through inventory keys Debug
 		if (Input::Get().KeyReleased(VK_DOWN) & itemMenuOpen)
 		{
-			++inventoryPosition;
-
-			if (inventoryPosition == mInventory.end())
-			{
-				inventoryPosition = mInventory.begin();						//Loop back round to top of inventory
-			}
-
+			InventoryDown();
 		}
 
 		if (Input::Get().KeyReleased(VK_UP) & itemMenuOpen)
 		{
-			if (inventoryPosition == mInventory.begin())
-			{
-				auto m = mInventory.rbegin().base();
-				inventoryPosition = mInventory.rbegin().base(); // last element 
-			}
-			
-			--inventoryPosition;
+			InventoryUp();
 		}
 
 		//Opens and closes item menu
@@ -484,19 +476,13 @@ void PlayState::Controls(const GameTimer & gt)
 	}
 
 	//Use Item Key, change to something else, or only allow when on item/pause menu
-	if (Input::Get().KeyReleased('U') & itemMenuOpen)
+	if (Input::Get().KeyReleased(GC::KEY_USEITEM) & itemMenuOpen)
 	{
-		if (mInventory.size() > 0)
-		{
-			--(*inventoryPosition).second;
-			if ((*inventoryPosition).second < 0)
-			{
-				mInventory.erase(inventoryPosition);
-			}
-		}
+		ItemAction();
 	}
 
 	// trade
+	//todo move to trade state
 	if (Input::Get().KeyReleased('9'))
 	{
 		//does player have request items
@@ -506,6 +492,7 @@ void PlayState::Controls(const GameTimer & gt)
 
 		const InventoryUnordered* request = mTempTrader.GetRequestItems();
 
+		// copy to manipulate for trade
 		Inventory temp = mInventory;
 
 		bool validTrader = true;
@@ -513,6 +500,7 @@ void PlayState::Controls(const GameTimer & gt)
 		// start at top of request
 		InventoryUnordered::const_iterator rIt = request->begin();
 
+		// evaluates if trade can be done and removes items
 		while (rIt != request->end() && validTrader)
 		{
 			// request items minused from temp inventory.
@@ -535,8 +523,8 @@ void PlayState::Controls(const GameTimer & gt)
 			{
 				CleanInventory(temp); // remove anything that the inventory has nothing of
 
-				int distance = std::distance(mInventory.begin(), inventoryPosition); // location of current itterator
-				int difference = mInventory.size() - temp.size(); 
+				__int64 distance = std::distance(mInventory.begin(), inventoryPosition); // location of current itterator
+				__int64 difference = mInventory.size() - temp.size();
 
 
 				// save changes to inventory
@@ -557,6 +545,59 @@ void PlayState::Controls(const GameTimer & gt)
 		}
 
 	}
+}
+
+void PlayState::InventoryUp()
+{
+	if (inventoryPosition == mInventory.begin())
+	{
+		auto m = mInventory.rbegin().base();
+		inventoryPosition = mInventory.rbegin().base(); // last element 
+	}
+
+	--inventoryPosition;
+}
+
+void PlayState::InventoryDown()
+{
+	++inventoryPosition;
+
+	if (inventoryPosition == mInventory.end())
+	{
+		inventoryPosition = mInventory.begin();						//Loop back round to top of inventory
+	}
+}
+
+void PlayState::ItemAction()
+{
+	assert(inventoryPosition != mInventory.end());
+
+	switch (GC::ITEM_LIST.at((*inventoryPosition).first).category)
+	{
+	case  ItemCategory::Healing:
+		if (inventoryPosition->second > 0)
+		{
+			--inventoryPosition->second; //removes a potion
+			mPlayer.health += GC::HEAL_SMALL;
+		}
+		break;
+	case ItemCategory::Weapons:
+		if (mCombatController.GetCurrentWeapon() != (*inventoryPosition).first)
+		{
+			mCombatController.EquipWeapon((*inventoryPosition).first);
+		}
+		break;
+	case ItemCategory::Farming:
+		--inventoryPosition->second;
+		break;
+	case ItemCategory::KeyItems:
+
+
+		break;
+	}
+
+	CleanInventory(mInventory); // tidy up
+
 }
 
 void PlayState::CleanInventory(Inventory& inv)

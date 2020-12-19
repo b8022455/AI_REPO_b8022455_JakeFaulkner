@@ -22,7 +22,7 @@ namespace GC
 		KEY_LOWER = 'Q',
 
 		KEY_INVENTORY = 'I',
-		KEY_USEITEM = 'B',
+		KEY_USEITEM = 'U',
 
 		KET_TALK = 'T',
 
@@ -34,7 +34,25 @@ namespace GC
 		KEY_DEBUG_ENEMY_POS = 'G'
 		;
 
-	const int PLAYER_LOW_HEALTH = 50;
+	const int
+		PLAYER_LOW_HEALTH = 50,
+
+		EXP_EXPONENT = 3,
+		EXP_OFFSET = 5,
+		EXP_DEFAULT = 5, // test value for increasing exp
+		
+		
+		HEAL_SMALL = 10,
+		HEAL_MED = 50,
+		HEAL_LARGE = 100
+		
+		; 
+
+
+	const float
+		ZOOM_SPEED = 20.0f,
+		MOVE_SPEED = 5.0f;
+
 
 
 	const std::string
@@ -44,8 +62,13 @@ namespace GC
 		GO_TILE = "Tiles",
 
 
-		STATE_PLAY = "PlayState"
+		STATE_PLAY = "PlayState",
 
+		TRADER_NAME_TEST	= "TravellerTest",
+		TRADER_NAME_1		= "Traveller1",
+		TRADER_NAME_2		= "Traveller2",
+		TRADER_NAME_3		= "Traveller3",
+		TRADER_NAME_4		= "Traveller4"
 		;
 
 	const DirectX::XMFLOAT3
@@ -56,21 +79,6 @@ namespace GC
 		DIRECTION_RAISE({ 0.0f,	1.0f,	0.0f }),
 		DIRECTION_LOWER({ 0.0f,	-1.0f,	0.0f })
 		;
-
-	const int
-		EXP_EXPONENT = 3,
-		EXP_OFFSET = 5,
-		EXP_DEFAULT = 5; // test value for increasing exp
-
-
-	const std::string
-		TRADER_NAME_TEST	= "TravellerTest",
-		TRADER_NAME_1		= "Traveller1",
-		TRADER_NAME_2		= "Traveller2",
-		TRADER_NAME_3		= "Traveller3",
-		TRADER_NAME_4		= "Traveller4"
-		;
-
 
 
 	const ItemMap ITEM_LIST = {
@@ -115,9 +123,5 @@ namespace GC
 
 	
 
-	const int
-		HEAL_SMALL = 10,
-		HEAL_MED = 50,
-		HEAL_LARGE = 100
-		;
+
 }
