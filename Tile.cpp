@@ -5,6 +5,7 @@ void TileManager::Initialize()
 	MaxGen = mDimention; // set up for tilefinder in playstate for player hazard detection
 
 	srand(time(NULL));
+	std::mt19937 rng(time(NULL));
 	// implement hazard tile creation in generation (can't be altered after?) 
 	// TODO: implement player check for hazard tile
 	// rescan tiles and sprinkle in hazards ? DOESN'T WORK
@@ -26,15 +27,26 @@ void TileManager::Initialize()
 	int H2Random; // randomness attributed to hazard generation / slow - ADVANCED GENERATION
 	int H3Random; // randomness attributed to hazard generation / slip? - ADVANCED GENERATION
 
+	std::uniform_int_distribution<int> gen1(H1MinSize, H1MaxSize); // uniform, unbiased
+	std::uniform_int_distribution<int> gen2(H2MinSize, H2MaxSize); // uniform, unbiased
+	std::uniform_int_distribution<int> gen3(H3MinSize, H3MaxSize); // uniform, unbiased
+
 	std::vector<std::vector<int>> coords(mDimention);
 	for (int u = 0; u < mDimention; u++) {
 		coords[u].resize(mDimention);
 	} // setup coords array to grid size
 	
+	std::vector<std::vector<int>> origin(mDimention); // used to store central tiles only during the first spawn
+	for (int u = 0; u < mDimention; u++) {
+		origin[u].resize(mDimention);
+	} // setup coords array to grid size
+
 	//int Max = H1 + H2 + H3; // total number of hazard sources
 
 	// select positions for central hazard spots at random and store in vector
 	// use distance here as well
+
+	// TODO: BUG STARTS HERE, DISTANCE LOGIC IS FLAWED, ONLY WORKS ON ODDS
 
 	// hazard type 1 - find hazard spots and check not within distance of other hazard
 	while (H1 > 0) { // until all hazards have been placed repeat (may cause issue )
@@ -55,23 +67,27 @@ void TileManager::Initialize()
 					bool odd = true; // whether or not to run odd or even logic
 					int Xcycle = 0; // used for x increase at start (increased after each whole odd cycle) 
 					int Ycycle = 0; // used for y increase at start (increased after each whole even cycle)
-					for (int d = 0; 0 < Cycles; d++) {
-						bool set = false; // TODO: ERROR (PREVENT SEARCHING OUT OF GRID)
+					for (int d = 0; d < Cycles; d++) {
+						bool set = false; // TODO: test generation
 						if (odd == true) { // larger loop
-							for (int x = 0; 0 < (H1Dist + 1); x++) {
+							for (int x = 0; x < (H1Dist + 1); x++) {
 								// xgrid = i -H1Dist + Xcycle + x
 								// ygrid = o + Ycycle - x
-								if (coords[i - H1Dist + Xcycle + x][o + Ycycle - x] == 5)
-									SAFE = false;
+								if ((i - H1Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+									(i - H1Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
+									if (coords[i - H1Dist + Xcycle + x][o + Ycycle - x] == 5)
+										SAFE = false;
 							}
 							Xcycle++;
 						}
 						if (odd == false) { // smaller loop
-							for (int x = 0; 0 < H1Dist; x++) {
+							for (int x = 0; x < H1Dist; x++) {
 								// xgrid = i(-H1Dist+1) + Xcycle + x
 								// ygrid = o + Ycyle - x
-								if (coords[i -(H1Dist+1) + Xcycle + x][o + Ycycle - x] == 5)
-									SAFE = false;
+								if ((i - (H1Dist+1) + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+									(i - (H1Dist+1) + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
+									if (coords[i -(H1Dist+1) + Xcycle + x][o + Ycycle - x] == 5)
+										SAFE = false;
 							}
 							Ycycle++;
 						}
@@ -87,6 +103,7 @@ void TileManager::Initialize()
 
 					if (SAFE == true) {
 						coords[i][o] = 5;
+						origin[i][o] = 5; // 
 						H1 -= 1;
 					}
 				}
@@ -101,14 +118,61 @@ void TileManager::Initialize()
 			for (int o = 0; o < mDimention; o++) {
 				// calculate random variable to figure out hazard spot
 				int r = rand() % dimSquare;
-				if (r <= 10/* && H2 > 0*/) { // if tile is selected
-					// check whether tile is beyond distance (REMOVED FOR NOW)
-					coords[i][o] = 6;
-					//H2 -= 1;
+				if (r <= 10 && H2 > 0) { // if tile is selected
+					// DISTANCE CHECK HERE
+					// main is central square (number to square)
+					//			  o
+					//	 o		 ooo
+					//	ooo		ooooo
+					//	 o		 ooo
+					//			  o
+					bool SAFE = true;
+					int Cycles = (H2Dist * 2) + 1; // max number / for loop
+					bool odd = true; // whether or not to run odd or even logic
+					int Xcycle = 0; // used for x increase at start (increased after each whole odd cycle) 
+					int Ycycle = 0; // used for y increase at start (increased after each whole even cycle)
+					for (int d = 0; d < Cycles; d++) {
+						bool set = false; // TODO: test generation
+						if (odd == true) { // larger loop
+							for (int x = 0; x < (H2Dist + 1); x++) {
+								// xgrid = i -H1Dist + Xcycle + x
+								// ygrid = o + Ycycle - x
+								if ((i - H2Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+									(i - H2Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
+									if (coords[i - H2Dist + Xcycle + x][o + Ycycle - x] == 6)
+										SAFE = false;
+							}
+							Xcycle++;
+						}
+						if (odd == false) { // smaller loop
+							for (int x = 0; x < H2Dist; x++) {
+								// xgrid = i(-H1Dist+1) + Xcycle + x
+								// ygrid = o + Ycyle - x
+								if ((i - (H2Dist + 1) + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+									(i - (H2Dist + 1) + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
+									if (coords[i - (H2Dist + 1) + Xcycle + x][o + Ycycle - x] == 6)
+										SAFE = false;
+							}
+							Ycycle++;
+						}
+						if (odd == true && set == false) {
+							odd = false;
+							set = true;
+						}
+						if (odd == false && set == false) {
+							odd = true;
+							set = true;
+						}
+					}
+
+					if (SAFE == true) {
+						coords[i][o] = 6;
+						origin[i][o] = 6;
+						H2 -= 1;
+					}
 				}
 			}
 		}
-		H2 -= 1;
 	}
 
 	// hazard type 3 - find hazard spots and check not within distance of other hazard
@@ -117,20 +181,196 @@ void TileManager::Initialize()
 			for (int o = 0; o < mDimention; o++) {
 				// calculate random variable to figure out hazard spot
 				int r = rand() % dimSquare;
-				if (r <= 10/* && H3 > 0*/) { // if tile is selected
-					// check whether tile is beyond distance (REMOVED FOR NOW)
-					coords[i][o] = 4;
-					//H3 -= 1;
+				if (r <= 10 && H3 > 0) { // if tile is selected
+					// DISTANCE CHECK HERE
+					// main is central square (number to square)
+					//			  o
+					//	 o		 ooo
+					//	ooo		ooooo
+					//	 o		 ooo
+					//			  o
+					bool SAFE = true;
+					int Cycles = (H3Dist * 2) + 1; // max number / for loop
+					bool odd = true; // whether or not to run odd or even logic
+					int Xcycle = 0; // used for x increase at start (increased after each whole odd cycle) 
+					int Ycycle = 0; // used for y increase at start (increased after each whole even cycle)
+					for (int d = 0; d < Cycles; d++) {
+						bool set = false; // TODO: test generation
+						if (odd == true) { // larger loop
+							for (int x = 0; x < (H3Dist + 1); x++) {
+								// xgrid = i -H1Dist + Xcycle + x
+								// ygrid = o + Ycycle - x
+								if ((i - H3Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+									(i - H3Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
+									if (coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 4)
+										SAFE = false;
+							}
+							Xcycle++;
+						}
+						if (odd == false) { // smaller loop
+							for (int x = 0; x < H3Dist; x++) {
+								// xgrid = i(-H1Dist+1) + Xcycle + x
+								// ygrid = o + Ycyle - x
+								if ((i - (H3Dist + 1) + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+									(i - (H3Dist + 1) + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
+									if (coords[i - (H3Dist + 1) + Xcycle + x][o + Ycycle - x] == 4)
+										SAFE = false;
+							}
+							Ycycle++;
+						}
+						if (odd == true && set == false) {
+							odd = false;
+							set = true;
+						}
+						if (odd == false && set == false) {
+							odd = true;
+							set = true;
+						}
+					}
+
+					if (SAFE == true) {
+						coords[i][o] = 4;
+						origin[i][o] = 4;
+						H3 -= 1;
+					}
 				}
 			}
 		}
-		H3 -= 1;
+		//H1 -= 1;
 	}
 
 	// set range of hazard using min & max size and set the nearby tiles as such
 
+	// hazard 1, set all tiles within gen1 to hazard
+	// TODO: BUGS BELOW, TILES ONLY SET ON ODD??
+	for (int i = 0; i < mDimention; i++) {
+		for (int o = 0; o < mDimention; o++) {
+			// use origin to select central tiles & set all tiles within gen 
+			if (origin[i][o] == 5){ // if central tile found
+				int haz1 = gen1(rng); // random between min & max
+				// use for loop to set all tiles within gen1 to hazard
+				int Cycles = (int(haz1) * 2) + 1; // max number / for loop
+				bool odd = true; // whether or not to run odd or even logic
+				int Xcycle = 0; // used for x increase at start (increased after each whole odd cycle) 
+				int Ycycle = 0; // used for y increase at start (increased after each whole even cycle)
+				for (int d = 0; d < Cycles; d++) {
+					bool set = false; // TODO: test generation
+					if (odd == true) { // larger loop
+						for (int x = 0; x < (haz1 + 1); x++) {
+							// xgrid = i -H1Dist + Xcycle + x
+							// ygrid = o + Ycycle - x
+							if ((i - haz1 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+								(i - haz1 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
+								coords[i - haz1 + Xcycle + x][o + Ycycle - x] = 5; // sets coord to hazard
+						}
+						Xcycle++;
+					}
+					if (odd == false) { // smaller loop
+						for (int x = 0; x < haz1; x++) {
+							// xgrid = i(-H1Dist+1) + Xcycle + x
+							// ygrid = o + Ycyle - x
+							if ((i - (haz1 + 1) + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+								(i - (haz1 + 1) + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
+								coords[i - (haz1 + 1) + Xcycle + x][o + Ycycle - x] = 5;
+						}
+						Ycycle++;
+					}
+					if (odd == true && set == false) {
+						odd = false;
+						set = true;
+					}
+					if (odd == false && set == false) {
+						odd = true;
+						set = true;
+					}
+				}
+			}
+			// HAZARD 2
+			if (origin[i][o] == 6) { // if central tile found
+				int haz2 = gen2(rng); // random between min & max
+				// use for loop to set all tiles within gen1 to hazard
+				int Cycles = (int(haz2) * 2) + 1; // max number / for loop
+				bool odd = true; // whether or not to run odd or even logic
+				int Xcycle = 0; // used for x increase at start (increased after each whole odd cycle) 
+				int Ycycle = 0; // used for y increase at start (increased after each whole even cycle)
+				for (int d = 0; d < Cycles; d++) {
+					bool set = false; // TODO: test generation
+					if (odd == true) { // larger loop
+						for (int x = 0; x < (haz2 + 1); x++) {
+							// xgrid = i -H1Dist + Xcycle + x
+							// ygrid = o + Ycycle - x
+							if ((i - haz2 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+								(i - haz2 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
+								coords[i - haz2 + Xcycle + x][o + Ycycle - x] = 6; // sets coord to hazard
+						}
+						Xcycle++;
+					}
+					if (odd == false) { // smaller loop
+						for (int x = 0; x < haz2; x++) {
+							// xgrid = i(-H1Dist+1) + Xcycle + x
+							// ygrid = o + Ycyle - x
+							if ((i - (haz2 + 1) + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+								(i - (haz2 + 1) + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
+								coords[i - (haz2 + 1) + Xcycle + x][o + Ycycle - x] = 6;
+						}
+						Ycycle++;
+					}
+					if (odd == true && set == false) {
+						odd = false;
+						set = true;
+					}
+					if (odd == false && set == false) {
+						odd = true;
+						set = true;
+					}
+				}
+			}
+			// HAZARD 3
+			if (origin[i][o] == 4) { // if central tile found
+				int haz3 = gen3(rng); // random between min & max
+				// use for loop to set all tiles within gen1 to hazard
+				int Cycles = (int(haz3) * 2) + 1; // max number / for loop
+				bool odd = true; // whether or not to run odd or even logic
+				int Xcycle = 0; // used for x increase at start (increased after each whole odd cycle) 
+				int Ycycle = 0; // used for y increase at start (increased after each whole even cycle)
+				for (int d = 0; d < Cycles; d++) {
+					bool set = false; // TODO: test generation
+					if (odd == true) { // larger loop
+						for (int x = 0; x < (haz3 + 1); x++) {
+							// xgrid = i -H1Dist + Xcycle + x
+							// ygrid = o + Ycycle - x
+							if ((i - haz3 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+								(i - haz3 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
+								coords[i - haz3 + Xcycle + x][o + Ycycle - x] = 4; // sets coord to hazard
+						}
+						Xcycle++;
+					}
+					if (odd == false) { // smaller loop
+						for (int x = 0; x < haz3; x++) {
+							// xgrid = i(-H1Dist+1) + Xcycle + x
+							// ygrid = o + Ycyle - x
+							if ((i - (haz3 + 1) + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+								(i - (haz3 + 1) + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
+								coords[i - (haz3 + 1) + Xcycle + x][o + Ycycle - x] = 4;
+						}
+						Ycycle++;
+					}
+					if (odd == true && set == false) {
+						odd = false;
+						set = true;
+					}
+					if (odd == false && set == false) {
+						odd = true;
+						set = true;
+					}
+				}
+			}
+		}
+	}
+
 	// use randomness attributed to that hazard to activate / deactivate other tiles outside up to range of 2 & 
-	// interior tiles
+	// interior tiles, use gen value + 2
+
 
 	// 4 = ICE, 5 = POISON/MARSH, 6 = MUD
 
