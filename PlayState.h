@@ -19,8 +19,7 @@ class PlayState : public State
 	PlayerWeapon mPlayerWeapon;
 	std::vector<Enemy> mEnemies;
 	Inventory mInventory;
-	//std::vector<Item> Inventory;
-	//Trader mTempTrader;
+	Trader mTempTrader;
 
 
 	// Trader player is focused on
@@ -74,14 +73,8 @@ public:
 		return &mInventory;
 	}
 
-	
-	//todo move to constants header in GC namespace
-	const float RIGHTBOUND = 15.0f;
-	const float LEFTBOUND = -RIGHTBOUND;
-	const float YBOUNDLOW = 50.0f;
-	const float YBOUNDHIGH = 300.0f;
-	const float UPBOUND = 15.0f;
-	const float DOWNBOUND = -UPBOUND;
+	// Only use after changes have been made of inventory. Removes items with 0 quantity.
+	void CleanInventory(Inventory& inv);
 
 	const float CAM_ANGLE = 45.0f;
 	const DirectX::XMFLOAT3 CAM_OFFSET{ 0.0f,10.0f,-10.0f }; 

@@ -115,7 +115,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TradeState.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\States</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -213,7 +213,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TradeState.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\States</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -14,22 +14,33 @@ class Trader // : public GameObject
 public:
 
 	Trader(const std::string& requestList, const std::string& rewardItems);
-	
 
-	// Returns item pointers container
-	const InventoryUnordered* GiveRewards()
+	bool CanTrade()
 	{
-		if (!traded)
+		return !traded;
+	}
+	// Adds rewards to parameter inventory. Returns false if already traded
+	bool GiveRewards(Inventory& inventory)
+	{
+		if (CanTrade())
 		{
+			// adds items
+			for (auto& i : *mRewardItems)
+			{
+				inventory[i.first] += i.second;
+			}
+
+			// change state to reflect trader completed
 			traded = true;
 			// swap dialog to avoid logic
 			mDialog.front().swap(mDialog.back());
-			return mRewardItems;
+
+			return true;
 		}
 		else
 		{
 			// Already traded
-			return nullptr;
+			return false;
 		}
 	}
 

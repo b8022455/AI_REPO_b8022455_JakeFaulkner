@@ -6,14 +6,14 @@
 //#include "Input.h"
 #include "Constants.h"
 #include <unordered_map>
-
+#include <algorithm>
 
 using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
 PlayState::PlayState()
 	:
-	mExperience(0, GC::EXP_EXPONENT, GC::EXP_OFFSET, 0)
-	//mTempTrader(GC::ITEMS_TRADER_REQUEST_1, GC::ITEMS_TRADER_REWARD_1)
+	mExperience(0, GC::EXP_EXPONENT, GC::EXP_OFFSET, 0),
+	mTempTrader(GC::TRADER_NAME_TEST, GC::TRADER_NAME_TEST)
 {
 }
 
@@ -25,8 +25,8 @@ void PlayState::Initialize()
 	mTileManager.Initialize();
 
 	//Inventory.push_back({ "Potion" });		//Testing Item usage
+	++mInventory["Radio"];
 	++mInventory["Potion"];
-	++mInventory["Leadpipe"];
 	inventoryPosition = mInventory.begin();
 
 
@@ -225,6 +225,27 @@ void PlayState::Update(const GameTimer & gt)
 	{
 		GameApp::Get().ChangeState("PauseMenu");
 	}
+
+
+	// show/hide item menu
+	if (itemMenuOpen)
+	{
+		GameApp::Get().mDebugLog << "Inventory:  (size " << mInventory.size() << ")\n";
+
+		//Debug purposes: shows which items are in inventory
+		std::for_each(mInventory.begin(), mInventory.end(), [&](auto& inv)
+		{
+			GameApp::Get().mDebugLog << inv.first << " : " << inv.second << "\n";
+		});
+
+
+		//Debug purposes: shows the currently selected item based on inventoryPosition value
+		if (inventoryPosition != mInventory.end())
+			GameApp::Get().mDebugLog << "Current Selected Item: " << (*inventoryPosition).first << " x" << (*inventoryPosition).second << "\n";
+	}
+
+
+
 
 
 	// for dirty frame
@@ -459,21 +480,7 @@ void PlayState::Controls(const GameTimer & gt)
 			itemMenuOpen = !itemMenuOpen;
 		}
 
-		if (itemMenuOpen)
-		{
-			GameApp::Get().mDebugLog << "Inventory:  (size " << mInventory.size() << ")\n";
-
-			//Debug purposes: shows which items are in inventory
-			std::for_each(mInventory.begin(), mInventory.end(), [&](auto& inv)
-			{
-				GameApp::Get().mDebugLog << inv.first << " : " << inv.second << "\n";
-			});
-
-
-			//Debug purposes: shows the currently selected item based on inventoryPosition value
-			if (inventoryPosition != mInventory.end())
-				GameApp::Get().mDebugLog << "Current Selected Item: " << (*inventoryPosition).first << " x" << (*inventoryPosition).second << "\n";
-		}
+		
 	}
 
 	//Use Item Key, change to something else, or only allow when on item/pause menu
@@ -492,13 +499,76 @@ void PlayState::Controls(const GameTimer & gt)
 	// trade
 	if (Input::Get().KeyReleased('9'))
 	{
-		// get request
-		//comp to player inventory
+		//does player have request items
 
-		// does player have room for reward - quest item
+		//if yes
+		// give reward items to player
 
-		// remove request item from player inventory
-		// give items to player inventory
+		const InventoryUnordered* request = mTempTrader.GetRequestItems();
 
+		Inventory temp = mInventory;
+
+		bool validTrader = true;
+
+		// start at top of request
+		InventoryUnordered::const_iterator rIt = request->begin();
+
+		while (rIt != request->end() && validTrader)
+		{
+			// request items minused from temp inventory.
+			// If item isn't there, it is created. the trade will fail so temp inventory will be discarded
+			temp[rIt->first] -= rIt->second;
+
+			// no trade if not enough of an item int the traders request
+			if (temp.at(rIt->first) < 0)
+			{
+				validTrader = false;
+			}
+
+			++rIt;
+		}
+
+		if (validTrader)
+		{
+			//add items to temp
+			if (mTempTrader.GiveRewards(temp))
+			{
+				CleanInventory(temp); // remove anything that the inventory has nothing of
+
+				int distance = std::distance(mInventory.begin(), inventoryPosition); // location of current itterator
+				int difference = mInventory.size() - temp.size(); 
+
+
+				// save changes to inventory
+				mInventory = temp; 
+
+				// if temp is smaller minus difference
+				if (difference > 0)
+				{
+					distance -= difference;
+				}
+
+				// reset iterator since inventory ahs changed
+				inventoryPosition = mInventory.begin();
+				// go to location
+				std::advance(inventoryPosition, distance);
+
+			}
+		}
+
+	}
+}
+
+void PlayState::CleanInventory(Inventory& inv)
+{
+	for (Inventory::iterator it = inv.begin(); it != inv.end();)
+	{
+		if ((*it).second <= 0) 
+		{
+			it = inv.erase(it);
+		}
+		else {
+			++it;
+		}
 	}
 }

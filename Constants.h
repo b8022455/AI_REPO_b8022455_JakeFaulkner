@@ -8,9 +8,6 @@
 #include <map>
 
 
-
-
-
 namespace GC
 {
 	//Keyboard keys
@@ -26,6 +23,8 @@ namespace GC
 
 		KEY_INVENTORY = 'I',
 		KEY_USEITEM = 'B',
+
+		KET_TALK = 'T',
 
 
 		KEY_ATTACK = 0x20,  //space
@@ -63,6 +62,17 @@ namespace GC
 		EXP_OFFSET = 5,
 		EXP_DEFAULT = 5; // test value for increasing exp
 
+
+	const std::string
+		TRADER_NAME_TEST	= "TravellerTest",
+		TRADER_NAME_1		= "Traveller1",
+		TRADER_NAME_2		= "Traveller2",
+		TRADER_NAME_3		= "Traveller3",
+		TRADER_NAME_4		= "Traveller4"
+		;
+
+
+
 	const ItemMap ITEM_LIST = {
 		{"Empty",			{ItemCategory::None,	0}}, // 
 		{"Radio",			{ItemCategory::KeyItems,  20}},
@@ -86,21 +96,24 @@ namespace GC
 	//Trader requests. upto 3
 	const ItemLookup ITEM_LOOKUP_REQUEST
 	{
-		{ "Traveller1",			{{"Leadpipe",2 }   }},
-		{ "Traveller2",			{{"Potion",2}, {"Plastic Spork",2},{ "Holy Water",2}			}   },
-		{ "Traveller3",			{{"Potion",2}, {"Nail Bat",2},{ "Leadpipe",2}					}   }, //todo change 
-		{ "Traveller4",			{{"Potion",2}, {"Leadpipe",2},{ "Holy Water",2}					}   }, //todo change
+		{ TRADER_NAME_TEST,			{{"Potion",1 }													}},
+		{ TRADER_NAME_1,			{{"Leadpipe",2 }	}},
+		{ TRADER_NAME_2,			{{"Potion",2}, {"Plastic Spork",2},{ "Holy Water",2}			}   },
+		{ TRADER_NAME_3,			{{"Potion",2}, {"Nail Bat",2},{ "Leadpipe",2}					}   }, //todo change 
+		{ TRADER_NAME_4,			{{"Potion",2}, {"Leadpipe",2},{ "Holy Water",2}					}   }, //todo change
 	};
 
 	const ItemLookup ITEM_LOOKUP_REWARD
 	{
-		{ "Traveller1",			{{"Leadpipe",2}													}	},
-		{ "Traveller2",			{{"Potion",2}, {"Leadpipe",2},{ "Holy Water",2}					}	}, //
-		{ "Traveller3",			{{"Potion",2}, {"Holy Water",2},{ "Holy Water",2}				}	}, //todo change 
-		{ "Traveller4",			{{"Potion",2}, {"Nail Bat",2},{ "Holy Water",2}					}	}, //todo change
-		{ "Traveller5",			{}																	}, // no reward, charity
+		{ TRADER_NAME_TEST,		{{"Key To Valhalla",1 }											}	},
+		{ TRADER_NAME_1,		{{"Leadpipe",2}													}	},
+		{ TRADER_NAME_2,		{{"Potion",2}, {"Leadpipe",2},{ "Holy Water",2}					}	}, //
+		{ TRADER_NAME_3,		{{"Potion",2}, {"Holy Water",2},{ "Holy Water",2}				}	}, //todo change 
+		{ TRADER_NAME_4,		{																}	}, // no reward, charity
 	};
 		 
+
+	
 
 	const int
 		HEAL_SMALL = 10,
