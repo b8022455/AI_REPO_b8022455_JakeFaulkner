@@ -29,6 +29,8 @@ void PlayState::Initialize()
 	++mInventory["Potion"];
 	inventoryPosition = mInventory.begin();
 
+	// todo change to closest trader in radius on button hit
+	mpActiveTrader = &mTempTrader;
 
 	for (auto& c : mCameras)
 	{
@@ -471,8 +473,6 @@ void PlayState::Controls(const GameTimer & gt)
 		{
 			itemMenuOpen = !itemMenuOpen;
 		}
-
-		
 	}
 
 	//Use Item Key, change to something else, or only allow when on item/pause menu
@@ -485,64 +485,65 @@ void PlayState::Controls(const GameTimer & gt)
 	//todo move to trade state
 	if (Input::Get().KeyReleased('9'))
 	{
-		//does player have request items
+		GameApp::Get().ChangeState(GC::STATE_TRADE);
 
-		//if yes
-		// give reward items to player
+		//////does player have request items
 
-		const InventoryUnordered* request = mTempTrader.GetRequestItems();
+		//////if yes
+		////// give reward items to player
 
-		// copy to manipulate for trade
-		Inventory temp = mInventory;
+		////const InventoryUnordered* request = mTempTrader.GetRequestItems();
 
-		bool validTrader = true;
+		////// copy to manipulate for trade
+		////Inventory temp = mInventory;
 
-		// start at top of request
-		InventoryUnordered::const_iterator rIt = request->begin();
+		////bool validTrader = true;
 
-		// evaluates if trade can be done and removes items
-		while (rIt != request->end() && validTrader)
-		{
-			// request items minused from temp inventory.
-			// If item isn't there, it is created. the trade will fail so temp inventory will be discarded
-			temp[rIt->first] -= rIt->second;
+		////// start at top of request
+		////InventoryUnordered::const_iterator rIt = request->begin();
 
-			// no trade if not enough of an item int the traders request
-			if (temp.at(rIt->first) < 0)
-			{
-				validTrader = false;
-			}
+		////// evaluates if trade can be done and removes items
+		////while (rIt != request->end() && validTrader)
+		////{
+		////	// request items minused from temp inventory.
+		////	// If item isn't there, it is created. the trade will fail so temp inventory will be discarded
+		////	temp[rIt->first] -= rIt->second;
 
-			++rIt;
-		}
+		////	// no trade if not enough of an item int the traders request
+		////	if (temp.at(rIt->first) < 0)
+		////	{
+		////		validTrader = false;
+		////	}
 
-		if (validTrader)
-		{
-			//add items to temp
-			if (mTempTrader.GiveRewards(temp))
-			{
-				CleanInventory(temp); // remove anything that the inventory has nothing of
+		////	++rIt;
+		////}
 
-				__int64 distance = std::distance(mInventory.begin(), inventoryPosition); // location of current itterator
-				__int64 difference = mInventory.size() - temp.size();
+		////if (validTrader)
+		////{
+		////	//add items to temp
+		////	if (mTempTrader.GiveRewards(temp))
+		////	{
+		////		CleanInventory(temp); // remove anything that the inventory has nothing of
 
+		////		__int64 distance = std::distance(mInventory.begin(), inventoryPosition); // location of current itterator
+		////		__int64 difference = mInventory.size() - temp.size();
 
-				// save changes to inventory
-				mInventory = temp; 
+		////		// save changes to inventory
+		////		mInventory = temp; 
 
-				// if temp is smaller minus difference
-				if (difference > 0)
-				{
-					distance -= difference;
-				}
+		////		// if temp is smaller minus difference
+		////		if (difference > 0)
+		////		{
+		////			distance -= difference;
+		////		}
 
-				// reset iterator since inventory ahs changed
-				inventoryPosition = mInventory.begin();
-				// go to location
-				std::advance(inventoryPosition, distance);
+		////		// reset iterator since inventory ahs changed
+		////		inventoryPosition = mInventory.begin();
+		////		// go to location
+		////		std::advance(inventoryPosition, distance);
 
-			}
-		}
+		////	}
+		////}
 
 	}
 }
@@ -551,7 +552,6 @@ void PlayState::InventoryUp()
 {
 	if (inventoryPosition == mInventory.begin())
 	{
-		auto m = mInventory.rbegin().base();
 		inventoryPosition = mInventory.rbegin().base(); // last element 
 	}
 
@@ -589,6 +589,9 @@ void PlayState::ItemAction()
 		break;
 	case ItemCategory::Farming:
 		--inventoryPosition->second;
+		// if there isnt a plant in a radius then instance 
+		//todo create an instance of a 'plant' gameobject at players location
+
 		break;
 	case ItemCategory::KeyItems:
 
@@ -599,6 +602,8 @@ void PlayState::ItemAction()
 	CleanInventory(mInventory); // tidy up
 
 }
+
+
 
 void PlayState::CleanInventory(Inventory& inv)
 {

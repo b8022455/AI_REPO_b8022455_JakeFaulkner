@@ -12,18 +12,18 @@ class Item;
 
 class TradeState : public State
 {
-	std::vector<Button> mButtons;
 	// from playstate on resume
 	Player* mpPlayer = nullptr;
 	//from playstate on resume
 	Trader* mpTrader = nullptr;
 
 	Inventory* mpInventory = nullptr;
+	Inventory::iterator* mpInventoryPosition;
 
 public:
-	TradeState(const Button& b0, const Button& b1, const Button& b2, const Button& b3);
+	TradeState();
 
-	virtual void Initialize()								override{};
+	virtual void Initialize()								override {};
 	virtual void Update(const GameTimer& gt)				override;
 	virtual void Draw(const GameTimer& gt)					override;
 	virtual void OnResume()									override;
@@ -37,5 +37,7 @@ public:
 	bool InputDown();
 	bool InputRight();
 	bool InputLeft();
+	void CleanInventory(Inventory& inv);
+	bool Trade();
 };
 

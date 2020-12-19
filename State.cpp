@@ -3,6 +3,7 @@
 #include "GameApp.h"
 #include "PlayState.h"
 #include "MenuState.h"
+#include "TradeState.h"
 
 bool StateManager::IsValidState(const std::string stateName)
 {
@@ -29,7 +30,11 @@ void StateManager::Init()
 	btnS = Button(buttonBg, "S Resume", Button::Action::GOTO_GAME);
 	AddState("PauseMenu", std::make_unique<MenuState>(btnW, btnA, btnD, btnS));
 
-	AddState("GameState", std::make_unique<PlayState>());
+	// GameState
+	AddState(GC::STATE_PLAY, std::make_unique<PlayState>());
+
+	//Trade state
+	AddState(GC::STATE_TRADE, std::make_unique<TradeState>());
 
 	// Init all states
 	std::for_each(mStates.begin(), mStates.end(), [](auto& s) { s.second->Initialize(); });
@@ -40,6 +45,8 @@ void StateManager::Update(const GameTimer & gt)
 	auto test = GameApp::Get().AspectRatio(); //todo remove. Example of accessing GameApp
 
 	//GameApp::Get().input.Update();
+
+	GameApp::Get().mDebugLog << "State: \"" << mCurrentState << "\"\n";
 
 	if (IsValidState(mCurrentState))
 	{

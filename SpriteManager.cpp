@@ -180,7 +180,7 @@ void Button::Activate()
 		GameApp::Get().ChangeState("MainMenu");
 		break;
 	case Button::GOTO_GAME:
-		GameApp::Get().ChangeState("GameState");
+		GameApp::Get().ChangeState(GC::STATE_PLAY);
 		break;
 	default:
 		break;

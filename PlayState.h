@@ -73,10 +73,15 @@ public:
 		return &mInventory;
 	}
 
+	Inventory::iterator* GetInventoryPos()
+	{
+		return &inventoryPosition;
+	}
+
 	void InventoryUp();
 	void InventoryDown();
 	void ItemAction();
-	void SelectWeapon();
+
 
 	// Only use after changes have been made of inventory. Removes items with 0 quantity.
 	void CleanInventory(Inventory& inv);
