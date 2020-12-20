@@ -5,9 +5,10 @@ void TileManager::Initialize()
 	MaxGen = mDimention; // set up for tilefinder in playstate for player hazard detection
 
 	srand(time(NULL));
-	std::mt19937 rng(time(NULL));
+	//std::random_device rd; // obtain a random number from hardware
+	std::mt19937 rng(time(NULL)); // seed the generator
+
 	// implement hazard tile creation in generation (can't be altered after?) 
-	// TODO: implement player check for hazard tile
 	// rescan tiles and sprinkle in hazards ? DOESN'T WORK
 	//number of sprinkles, size of sprinkles (min,max), distance from other sprinkles of the same type
 
@@ -26,7 +27,11 @@ void TileManager::Initialize()
 	int H1Random; // randomness attributed to hazard generation / health - ADVANCED GENERATION
 	int H2Random; // randomness attributed to hazard generation / slow - ADVANCED GENERATION
 	int H3Random; // randomness attributed to hazard generation / slip? - ADVANCED GENERATION
+	int H1RandomDist; // distance from regular gen / health - ADVANCED GENERATION
+	int H2RandomDist; // distance from regular gen / slow - ADVANCED GENERATION
+	int H3RandomDist; // distance from regular gen / slip - ADVANCED GENERATION
 
+	std::uniform_int_distribution<int> grid(0,mDimention);
 	std::uniform_int_distribution<int> gen1(H1MinSize, H1MaxSize); // uniform, unbiased
 	std::uniform_int_distribution<int> gen2(H2MinSize, H2MaxSize); // uniform, unbiased
 	std::uniform_int_distribution<int> gen3(H3MinSize, H3MaxSize); // uniform, unbiased
@@ -46,14 +51,13 @@ void TileManager::Initialize()
 	// select positions for central hazard spots at random and store in vector
 	// use distance here as well
 
-	// TODO: BUG STARTS HERE, DISTANCE LOGIC IS FLAWED, ONLY WORKS ON ODDS
-
 	// hazard type 1 - find hazard spots and check not within distance of other hazard
 	while (H1 > 0) { // until all hazards have been placed repeat (may cause issue )
 		for (int i = 0; i < mDimention; i++) {
 			for (int o = 0; o < mDimention; o++) {
 				// calculate random variable to figure out hazard spot
-				int r = rand() % dimSquare;
+				int r = rand() % dimSquare; // favors the lower numbers
+				//int r = grid(rng); // causes a worse problem
 				if (r <= 10 && H1 > 0) { // if tile is selected
 					// DISTANCE CHECK HERE
 					// main is central square (number to square)
@@ -68,25 +72,29 @@ void TileManager::Initialize()
 					int Xcycle = 0; // used for x increase at start (increased after each whole odd cycle) 
 					int Ycycle = 0; // used for y increase at start (increased after each whole even cycle)
 					for (int d = 0; d < Cycles; d++) {
-						bool set = false; // TODO: test generation
+						bool set = false; 
 						if (odd == true) { // larger loop
 							for (int x = 0; x < (H1Dist + 1); x++) {
 								// xgrid = i -H1Dist + Xcycle + x
 								// ygrid = o + Ycycle - x
+								int checkx = (i - H1Dist + Xcycle + x);
+								int checky = (o + Ycycle - x);
 								if ((i - H1Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 									(i - H1Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
 									if (coords[i - H1Dist + Xcycle + x][o + Ycycle - x] == 5)
 										SAFE = false;
 							}
 							Xcycle++;
-						}
+						} // X ISNT CALCULATED PROPERLY, H1DIST + 1 ISN'T WORKING
 						if (odd == false) { // smaller loop
 							for (int x = 0; x < H1Dist; x++) {
 								// xgrid = i(-H1Dist+1) + Xcycle + x
 								// ygrid = o + Ycyle - x
-								if ((i - (H1Dist+1) + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-									(i - (H1Dist+1) + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
-									if (coords[i -(H1Dist+1) + Xcycle + x][o + Ycycle - x] == 5)
+								int checkx = (i - H1Dist + Xcycle + x);
+								int checky = (o + Ycycle - x);
+								if ((i - H1Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+									(i - H1Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
+									if (coords[i - H1Dist + Xcycle + x][o + Ycycle - x] == 5)
 										SAFE = false;
 							}
 							Ycycle++;
@@ -118,6 +126,7 @@ void TileManager::Initialize()
 			for (int o = 0; o < mDimention; o++) {
 				// calculate random variable to figure out hazard spot
 				int r = rand() % dimSquare;
+				//int r = grid(rng); // causes worse problems
 				if (r <= 10 && H2 > 0) { // if tile is selected
 					// DISTANCE CHECK HERE
 					// main is central square (number to square)
@@ -132,7 +141,7 @@ void TileManager::Initialize()
 					int Xcycle = 0; // used for x increase at start (increased after each whole odd cycle) 
 					int Ycycle = 0; // used for y increase at start (increased after each whole even cycle)
 					for (int d = 0; d < Cycles; d++) {
-						bool set = false; // TODO: test generation
+						bool set = false;
 						if (odd == true) { // larger loop
 							for (int x = 0; x < (H2Dist + 1); x++) {
 								// xgrid = i -H1Dist + Xcycle + x
@@ -148,9 +157,9 @@ void TileManager::Initialize()
 							for (int x = 0; x < H2Dist; x++) {
 								// xgrid = i(-H1Dist+1) + Xcycle + x
 								// ygrid = o + Ycyle - x
-								if ((i - (H2Dist + 1) + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-									(i - (H2Dist + 1) + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
-									if (coords[i - (H2Dist + 1) + Xcycle + x][o + Ycycle - x] == 6)
+								if ((i - H2Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+									(i - H2Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
+									if (coords[i - H2Dist + Xcycle + x][o + Ycycle - x] == 6)
 										SAFE = false;
 							}
 							Ycycle++;
@@ -181,6 +190,7 @@ void TileManager::Initialize()
 			for (int o = 0; o < mDimention; o++) {
 				// calculate random variable to figure out hazard spot
 				int r = rand() % dimSquare;
+				//int r = grid(rng); // causes a worse problem
 				if (r <= 10 && H3 > 0) { // if tile is selected
 					// DISTANCE CHECK HERE
 					// main is central square (number to square)
@@ -195,7 +205,7 @@ void TileManager::Initialize()
 					int Xcycle = 0; // used for x increase at start (increased after each whole odd cycle) 
 					int Ycycle = 0; // used for y increase at start (increased after each whole even cycle)
 					for (int d = 0; d < Cycles; d++) {
-						bool set = false; // TODO: test generation
+						bool set = false;
 						if (odd == true) { // larger loop
 							for (int x = 0; x < (H3Dist + 1); x++) {
 								// xgrid = i -H1Dist + Xcycle + x
@@ -211,9 +221,9 @@ void TileManager::Initialize()
 							for (int x = 0; x < H3Dist; x++) {
 								// xgrid = i(-H1Dist+1) + Xcycle + x
 								// ygrid = o + Ycyle - x
-								if ((i - (H3Dist + 1) + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-									(i - (H3Dist + 1) + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
-									if (coords[i - (H3Dist + 1) + Xcycle + x][o + Ycycle - x] == 4)
+								if ((i - H3Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+									(i - H3Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
+									if (coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 4)
 										SAFE = false;
 							}
 							Ycycle++;
@@ -241,8 +251,8 @@ void TileManager::Initialize()
 
 	// set range of hazard using min & max size and set the nearby tiles as such
 
-	// hazard 1, set all tiles within gen1 to hazard
-	// TODO: BUGS BELOW, TILES ONLY SET ON ODD??
+	// COULD TRY TO IMPLEMENT RANDOMNESS HERE AS WELL, SAVE SPACE AND 
+	
 	for (int i = 0; i < mDimention; i++) {
 		for (int o = 0; o < mDimention; o++) {
 			// use origin to select central tiles & set all tiles within gen 
@@ -254,7 +264,7 @@ void TileManager::Initialize()
 				int Xcycle = 0; // used for x increase at start (increased after each whole odd cycle) 
 				int Ycycle = 0; // used for y increase at start (increased after each whole even cycle)
 				for (int d = 0; d < Cycles; d++) {
-					bool set = false; // TODO: test generation
+					bool set = false;
 					if (odd == true) { // larger loop
 						for (int x = 0; x < (haz1 + 1); x++) {
 							// xgrid = i -H1Dist + Xcycle + x
@@ -269,9 +279,11 @@ void TileManager::Initialize()
 						for (int x = 0; x < haz1; x++) {
 							// xgrid = i(-H1Dist+1) + Xcycle + x
 							// ygrid = o + Ycyle - x
-							if ((i - (haz1 + 1) + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-								(i - (haz1 + 1) + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
-								coords[i - (haz1 + 1) + Xcycle + x][o + Ycycle - x] = 5;
+							int checkx = (i - haz1 + Xcycle + x);
+							int checky = (o + Ycycle - x);
+							if ((i - haz1 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+								(i - haz1 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
+								coords[i - haz1 + Xcycle + x][o + Ycycle - x] = 5;
 						}
 						Ycycle++;
 					}
@@ -294,7 +306,7 @@ void TileManager::Initialize()
 				int Xcycle = 0; // used for x increase at start (increased after each whole odd cycle) 
 				int Ycycle = 0; // used for y increase at start (increased after each whole even cycle)
 				for (int d = 0; d < Cycles; d++) {
-					bool set = false; // TODO: test generation
+					bool set = false;
 					if (odd == true) { // larger loop
 						for (int x = 0; x < (haz2 + 1); x++) {
 							// xgrid = i -H1Dist + Xcycle + x
@@ -309,9 +321,9 @@ void TileManager::Initialize()
 						for (int x = 0; x < haz2; x++) {
 							// xgrid = i(-H1Dist+1) + Xcycle + x
 							// ygrid = o + Ycyle - x
-							if ((i - (haz2 + 1) + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-								(i - (haz2 + 1) + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
-								coords[i - (haz2 + 1) + Xcycle + x][o + Ycycle - x] = 6;
+							if ((i - haz2 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+								(i - haz2 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
+								coords[i - haz2 + Xcycle + x][o + Ycycle - x] = 6;
 						}
 						Ycycle++;
 					}
@@ -334,7 +346,7 @@ void TileManager::Initialize()
 				int Xcycle = 0; // used for x increase at start (increased after each whole odd cycle) 
 				int Ycycle = 0; // used for y increase at start (increased after each whole even cycle)
 				for (int d = 0; d < Cycles; d++) {
-					bool set = false; // TODO: test generation
+					bool set = false;
 					if (odd == true) { // larger loop
 						for (int x = 0; x < (haz3 + 1); x++) {
 							// xgrid = i -H1Dist + Xcycle + x
@@ -349,9 +361,9 @@ void TileManager::Initialize()
 						for (int x = 0; x < haz3; x++) {
 							// xgrid = i(-H1Dist+1) + Xcycle + x
 							// ygrid = o + Ycyle - x
-							if ((i - (haz3 + 1) + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-								(i - (haz3 + 1) + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
-								coords[i - (haz3 + 1) + Xcycle + x][o + Ycycle - x] = 4;
+							if ((i - haz3 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+								(i - haz3 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
+								coords[i - haz3 + Xcycle + x][o + Ycycle - x] = 4;
 						}
 						Ycycle++;
 					}
