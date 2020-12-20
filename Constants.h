@@ -56,7 +56,10 @@ namespace GC
 
 	const float
 		ZOOM_SPEED = 20.0f,
-		MOVE_SPEED = 5.0f;
+		MOVE_SPEED = 5.0f,
+
+		TRADER_RADIUS = 1.4f
+		;
 
 
 

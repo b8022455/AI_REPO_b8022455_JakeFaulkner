@@ -17,6 +17,7 @@ class PlayState : public State
 {
 	Player mPlayer;
 	PlayerWeapon mPlayerWeapon;
+	std::vector<Trader> mTraders;
 	std::vector<Enemy> mEnemies;
 	Inventory mInventory;
 	Trader mTempTrader;
@@ -42,6 +43,9 @@ class PlayState : public State
 	CAMERA_TYPE mCamType = CAMERA_TYPE::GAME;
 
 	std::array<Camera, CAMERA_TYPE::SIZE> mCameras;
+
+	void InitializeTraders();
+	bool FindNearestTraderInRadius();
 public:
 	PlayState();
 
@@ -53,7 +57,7 @@ public:
 	virtual void OnMouseUp(WPARAM btnState, int x, int y)	override;
 	virtual void OnMouseMove(WPARAM btnState, int x, int y) override;
 	virtual void OnKeyboardInput(const GameTimer& gt)		override;
-	virtual void OnResume()									override{};
+	virtual void OnResume()									override;
 
 
 	void Controls(const GameTimer& gt);

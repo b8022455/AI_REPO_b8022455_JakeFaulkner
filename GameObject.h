@@ -4,6 +4,8 @@
 #include "FrameResource.h"
 #include <memory>
 #include <DirectXMath.h>
+#include "SimpleMath.h"
+
 
 class GameTimer;
 
@@ -22,6 +24,7 @@ public:
 	virtual void Update(const GameTimer& gt) {};
 
 	void SetPos(const DirectX::XMFLOAT3& newPos);
-	DirectX::XMFLOAT3 GetPos();
+	const DirectX::XMFLOAT3 GetPos() const;
+	const DirectX::SimpleMath::Vector3 GetPosV3() const;
 
 };

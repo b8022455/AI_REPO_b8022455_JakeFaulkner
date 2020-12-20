@@ -10,6 +10,74 @@
 
 using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
+void PlayState::InitializeTraders()
+{
+
+	mTraders.push_back(Trader(GC::TRADER_NAME_TEST, GC::TRADER_NAME_TEST, GC::TRADER_NAME_TEST));
+	mTraders.push_back(Trader(GC::TRADER_NAME_1, GC::TRADER_NAME_1, GC::TRADER_NAME_1));
+	mTraders.push_back(Trader(GC::TRADER_NAME_2, GC::TRADER_NAME_2, GC::TRADER_NAME_2));
+	mTraders.push_back(Trader(GC::TRADER_NAME_3, GC::TRADER_NAME_3, GC::TRADER_NAME_3));
+	mTraders.push_back(Trader(GC::TRADER_NAME_1, GC::TRADER_NAME_2, GC::TRADER_NAME_3));
+
+	struct SetupTraders
+	{
+		float x = -10.5f;
+		const int biggestGap = 3;
+		void operator()(Trader& t)
+		{
+			t.Initialize(GC::GO_TRADER);
+			t.mpInstance->MaterialIndex = 6;
+			x+= 1.0f + (rand() % biggestGap);
+			t.SetPos({ x, 0.0f, 3.0f });
+		}
+	};
+
+
+	std::for_each(mTraders.begin(), mTraders.end(), SetupTraders());
+
+
+}
+
+bool PlayState::FindNearestTraderInRadius()
+{
+	struct SortByDistance
+	{
+		SimpleMath::Vector3 from;
+
+		bool operator()(const Trader& a, const Trader& b)
+		{
+			distanceA = SimpleMath::Vector3::Distance( from , a.GetPosV3() );
+			distanceB = SimpleMath::Vector3::Distance( from , b.GetPosV3() );
+
+			return distanceA < distanceB;
+		}
+	private:
+		float distanceA, distanceB;
+	};
+
+	SortByDistance s;
+	// distance from player location
+	s.from = mPlayer.GetPosV3();
+
+	std::sort(mTraders.begin(), mTraders.end(),std::ref(s));
+
+	float distance = SimpleMath::Vector3::Distance( mPlayer.GetPosV3() , mTraders.front().GetPosV3());
+
+	if (distance < GC::TRADER_RADIUS)
+	{
+		mpActiveTrader = &mTraders.front();
+		return true;
+	}
+	else
+	{
+		// if none in range clear any active trader
+		mpActiveTrader = nullptr;
+		return false;
+	}
+
+
+}
+
 PlayState::PlayState()
 	:
 	mExperience(0, GC::EXP_EXPONENT, GC::EXP_OFFSET, 0),
@@ -30,7 +98,7 @@ void PlayState::Initialize()
 	inventoryPosition = mInventory.begin();
 
 	// todo change to closest trader in radius on button hit
-	mpActiveTrader = &mTempTrader;
+	//mpActiveTrader = &mTempTrader;
 
 
 	for (auto& c : mCameras)
@@ -43,6 +111,8 @@ void PlayState::Initialize()
 	mPlayerWeapon.Initialize("Weapon");
 	mTempTrader.Initialize("Trader");
 
+
+	InitializeTraders();
 	mTempTrader.SetPos({ -5,0,1 });
 	
 	int n(0);
@@ -81,6 +151,8 @@ void PlayState::Initialize()
 	}
 
 	mCombatController.Initialize(&mPlayer,&mPlayerWeapon,&mEnemies);
+
+	
 
 	
 	// Sprites
@@ -299,6 +371,12 @@ void PlayState::OnKeyboardInput(const GameTimer & gt)
 
 }
 
+void PlayState::OnResume()
+{
+	// remove focus from trader
+	mpActiveTrader = nullptr;
+}
+
 
 /*
 
@@ -487,66 +565,20 @@ void PlayState::Controls(const GameTimer & gt)
 	//todo move to trade state
 	if (Input::Get().KeyReleased('9'))
 	{
-		GameApp::Get().ChangeState(GC::STATE_TRADE);
+		if (FindNearestTraderInRadius())
+		{
+			//todo play sound
+			assert(mpActiveTrader);
+			GameApp::Get().ChangeState(GC::STATE_TRADE);
+		}
+		else
+		{
+			//todo sound fail sound
+		}
 
-		//////does player have request items
 
-		//////if yes
-		////// give reward items to player
 
-		////const InventoryUnordered* request = mTempTrader.GetRequestItems();
-
-		////// copy to manipulate for trade
-		////Inventory temp = mInventory;
-
-		////bool validTrader = true;
-
-		////// start at top of request
-		////InventoryUnordered::const_iterator rIt = request->begin();
-
-		////// evaluates if trade can be done and removes items
-		////while (rIt != request->end() && validTrader)
-		////{
-		////	// request items minused from temp inventory.
-		////	// If item isn't there, it is created. the trade will fail so temp inventory will be discarded
-		////	temp[rIt->first] -= rIt->second;
-
-		////	// no trade if not enough of an item int the traders request
-		////	if (temp.at(rIt->first) < 0)
-		////	{
-		////		validTrader = false;
-		////	}
-
-		////	++rIt;
-		////}
-
-		////if (validTrader)
-		////{
-		////	//add items to temp
-		////	if (mTempTrader.GiveRewards(temp))
-		////	{
-		////		CleanInventory(temp); // remove anything that the inventory has nothing of
-
-		////		__int64 distance = std::distance(mInventory.begin(), inventoryPosition); // location of current itterator
-		////		__int64 difference = mInventory.size() - temp.size();
-
-		////		// save changes to inventory
-		////		mInventory = temp; 
-
-		////		// if temp is smaller minus difference
-		////		if (difference > 0)
-		////		{
-		////			distance -= difference;
-		////		}
-
-		////		// reset iterator since inventory ahs changed
-		////		inventoryPosition = mInventory.begin();
-		////		// go to location
-		////		std::advance(inventoryPosition, distance);
-
-		////	}
-		////}
-
+		
 	}
 }
 
@@ -604,8 +636,6 @@ void PlayState::ItemAction()
 	CleanInventory(mInventory); // tidy up
 
 }
-
-
 
 void PlayState::CleanInventory(Inventory& inv)
 {

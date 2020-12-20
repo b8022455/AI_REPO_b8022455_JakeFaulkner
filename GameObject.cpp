@@ -25,7 +25,17 @@ void GameObject::SetPos(const DirectX::XMFLOAT3 & newPos)
 	mpInstance->World._43 = newPos.z;
 }
 
-DirectX::XMFLOAT3 GameObject::GetPos()
+const DirectX::XMFLOAT3 GameObject::GetPos() const
+{
+	return DirectX::XMFLOAT3
+	{
+		mpInstance->World._41,
+		mpInstance->World._42,
+		mpInstance->World._43
+	};
+}
+
+const DirectX::SimpleMath::Vector3 GameObject::GetPosV3() const
 {
 	return DirectX::XMFLOAT3
 	{

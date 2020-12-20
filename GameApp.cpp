@@ -119,7 +119,7 @@ bool GameApp::Initialize()
 	BuildObjGeometry("Data/Models/tempPlayer.obj", "tempPlayerGeo", "tempPlayer");//tempPlayer.obj
 	BuildObjGeometry("Data/Models/tempEnemy.obj", "tempEnemyGeo", "tempEnemy");
 	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" ); //quad rather than cube
-	BuildObjGeometry("Data/Models/tree01.obj","traderGeo", "trader" ); //quad rather than cube
+	BuildObjGeometry("Data/Models/building04.obj","traderGeo", "trader" ); //quad rather than cube
 	BuildSwordGeometry();
 	BuildPlayerGeometry();
 	BuildMaterials();
