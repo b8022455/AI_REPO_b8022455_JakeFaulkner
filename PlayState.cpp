@@ -13,7 +13,7 @@ using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 PlayState::PlayState()
 	:
 	mExperience(0, GC::EXP_EXPONENT, GC::EXP_OFFSET, 0),
-	mTempTrader(GC::TRADER_NAME_TEST, GC::TRADER_NAME_TEST)
+	mTempTrader(GC::TRADER_NAME_TEST,GC::TRADER_NAME_TEST, GC::TRADER_NAME_TEST)
 {
 }
 

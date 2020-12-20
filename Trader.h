@@ -1,6 +1,8 @@
 #pragma once
+#include <utility>
 #include "Constants.h"
 #include "GameObject.h"
+
 // NPCS
 // todo inherit from gameobject, change init, add gameobject override functions
 class Trader // : public GameObject
@@ -8,12 +10,12 @@ class Trader // : public GameObject
 	const InventoryUnordered* mRequestItems;
 	const InventoryUnordered* mRewardItems;
 	// Swap when traded
-	std::array<std::string, 2> mDialog; 
-
+	DialogPair mDialog;
+	
 	bool traded = false;
 public:
 
-	Trader(const std::string& requestList, const std::string& rewardItems);
+	Trader(const std::string& dialog, const std::string& requestList, const std::string& rewardItems);
 
 	bool CanTrade()
 	{
@@ -33,7 +35,8 @@ public:
 			// change state to reflect trader completed
 			traded = true;
 			// swap dialog to avoid logic
-			mDialog.front().swap(mDialog.back());
+
+			mDialog.first.swap(mDialog.second);
 
 			return true;
 		}
@@ -53,7 +56,7 @@ public:
 	// Returns dialog before and after trading.
 	std::string GetDialog()
 	{
-		return mDialog.front();
+		return mDialog.first;
 	}
 
 

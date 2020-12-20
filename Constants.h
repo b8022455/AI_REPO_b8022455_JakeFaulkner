@@ -7,6 +7,7 @@
 #include <vector>
 #include <map>
 
+typedef std::pair<std::string, std::string> DialogPair;
 
 namespace GC
 {
@@ -40,13 +41,13 @@ namespace GC
 		EXP_EXPONENT = 3,
 		EXP_OFFSET = 5,
 		EXP_DEFAULT = 5, // test value for increasing exp
-		
-		
+
+
 		HEAL_SMALL = 10,
 		HEAL_MED = 50,
 		HEAL_LARGE = 100
-		
-		; 
+
+		;
 
 
 	const float
@@ -65,11 +66,11 @@ namespace GC
 		STATE_PLAY = "PlayState",
 		STATE_TRADE = "TradeState",
 
-		TRADER_NAME_TEST	= "TravellerTest",
-		TRADER_NAME_1		= "Traveller1",
-		TRADER_NAME_2		= "Traveller2",
-		TRADER_NAME_3		= "Traveller3",
-		TRADER_NAME_4		= "Traveller4"
+		TRADER_NAME_TEST = "TravellerTest",
+		TRADER_NAME_1 = "Traveller1",
+		TRADER_NAME_2 = "Traveller2",
+		TRADER_NAME_3 = "Traveller3",
+		TRADER_NAME_4 = "Traveller4"
 		;
 
 	const DirectX::XMFLOAT3
@@ -120,9 +121,14 @@ namespace GC
 		{ TRADER_NAME_3,		{{"Potion",2}, {"Holy Water",2},{ "Holy Water",2}				}	}, //todo change 
 		{ TRADER_NAME_4,		{																}	}, // no reward, charity
 	};
-		 
-
-	
 
 
+	const std::map<std::string, DialogPair> DIALOG_PAIR
+	{
+		{ TRADER_NAME_TEST,	{"Got some rare things to trade, stranger","heh heh heh. Thank you."	}},
+		{ TRADER_NAME_1,	{"Trade with me","Now on your way."	}},
+		{ TRADER_NAME_2,	{"I need some things, you need some things","Now I need some peace and quiet and you need to leave."	}}, //
+		{ TRADER_NAME_3,	{"Trade with me","Now on your way."	}}, //todo change 
+		{ TRADER_NAME_4, 	{"Trade with me","Now on your way."	}}, // no reward, charity
+	};
 }

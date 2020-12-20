@@ -14,7 +14,7 @@ void TradeState::Update(const GameTimer & gt)
 	{
 		if (mpTrader)
 		{
-			GameApp::Get().mDebugLog << "Traded? " << !mpTrader->CanTrade() << "\n\n";
+			GameApp::Get().mDebugLog << "Traded? " << !mpTrader->CanTrade() << "\n\n " << mpTrader->GetDialog() << "\n\n ";
 		}
 
 
