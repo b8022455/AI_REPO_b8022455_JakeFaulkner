@@ -24,12 +24,12 @@ void TileManager::Initialize()
 	int H1Dist = 5; // distance between other hazards from central spot / health - ADVANCED GENERATION
 	int H2Dist = 3; // distance between other hazards from central spot / slow - ADVANCED GENERATION
 	int H3Dist = 3; // distance between other hazards from central spot / slip? - ADVANCED GENERATION
-	int H1Random; // randomness attributed to hazard generation / health - ADVANCED GENERATION
-	int H2Random; // randomness attributed to hazard generation / slow - ADVANCED GENERATION
-	int H3Random; // randomness attributed to hazard generation / slip? - ADVANCED GENERATION
-	int H1RandomDist; // distance from regular gen / health - ADVANCED GENERATION
-	int H2RandomDist; // distance from regular gen / slow - ADVANCED GENERATION
-	int H3RandomDist; // distance from regular gen / slip - ADVANCED GENERATION
+	int H1Random = 2; // randomness attributed to hazard generation / health - ADVANCED GENERATION
+	int H2Random = 5; // randomness attributed to hazard generation / slow - ADVANCED GENERATION
+	int H3Random = 5; // randomness attributed to hazard generation / slip? - ADVANCED GENERATION
+	int H1RandomDist = 2; // distance from regular gen / health - ADVANCED GENERATION
+	int H2RandomDist = 3; // distance from regular gen / slow - ADVANCED GENERATION
+	int H3RandomDist = 3; // distance from regular gen / slip - ADVANCED GENERATION
 
 	std::uniform_int_distribution<int> grid(0,mDimention);
 	std::uniform_int_distribution<int> gen1(H1MinSize, H1MaxSize); // uniform, unbiased
@@ -296,6 +296,58 @@ void TileManager::Initialize()
 						set = true;
 					}
 				}
+				// TODO: RANDOMNESS HERE
+				// use H1RandomDist as max distance from central AND randomness is the range within dimsquare to use?
+				
+				int Rand1 = H1RandomDist + H1Dist; // set
+				// use for loop to set all tiles within gen1 to hazard
+				Cycles = (Rand1 * 2) + 1; 
+				odd = true; // whether or not to run odd or even logic
+				Xcycle = 0; // used for x increase at start (increased after each whole odd cycle) 
+				Ycycle = 0; // used for y increase at start (increased after each whole even cycle)
+				for (int d = 0; d < Cycles; d++) {
+					bool set = false;
+					if (odd == true) { // larger loop
+						for (int x = 0; x < (Rand1 + 1); x++) {
+							// xgrid = i -H1Dist + Xcycle + x
+							// ygrid = o + Ycycle - x
+							if ((i - Rand1 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+								(i - Rand1 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
+								if (coords[i - Rand1 + Xcycle + x][o + Ycycle - x] != 5) { // not already a hazard
+									// ADJUST HERE AS NEEDED
+									int use = (rand() % dimSquare);
+									if (use <= H1Random)
+										coords[i - Rand1 + Xcycle + x][o + Ycycle - x] = 5;
+								}
+						}
+						Xcycle++;
+					}
+					if (odd == false) { // smaller loop
+						for (int x = 0; x < Rand1; x++) {
+							// xgrid = i(-H1Dist+1) + Xcycle + x
+							// ygrid = o + Ycyle - x
+							//int checkx = (i - haz1 + Xcycle + x); // DEBUG
+							//int checky = (o + Ycycle - x); // DEBUG
+							if ((i - Rand1 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+								(i - Rand1 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
+								if (coords[i - Rand1 + Xcycle + x][o + Ycycle - x] != 5) { // not already a hazard
+									// ADJUST HERE AS NEEDED
+									int use = (rand() % dimSquare);
+									if (use <= H1Random)
+										coords[i - Rand1 + Xcycle + x][o + Ycycle - x] = 5;
+								}
+						}
+						Ycycle++;
+					}
+					if (odd == true && set == false) {
+						odd = false;
+						set = true;
+					}
+					if (odd == false && set == false) {
+						odd = true;
+						set = true;
+					}
+				}
 			}
 			// HAZARD 2
 			if (origin[i][o] == 6) { // if central tile found
@@ -336,6 +388,58 @@ void TileManager::Initialize()
 						set = true;
 					}
 				}
+				// TODO: RANDOMNESS HERE
+				// use H1RandomDist as max distance from central AND randomness is the range within dimsquare to use?
+
+				int Rand2 = H2RandomDist + H2Dist; // set
+				// use for loop to set all tiles within gen1 to hazard
+				Cycles = (Rand2 * 2) + 1;
+				odd = true; // whether or not to run odd or even logic
+				Xcycle = 0; // used for x increase at start (increased after each whole odd cycle) 
+				Ycycle = 0; // used for y increase at start (increased after each whole even cycle)
+				for (int d = 0; d < Cycles; d++) {
+					bool set = false;
+					if (odd == true) { // larger loop
+						for (int x = 0; x < (Rand2 + 1); x++) {
+							// xgrid = i -H1Dist + Xcycle + x
+							// ygrid = o + Ycycle - x
+							if ((i - Rand2 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+								(i - Rand2 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
+								if (coords[i - Rand2 + Xcycle + x][o + Ycycle - x] != 6) { // not already a hazard
+									// ADJUST HERE AS NEEDED
+									int use = (rand() % dimSquare);
+									if (use <= H2Random)
+										coords[i - Rand2 + Xcycle + x][o + Ycycle - x] = 6;
+								}
+						}
+						Xcycle++;
+					}
+					if (odd == false) { // smaller loop
+						for (int x = 0; x < Rand2; x++) {
+							// xgrid = i(-H1Dist+1) + Xcycle + x
+							// ygrid = o + Ycyle - x
+							//int checkx = (i - haz1 + Xcycle + x); // DEBUG
+							//int checky = (o + Ycycle - x); // DEBUG
+							if ((i - Rand2 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+								(i - Rand2 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
+								if (coords[i - Rand2 + Xcycle + x][o + Ycycle - x] != 6) { // not already a hazard
+									// ADJUST HERE AS NEEDED
+									int use = (rand() % dimSquare);
+									if (use <= H2Random)
+										coords[i - Rand2 + Xcycle + x][o + Ycycle - x] = 6;
+								}
+						}
+						Ycycle++;
+					}
+					if (odd == true && set == false) {
+						odd = false;
+						set = true;
+					}
+					if (odd == false && set == false) {
+						odd = true;
+						set = true;
+					}
+				}
 			}
 			// HAZARD 3
 			if (origin[i][o] == 4) { // if central tile found
@@ -364,6 +468,58 @@ void TileManager::Initialize()
 							if ((i - haz3 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 								(i - haz3 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
 								coords[i - haz3 + Xcycle + x][o + Ycycle - x] = 4;
+						}
+						Ycycle++;
+					}
+					if (odd == true && set == false) {
+						odd = false;
+						set = true;
+					}
+					if (odd == false && set == false) {
+						odd = true;
+						set = true;
+					}
+				}
+				// TODO: RANDOMNESS HERE
+				// use H1RandomDist as max distance from central AND randomness is the range within dimsquare to use?
+
+				int Rand3 = H3RandomDist + H3Dist; // set
+				// use for loop to set all tiles within gen1 to hazard
+				Cycles = (Rand3 * 2) + 1;
+				odd = true; // whether or not to run odd or even logic
+				Xcycle = 0; // used for x increase at start (increased after each whole odd cycle) 
+				Ycycle = 0; // used for y increase at start (increased after each whole even cycle)
+				for (int d = 0; d < Cycles; d++) {
+					bool set = false;
+					if (odd == true) { // larger loop
+						for (int x = 0; x < (Rand3 + 1); x++) {
+							// xgrid = i -H1Dist + Xcycle + x
+							// ygrid = o + Ycycle - x
+							if ((i - Rand3 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+								(i - Rand3 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
+								if (coords[i - Rand3 + Xcycle + x][o + Ycycle - x] != 4) { // not already a hazard
+									// ADJUST HERE AS NEEDED
+									int use = (rand() % dimSquare);
+									if (use <= H3Random)
+										coords[i - Rand3 + Xcycle + x][o + Ycycle - x] = 4;
+								}
+						}
+						Xcycle++;
+					}
+					if (odd == false) { // smaller loop
+						for (int x = 0; x < Rand3; x++) {
+							// xgrid = i(-H1Dist+1) + Xcycle + x
+							// ygrid = o + Ycyle - x
+							//int checkx = (i - haz1 + Xcycle + x); // DEBUG
+							//int checky = (o + Ycycle - x); // DEBUG
+							if ((i - Rand3 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
+								(i - Rand3 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
+								if (coords[i - Rand3 + Xcycle + x][o + Ycycle - x] != 4) { // not already a hazard
+									// ADJUST HERE AS NEEDED
+									int use = (rand() % dimSquare);
+									if (use <= H3Random)
+										coords[i - Rand3 + Xcycle + x][o + Ycycle - x] = 4;
+								}
 						}
 						Ycycle++;
 					}
