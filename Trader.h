@@ -52,6 +52,10 @@ public:
 		return mRequestItems;
 	}
 
+	const InventoryUnordered* GetRewardItems()
+	{
+		return mRewardItems;
+	}
 	// Returns dialog before and after trading.
 	std::string GetDialog()
 	{

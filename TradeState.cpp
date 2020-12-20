@@ -15,8 +15,34 @@ void TradeState::Update(const GameTimer & gt)
 		if (mpTrader)
 		{
 			GameApp::Get().mDebugLog << "Traded? " << !mpTrader->CanTrade() << "\n\n " << mpTrader->GetDialog() << "\n\n ";
+
+			//display trade details debug
+			if (mpTrader->CanTrade())
+			{
+				const InventoryUnordered* request = mpTrader->GetRequestItems();
+
+				GameApp::Get().mDebugLog << "\nRequest:\n";
+
+				std::for_each(request->begin(), request->end(), [](auto& inv)
+				{
+					GameApp::Get().mDebugLog << inv.first << " : " << inv.second << "\n";
+				});
+
+
+				GameApp::Get().mDebugLog << "\nReward:\n";
+
+				const InventoryUnordered* reward = mpTrader->GetRewardItems();
+
+				std::for_each(reward->begin(), reward->end(), [](auto& inv)
+				{
+					GameApp::Get().mDebugLog << inv.first << " : " << inv.second << "\n";
+				});
+			}
+			
 		}
 
+		//show inventory debug
+		GameApp::Get().mDebugLog << "\nInventory:\n";
 
 		std::for_each(mpInventory->begin(), mpInventory->end(), [&](auto& inv)
 		{

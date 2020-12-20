@@ -20,7 +20,6 @@ class PlayState : public State
 	std::vector<Trader> mTraders;
 	std::vector<Enemy> mEnemies;
 	Inventory mInventory;
-	Trader mTempTrader;
 
 
 	// Trader player is focused on

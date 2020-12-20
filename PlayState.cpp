@@ -80,8 +80,7 @@ bool PlayState::FindNearestTraderInRadius()
 
 PlayState::PlayState()
 	:
-	mExperience(0, GC::EXP_EXPONENT, GC::EXP_OFFSET, 0),
-	mTempTrader(GC::TRADER_NAME_TEST,GC::TRADER_NAME_TEST, GC::TRADER_NAME_TEST)
+	mExperience(0, GC::EXP_EXPONENT, GC::EXP_OFFSET, 0)
 {
 }
 
@@ -109,11 +108,9 @@ void PlayState::Initialize()
 
 	mPlayer.Initialize("Player");
 	mPlayerWeapon.Initialize("Weapon");
-	mTempTrader.Initialize("Trader");
 
 
 	InitializeTraders();
-	mTempTrader.SetPos({ -5,0,1 });
 	
 	int n(0);
 	int clumpSize(5);
