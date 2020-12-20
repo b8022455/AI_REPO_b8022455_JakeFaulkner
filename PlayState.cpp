@@ -32,16 +32,18 @@ void PlayState::Initialize()
 	// todo change to closest trader in radius on button hit
 	mpActiveTrader = &mTempTrader;
 
+
 	for (auto& c : mCameras)
 	{
 		c.SetPosition(0.0f, 25.0f, 0.0f);
 		c.Pitch(XMConvertToRadians(CAM_ANGLE)); // SETS CAMERA TO FACE DOWN
 	}
 
-	//GameApp::Get().OnResize();
-
-	mPlayer.Initialize("Player");					// todo adapt GameApp mPlayer to this state
+	mPlayer.Initialize("Player");
 	mPlayerWeapon.Initialize("Weapon");
+	mTempTrader.Initialize("Trader");
+
+	mTempTrader.SetPos({ -5,0,1 });
 	
 	int n(0);
 	int clumpSize(5);

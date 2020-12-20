@@ -4,8 +4,7 @@
 #include "GameObject.h"
 
 // NPCS
-// todo inherit from gameobject, change init, add gameobject override functions
-class Trader // : public GameObject
+class Trader : public GameObject
 {
 	const InventoryUnordered* mRequestItems;
 	const InventoryUnordered* mRewardItems;

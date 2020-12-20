@@ -7,6 +7,7 @@
 #include "GameApp.h"
 #include "SimpleMath.h"
 #include "OBJ_Loader.h"
+#include <cassert>
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -115,9 +116,10 @@ bool GameApp::Initialize()
 	BuildShadersAndInputLayout();
 	BuildBoxGeometry();
 	BuildObjGeometry("Data/Models/tempSword.obj", "tempSwordGeo", "tempSword");// loads obj
-	BuildObjGeometry("Data/Models/building01.obj", "tempPlayerGeo", "tempPlayer");//tempPlayer.obj
+	BuildObjGeometry("Data/Models/tempPlayer.obj", "tempPlayerGeo", "tempPlayer");//tempPlayer.obj
 	BuildObjGeometry("Data/Models/tempEnemy.obj", "tempEnemyGeo", "tempEnemy");
 	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" ); //quad rather than cube
+	BuildObjGeometry("Data/Models/tree01.obj","traderGeo", "trader" ); //quad rather than cube
 	BuildSwordGeometry();
 	BuildPlayerGeometry();
 	BuildMaterials();
@@ -1053,10 +1055,13 @@ void GameApp::BuildRenderItems()
 
 	UINT objCbIndex = 0;
 
+	// Every rItem needs an instance buffer
+	// Change GC::NUM_DIFF_RENDER_OBJS to reflect this. 
 	mAllRitems["Tiles"] = BuildRenderItem(objCbIndex, "floorTileGeo", "floorTile");
 	mAllRitems["Weapon"] = BuildRenderItem(objCbIndex, "tempSwordGeo", "tempSword");
 	mAllRitems["Player"] = BuildRenderItem(objCbIndex, "tempPlayerGeo", "tempPlayer");
 	mAllRitems["Enemy"] = BuildRenderItem(objCbIndex, "tempEnemyGeo", "tempEnemy");
+	mAllRitems["Trader"] = BuildRenderItem(objCbIndex, "traderGeo", "trader");
 
 
 	//Uncomment this if testing weapon collision, will be removed once the function in enemy class is available in GameApp
@@ -1066,12 +1071,16 @@ void GameApp::BuildRenderItems()
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)
 		mOpaqueRitems.push_back(e.second.get());
+
+	// check theres an instance buffer for each render item. 
+	assert(mOpaqueRitems.size() == (sizeof(mCurrFrameResource->InstanceBuffer) / sizeof(mCurrFrameResource->InstanceBuffer[0])));
 }
 
 
 
 void GameApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems)
 {
+
 	// For each render item...
 	for (size_t i = 0; i < ritems.size(); ++i)
 	{

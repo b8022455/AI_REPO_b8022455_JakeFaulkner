@@ -35,6 +35,10 @@ namespace GC
 		KEY_DEBUG_ENEMY_POS = 'G'
 		;
 
+	const size_t
+		NUM_DIFF_RENDER_OBJS = 5 // for frame resource
+		;
+
 	const int
 		PLAYER_LOW_HEALTH = 50,
 
@@ -61,6 +65,7 @@ namespace GC
 		GO_ENEMY = "Enemy",
 		GO_WEAPON = "Weapon",
 		GO_TILE = "Tiles",
+		GO_TRADER = "Trader",
 
 
 		STATE_PLAY = "PlayState",
