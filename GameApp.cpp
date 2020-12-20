@@ -507,7 +507,8 @@ void GameApp::LoadTexture(const std::string & name, const std::wstring & filenam
 
 void GameApp::LoadTextures()
 {
-
+	// if all textures are not reserved they will not be listed in order
+	mTextures.reserve(20);
 	LoadTexture("bricksTex", L"Data/Textures/bricks.dds");
 	LoadTexture("stoneTex", L"Data/Textures/stone.dds");
 	LoadTexture("tileTex", L"Data/Textures/tile.dds");
@@ -515,13 +516,13 @@ void GameApp::LoadTextures()
 	LoadTexture("iceTex", L"Data/Textures/ice.dds");
 	LoadTexture("grassTex", L"Data/Textures/grass.dds");
 	LoadTexture("defaultTex", L"Data/Textures/white1x1.dds");
-
+	LoadTexture("uiTex", L"Data/Textures/ui.dds");
 }
 
 void GameApp::BuildRootSignature()
 {
 	CD3DX12_DESCRIPTOR_RANGE texTable;
-	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 8, 0, 0);
+	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 9, 0, 0);
 
 	// Root parameter can be a table, root descriptor or root constants.
 	CD3DX12_ROOT_PARAMETER slotRootParameter[4];
@@ -564,7 +565,7 @@ void GameApp::BuildDescriptorHeaps()
 	// Create the SRV heap.
 	//
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-	srvHeapDesc.NumDescriptors = 8;
+	srvHeapDesc.NumDescriptors = 9;
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&mSrvDescriptorHeap)));
@@ -582,6 +583,7 @@ void GameApp::BuildDescriptorHeaps()
 	auto iceTex = mTextures["iceTex"]->Resource;
 	auto grassTex = mTextures["grassTex"]->Resource;
 	auto defaultTex = mTextures["defaultTex"]->Resource;
+	auto uiTex = mTextures["uiTex"]->Resource;
 
 	//Brick 0
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -648,6 +650,16 @@ void GameApp::BuildDescriptorHeaps()
 	md3dDevice->CreateShaderResourceView(defaultTex.Get(), &srvDesc, hCpuDescriptor);
 	md3dDevice->CreateShaderResourceView(defaultTex.Get(), &srvDesc, hCpuDescriptor);
 	
+	// next descriptor
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+
+	// UI tex 7
+	srvDesc.Format = uiTex->GetDesc().Format;
+	srvDesc.Texture2D.MipLevels = uiTex->GetDesc().MipLevels;
+	md3dDevice->CreateShaderResourceView(uiTex.Get(), &srvDesc, hCpuDescriptor);
+
+	// next descriptor
 	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 

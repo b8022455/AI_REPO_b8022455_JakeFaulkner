@@ -133,7 +133,6 @@ Sprite::Sprite(const std::string & textureName)
 void Sprite::Initialise(const std::string & textureName, bool centreOrigin)
 {
 	texture = GameApp::Get().GetSpriteGpuDescHandle(textureName);
-
 	if (centreOrigin)
 	{
 		origin.x = 0.5f * (float)(sourceRectangle.right - sourceRectangle.left);

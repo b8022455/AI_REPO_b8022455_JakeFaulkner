@@ -66,6 +66,18 @@ public:
 
 	State* GetState(const std::string& name);
 
+	const Texture* const GetTexture(const std::string& name)
+	{
+		if (mTextures.count(name) == 1)
+		{
+			return mTextures[name].get();
+		}
+		else
+		{
+			assert(false);
+			return nullptr;
+		}
+	}
 
 	XMFLOAT2 GetClientSize();
 	// Output to viewport

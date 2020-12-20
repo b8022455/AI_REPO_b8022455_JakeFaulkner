@@ -18,10 +18,10 @@ struct Sprite
 {
 	std::string textureName; //lookup gpu handle
 	D3D12_GPU_DESCRIPTOR_HANDLE texture;
-	DirectX::XMUINT2 textureSize = DirectX::XMUINT2(128,128);
+	DirectX::XMUINT2 textureSize = DirectX::XMUINT2(512,512);
 	DirectX::XMFLOAT2 position = { 20.0f,20.0f };
-	//RECT destinationRectangle = {0,0,128,128};
-	RECT sourceRectangle = {0,0,128,128 };   //todo array for animations?
+	//RECT destinationRectangle = {0,0,512,512}; //ignore
+	RECT sourceRectangle = {0,0,512,512 };   //todo array for animations?
 	DirectX::FXMVECTOR color = DirectX::Colors::White;
 	float rotation = 0.0f;
 	float scale = 1.0f;

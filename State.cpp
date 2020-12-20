@@ -14,7 +14,11 @@ void StateManager::Init()
 
 	// Set up menu buttons
 	Sprite buttonBg;
-	buttonBg.Initialise("iceTex",true);
+	buttonBg.textureSize.x = buttonBg.textureSize.x >> 1;
+	buttonBg.textureSize.y = buttonBg.textureSize.y >> 1;
+	buttonBg.sourceRectangle = { 0,0,(LONG)buttonBg.textureSize.x,(LONG)buttonBg.textureSize.y >> 2 };
+	buttonBg.Initialise("uiTex",true);
+	
 	
 	// Main menu
 	Button btnW(buttonBg, "W Play", Button::Action::GOTO_GAME);
@@ -32,7 +36,7 @@ void StateManager::Init()
 
 	// GameState
 	AddState(GC::STATE_PLAY, std::make_unique<PlayState>());
-
+	
 	//Trade state
 	AddState(GC::STATE_TRADE, std::make_unique<TradeState>());
 
