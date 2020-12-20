@@ -250,21 +250,6 @@ void PlayState::Update(const GameTimer & gt)
 	
 	});
 
-	if (Input::Get().KeyReleased(GC::KEY_USEITEM))
-	{
-		// potion exists in inventory
-		if (mInventory.count("Potion") > 0)
-		{
-			// has potion
-			if (mInventory.at("Potion") > 0)
-			{
-				--mInventory.at("Potion"); // remove a potion
-				mPlayer.health += GC::HEAL_SMALL;
-			}
-		}
-	}
-
-
 	PassConstants* pMainPassCB = GameApp::Get().GetMainPassCB();
 
 	//flashing red for low health
@@ -641,6 +626,7 @@ void PlayState::CleanInventory(Inventory& inv)
 		if ((*it).second <= 0) 
 		{
 			it = inv.erase(it);
+			inventoryPosition = inv.begin();
 		}
 		else {
 			++it;

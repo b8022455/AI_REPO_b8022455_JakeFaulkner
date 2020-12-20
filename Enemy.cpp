@@ -91,6 +91,7 @@ const std::string Enemy::GetDropItem()
 	InventoryUnordered::const_iterator it = mpDropItems->begin();
 	while (it != mpDropItems->end() && !found)
 	{
+		previousMax = max - 1;
 		max = max >> 1; // divides by 2
 		found = true;
 		if (drop >= max)
