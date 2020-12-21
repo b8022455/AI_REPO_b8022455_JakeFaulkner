@@ -3,7 +3,7 @@
 #include <array>
 
 #ifndef FONT_SIZE
-#define FONT_SIZE 1
+#define FONT_SIZE 2
 #endif // !FONT_SIZE
 #include "DescriptorHeap.h"
 

@@ -81,6 +81,11 @@ public:
 	XMFLOAT2 GetClientSize();
 	XMINT2 GetClientSizeU2();
 
+	const UINT GetCbvSrvDescriptorSize() const
+	{
+		return mCbvSrvDescriptorSize;
+	}
+
 	// Output to viewport
 	std::ostringstream mDebugLog;
 	UINT mInstanceCount = 0;

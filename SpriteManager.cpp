@@ -23,6 +23,8 @@
 void SpriteManager::Init(ID3D12Device * device, ID3D12CommandQueue* commandQueue, UINT srvDescSize,DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthStencilFormat, CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle)
 {
 
+	UINT size = GameApp::Get().GetCbvSrvDescriptorSize();
+
 	mGraphicsMemory = std::make_unique<DirectX::GraphicsMemory>(device);
 
 	DirectX::ResourceUploadBatch resourceUpload(device);
@@ -42,9 +44,18 @@ void SpriteManager::Init(ID3D12Device * device, ID3D12CommandQueue* commandQueue
 			gpuHandle
 			);
 
+		cpuHandle.Offset(size);
+		gpuHandle.Offset(size);
+
 		//todo next
 		//mSpriteFont.at(1) = std::make_unique<DirectX::SpriteFont>( .. )
-
+		mSpriteFont.at(1) = std::make_unique<DirectX::SpriteFont>(
+			device,
+			resourceUpload,
+			L"Data/Fonts/Traveling__Typewriter_16.spritefont",
+			cpuHandle,
+			gpuHandle
+			);
 	}
 
 	auto uploadResourceEnd = resourceUpload.End(commandQueue);
@@ -70,7 +81,7 @@ void SpriteManager::DrawBegin(ID3D12GraphicsCommandList * commandList, const D3D
 void SpriteManager::DrawEnd()
 {
 	// Prints debug string
-	mSpriteFont.at(0)->DrawString(mSpriteBatch.get(), GameApp::Get().mDebugLog.str().c_str(), DirectX::XMFLOAT2(10.0f, 10.0f));
+	mSpriteFont.at(1)->DrawString(mSpriteBatch.get(), GameApp::Get().mDebugLog.str().c_str(), DirectX::XMFLOAT2(10.0f, 10.0f));
 
 	//Ends spritebatch
 	mSpriteBatch->End();
