@@ -13,6 +13,33 @@
 #include <GraphicsMemory.h>
 #include <d3d12.h>
 #include <CommonStates.h>
+#include "SimpleMath.h"
+
+struct Text
+{
+	const char* string = "";
+	DirectX::SimpleMath::Vector2 position = { 0,0 };
+	DirectX::SimpleMath::Vector4 color = {1.0f,0.0f,0.0f,1.0f};
+	float rotation = 0.0f; 
+	DirectX::SimpleMath::Vector2 origin = { 0,0 };
+	float scale = 1.0f;
+	size_t fontIndex = 0;
+	bool center = false;
+
+	void operator=(const Text& text)
+	{
+		string = text.string;
+		position = text.position;
+		color = text.color;
+		rotation = text.rotation;
+		origin = text.origin;
+		scale = text.scale;
+		fontIndex = text.fontIndex;
+		center = text.center;
+	}
+
+	void Draw();
+};
 
 struct Sprite
 {
@@ -22,7 +49,7 @@ struct Sprite
 	DirectX::XMFLOAT2 position = { 0.0f,0.0f };
 	//RECT destinationRectangle = {0,0,512,512}; //ignore
 	RECT sourceRectangle = {0,0,512,512 };   //todo array for animations?
-	DirectX::FXMVECTOR color = DirectX::Colors::White;
+	DirectX::SimpleMath::Vector4 color = DirectX::Colors::White;
 	float rotation = 0.0f;
 	float scale = 1.0f;
 	DirectX::XMFLOAT2 origin = DirectX::XMFLOAT2(0.0f, 0.0f);
@@ -50,6 +77,8 @@ struct Sprite
 	void Initialise(const std::string& textureName, bool centreOrigin = false);
 
 	void Draw();
+
+	
 };
 
 class Button
@@ -62,7 +91,7 @@ public:
 	};
 private:
 	Sprite sprite;
-	std::string text;
+	std::string text; // convert to Text
 	Action action;
 	bool enabled = true;
 
@@ -72,7 +101,7 @@ public:
 	void Draw();
 	void SetPos(const DirectX::XMFLOAT2& pos);
 
-
+	void SetColor(const DirectX::SimpleMath::Vector4& color);
 	void Activate();
 };
 
@@ -98,6 +127,8 @@ public:
 	// Called in State::Draw method. Begin and End methods are called in GameApp::Draw
 	void DrawSprite(const Sprite& sprite);
 	// Called in State::Draw method. Begin and End methods are called in GameApp::Draw
-	void DrawFont(size_t i, const std::string& output, const DirectX::XMFLOAT2& pos, bool centre = false);
+	void DrawString(size_t i, const std::string& output, const DirectX::XMFLOAT2& pos, bool centre = false);
+
+	void DrawString(const Text& t);
 };
 

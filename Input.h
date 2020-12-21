@@ -116,6 +116,12 @@ public:
 	bool MenuInputDown();
 	bool MenuInputRight();
 	bool MenuInputLeft();
+
+	bool MenuLeftHeld();
+	bool MenuUpHeld();
+	bool MenuRightHeld();
+	bool MenuDownHeld();
+
 	// the moment its pressed
 	bool MenuButtonPressed();
 	

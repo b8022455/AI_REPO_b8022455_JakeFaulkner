@@ -58,10 +58,42 @@ bool Input::MenuInputLeft()
 		mGamePadTracker.x == GamePad::ButtonStateTracker::ButtonState::RELEASED;
 }
 
+
+bool Input::MenuLeftHeld()
+{
+	return
+		KeyPressed(GC::KEY_LT) ||
+		mGamePadTracker.dpadLeft == GamePad::ButtonStateTracker::ButtonState::PRESSED ||
+		mGamePadTracker.x == GamePad::ButtonStateTracker::ButtonState::PRESSED;
+}
+
+bool Input::MenuUpHeld()
+{
+	return 
+		KeyPressed(GC::KEY_FW) ||
+		GamePad().dpadUp == GamePad::ButtonStateTracker::ButtonState::PRESSED ||
+		GamePad().y == GamePad::ButtonStateTracker::ButtonState::PRESSED;
+}
+
+bool Input::MenuRightHeld()
+{
+	return
+		KeyPressed(GC::KEY_RT) ||
+		GamePad().dpadRight == GamePad::ButtonStateTracker::ButtonState::PRESSED ||
+		GamePad().b == GamePad::ButtonStateTracker::ButtonState::PRESSED;
+}
+
+bool Input::MenuDownHeld()
+{
+	return
+		KeyPressed(GC::KEY_BK) ||
+		GamePad().dpadDown == GamePad::ButtonStateTracker::ButtonState::PRESSED ||
+		GamePad().a == GamePad::ButtonStateTracker::ButtonState::PRESSED;
+}
+
 bool Input::MenuButtonPressed()
 {
 	return
-		
 		KeyPressed(GC::KEY_LT) ||
 		KeyPressed(GC::KEY_FW) ||
 		KeyPressed(GC::KEY_BK) ||

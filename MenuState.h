@@ -4,9 +4,12 @@
 
 class MenuState : public State
 {
+	Text mTitle;
+	Text mBody;
 	std::vector<Button> mButtons;
 
 public:
+	MenuState(const Text& t1, const Text& b, const Button& b0, const Button& b1, const Button& b2, const Button& b3);
 	MenuState(const Button& b0, const Button& b1, const Button& b2, const Button& b3);
 
 	virtual void Initialize() override {};

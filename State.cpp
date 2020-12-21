@@ -29,6 +29,10 @@ void StateManager::Init()
 	mMenuBackground.sourceRectangle = { 0,0,s.x,s.y };
 
 
+	//set position of text elements of menus
+	Text menuTitle, menuBody;
+	menuTitle.position = GC::MENU_TITLE_POSITION;
+	menuBody.position = GC::MENU_BODY_POSITION;
 
 	// Set up menu buttons
 	Sprite buttonBg;
@@ -39,18 +43,22 @@ void StateManager::Init()
 	
 	
 	// Main menu
+	menuTitle.string = "Game Name";
+	menuBody.string = "Placeholder text";
 	Button btnW(buttonBg, "W Play", Button::Action::GOTO_GAME);
 	Button btnA(buttonBg, "A Play", Button::Action::GOTO_GAME);
 	Button btnD(buttonBg, "D Play", Button::Action::GOTO_GAME);
 	Button btnS(buttonBg, "S Play", Button::Action::GOTO_GAME);
-	AddState("MainMenu", std::make_unique<MenuState>(btnW, btnA, btnD, btnS));
+	AddState("MainMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS));
 
 	//PauseMenu
+	menuTitle.string = "Pause";
+	menuBody.string = "Placeholder text";
 	btnW = Button(buttonBg, "W Resume", Button::Action::GOTO_GAME);
 	btnA = Button(buttonBg, "A Resume", Button::Action::GOTO_GAME);
 	btnD = Button(buttonBg, "D Resume", Button::Action::GOTO_GAME);
 	btnS = Button(buttonBg, "S Resume", Button::Action::GOTO_GAME);
-	AddState("PauseMenu", std::make_unique<MenuState>(btnW, btnA, btnD, btnS));
+	AddState("PauseMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS));
 
 	// GameState
 	AddState(GC::STATE_PLAY, std::make_unique<PlayState>());

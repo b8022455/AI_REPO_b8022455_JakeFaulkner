@@ -83,6 +83,13 @@ namespace GC
 		TRADER_NAME_4 = "Traveller4"
 		;
 
+	const DirectX::XMFLOAT2
+		MENU_BUTTON_PIVOT{0.5f,0.6f},
+		MENU_BUTTON_DISTANCE{200.0f,100.0f}, // distance from pivot
+		MENU_TITLE_POSITION{20.0f,20.0f},
+		MENU_BODY_POSITION{20.0f,50.0f}
+	;
+
 	const DirectX::XMFLOAT3
 		DIRECTION_FWD({ 0.0f,	0.0f,	1.0f }),
 		DIRECTION_BCK({ 0.0f,	0.0f,	-1.0f }),
@@ -91,7 +98,10 @@ namespace GC
 		DIRECTION_RAISE({ 0.0f,	1.0f,	0.0f }),
 		DIRECTION_LOWER({ 0.0f,	-1.0f,	0.0f })
 		;
-
+	const DirectX::XMFLOAT4
+		BUTTON_DOWN_COLOR({ 0.7f, 0.7f, 0.7f, 1.0f}),
+		BUTTON_UP_COLOR{ 1.0f, 1.0f, 1.0f, 1.0f }
+		;
 
 	const ItemMap ITEM_LIST = {
 		{"Empty",			{ItemCategory::None,	0}}, // 

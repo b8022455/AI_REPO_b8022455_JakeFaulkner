@@ -112,7 +112,7 @@ void SpriteManager::DrawSprite(const Sprite & s)
 	);
 }
 
-void SpriteManager::DrawFont(size_t i, const std::string & output, const DirectX::XMFLOAT2& pos, bool centre)
+void SpriteManager::DrawString(size_t i, const std::string & output, const DirectX::XMFLOAT2& pos, bool centre)
 {
 	if (i < mSpriteFont.size())
 	{
@@ -134,6 +134,22 @@ void SpriteManager::DrawFont(size_t i, const std::string & output, const DirectX
 		assert(false);
 	}
 
+}
+
+void SpriteManager::DrawString(const Text & t)
+{
+	if (t.fontIndex < mSpriteFont.size())
+	{
+		const DirectX::SimpleMath::Vector2 origin =	(t.center)? 
+			mSpriteFont.at(t.fontIndex)->MeasureString(t.string, true) *-0.5f : //center 
+			t.origin;															// predefined origin
+	
+		mSpriteFont.at(t.fontIndex)->DrawString(mSpriteBatch.get(), t.string, t.position, t.color, t.rotation, origin, t.scale);
+	}
+	else
+	{
+		assert(false);
+	}
 }
 
 Sprite::Sprite(const std::string & textureName)
@@ -165,12 +181,11 @@ Button::Button(const Sprite & s, const std::string & t, const Action & a)
 	
 }
 
-
 void Button::Draw()
 {
 	sprite.Draw();
 
-	GameApp::Get().DrawFont(0, text,sprite.position, true);
+	GameApp::Get().DrawString(0, text,sprite.position, true);
 }
 
 void Button::SetPos(const XMFLOAT2 & pos)
@@ -178,6 +193,11 @@ void Button::SetPos(const XMFLOAT2 & pos)
 	sprite.position = pos;
 
 	//todo postion text and sprite
+}
+
+void Button::SetColor(const DirectX::SimpleMath::Vector4 & color)
+{
+	sprite.color = color;
 }
 
 void Button::Activate()
@@ -195,4 +215,9 @@ void Button::Activate()
 	default:
 		break;
 	}
+}
+
+void Text::Draw()
+{
+	GameApp::Get().DrawString(*this);
 }

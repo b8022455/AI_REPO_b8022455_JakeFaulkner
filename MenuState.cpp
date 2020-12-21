@@ -5,6 +5,29 @@
 using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
 
+MenuState::MenuState(const Text & t, const Text & b, const Button & b0, const Button & b1, const Button & b2, const Button & b3)
+{
+	DirectX::SimpleMath::Vector2 clientSize = GameApp::Get().GetClientSize();
+
+	mTitle = t;
+	mBody = b;
+
+	mButtons.reserve(4);
+
+	mButtons.push_back(b0);
+	mButtons.push_back(b1);
+	mButtons.push_back(b2);
+	mButtons.push_back(b3);
+
+
+	DirectX::XMFLOAT2 relButtonPivot = clientSize * GC::MENU_BUTTON_PIVOT;
+
+	mButtons.at(0).SetPos({ relButtonPivot.x								,	relButtonPivot.y - GC::MENU_BUTTON_DISTANCE.y });
+	mButtons.at(1).SetPos({ relButtonPivot.x - GC::MENU_BUTTON_DISTANCE.x	,	relButtonPivot.y });
+	mButtons.at(2).SetPos({ relButtonPivot.x + GC::MENU_BUTTON_DISTANCE.x	,	relButtonPivot.y });
+	mButtons.at(3).SetPos({ relButtonPivot.x								,	relButtonPivot.y + GC::MENU_BUTTON_DISTANCE.y });
+}
+
 MenuState::MenuState(const Button & b0, const Button & b1, const Button & b2, const Button & b3)
 {
 	mButtons.reserve(4);
@@ -35,35 +58,47 @@ void MenuState::Update(const GameTimer & gt)
 		GameApp::Get().PlayClickDownAudio();
 	}
 
-	//todo on release
+	//down
+	if (Input::Get().MenuUpHeld()) mButtons.at(0).SetColor(GC::BUTTON_DOWN_COLOR);
+	if(Input::Get().MenuLeftHeld()) mButtons.at(1).SetColor(GC::BUTTON_DOWN_COLOR);
+	if(Input::Get().MenuRightHeld())mButtons.at(2).SetColor(GC::BUTTON_DOWN_COLOR);
+	if(Input::Get().MenuDownHeld())mButtons.at(3).SetColor(GC::BUTTON_DOWN_COLOR);
+
+	//Release
 
 	if (Input::Get().MenuInputUp()) // W
 	{
 		GameApp::Get().PlayClickUpAudio(true);
+		mButtons.at(3).SetColor(GC::BUTTON_UP_COLOR);
 		mButtons.at(0).Activate();
 	}
 
 	if (Input::Get().MenuInputLeft()) // A
 	{
 		GameApp::Get().PlayClickUpAudio(true);
+		mButtons.at(3).SetColor(GC::BUTTON_UP_COLOR);
 		mButtons.at(1).Activate();
 	}
 	
 	if (Input::Get().MenuInputRight()) // D
 	{
 		GameApp::Get().PlayClickUpAudio(true);
+		mButtons.at(3).SetColor(GC::BUTTON_UP_COLOR);
 		mButtons.at(2).Activate();
 	}
 	
 	if (Input::Get().MenuInputDown()) // S
 	{
 		GameApp::Get().PlayClickUpAudio(true);
+		mButtons.at(3).SetColor(GC::BUTTON_UP_COLOR);
 		mButtons.at(3).Activate();
 	}
 }
 
 void MenuState::Draw(const GameTimer & gt)
 {
+	mTitle.Draw();
+	mBody.Draw();
 	for (auto& b : mButtons)
 	{
 		b.Draw();

@@ -58,8 +58,9 @@ public:
 		mSpriteManager.DrawSprite(sprite);
 	}
 
-	void DrawFont(size_t i, const std::string& output, const XMFLOAT2& pos, bool centre = false);
+	void DrawString(size_t i, const std::string& output, const XMFLOAT2& pos, bool centre = false);
 
+	void DrawString(const Text& t);
 
 	void ChangeState(const std::string& name);
 
