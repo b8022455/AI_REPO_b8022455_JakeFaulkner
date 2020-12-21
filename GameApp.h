@@ -15,7 +15,6 @@
 #include "TextConsole.h"
 #include "Player.h"
 #include "State.h"
-
 #include "Input.h"
 
 
@@ -80,6 +79,8 @@ public:
 	}
 
 	XMFLOAT2 GetClientSize();
+	XMINT2 GetClientSizeU2();
+
 	// Output to viewport
 	std::ostringstream mDebugLog;
 	UINT mInstanceCount = 0;
@@ -116,10 +117,10 @@ private:
 	std::unique_ptr<RenderItem> BuildRenderItem(UINT& objCBindex,const std::string& geoName, const std::string& subGeoName);
 	void BuildRenderItems();
 	void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems);
-	
 
+public:
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GetStaticSamplers();
-	
+private:
 
 	
 private:

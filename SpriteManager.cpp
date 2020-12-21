@@ -30,7 +30,7 @@ void SpriteManager::Init(ID3D12Device * device, ID3D12CommandQueue* commandQueue
 	resourceUpload.Begin();
 	{
 		DirectX::RenderTargetState rtState(backBufferFormat,depthStencilFormat);
-		DirectX::SpriteBatchPipelineStateDescription sbPipelineDesc(rtState);
+		DirectX::SpriteBatchPipelineStateDescription sbPipelineDesc(rtState,nullptr,nullptr,nullptr);
 
 		mSpriteBatch = std::make_unique<DirectX::SpriteBatch>(device,resourceUpload, sbPipelineDesc);
 

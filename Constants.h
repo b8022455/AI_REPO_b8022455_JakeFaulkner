@@ -73,6 +73,8 @@ namespace GC
 
 		STATE_PLAY = "PlayState",
 		STATE_TRADE = "TradeState",
+		STATE_PAUSE = "PauseMenu",
+		STATE_MAINMENU = "MainMenu",
 
 		TRADER_NAME_TEST = "TravellerTest",
 		TRADER_NAME_1 = "Traveller1",

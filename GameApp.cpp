@@ -207,6 +207,13 @@ XMFLOAT2 GameApp::GetClientSize()
 	return {(float)mClientWidth, (float)mClientHeight};
 }
 
+XMINT2 GameApp::GetClientSizeU2()
+{
+	return {(int) mClientWidth,(int)mClientHeight };
+}
+
+
+
 void GameApp::Update(const GameTimer& gt)
 {
 	assert(mpActiveCamera);
@@ -292,8 +299,15 @@ void GameApp::Draw(const GameTimer& gt)
 	// Bind all the textures used in this scene.
 	mCommandList->SetGraphicsRootDescriptorTable(3, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
-	DrawRenderItems(mCommandList.Get(), mOpaqueRitems);
 
+
+	// dont render if its a menu
+	if (!mStateManager.IsMenu())
+	{
+		DrawRenderItems(mCommandList.Get(), mOpaqueRitems);
+	}
+
+	mCommandList->SetPipelineState(mPSOs["opaque"].Get());
 	// Sprite drawing
 	mSpriteManager.DrawBegin(mCommandList.Get(), mScreenViewport);
 
@@ -512,8 +526,8 @@ void GameApp::LoadTextures()
 	LoadTexture("bricksTex", L"Data/Textures/bricks.dds");
 	LoadTexture("stoneTex", L"Data/Textures/stone.dds");
 	LoadTexture("tileTex", L"Data/Textures/tile.dds");
-	LoadTexture("crateTex", L"Data/Textures/WoodCrate01.dds");
 	LoadTexture("iceTex", L"Data/Textures/ice.dds");
+	LoadTexture("crateTex", L"Data/Textures/WoodCrate01.dds");
 	LoadTexture("grassTex", L"Data/Textures/grass.dds");
 	LoadTexture("defaultTex", L"Data/Textures/white1x1.dds");
 	LoadTexture("uiTex", L"Data/Textures/ui.dds");
@@ -533,7 +547,7 @@ void GameApp::BuildRootSignature()
 	slotRootParameter[2].InitAsConstantBufferView(0);
 	slotRootParameter[3].InitAsDescriptorTable(1, &texTable, D3D12_SHADER_VISIBILITY_PIXEL);
 
-	auto staticSamplers = GetStaticSamplers();
+	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6>  staticSamplers = GetStaticSamplers();
 
 	// A root signature is an array of root parameters.
 	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(4, slotRootParameter,

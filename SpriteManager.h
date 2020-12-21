@@ -12,14 +12,14 @@
 #include "Common/d3dx12.h"
 #include <GraphicsMemory.h>
 #include <d3d12.h>
-
+#include <CommonStates.h>
 
 struct Sprite
 {
 	std::string textureName; //lookup gpu handle
 	D3D12_GPU_DESCRIPTOR_HANDLE texture;
 	DirectX::XMUINT2 textureSize = DirectX::XMUINT2(512,512);
-	DirectX::XMFLOAT2 position = { 20.0f,20.0f };
+	DirectX::XMFLOAT2 position = { 0.0f,0.0f };
 	//RECT destinationRectangle = {0,0,512,512}; //ignore
 	RECT sourceRectangle = {0,0,512,512 };   //todo array for animations?
 	DirectX::FXMVECTOR color = DirectX::Colors::White;

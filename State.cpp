@@ -5,12 +5,30 @@
 #include "MenuState.h"
 #include "TradeState.h"
 
+void StateManager::EvaluateState()
+{
+	if (mCurrentState == GC::STATE_PLAY || mCurrentState == GC::STATE_PAUSE || mCurrentState == GC::STATE_TRADE)
+	{
+		mIsMenu = false;
+	}
+	else // menus
+	{
+		mIsMenu = true;
+	}
+}
+
 bool StateManager::IsValidState(const std::string stateName)
 {
 	return mStates.count(stateName) == 1;
 }
 void StateManager::Init()
 {
+	mMenuBackground.Initialise("iceTex");
+
+	DirectX::XMINT2 s = GameApp::Get().GetClientSizeU2(); //todo on resize
+	mMenuBackground.sourceRectangle = { 0,0,s.x,s.y };
+
+
 
 	// Set up menu buttons
 	Sprite buttonBg;
@@ -43,6 +61,8 @@ void StateManager::Init()
 	// Init all states
 	std::for_each(mStates.begin(), mStates.end(), [](auto& s) { s.second->Initialize(); });
 
+	EvaluateState();
+
 }
 void StateManager::Update(const GameTimer & gt)
 {
@@ -66,6 +86,11 @@ void StateManager::Draw(const GameTimer & gt)
 {
 	if (IsValidState(mCurrentState))
 	{
+		if (IsMenu())
+		{
+			mMenuBackground.Draw();
+		}
+
 		mStates[mCurrentState]->Draw(gt);
 	}
 	else
@@ -106,7 +131,9 @@ void StateManager::ChangeState(const std::string & name)
 {
 	if (IsValidState(name))
 	{
+
 		mCurrentState = name;
+		EvaluateState();
 		mStates[name]->OnResume();
 	}
 	else
