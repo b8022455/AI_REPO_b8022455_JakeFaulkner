@@ -86,6 +86,16 @@ public:
 		return mCbvSrvDescriptorSize;
 	}
 
+	GameAudio& GetAudio()
+	{
+		return mGameAudio;
+	}
+
+	//audio trigger for menu button press
+	void PlayClickDownAudio();
+	// audio trigger for menu button release. Bool passed if the button is unable take actions
+	void PlayClickUpAudio(bool success);
+
 	// Output to viewport
 	std::ostringstream mDebugLog;
 	UINT mInstanceCount = 0;

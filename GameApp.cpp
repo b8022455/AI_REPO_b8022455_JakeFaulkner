@@ -86,12 +86,21 @@ bool GameApp::Initialize()
 
 		// Creates an 'engine' for sound effects. 
 		mGameAudio.CreateEngine("sfx", AUDIO_ENGINE_TYPE::SFX);
-		// Loads a sound onto an 'engine'
 		mGameAudio.LoadSound("sfx", "chord", L"Data/Sounds/chord.wav");
 		// Plays up to 20 instances at once. SFX only
 		mGameAudio.SetCacheSize("sfx", 20);
 		// New instance to play when cache is full. Oldest instance removed SFX only
 		mGameAudio.ForceAudio("sfx", true);
+
+		mGameAudio.CreateEngine("ui", AUDIO_ENGINE_TYPE::SFX);
+		// Loads a sound onto an 'engine'
+		mGameAudio.LoadSound("ui", "clickDown", L"Data/Sounds/clickDown.wav");
+		mGameAudio.LoadSound("ui", "clickUpFail", L"Data/Sounds/clickUpFail.wav");
+		mGameAudio.LoadSound("ui", "clickUpSuccess", L"Data/Sounds/clickUpSuccess.wav");
+
+		mGameAudio.SetCacheSize("ui", 30);
+		// New instance to play when cache is full. Oldest instance removed SFX only
+		mGameAudio.ForceAudio("ui", true);
 
 		//Music 'engine'
 		mGameAudio.CreateEngine("music", AUDIO_ENGINE_TYPE::MUSIC);
@@ -103,8 +112,8 @@ bool GameApp::Initialize()
 		// Plays audio from 'music' engine. No need to specify engine
 		mGameAudio.Play("ring9", nullptr, true);
 		// Is that better?
-		mGameAudio.SetEngineVolume("music", 0.005f);
-		mGameAudio.SetEngineVolume("sfx", 0.005f);
+		mGameAudio.SetEngineVolume("music", 0.1f);
+		mGameAudio.SetEngineVolume("sfx", 0.1f);
 	}
 
 
@@ -212,7 +221,22 @@ XMINT2 GameApp::GetClientSizeU2()
 	return {(int) mClientWidth,(int)mClientHeight };
 }
 
+void GameApp::PlayClickDownAudio()
+{
+	mGameAudio.Play("clickDown");
+}
 
+void GameApp::PlayClickUpAudio(bool success)
+{
+	if (success)
+	{
+		mGameAudio.Play("clickUpSuccess");
+	}
+	else
+	{
+		mGameAudio.Play("clickUpFail");
+	}
+}
 
 void GameApp::Update(const GameTimer& gt)
 {
@@ -521,7 +545,6 @@ void GameApp::LoadTexture(const std::string & name, const std::wstring & filenam
 
 void GameApp::LoadTextures()
 {
-	// if all textures are not reserved they will not be listed in order
 	mTextures.reserve(20);
 	LoadTexture("bricksTex", L"Data/Textures/bricks.dds");
 	LoadTexture("stoneTex", L"Data/Textures/stone.dds");

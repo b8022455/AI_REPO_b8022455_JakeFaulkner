@@ -112,6 +112,13 @@ public:
 		return mGamePadState.triggers.right;
 
 	}
+	bool MenuInputUp();
+	bool MenuInputDown();
+	bool MenuInputRight();
+	bool MenuInputLeft();
+	// the moment its pressed
+	bool MenuButtonPressed();
+	
 };
 
 

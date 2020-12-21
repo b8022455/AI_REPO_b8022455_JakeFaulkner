@@ -33,10 +33,6 @@ public:
 	virtual void OnMouseUp(WPARAM btnState, int x, int y)	override {};
 	virtual void OnMouseMove(WPARAM btnState, int x, int y) override {};
 	virtual void OnKeyboardInput(const GameTimer& gt)		override {};
-	bool InputUp();
-	bool InputDown();
-	bool InputRight();
-	bool InputLeft();
 	void CleanInventory(Inventory& inv);
 	bool Trade();
 };

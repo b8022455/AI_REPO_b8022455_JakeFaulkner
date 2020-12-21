@@ -53,30 +53,38 @@ void TradeState::Update(const GameTimer & gt)
 			GameApp::Get().mDebugLog << "Current Selected Item: " << (*mpInventoryPosition)->first << " x" << (*mpInventoryPosition)->second << "\n";
 	}
 
-	if (InputUp()) // W
+	if (Input::Get().MenuButtonPressed())
 	{
-		
+		GameApp::Get().PlayClickDownAudio();
 	}
 
-	if (InputLeft()) // A
+	if (Input::Get().MenuInputUp()) // W
 	{
-		
 	}
 
-	if (InputRight()) // D
+	if (Input::Get().MenuInputLeft()) // A
+	{
+	}
+
+	if (Input::Get().MenuInputRight()) // D
 	{
 		if (Trade())
 		{
+			GameApp::Get().PlayClickUpAudio(true);
+
 			// todo play success noise
 		}
 		else
 		{
+			GameApp::Get().PlayClickUpAudio(false);
 			// todo play fail noise
 		}
 	}
 
-	if (InputDown()) // S
+	if (Input::Get().MenuInputDown()) // S
 	{
+		GameApp::Get().PlayClickUpAudio(true);
+
 		// return to game
 		GameApp::Get().ChangeState(GC::STATE_PLAY);
 	}
@@ -102,35 +110,6 @@ void TradeState::OnResume()
 		GameApp::Get().ChangeState(GC::STATE_PLAY);
 	}
 
-}
-
-bool TradeState::InputUp()
-{
-	return
-		Input::Get().KeyHeld(GC::KEY_FW) ||
-		Input::Get().GamePad().dpadUp == ButtonState::RELEASED ||
-		Input::Get().GamePad().y == ButtonState::RELEASED;
-}
-
-bool TradeState::InputDown()
-{
-	return Input::Get().KeyHeld(GC::KEY_BK) ||
-		Input::Get().GamePad().dpadDown == ButtonState::RELEASED ||
-		Input::Get().GamePad().a == ButtonState::RELEASED;
-}
-
-bool TradeState::InputRight()
-{
-	return Input::Get().KeyHeld(GC::KEY_RT) ||
-		Input::Get().GamePad().dpadRight == ButtonState::RELEASED ||
-		Input::Get().GamePad().b == ButtonState::RELEASED;
-}
-
-bool TradeState::InputLeft()
-{
-	return Input::Get().KeyHeld(GC::KEY_LT) ||
-		Input::Get().GamePad().dpadLeft == ButtonState::RELEASED ||
-		Input::Get().GamePad().x == ButtonState::RELEASED;
 }
 
 void TradeState::CleanInventory(Inventory& inv)

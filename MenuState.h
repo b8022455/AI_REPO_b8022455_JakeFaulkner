@@ -18,11 +18,6 @@ public:
 	virtual void OnMouseMove(WPARAM btnState, int x, int y) override{};
 	virtual void OnKeyboardInput(const GameTimer& gt)		override{};
 	virtual void OnResume()									override{};
-
-	bool InputUp();
-	bool InputDown();
-	bool InputRight();
-	bool InputLeft();
 };
 
 
