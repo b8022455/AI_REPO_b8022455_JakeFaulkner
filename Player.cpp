@@ -7,7 +7,7 @@ void Player::Update(const GameTimer & gt)
 {
 	const float dt = gt.DeltaTime();	
 	GameApp::Get().mDebugLog << "Health:" << health << "\n";
-	// TODO: APPLY VELOCITY HERE
+	// APPLY VELOCITY HERE
 	if (RIGHT_velocity >= 0)
 		RIGHT_velocity -= dt * 8;
 	if (RIGHT_velocity < 0)

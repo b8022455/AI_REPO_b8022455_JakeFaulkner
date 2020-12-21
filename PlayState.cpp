@@ -220,7 +220,7 @@ void PlayState::Update(const GameTimer & gt)
 	if ((tileX > 0 && tileZ > 0 && tileX < mTileManager.MaxGen && tileZ < mTileManager.MaxGen) && 
 		(tileX2 >= 0 && tileZ2 >= 0 && tileX2 <= mTileManager.MaxGen && tileZ2 <= mTileManager.MaxGen)) {
 		
-		// TODO: POSSIBLE GLITCH HERE (TILE ACTIVE WHEN PLAYER NOT OVER IT, TILE RIGHT / RIGHT&UP)
+		// POSSIBLE GLITCH HERE (TILE ACTIVE WHEN PLAYER NOT OVER IT, TILE RIGHT / RIGHT&UP) - FIXED ITSELF??
 		// 
 		// if the player is over a poison/damage tile
 		if (mTileManager.GetIndex(tileX, tileZ) == 5 || mTileManager.GetIndex(tileX2, tileZ2) == 5) {
