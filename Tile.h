@@ -12,20 +12,23 @@ struct mapData { // STRUCT FOR MAP TEXTURE AND TILE DATA
 
 class Tile : public GameObject
 {
+
 public:
-	Tile() {};
+	// OLD CODE
+	//Tile() {};
+
+	//void Initialize(const std::string& renderItemName);
+	//void InitTilePosition(int instance, DirectX::XMFLOAT3 position, int textIndex);
+	//void SetPosition(const DirectX::XMFLOAT3& newSetPosition);
+	//void Tile::SetRandomPosition();
+	////int playerDirection; //TODO:use to stop player walking into object
+	//DirectX::XMFLOAT3 GetPosition();
 
 	void Initialize(const std::string& renderItemName);
-	void InitTilePosition(int instance, DirectX::XMFLOAT3 position, int textIndex);
-	void SetPosition(const DirectX::XMFLOAT3& newSetPosition);
-	void Tile::SetRandomPosition();
-	//int playerDirection; //TODO:use to stop player walking into object
-	DirectX::XMFLOAT3 GetPosition();
-
-	//void SetPos(const DirectX::XMFLOAT3& newPos); - in gameobject just to remind me
-	//DirectX::XMFLOAT3 GetPos(); - in gameobject just to remind me
-
-	//todo specialised tile
+	void SetRandomPosition();
+	void CreateTileWallHorizontal(int clumpSize, DirectX::XMFLOAT3& position, int count);
+	void CreateTileWallVertical(int clumpSize, DirectX::XMFLOAT3& position, int count);
+	DirectX::XMFLOAT3 SetRandom();
 };
 
 

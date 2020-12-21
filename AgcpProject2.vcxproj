@@ -161,10 +161,16 @@
     <ClCompile Include="FrameResource.cpp" />
     <ClCompile Include="GameApp.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Experience.cpp" />
+    <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="State.cpp" />
     <ClCompile Include="Tile.cpp" />
+    <ClCompile Include="Trader.cpp" />
+    <ClCompile Include="TradeState.cpp" />
+    <ClCompile Include="Velocity.cpp" />
     <ClCompile Include="WinMain.cpp" />
     <ClCompile Include="SpriteManager.cpp" />
     <ClCompile Include="TextConsole.cpp" />
@@ -183,10 +189,15 @@
     <ClInclude Include="Common\GeometryGenerator.h" />
     <ClInclude Include="Common\MathHelper.h" />
     <ClInclude Include="Common\UploadBuffer.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="FrameResource.h" />
     <ClInclude Include="GameApp.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Input.h" />
+    <ClInclude Include="Item.h" />
+    <ClInclude Include="Experience.h" />
+    <ClInclude Include="MenuState.h" />
     <ClInclude Include="OBJ_Loader.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayState.h" />
@@ -195,6 +206,10 @@
     <ClInclude Include="SpriteManager.h" />
     <ClInclude Include="TextConsole.h" />
     <ClInclude Include="Tile.h" />
+    <ClInclude Include="Trader.h" />
+    <ClInclude Include="TradeState.h" />
+    <ClInclude Include="Velocity.h" />
+    <ClInclude Include="XmfloatOverload.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

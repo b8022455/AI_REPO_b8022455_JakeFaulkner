@@ -7,6 +7,7 @@ void CombatController::Initialize(Player* player, PlayerWeapon* playerWeapon, st
 	mpPlayer = player;
 	mpEnemies = enemies;
 	mpPlayerWeapon = playerWeapon;
+	mpPlayerWeapon->mpInstance->MaterialIndex = 4;
 
 	//Sets up the collision point for the weapon
 	collisionPoint = mpPlayerWeapon->mpInstance->World;
@@ -27,7 +28,7 @@ void CombatController::Update()
 	else
 	{
 		mpPlayerWeapon->playerDirection = mpPlayer->playerDir;		//gets direction the player is facing, doesn't detect when attacking to prevent sword switching positions
-		
+
 		std::for_each(mpEnemies->begin(), mpEnemies->end(), [&](Enemy& e)
 		{
 			e.playerDirection = mpPlayer->playerDir;				//Gets direction player is facing into the enemy class to correctly blowback the enemy from the player
@@ -55,9 +56,9 @@ bool CombatController::CheckCollision(float ObjX, float ObjY, float ObjZ)
 	float yDistance = ObjY - collisionPoint._42;
 	float zDistance = ObjZ - collisionPoint._43;
 
-	if (xDistance > -1.5f && xDistance < 1.0f)							//If distance between X coordinate is within boundaries (-1.5 < X < 1.0)
+	if (xDistance > -1.5f && xDistance < 1.5f)							//If distance between X coordinate is within boundaries (-1.5 < X < 1.0)
 		if (yDistance > -1.5f && yDistance < 1.5f)						//If distance between Y coordinate is within boundaries (-1.5 < Y < 1.5)
-			if (zDistance > -1.0f && zDistance < 2.0f)					//If distance between Z coordinate is within boundaries (-1.0f < Z < 2.0f)
+			if (zDistance > -1.5f && zDistance < 1.5f)					//If distance between Z coordinate is within boundaries (-1.0f < Z < 2.0f)
 				return true;				//There is a collision between the 2 objects
 
 	return false;				//If the distance between the objects is not within the boundaries, there is no collision
@@ -91,6 +92,17 @@ bool CombatController::CheckCollision(XMFLOAT3 Obj1, XMFLOAT3 Obj2, float xMin, 
 	return false;				//If the distance between the objects is not within the boundaries, there is no collision
 }
 
+void CombatController::EquipWeapon(std::string weaponName)
+{
+	equippedWeapon = weaponName;		//Sets the equipped weapon
+	mpPlayer->attack = mpPlayer->attack + mpPlayerWeapon->GetWeaponStats(weaponName);			//Updates player attack value to base attack + equipped weapons attack amount
+}
+
+std::string CombatController::GetCurrentWeapon()
+{
+	return equippedWeapon;
+}
+
 void PlayerWeapon::Initialize(const std::string& renderItemName)
 {
 	// Setup a render item
@@ -120,20 +132,18 @@ void PlayerWeapon::PositionWeapon()
 
 	if (playerDirection > 1)		//If the player direction is Up (2 in the enum) or Down (3 in the enum)
 	{
-		weaponStartingRotation = 0.349066f;		//Sets new starting to rotation to 20 degrees for up/down
-		weaponEndRotation = 2.79253f;			//Sets new end rotation to 160 degrees
+		weaponStartingRotation = 1.5708f;		//Sets new starting to rotation to 90 degrees for up/down
+		weaponEndRotation = 7.85398f;			//Sets new end rotation to 450 degrees
 	}
-	else if(playerDirection <= 1)				//If player direction is Left (0 in the enum) or Right (1 in the enum)
+	else if (playerDirection <= 1)				//If player direction is Left (0 in the enum) or Right (1 in the enum)
 	{
-		weaponStartingRotation = -1.39626f;
-		weaponEndRotation = 1.39626f;
+		weaponStartingRotation = 0.0f;
+		weaponEndRotation = 6.28319f;			//360 degrees
 	}
 
 	weaponRotation = weaponStartingRotation;
 
 	UpdateWeaponMatrix();
-
-	mpInstance->MaterialIndex = 4;
 }
 
 void PlayerWeapon::SwingWeapon()
@@ -165,43 +175,38 @@ void PlayerWeapon::UpdateTimer()
 
 void PlayerWeapon::UpdateWeaponMatrix()
 {
-	float playerPosOffsetX = 0.0f;
-	float playerPosOffsetZ = 0.0f;
-
 	switch (playerDirection)
 	{
-		case 0:						//Left
-			playerPosOffsetX = -0.2f;
-			weaponPositionMatrix = XMMatrixTranslation(-0.5f, 0.0f, 0.0f);
-			break;
+	case 0:						//Left
+		weaponPositionMatrix = XMMatrixTranslation(-1.0f, 0.0f, 0.0f);
+		break;
 
-		case 1:						//Right
-			playerPosOffsetX = 0.2f;
-			weaponPositionMatrix = XMMatrixTranslation(1.4f, 0.0f, 0.0f);
-			break;
+	case 1:						//Right
+		weaponPositionMatrix = XMMatrixRotationZ(3.14159f);
+		weaponPositionMatrix *= XMMatrixTranslation(1.0f, 0.0f, 0.0f);
+		break;
 
-		case 2:						//Up
-			playerPosOffsetZ = 0.2f;
-			weaponPositionMatrix = XMMatrixTranslation(-0.5f, 0.0f, 0.0f);
-			break;
+	case 2:						//Up
+		weaponPositionMatrix = XMMatrixTranslation(-1.0f, 0.0f, 0.0f);
+		break;
 
-		case 3:						//Down
-			playerPosOffsetZ = -0.2f;
-			weaponPositionMatrix = XMMatrixTranslation(1.4f, 0.0f, 0.0f);
-			break;
+	case 3:						//Down
+		weaponPositionMatrix = XMMatrixRotationZ(3.14159f);
+		weaponPositionMatrix *= XMMatrixTranslation(1.0f, 0.0f, 0.0f);
+		break;
 
-		default:
-			assert(playerDirection);
-				break;
+	default:
+		assert(playerDirection);
+		break;
 	}
 
 	///Find way to do rotation around a point using 1 matrix
 	weaponPositionMatrix *= XMMatrixRotationY(weaponRotation);
 	//Positions the weapon at the players position + offset
 	weaponPositionMatrix *= XMMatrixTranslation(
-		playerPos._41 + playerPosOffsetX,
+		playerPos._41,
 		playerPos._42 + 1.0f,
-		playerPos._43 + playerPosOffsetZ
+		playerPos._43
 	);
 
 	XMStoreFloat4x4(&mpInstance->World, weaponPositionMatrix);		//Stores above calculated matrix into the world matrix for the obj
@@ -210,4 +215,34 @@ void PlayerWeapon::UpdateWeaponMatrix()
 bool PlayerWeapon::GetAttackStatus()
 {
 	return attacking;
+}
+
+int PlayerWeapon::GetWeaponStats(std::string equippedWeapon)
+{
+	int attack = 0;
+	if (equippedWeapon == "Stick")
+	{
+		attack = 10;
+		mpInstance->MaterialIndex = 4;		//Visual show of weapons being changed when equipped
+		///Find way to change model to something else
+	}
+
+	if (equippedWeapon == "Leadpipe")
+	{
+		attack = 20;
+		mpInstance->MaterialIndex = 1;
+		//etc.
+	}
+
+	if (equippedWeapon == "Nail Bat")
+	{
+		attack = 40;
+	}
+
+	if (equippedWeapon == "Plastic Spork")
+	{
+		attack = 5;
+	}
+
+	return attack;
 }

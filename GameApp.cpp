@@ -7,6 +7,7 @@
 #include "GameApp.h"
 #include "SimpleMath.h"
 #include "OBJ_Loader.h"
+#include <cassert>
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -18,6 +19,7 @@ using namespace DirectX::PackedVector;
 const int gNumFrameResources = 3; //todo move to GC namespace in its own header
 
 bool GameApp::DEBUG = false;
+
 
 std::string PrintMatrix(XMMATRIX& xmm)
 {
@@ -46,8 +48,6 @@ std::string PrintMatrix(XMMATRIX& xmm)
 		;
 	return o.str();
 }
-
-
 
 GameApp::GameApp(HINSTANCE hInstance)
 	: D3DApp(hInstance)
@@ -79,7 +79,6 @@ bool GameApp::Initialize()
 	mCbvSrvDescriptorSize = md3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 
-	
 
 	//Audio setup
 	{
@@ -117,17 +116,21 @@ bool GameApp::Initialize()
 	BuildShadersAndInputLayout();
 	BuildBoxGeometry();
 	BuildObjGeometry("Data/Models/tempSword.obj", "tempSwordGeo", "tempSword");// loads obj
-	BuildObjGeometry("Data/Models/tempPlayer.obj", "tempPlayerGeo", "tempPlayer");
+	BuildObjGeometry("Data/Models/tempPlayer.obj", "tempPlayerGeo", "tempPlayer");//tempPlayer.obj
 	BuildObjGeometry("Data/Models/tempEnemy.obj", "tempEnemyGeo", "tempEnemy");
 	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" ); //quad rather than cube
+	BuildObjGeometry("Data/Models/building04.obj","traderGeo", "trader" ); //quad rather than cube
 	BuildSwordGeometry();
 	BuildPlayerGeometry();
 	BuildMaterials();
 	BuildRenderItems();
 	// Sets up all states. Requires render items
+
 	mStateManager.Init(); 
 	BuildFrameResources();
 	BuildPSOs();
+
+	Input::Get().Initialize();
 
 
 	// Normally called OnSize() at start but no camera is created until states initialised.
@@ -184,11 +187,32 @@ void GameApp::OnResize()
 	}
 }
 
+void GameApp::DrawFont(size_t i, const std::string & output, const XMFLOAT2 & pos, bool centre)
+{
+	mSpriteManager.DrawFont(i, output.c_str(), pos, centre);
+}
+
+void GameApp::ChangeState(const std::string & name)
+{
+	mStateManager.ChangeState(name);
+}
+
+State * GameApp::GetState(const std::string & name)
+{
+	return mStateManager.GetState(name);
+}
+
+XMFLOAT2 GameApp::GetClientSize()
+{
+	return {(float)mClientWidth, (float)mClientHeight};
+}
+
 void GameApp::Update(const GameTimer& gt)
 {
 	assert(mpActiveCamera);
 
 	OnKeyboardInput(gt);
+	Input::Get().Update();
 
 	// Cycle through the circular frame resource array.
 	mCurrFrameResourceIndex = (mCurrFrameResourceIndex + 1) % gNumFrameResources;
@@ -269,9 +293,16 @@ void GameApp::Draw(const GameTimer& gt)
 	mCommandList->SetGraphicsRootDescriptorTable(3, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
 	DrawRenderItems(mCommandList.Get(), mOpaqueRitems);
-	mSprites.Draw(mCommandList.Get(), mScreenViewport);
 
-	//mStateManager.Draw(gt);
+	// Sprite drawing
+	mSpriteManager.DrawBegin(mCommandList.Get(), mScreenViewport);
+
+	// Draws sprites and fonts based on current state
+	mStateManager.Draw(gt);
+
+	mSpriteManager.DrawEnd();
+
+
 
 	// Indicate a state transition on the resource usage.
 	mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(),
@@ -283,7 +314,6 @@ void GameApp::Draw(const GameTimer& gt)
 	ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
 	mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-	//mSprites.DrawEnd();
 	// Swap the back and front buffers
 	ThrowIfFailed(mSwapChain->Present(0, 0));
 	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
@@ -557,6 +587,7 @@ void GameApp::BuildDescriptorHeaps()
 	auto mudTex = mTextures["mudTex"]->Resource;
 	auto defaultTex = mTextures["defaultTex"]->Resource;
 
+	//Brick 0
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 	srvDesc.Format = bricksTex->GetDesc().Format;
@@ -571,6 +602,7 @@ void GameApp::BuildDescriptorHeaps()
 	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	
+	// Stone 1
 	srvDesc.Format = stoneTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = stoneTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(stoneTex.Get(), &srvDesc, hCpuDescriptor);
@@ -579,6 +611,7 @@ void GameApp::BuildDescriptorHeaps()
 	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
+	// Tile 2
 	srvDesc.Format = tileTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = tileTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(tileTex.Get(), &srvDesc, hCpuDescriptor);
@@ -587,6 +620,7 @@ void GameApp::BuildDescriptorHeaps()
 	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
+	// Crate 3
 	srvDesc.Format = crateTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = crateTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(crateTex.Get(), &srvDesc, hCpuDescriptor);
@@ -595,6 +629,7 @@ void GameApp::BuildDescriptorHeaps()
 	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
+	// Ice 4
 	srvDesc.Format = iceTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = iceTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(iceTex.Get(), &srvDesc, hCpuDescriptor);
@@ -603,6 +638,7 @@ void GameApp::BuildDescriptorHeaps()
 	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
+	// Grass 5
 	srvDesc.Format = grassTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = grassTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(grassTex.Get(), &srvDesc, hCpuDescriptor);
@@ -619,6 +655,7 @@ void GameApp::BuildDescriptorHeaps()
 	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	
+	// Default 6
 	srvDesc.Format = defaultTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = defaultTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(defaultTex.Get(), &srvDesc, hCpuDescriptor);
@@ -628,7 +665,7 @@ void GameApp::BuildDescriptorHeaps()
 	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 
 	{
-		mSprites.Init(md3dDevice.Get(), mCommandQueue.Get(), mCbvSrvDescriptorSize, mBackBufferFormat, mDepthStencilFormat, hCpuDescriptor,hGpuDescriptor);
+		mSpriteManager.Init(md3dDevice.Get(), mCommandQueue.Get(), mCbvSrvDescriptorSize, mBackBufferFormat, mDepthStencilFormat, hCpuDescriptor,hGpuDescriptor);
 	}
 
 }
@@ -934,8 +971,6 @@ void GameApp::BuildPlayerGeometry()
 	mGeometries[geo->Name] = std::move(geo);
 }
 
-
-
 void GameApp::BuildPSOs()
 {
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC opaquePsoDesc;
@@ -1009,62 +1044,38 @@ void GameApp::BuildMaterials()
 
 }
 
+std::unique_ptr<RenderItem> GameApp::BuildRenderItem(UINT& objCBindex, const std::string& geoName, const std::string& subGeoName)
+{
+
+	auto rItem = std::make_unique<RenderItem>();
+	rItem->World = MathHelper::Identity4x4();
+	rItem->ObjCBIndex = objCBindex;
+	rItem->InstanceCount = 0;
+	rItem->Geo = mGeometries[geoName].get();
+	rItem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	rItem->IndexCount = rItem->Geo->DrawArgs  [subGeoName].IndexCount;
+	rItem->StartIndexLocation = rItem->Geo->DrawArgs[subGeoName].StartIndexLocation;
+	rItem->BaseVertexLocation = rItem->Geo->DrawArgs[subGeoName].BaseVertexLocation;
+
+	++objCBindex;
+
+	return std::move(rItem);
+}
+
 void GameApp::BuildRenderItems()
 {
 	// Generate instance data.
 
-	auto boxRitem = std::make_unique<RenderItem>();
+	UINT objCbIndex = 0;
 
+	// Every rItem needs an instance buffer
+	// Change GC::NUM_DIFF_RENDER_OBJS to reflect this. 
+	mAllRitems["Tiles"] = BuildRenderItem(objCbIndex, "floorTileGeo", "floorTile");
+	mAllRitems["Weapon"] = BuildRenderItem(objCbIndex, "tempSwordGeo", "tempSword");
+	mAllRitems["Player"] = BuildRenderItem(objCbIndex, "tempPlayerGeo", "tempPlayer");
+	mAllRitems["Enemy"] = BuildRenderItem(objCbIndex, "tempEnemyGeo", "tempEnemy");
+	mAllRitems["Trader"] = BuildRenderItem(objCbIndex, "traderGeo", "trader");
 
-	boxRitem->World = MathHelper::Identity4x4();
-	boxRitem->TexTransform = MathHelper::Identity4x4();
-	boxRitem->ObjCBIndex = 0;
-	boxRitem->Mat = mMaterials["ice0"].get();
-	boxRitem->Geo = mGeometries["floorTileGeo"].get();
-	boxRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	boxRitem->InstanceCount = 0;
-	boxRitem->IndexCount = boxRitem->Geo->DrawArgs["floorTile"].IndexCount;
-	boxRitem->StartIndexLocation = boxRitem->Geo->DrawArgs["floorTile"].StartIndexLocation;
-	boxRitem->BaseVertexLocation = boxRitem->Geo->DrawArgs["floorTile"].BaseVertexLocation;
-	boxRitem->Bounds = boxRitem->Geo->DrawArgs["floorTile"].Bounds;
-
-	///Generic box used as the weapon default for now
-	auto swordRitem = std::make_unique<RenderItem>();
-	swordRitem->World = MathHelper::Identity4x4();
-	swordRitem->ObjCBIndex = 1;
-	swordRitem->InstanceCount = 0;
-	swordRitem->Mat = mMaterials["ice0"].get();
-	swordRitem->Geo = mGeometries["tempSwordGeo"].get(); //"swordGeo"
-	swordRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	swordRitem->IndexCount = swordRitem->Geo->DrawArgs["tempSword"].IndexCount;//"swordGeo"
-	swordRitem->StartIndexLocation = swordRitem->Geo->DrawArgs["tempSword"].StartIndexLocation;//"swordGeo"
-	swordRitem->BaseVertexLocation = swordRitem->Geo->DrawArgs["tempSword"].BaseVertexLocation;//"swordGeo"
-
-	auto playerRitem = std::make_unique<RenderItem>();
-	playerRitem->World = MathHelper::Identity4x4();
-	playerRitem->ObjCBIndex = 2;
-	playerRitem->InstanceCount = 0;
-	playerRitem->Geo = mGeometries["tempPlayerGeo"].get();//playerGeo
-	playerRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	playerRitem->IndexCount = playerRitem->Geo->DrawArgs["tempPlayer"].IndexCount;//player
-	playerRitem->StartIndexLocation = playerRitem->Geo->DrawArgs["tempPlayer"].StartIndexLocation;//player
-	playerRitem->BaseVertexLocation = playerRitem->Geo->DrawArgs["tempPlayer"].BaseVertexLocation;//player
-	//playerRitem->Instances.reserve(10);
-
-	auto enemyRitem = std::make_unique<RenderItem>();
-	enemyRitem->World = MathHelper::Identity4x4();
-	enemyRitem->ObjCBIndex = 3;
-	enemyRitem->InstanceCount = 0;
-	enemyRitem->Geo = mGeometries["tempPlayerGeo"].get();
-	enemyRitem->PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-	enemyRitem->IndexCount = enemyRitem->Geo->DrawArgs["tempPlayer"].IndexCount;				//Just for testing, will give enemy its own geo eventually
-	enemyRitem->StartIndexLocation = enemyRitem->Geo->DrawArgs["tempPlayer"].StartIndexLocation;
-	enemyRitem->BaseVertexLocation = enemyRitem->Geo->DrawArgs["tempPlayer"].BaseVertexLocation;
-
-	mAllRitems["Tiles"] = std::move(boxRitem);
-	mAllRitems["Weapon"] = std::move(swordRitem);
-	mAllRitems["Player"] = std::move(playerRitem);
-	mAllRitems["Enemy"] = std::move(enemyRitem);
 
 	//Uncomment this if testing weapon collision, will be removed once the function in enemy class is available in GameApp
 	#pragma region Weapon Collision Checking
@@ -1073,10 +1084,16 @@ void GameApp::BuildRenderItems()
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)
 		mOpaqueRitems.push_back(e.second.get());
+
+	// check theres an instance buffer for each render item. 
+	assert(mOpaqueRitems.size() == (sizeof(mCurrFrameResource->InstanceBuffer) / sizeof(mCurrFrameResource->InstanceBuffer[0])));
 }
+
+
 
 void GameApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems)
 {
+
 	// For each render item...
 	for (size_t i = 0; i < ritems.size(); ++i)
 	{
@@ -1093,6 +1110,20 @@ void GameApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vec
 
 		cmdList->DrawIndexedInstanced(ri->IndexCount, ri->InstanceCount, ri->StartIndexLocation, ri->BaseVertexLocation, 0);
 	}
+}
+
+CD3DX12_GPU_DESCRIPTOR_HANDLE GameApp::GetSpriteGpuDescHandle(const std::string & textureName)
+{
+	// get gpu start
+	CD3DX12_GPU_DESCRIPTOR_HANDLE hGpuDescriptor(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+
+	//find offset distance
+	const int distance = (int)std::distance(mTextures.begin(), mTextures.find(textureName));
+
+	//offset desc
+	hGpuDescriptor.Offset(distance, mCbvSrvUavDescriptorSize);
+
+	return hGpuDescriptor;
 }
 
 std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GameApp::GetStaticSamplers()

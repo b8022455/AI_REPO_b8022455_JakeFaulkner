@@ -16,6 +16,10 @@
 #include "Player.h"
 #include "State.h"
 
+#include "Input.h"
+
+
+
 
 class GameApp : public D3DApp, public Singleton<GameApp>
 {
@@ -32,7 +36,7 @@ public:
 	// Access to instance data from states and gameobjects
 	InstanceData* AddRenderItemInstance(const std::string & renderItemName);
 	GameApp& GetGameApp() { return *this; }
-	// For access to lights,camera projection, fog
+	// For access to lights, camera projection, fog
 	PassConstants* GetMainPassCB();
 
 	const POINT& GetLastMousePos()
@@ -48,6 +52,22 @@ public:
 
 	virtual void OnResize()override;
 
+	CD3DX12_GPU_DESCRIPTOR_HANDLE GetSpriteGpuDescHandle(const std::string& textureName);
+
+	void DrawSprite(const Sprite& sprite)
+	{
+		mSpriteManager.DrawSprite(sprite);
+	}
+
+	void DrawFont(size_t i, const std::string& output, const XMFLOAT2& pos, bool centre = false);
+
+
+	void ChangeState(const std::string& name);
+
+	State* GetState(const std::string& name);
+
+
+	XMFLOAT2 GetClientSize();
 	// Output to viewport
 	std::ostringstream mDebugLog;
 	UINT mInstanceCount = 0;
@@ -80,9 +100,11 @@ private:
 	void BuildFrameResources();
 	void BuildMaterial(int& index, int texIndex, const std::string& name, float roughness = 0.5f, const DirectX::XMFLOAT4& diffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f }, const DirectX::XMFLOAT3& fresnel = { 0.05f, 0.05f, 0.05f });
 	void BuildMaterials();
+	//Auto increments obj cb index
+	std::unique_ptr<RenderItem> BuildRenderItem(UINT& objCBindex,const std::string& geoName, const std::string& subGeoName);
 	void BuildRenderItems();
 	void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems);
-
+	
 
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GetStaticSamplers();
 	
@@ -134,7 +156,5 @@ private:
 	StateManager mStateManager;
 
 	//Viewport Sprites
-	SpriteManager mSprites;
-	//std::unique_ptr<DX::TextConsole> mConsole;
-
+	SpriteManager mSpriteManager;
 };

@@ -6,9 +6,10 @@
 #include "RenderItem.h"
 #include "Common/Camera.h"
 #include "GameObject.h"
+#include "Velocity.h"
 
 
-using namespace DirectX;
+//using namespace DirectX;
 
 enum PlayerFacingDirection {Left, Right, Up, Down};
 
@@ -22,6 +23,9 @@ public:
   void MoveLeft		( const GameTimer& gt);
   void MoveRight	( const GameTimer& gt);
 
+  Velocity vel;
+  // Gamepad
+  void Move(const GameTimer& gt, const DirectX::SimpleMath::Vector3& vec);
   void DamagePlayer(int damage);
 
   int health = 100;
@@ -37,11 +41,12 @@ public:
   const float PLAYER_DOWNBOUND = -15.0f;
 
   PlayerFacingDirection playerDir = PlayerFacingDirection::Right;
+  int attack = 10;		//Base attack stat (base amount + weapon amount), need to make private but public for debugging purposes
 
 private:
   void DamageEnemy();		
 
-  XMFLOAT3 pos;
+  //XMFLOAT3 pos;
   
   const float MOVE = 5.0f;
   const float MAX_VELOCITY = 5.0f; // change as needed, replace move

@@ -3,6 +3,8 @@
 #include "GameApp.h"
 
 
+
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 	PSTR cmdLine, int showCmd)
 {
@@ -14,6 +16,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance,
 
 	try
 	{
+		
+		Input input;
 		GameApp theApp(hInstance);
 		if (!GameApp::Get().Initialize())
 			return 0;
