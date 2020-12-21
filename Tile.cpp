@@ -24,9 +24,9 @@ void TileManager::Initialize()
 	int H1Dist = 5; // distance between other hazards from central spot / health - ADVANCED GENERATION
 	int H2Dist = 3; // distance between other hazards from central spot / slow - ADVANCED GENERATION
 	int H3Dist = 3; // distance between other hazards from central spot / slip? - ADVANCED GENERATION
-	int H1Random = 2; // randomness attributed to hazard generation / health - ADVANCED GENERATION
-	int H2Random = 5; // randomness attributed to hazard generation / slow - ADVANCED GENERATION
-	int H3Random = 5; // randomness attributed to hazard generation / slip? - ADVANCED GENERATION
+	int H1Random = 50; // randomness attributed to hazard generation / health - ADVANCED GENERATION
+	int H2Random = 200; // randomness attributed to hazard generation / slow - ADVANCED GENERATION
+	int H3Random = 150; // randomness attributed to hazard generation / slip? - ADVANCED GENERATION
 	int H1RandomDist = 2; // distance from regular gen / health - ADVANCED GENERATION
 	int H2RandomDist = 3; // distance from regular gen / slow - ADVANCED GENERATION
 	int H3RandomDist = 3; // distance from regular gen / slip - ADVANCED GENERATION
@@ -296,7 +296,7 @@ void TileManager::Initialize()
 						set = true;
 					}
 				}
-				// TODO: RANDOMNESS HERE
+				// RANDOMNESS HERE
 				// use H1RandomDist as max distance from central AND randomness is the range within dimsquare to use?
 				
 				int Rand1 = H1RandomDist + H1Dist; // set
@@ -388,7 +388,7 @@ void TileManager::Initialize()
 						set = true;
 					}
 				}
-				// TODO: RANDOMNESS HERE
+				// RANDOMNESS HERE
 				// use H1RandomDist as max distance from central AND randomness is the range within dimsquare to use?
 
 				int Rand2 = H2RandomDist + H2Dist; // set
@@ -480,7 +480,7 @@ void TileManager::Initialize()
 						set = true;
 					}
 				}
-				// TODO: RANDOMNESS HERE
+				// RANDOMNESS HERE
 				// use H1RandomDist as max distance from central AND randomness is the range within dimsquare to use?
 
 				int Rand3 = H3RandomDist + H3Dist; // set
