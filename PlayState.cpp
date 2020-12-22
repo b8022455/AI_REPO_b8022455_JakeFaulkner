@@ -85,7 +85,7 @@ PlayState::PlayState()
 void PlayState::Initialize()
 {
 	GameApp::Get().SetActiveCamera(&mCameras.at(CAMERA_TYPE::GAME));
-
+	//GameApp::Get().SetActiveCamera(&mCamera);
 	//mTile.Initialize("Tiles");
 	mTileManager.Initialize();
 
@@ -106,7 +106,12 @@ void PlayState::Initialize()
 
 	mPlayer.Initialize("Player");
 	mPlayerWeapon.Initialize("Weapon");
-
+	
+	/*mTile.Initialize("Tiles");
+	{
+		mTile.mpInstance->MaterialIndex = 4;*/
+		/*mTile.SetRandomPosition();
+	}*/
 
 	InitializeTraders();
 	
@@ -177,36 +182,62 @@ void PlayState::Update(const GameTimer & gt)
 	mPlayer.Update(gt);
 	mCombatController.Update();
 
-	// TODO: (NOTE) CHECK AREA HAZARDS HERE
-	// if player.x & player.z are within the tile.x & tile.z, cause effects, for now DEBUG logic
-
 	// reset hazard timer for tile hazards 
 	if (mPlayer.hazardTimer >= 0) {
 		mPlayer.hazardTimer -= gt.DeltaTime();
 	}
 
-	// damage player over time, needs a wait between effect activations
-	if (mPlayer.GetPos().x >= 10.0f) {
-		if (mPlayer.hazardTimer <= 0) { // if hazard should be active
-			mPlayer.health -= 5;
-			mPlayer.hazardTimer = 3; // reset hazard timer
-		}
-	}
-
 	// Game Camera follows player
 	mCameras.at(CAMERA_TYPE::GAME).SetPosition(
-		Lerp(mCameras.at(CAMERA_TYPE::GAME).GetPosition(), mPlayer.GetPos() + CAM_OFFSET,  0.9999f * gt.DeltaTime())
+		Lerp(mCameras.at(CAMERA_TYPE::GAME).GetPosition(), mPlayer.GetPos() + CAM_OFFSET, 0.9999f * gt.DeltaTime())
 	);
 
-	// slow player until they leave the tile
-	// while player is not on a slow tile movespeed is normal? (for possible use when applied to tile object)
-	// if player is on a slow tile
-	if (mPlayer.GetPos().z >= 10.0f) {
-		mPlayer.Slowed = true;
-	}
-	// if player is not on a slow tile
-	if ((mPlayer.GetPos().z <= 10.0f) && mPlayer.Slowed == true) {
-		mPlayer.Slowed = false;
+	// MUST CHECK BOTH METHODS
+	// currently -15 to 15 on both (BOUNDARIES SHOULD BE PUBLIC AND USED TO CALCULATE)
+	// tiles are 32 by 32
+	// 0.0f is middle of grid
+	// each tile is 0.9375 of a world position
+	// player position + half max tile * (MaxWorldPos / MaxTile) to find current tile (REPEAT FOR X & Y APPROPRIATELY)
+	// LAST COMPONENT OF THE CALCULATION WILL CAUSE PROBLEMS IF SIZE OF EACH TILE ITSELF INCREASED
+	//const float diff = float(mTileManager.MaxGen) / 30.0f;
+	const float diff2 = 30.0f / float(mTileManager.MaxGen); // WORLDSPACE / GRID SIZE
+	int underX = round(mPlayer.GetPos().x); // worldspace position does not correspond to tilemap coordinate
+	int underZ = round(mPlayer.GetPos().z);
+	float tileX = (underX + (0.5f * (mTileManager.MaxGen))/* * diff*/); // greater
+	float tileZ = (underZ + (0.5f *(mTileManager.MaxGen)))/* * diff*/; // greater
+	float tileX2 = (underX + (0.5f * (mTileManager.MaxGen)) * diff2); //lesser
+	float tileZ2 = (underZ + (0.5f * (mTileManager.MaxGen)) * diff2); // lesser
+
+	// USED FOR DEBUGGING THE SAFETY NET FOR THE PLAYER GRID CHECKER - KEEP IF ERRORS ARISE LATER
+	//if ((tileX < 0 || tileZ < 0 || tileX > mTileManager.MaxGen || tileZ > mTileManager.MaxGen) ||
+	//	(tileX2 < 0 || tileZ2 < 0 || tileX2 > mTileManager.MaxGen || tileZ2 > mTileManager.MaxGen)) {
+	//
+	//	int r = 0;
+	//}
+
+	// if player over the grid execute the grid check 
+	if ((tileX > 0 && tileZ > 0 && tileX < mTileManager.MaxGen && tileZ < mTileManager.MaxGen) && 
+		(tileX2 >= 0 && tileZ2 >= 0 && tileX2 <= mTileManager.MaxGen && tileZ2 <= mTileManager.MaxGen)) {
+		
+		// POSSIBLE GLITCH HERE (TILE ACTIVE WHEN PLAYER NOT OVER IT, TILE RIGHT / RIGHT&UP) - FIXED ITSELF??
+		// 
+		// if the player is over a poison/damage tile
+		if (mTileManager.GetIndex(tileX, tileZ) == 5 || mTileManager.GetIndex(tileX2, tileZ2) == 5) {
+			if (mPlayer.hazardTimer <= 0) { // if hazard should be active
+				mPlayer.health -= 5;
+				mPlayer.hazardTimer = 3; // reset hazard timer
+			}
+		}
+
+		// if the player is over a slow tile
+		if (mTileManager.GetIndex(tileX, tileZ) == 6 || mTileManager.GetIndex(tileX2, tileZ2) == 6) {
+			mPlayer.Slowed = true;
+		}
+
+		if (mTileManager.GetIndex(tileX, tileZ) != 6 && mTileManager.GetIndex(tileX2, tileZ2) != 6) {
+			mPlayer.Slowed = false;
+		}
+	
 	}
 	
 
@@ -631,4 +662,12 @@ void PlayState::CleanInventory(Inventory& inv)
 			++it;
 		}
 	}
+
+	/*if (GetAsyncKeyState('T') & 0x8000) //testing
+	{
+		mTile.Initialize("Tiles");
+
+		mTile.SetRandomPosition();
+
+	}*/
 }

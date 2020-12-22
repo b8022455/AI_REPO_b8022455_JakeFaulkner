@@ -47,19 +47,19 @@ void Enemy::DamageEnemy(int dmg)
 	switch (playerDirection)
 	{
 	case 0:										//Left
-		x = -5.0f;
+		x = -2.0f;
 		break;
 
 	case 1:										//Right
-		x = 5.0f;
+		x = 2.0f;
 		break;
 
 	case 2:										//Up
-		z = 5.0f;
+		z = 2.0f;
 		break;
 
 	case 3:										//Down
-		z = -5.0f;
+		z = -2.0f;
 		break;
 	}
 

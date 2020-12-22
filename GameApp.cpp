@@ -535,6 +535,8 @@ void GameApp::UpdateMainPassCB(const GameTimer& gt)
 	currPassCB->CopyData(0, mMainPassCB);
 }
 
+// **************************** TEXTURES ****************************************************
+
 void GameApp::LoadTexture(const std::string & name, const std::wstring & filename)
 {
 	auto texture = std::make_unique<Texture>();
@@ -557,6 +559,7 @@ void GameApp::LoadTextures()
 	LoadTexture("iceTex", L"Data/Textures/ice.dds");
 	LoadTexture("crateTex", L"Data/Textures/WoodCrate01.dds");
 	LoadTexture("grassTex", L"Data/Textures/grass.dds");
+	LoadTexture("mudTex", L"Data/Textures/LostMeadow_dirt.dds");
 	LoadTexture("defaultTex", L"Data/Textures/white1x1.dds");
 	LoadTexture("uiTex", L"Data/Textures/ui.dds");
 }
@@ -564,7 +567,7 @@ void GameApp::LoadTextures()
 void GameApp::BuildRootSignature()
 {
 	CD3DX12_DESCRIPTOR_RANGE texTable;
-	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 10, 0, 0); // inc 2 fonts
+	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 11, 0, 0); // inc 2 fonts
 
 	// Root parameter can be a table, root descriptor or root constants.
 	CD3DX12_ROOT_PARAMETER slotRootParameter[4];
@@ -575,7 +578,7 @@ void GameApp::BuildRootSignature()
 	slotRootParameter[2].InitAsConstantBufferView(0);
 	slotRootParameter[3].InitAsDescriptorTable(1, &texTable, D3D12_SHADER_VISIBILITY_PIXEL);
 
-	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6>  staticSamplers = GetStaticSamplers();
+	auto staticSamplers = GetStaticSamplers();
 
 	// A root signature is an array of root parameters.
 	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(4, slotRootParameter,
@@ -607,7 +610,7 @@ void GameApp::BuildDescriptorHeaps()
 	// Create the SRV heap.
 	//
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-	srvHeapDesc.NumDescriptors = 10; // including 2 fonts
+	srvHeapDesc.NumDescriptors = 11; // including 2 fonts
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&mSrvDescriptorHeap)));
@@ -624,6 +627,7 @@ void GameApp::BuildDescriptorHeaps()
 	auto crateTex = mTextures["crateTex"]->Resource;
 	auto iceTex = mTextures["iceTex"]->Resource;
 	auto grassTex = mTextures["grassTex"]->Resource;
+	auto mudTex = mTextures["mudTex"]->Resource;
 	auto defaultTex = mTextures["defaultTex"]->Resource;
 	auto uiTex = mTextures["uiTex"]->Resource;
 
@@ -681,6 +685,14 @@ void GameApp::BuildDescriptorHeaps()
 	srvDesc.Format = grassTex->GetDesc().Format;
 	srvDesc.Texture2D.MipLevels = grassTex->GetDesc().MipLevels;
 	md3dDevice->CreateShaderResourceView(grassTex.Get(), &srvDesc, hCpuDescriptor);
+
+	// next descriptor
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+
+	srvDesc.Format = mudTex->GetDesc().Format;
+	srvDesc.Texture2D.MipLevels = mudTex->GetDesc().MipLevels;
+	md3dDevice->CreateShaderResourceView(mudTex.Get(), &srvDesc, hCpuDescriptor);
 
 	// next descriptor
 	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);

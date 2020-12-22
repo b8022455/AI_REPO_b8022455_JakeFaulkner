@@ -2,6 +2,7 @@
 #include <vector>
 #include "GameObject.h"
 #include <random>
+#include <time.h>
 
 struct mapData { // STRUCT FOR MAP TEXTURE AND TILE DATA
 	int texIndex; //texture index from texture buffer for tile 
@@ -13,6 +14,16 @@ class Tile : public GameObject
 {
 
 public:
+	// OLD CODE
+	//Tile() {};
+
+	//void Initialize(const std::string& renderItemName);
+	//void InitTilePosition(int instance, DirectX::XMFLOAT3 position, int textIndex);
+	//void SetPosition(const DirectX::XMFLOAT3& newSetPosition);
+	//void Tile::SetRandomPosition();
+	////int playerDirection; //TODO:use to stop player walking into object
+	//DirectX::XMFLOAT3 GetPosition();
+
 	void Initialize(const std::string& renderItemName);
 	void SetRandomPosition();
 	void CreateTileWallHorizontal(int clumpSize, DirectX::XMFLOAT3& position, int count);
@@ -28,6 +39,7 @@ typedef std::vector<TileLine> TileGid; // 2D Tile Array
 class TileManager 
 {
 	const int mDimention = 32;
+	const int dimSquare = mDimention * mDimention;
 	std::vector<std::vector<mapData>> mMapData;
 	const float mUnitSize = 1.0f;
 	TileGid  mTileGrid;
@@ -43,9 +55,10 @@ class TileManager
 	const std::string mRenderItemName = "Tiles";
 
 public:
+	int MaxGen;
 	void Initialize();
 	void Update(const GameTimer& gt);
 	Tile& GetTile(int x, int y);
 	void SetTile(int x, int y, const Tile& tile);
-	
+	int GetIndex(int x, int y); // maybe remove 
 };

@@ -11,7 +11,8 @@
 #include "Experience.h"
 #include "Constants.h"
 #include "Trader.h"
-
+#include <math.h>
+using namespace std;
 
 class PlayState : public State
 {
