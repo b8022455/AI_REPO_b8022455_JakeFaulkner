@@ -13,53 +13,36 @@ void TradeState::Initialize()
 {
 	const DirectX::XMINT2 s = GameApp::Get().GetClientSizeU2(); //todo on resize
 
+	const long
+		top = s.y - (s.y / 2),// 2/3s down
+		colTop = top + 64,
+		colDivX = s.x / 2; // split down the middle
 
-	const float textPadding = 128.0f;
+	const float topStartFloat = (float)top,
+		colTopFloat = (float)colTop,
+		colDivXFloat = (float)colDivX,
+		textPadding = 20.0f;
 
-
-	const long top = s.y - (s.y / 2);
-	const long colTop = top + 128;
-	const long colDivX = s.x / 2;
-
-	const float topStartFloat = (float)top;
-	const float colTopFloat = (float)top;
-	const float colDivXFloat = (float)colDivX;
-
-	//const float offset = 32.0f;
-	//const float topOffset = offset + top;
-	//const float right = (0.5f*s.y) + offset + offset;
-
-	//mBackground.sourceRectangle = { 0, top ,s.x,s.y };
-	//mBackground.position = { 0,top };
 
 	mBackground.destinationRectangle = { 0, top, s.x, s.y };
 	mBackground.Initialise("iceTex");
 
 	
-	mText[TEXT_TRADER].position = { textPadding ,topStartFloat };
-	// left side
-	mText[TEXT_REQUEST].position = { textPadding , colTopFloat };
-	// right side
-	mText[TEXT_REWARD].position = { colDivXFloat + textPadding, colTopFloat }; // middle
+	mText[TEXT_TRADER].position = { textPadding ,topStartFloat + textPadding }; // top
+	mText[TEXT_REQUEST].position = { textPadding , colTopFloat + textPadding }; // left col
+	mText[TEXT_REWARD].position = { colDivXFloat + textPadding, colTopFloat + textPadding}; // right col
+	
+	for (auto& t : mText)
+	{
+		t.fontIndex = 1;
+		t.color = GC::TEXT_LIGHT_COLOR;
+	}
 
-	mText[TEXT_TRADER].fontIndex = 1;
-	mText[TEXT_REQUEST].fontIndex = 1;
-	mText[TEXT_REWARD].fontIndex = 1;
+	const RECT r{		GC::PANEL_SRC[0],		GC::PANEL_SRC[1],		GC::PANEL_SRC[2],		GC::PANEL_SRC[3],	};
 
-
-
-	const RECT r{
-		GC::PANEL_SRC[0],
-		GC::PANEL_SRC[1],
-		GC::PANEL_SRC[2],
-		GC::PANEL_SRC[3],
-	};
-
-	mPanels.at(PANEL_TOP).Initialize("uiTex", r, { 0, top, s.x, colTop });
-
-	mPanels.at(PANEL_LEFT).Initialize("uiTex", r, { 0,colTop,colDivX,s.y });
-
-	mPanels.at(PANEL_RIGHT).Initialize("uiTex", r, { colDivX,colTop,s.x,s.y });
+	mPanels.at(PANEL_TOP).Initialize("uiTex", r, { 0, top, s.x, colTop });// top
+	mPanels.at(PANEL_LEFT).Initialize("uiTex", r, { 0,colTop,colDivX,s.y });// left col
+	mPanels.at(PANEL_RIGHT).Initialize("uiTex", r, { colDivX,colTop,s.x,s.y });// right col
 }
 
 void TradeState::Update(const GameTimer & gt)

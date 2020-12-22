@@ -98,7 +98,10 @@ namespace GC
 		;
 	const DirectX::XMFLOAT4
 		BUTTON_DOWN_COLOR({ 0.7f, 0.7f, 0.7f, 1.0f}),
-		BUTTON_UP_COLOR{ 1.0f, 1.0f, 1.0f, 1.0f }
+		BUTTON_UP_COLOR{ 1.0f, 1.0f, 1.0f, 1.0f },
+
+		TEXT_DARK_COLOR{ 0.2f, 0.2f, 0.2f, 1.0f},
+		TEXT_LIGHT_COLOR{ 1.0f, 1.0f, 1.0f, 1.0f }
 		;
 
 	const long
