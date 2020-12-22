@@ -32,9 +32,7 @@ void PlayState::InitializeTraders()
 		}
 	};
 
-
 	std::for_each(mTraders.begin(), mTraders.end(), SetupTraders());
-
 
 }
 
@@ -155,6 +153,7 @@ void PlayState::Initialize()
 	// Sprites
 	{
 		Sprite spriteSample;
+		spriteSample.scale = 0.1f;
 
 		spriteSample.Initialise("tileTex");
 		mSprites["testSpriteFirst"] = spriteSample;

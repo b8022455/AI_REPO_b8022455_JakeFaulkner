@@ -91,7 +91,7 @@ bool Input::MenuDownHeld()
 		GamePad().a == GamePad::ButtonStateTracker::ButtonState::PRESSED;
 }
 
-bool Input::MenuButtonPressed()
+bool Input::AnyMenuButtonPressed()
 {
 	return
 		KeyPressed(GC::KEY_LT) ||

@@ -123,7 +123,7 @@ public:
 	bool MenuDownHeld();
 
 	// the moment its pressed
-	bool MenuButtonPressed();
+	bool AnyMenuButtonPressed();
 	
 };
 

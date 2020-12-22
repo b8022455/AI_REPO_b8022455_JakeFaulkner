@@ -61,8 +61,6 @@ namespace GC
 		TRADER_RADIUS = 1.75f
 		;
 
-
-
 	const std::string
 		GO_PLAYER = "Player",
 		GO_ENEMY = "Enemy",
@@ -102,6 +100,10 @@ namespace GC
 		BUTTON_DOWN_COLOR({ 0.7f, 0.7f, 0.7f, 1.0f}),
 		BUTTON_UP_COLOR{ 1.0f, 1.0f, 1.0f, 1.0f }
 		;
+
+	const long
+		PANEL_SRC[4]{ 192, 128,256,192 }
+	;
 
 	const ItemMap ITEM_LIST = {
 		{"Empty",			{ItemCategory::None,	0}}, // 
@@ -145,10 +147,10 @@ namespace GC
 
 	const std::map<std::string, DialogPair> DIALOG_PAIR
 	{
-		{ TRADER_NAME_TEST,	{"Got some rare things to trade, stranger","heh heh heh. Thank you."	}},
-		{ TRADER_NAME_1,	{"Trade with me","Now on your way."	}},
-		{ TRADER_NAME_2,	{"I need some things, you need some things","Now I need some peace and quiet and you need to leave."	}}, //
-		{ TRADER_NAME_3,	{"Trade with me","Now on your way."	}}, //todo change 
-		{ TRADER_NAME_4, 	{"Trade with me","Now on your way."	}}, // no reward, charity
+		{ TRADER_NAME_TEST,	{"Got some rare things to trade, stranger","heh heh heh Thank you"	}},
+		{ TRADER_NAME_1,	{"Trade with me","Now on your way"	}},
+		{ TRADER_NAME_2,	{"I need some things   you need some things","Now I need some peace and quiet and you need to leave"	}}, //
+		{ TRADER_NAME_3,	{"Trade with me","Now on your way"	}}, //todo change 
+		{ TRADER_NAME_4, 	{"Trade with me","Now on your way"	}}, // no reward, charity
 	};
 }

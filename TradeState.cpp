@@ -9,37 +9,62 @@ TradeState::TradeState()
 {
 }
 
+void TradeState::Initialize()
+{
+	const DirectX::XMINT2 s = GameApp::Get().GetClientSizeU2(); //todo on resize
+
+
+	const float textPadding = 128.0f;
+
+
+	const long top = s.y - (s.y / 2);
+	const long colTop = top + 128;
+	const long colDivX = s.x / 2;
+
+	const float topStartFloat = (float)top;
+	const float colTopFloat = (float)top;
+	const float colDivXFloat = (float)colDivX;
+
+	//const float offset = 32.0f;
+	//const float topOffset = offset + top;
+	//const float right = (0.5f*s.y) + offset + offset;
+
+	//mBackground.sourceRectangle = { 0, top ,s.x,s.y };
+	//mBackground.position = { 0,top };
+
+	mBackground.destinationRectangle = { 0, top, s.x, s.y };
+	mBackground.Initialise("iceTex");
+
+	
+	mText[TEXT_TRADER].position = { textPadding ,topStartFloat };
+	// left side
+	mText[TEXT_REQUEST].position = { textPadding , colTopFloat };
+	// right side
+	mText[TEXT_REWARD].position = { colDivXFloat + textPadding, colTopFloat }; // middle
+
+	mText[TEXT_TRADER].fontIndex = 1;
+	mText[TEXT_REQUEST].fontIndex = 1;
+	mText[TEXT_REWARD].fontIndex = 1;
+
+
+
+	const RECT r{
+		GC::PANEL_SRC[0],
+		GC::PANEL_SRC[1],
+		GC::PANEL_SRC[2],
+		GC::PANEL_SRC[3],
+	};
+
+	mPanels.at(PANEL_TOP).Initialize("uiTex", r, { 0, top, s.x, colTop });
+
+	mPanels.at(PANEL_LEFT).Initialize("uiTex", r, { 0,colTop,colDivX,s.y });
+
+	mPanels.at(PANEL_RIGHT).Initialize("uiTex", r, { colDivX,colTop,s.x,s.y });
+}
+
 void TradeState::Update(const GameTimer & gt)
 {
 	{
-		if (mpTrader)
-		{
-			GameApp::Get().mDebugLog << "Traded? " << !mpTrader->CanTrade() << "\n\n " << mpTrader->GetDialog() << "\n\n ";
-
-			//display trade details debug
-			if (mpTrader->CanTrade())
-			{
-				const InventoryUnordered* request = mpTrader->GetRequestItems();
-
-				GameApp::Get().mDebugLog << "\nRequest:\n";
-
-				std::for_each(request->begin(), request->end(), [](auto& inv)
-				{
-					GameApp::Get().mDebugLog << inv.first << " : " << inv.second << "\n";
-				});
-
-
-				GameApp::Get().mDebugLog << "\nReward:\n";
-
-				const InventoryUnordered* reward = mpTrader->GetRewardItems();
-
-				std::for_each(reward->begin(), reward->end(), [](auto& inv)
-				{
-					GameApp::Get().mDebugLog << inv.first << " : " << inv.second << "\n";
-				});
-			}
-			
-		}
 
 		//show inventory debug
 		GameApp::Get().mDebugLog << "\nInventory:\n";
@@ -53,7 +78,7 @@ void TradeState::Update(const GameTimer & gt)
 			GameApp::Get().mDebugLog << "Current Selected Item: " << (*mpInventoryPosition)->first << " x" << (*mpInventoryPosition)->second << "\n";
 	}
 
-	if (Input::Get().MenuButtonPressed())
+	if (Input::Get().AnyMenuButtonPressed())
 	{
 		GameApp::Get().PlayClickDownAudio();
 	}
@@ -70,14 +95,12 @@ void TradeState::Update(const GameTimer & gt)
 	{
 		if (Trade())
 		{
+			RefreshText(); // update text
 			GameApp::Get().PlayClickUpAudio(true);
-
-			// todo play success noise
 		}
 		else
 		{
 			GameApp::Get().PlayClickUpAudio(false);
-			// todo play fail noise
 		}
 	}
 
@@ -92,6 +115,17 @@ void TradeState::Update(const GameTimer & gt)
 
 void TradeState::Draw(const GameTimer & gt)
 {
+	mBackground.Draw();
+
+	for (auto& p : mPanels)
+	{
+		p.Draw();
+	}
+	for (auto& t : mText)
+	{
+		t.Draw();
+	}
+
 }
 
 void TradeState::OnResume()
@@ -109,6 +143,11 @@ void TradeState::OnResume()
 		assert(false);
 		GameApp::Get().ChangeState(GC::STATE_PLAY);
 	}
+	else
+	{
+		RefreshText();
+	}
+
 
 }
 
@@ -154,6 +193,7 @@ bool TradeState::Trade()
 		if (temp.at(rIt->first) < 0)
 		{
 			validTrader = false;
+
 		}
 
 		++rIt;
@@ -190,5 +230,23 @@ bool TradeState::Trade()
 	}
 
 	return ret;
+}
 
+void TradeState::RefreshText()
+{
+	
+	mText[TEXT_TRADER].string = mpTrader->GetDialog().c_str();
+
+	if (mpTrader->CanTrade())
+	{
+		// show trade items if can trade
+		mText[TEXT_REQUEST].string = mpTrader->GetRequestAsString().c_str();
+		mText[TEXT_REWARD].string = mpTrader->GetRewardAsString().c_str();
+	}
+	else
+	{
+		//show nothing
+		mText[TEXT_REQUEST].string = "";
+		mText[TEXT_REWARD].string = mText[TEXT_REQUEST].string;
+	}
 }

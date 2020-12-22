@@ -49,11 +49,16 @@ MenuState::MenuState(const Button & b0, const Button & b1, const Button & b2, co
 	mButtons.at(3).SetPos({ centre.x			,	centre.y + offset.y		});
 }
 
+void MenuState::Initialize()
+{
+	
+}
+
 void MenuState::Update(const GameTimer & gt)
 { 
 	assert(mButtons.size() == 4);
 
-	if (Input::Get().MenuButtonPressed())
+	if (Input::Get().AnyMenuButtonPressed())
 	{
 		GameApp::Get().PlayClickDownAudio();
 	}
@@ -99,6 +104,8 @@ void MenuState::Draw(const GameTimer & gt)
 {
 	mTitle.Draw();
 	mBody.Draw();
+	//mTempPanel.Draw();
+
 	for (auto& b : mButtons)
 	{
 		b.Draw();

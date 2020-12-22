@@ -39,6 +39,7 @@ void StateManager::Init()
 	buttonBg.textureSize.x = buttonBg.textureSize.x >> 1;
 	buttonBg.textureSize.y = buttonBg.textureSize.y >> 1;
 	buttonBg.sourceRectangle = { 0,0,(LONG)buttonBg.textureSize.x,(LONG)buttonBg.textureSize.y >> 2 };
+	buttonBg.destinationRectangle = { -1,-1,-1,-1 };
 	buttonBg.Initialise("uiTex",true);
 	
 	
@@ -56,7 +57,7 @@ void StateManager::Init()
 	menuBody.string = "Placeholder text";
 	btnW = Button(buttonBg, "W Resume", Button::Action::GOTO_GAME);
 	btnA = Button(buttonBg, "A Resume", Button::Action::GOTO_GAME);
-	btnD = Button(buttonBg, "D Resume", Button::Action::GOTO_GAME);
+	btnD = Button(buttonBg, "D Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnS = Button(buttonBg, "S Resume", Button::Action::GOTO_GAME);
 	AddState("PauseMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS));
 

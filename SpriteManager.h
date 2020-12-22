@@ -17,9 +17,9 @@
 
 struct Text
 {
-	const char* string = "";
+	std::string string = "";
 	DirectX::SimpleMath::Vector2 position = { 0,0 };
-	DirectX::SimpleMath::Vector4 color = {1.0f,0.0f,0.0f,1.0f};
+	DirectX::SimpleMath::Vector4 color = {0.0f,0.0f,0.0f,1.0f};
 	float rotation = 0.0f; 
 	DirectX::SimpleMath::Vector2 origin = { 0,0 };
 	float scale = 1.0f;
@@ -47,7 +47,7 @@ struct Sprite
 	D3D12_GPU_DESCRIPTOR_HANDLE texture;
 	DirectX::XMUINT2 textureSize = DirectX::XMUINT2(512,512);
 	DirectX::XMFLOAT2 position = { 0.0f,0.0f };
-	//RECT destinationRectangle = {0,0,512,512}; //ignore
+	RECT destinationRectangle = {-1,-1,-1,-1}; //ignore if left = -1
 	RECT sourceRectangle = {0,0,512,512 };   //todo array for animations?
 	DirectX::SimpleMath::Vector4 color = DirectX::Colors::White;
 	float rotation = 0.0f;
@@ -64,7 +64,7 @@ struct Sprite
 		textureSize = s.textureSize;
 		texture = s.texture;
 		position = s.position;
-		//destinationRectangle = s.destinationRectangle;
+		destinationRectangle = s.destinationRectangle;
 		sourceRectangle = s.sourceRectangle;
 		rotation = s.rotation;
 		scale = s.scale;
@@ -79,6 +79,34 @@ struct Sprite
 	void Draw();
 
 	
+};
+
+class Panel
+{
+	// array names
+	enum
+	{ 
+		CORNER_TL, 		CORNER_TR,		CORNER_BL,		CORNER_BR,
+		EDGE_L,		EDGE_T,		EDGE_R,		EDGE_B,
+		MIDDLE,		COUNT
+	};
+
+	// sprites making up the panel display
+	std::array<Sprite, COUNT> mSprites;
+	RECT mSourceRect = { 0,0,512,512 };
+	// Screen scace of panel
+	RECT mDestRect = { 0,0,512,512 };
+	
+
+	void CalcSpriteRects();
+	
+
+public:
+	void Initialize(const std::string& textureName, const RECT& src, const RECT& dst);
+
+	void Move(DirectX::SimpleMath::Vector2 v);
+	
+	void Draw();
 };
 
 class Button
