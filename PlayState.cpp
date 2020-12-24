@@ -663,12 +663,4 @@ void PlayState::CleanInventory(Inventory& inv)
 			++it;
 		}
 	}
-
-	/*if (GetAsyncKeyState('T') & 0x8000) //testing
-	{
-		mTile.Initialize("Tiles");
-
-		mTile.SetRandomPosition();
-
-	}*/
 }

@@ -5,31 +5,7 @@ void TileManager::Initialize()
 	MaxGen = mDimention; // set up for tilefinder in playstate for player hazard detection
 
 	srand(time(NULL));
-	//std::random_device rd; // obtain a random number from hardware
 	std::mt19937 rng(time(NULL)); // seed the generator
-
-	// implement hazard tile creation in generation (can't be altered after?) 
-	// rescan tiles and sprinkle in hazards ? DOESN'T WORK
-	//number of sprinkles, size of sprinkles (min,max), distance from other sprinkles of the same type
-
-	int H1 = 2; // frequency of hazard spots to generate / health
-	int H2 = 4; // frequency of hazard spots to generate / slow
-	int H3 = 1;// frequency of hazard spots to generate / slip?
-	int H1MaxSize = 3; // maximum size of hazard spot / health - ADVANCED GENERATION
-	int H2MaxSize = 3; // maximum size of hazard spot / slow - ADVANCED GENERATION
-	int H3MaxSize = 3; // maximum size of hazard spot / slip? - ADVANCED GENERATION
-	int H1MinSize = 2; // minimum size of hazard spot / health - ADVANCED GENERATION
-	int H2MinSize = 2; // minimum size of hazard spot / slow - ADVANCED GENERATION
-	int H3MinSize = 2; // minimum size of hazard spot / slip? - ADVANCED GENERATION
-	int H1Dist = 5; // distance between other hazards from central spot / health - ADVANCED GENERATION
-	int H2Dist = 3; // distance between other hazards from central spot / slow - ADVANCED GENERATION
-	int H3Dist = 3; // distance between other hazards from central spot / slip? - ADVANCED GENERATION
-	int H1Random = 50; // randomness attributed to hazard generation / health - ADVANCED GENERATION
-	int H2Random = 200; // randomness attributed to hazard generation / slow - ADVANCED GENERATION
-	int H3Random = 150; // randomness attributed to hazard generation / slip? - ADVANCED GENERATION
-	int H1RandomDist = 2; // distance from regular gen / health - ADVANCED GENERATION
-	int H2RandomDist = 3; // distance from regular gen / slow - ADVANCED GENERATION
-	int H3RandomDist = 3; // distance from regular gen / slip - ADVANCED GENERATION
 
 	std::uniform_int_distribution<int> grid(0,mDimention);
 	std::uniform_int_distribution<int> gen1(H1MinSize, H1MaxSize); // uniform, unbiased
@@ -615,44 +591,6 @@ void TileManager::SetTile(int x, int y, const Tile & tile)
 	mTileGrid.at(y).at(x) = tile; //todo x,y may need swapping around
 
 }
-//----------------OLD INDIVIDUAL TILE CODE-----------------------------------------------//
-
-//void Tile::Initialize(const std::string& renderItemName)
-//{
-//	AddRenderItemInstance("Tiles");
-//}
-//
-//void Tile::InitTilePosition(int instance, DirectX::XMFLOAT3 position, int textIndex)
-//{
-//	mpInstance->MaterialIndex = textIndex;
-//	mpInstance->World._41 = position.x;
-//	mpInstance->World._42 = position.y;
-//	mpInstance->World._43 = position.z;
-//}
-//
-//void Tile::SetPosition(const DirectX::XMFLOAT3& newPosition)
-//{
-//	//Updates position on the object
-//	mpInstance->World._41 = newPosition.x;
-//	mpInstance->World._42 = newPosition.y;
-//	mpInstance->World._43 = newPosition.z;
-//}
-//
-//void Tile::SetRandomPosition()
-//{
-//	int min = -15;
-//	int max = 15;
-//	std::random_device rd;								// only used once to initialise (seed) engine
-//	std::mt19937 rng(rd());								// random-number engine used (Mersenne-Twister in this case)
-//	std::uniform_int_distribution<int> uni(min, max);	// guaranteed unbiased
-//
-//	float random_integer = (float)uni(rng);
-//	float random_integer2 = (float)uni(rng);
-//
-//	mpInstance->World._41 = random_integer;
-//	mpInstance->World._42 = 5.0f; // todo change back to 0.0f
-//	mpInstance->World._43 = random_integer2;
-//}
 //----------------INDIVIDUAL TILE CODE-----------------------------------------------//
 
 void Tile::Initialize(const std::string& renderItemName)
