@@ -32,6 +32,8 @@ namespace GC
 		KEY_PAUSE = 0xD, //enter
 		KEY_CAM = 0x70, // F1
 
+		KEY_DEBUG_GENERATE = 'R',
+
 		KEY_DEBUG_ENEMY_POS = 'G'
 		;
 

@@ -22,8 +22,6 @@ void TileManager::Initialize()
 		origin[u].resize(mDimention);
 	} // setup coords array to grid size
 
-	//int Max = H1 + H2 + H3; // total number of hazard sources
-
 	// select positions for central hazard spots at random and store in vector
 	// use distance here as well
 

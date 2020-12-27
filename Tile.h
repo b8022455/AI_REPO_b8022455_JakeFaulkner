@@ -38,24 +38,36 @@ typedef std::vector<TileLine> TileGid; // 2D Tile Array
 
 class TileManager 
 {
+	//const int mDimention = 32;
+	//const int dimSquare = mDimention * mDimention;
+	//std::vector<std::vector<mapData>> mMapData;
+	const float mUnitSize = 1.0f;
+	//TileGid  mTileGrid;
+
+
+	//const float mWidth = 30.0f;
+	//const float mHeight = 30.0f;
+	//const float mDepth = 30.0f;
+	//const float x = -0.5f*mWidth;
+	//const float z = -0.5f*mDepth;
+	//const float dx = mWidth / (mDimention - 1);
+	//const float dz = mDepth / (mDimention - 1);
+	//const std::string mRenderItemName = "Tiles";
+
+public:
 	const int mDimention = 32;
 	const int dimSquare = mDimention * mDimention;
-	std::vector<std::vector<mapData>> mMapData;
-	const float mUnitSize = 1.0f;
-	TileGid  mTileGrid;
-
-
+	const std::string mRenderItemName = "Tiles";
 	const float mWidth = 30.0f;
 	const float mHeight = 30.0f;
 	const float mDepth = 30.0f;
-	const float x = -0.5f*mWidth;
-	const float z = -0.5f*mDepth;
+	const float x = -0.5f * mWidth;
+	const float z = -0.5f * mDepth;
 	const float dx = mWidth / (mDimention - 1);
 	const float dz = mDepth / (mDimention - 1);
-	const std::string mRenderItemName = "Tiles";
-
-public:
 	int MaxGen;
+	TileGid  mTileGrid;
+	std::vector<std::vector<mapData>> mMapData;
 	void Initialize();
 	void Update(const GameTimer& gt);
 	Tile& GetTile(int x, int y);

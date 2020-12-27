@@ -94,5 +94,6 @@ public:
 	const DirectX::XMFLOAT3 CAM_OFFSET{ 0.0f,10.0f,-10.0f }; 
 	Experience mExperience;
 
+	void ReGen();
 };
 
