@@ -176,6 +176,7 @@
     <ClCompile Include="TextConsole.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AttackTimeDelay.h" />
     <ClInclude Include="AudioSImple.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>

@@ -14,6 +14,16 @@ void Enemy::SetPosition(const DirectX::XMFLOAT3& newPosition)
 	mpInstance->World._41 = newPosition.x;
 	mpInstance->World._42 = newPosition.y;
 	mpInstance->World._43 = newPosition.z;
+
+	int attackDuration = 2;		//How long the attack plays for, not final time yet
+	int attackDelay = 4;		//How long between each attack
+
+	times.StartTime(attackDuration, attackDelay);
+
+	//Sets up collision point for attack
+	attackCollisionPoint = mpInstance->World;
+	//attackCollisionPoint._41 += 0.2f;
+
 }
 
 void Enemy::SetRandomPosition()
@@ -78,13 +88,11 @@ int Enemy::GetRandomValue(int min, int max)
 
 const std::string Enemy::GetDropItem()
 {
-
-	
 	int max = 536870912;
 	int drop = GetRandomValue(0, max);
 	///Could add money to be dropped if a currency is going to be in the game
 
-	InventoryUnordered::const_iterator retIt = --mpDropItems->end();
+	InventoryUnordered::const_iterator retIt = mpDropItems->begin();
 
 	bool found = false;
 
@@ -92,10 +100,10 @@ const std::string Enemy::GetDropItem()
 	while (it != mpDropItems->end() && !found)
 	{
 		max = max >> 1; // divides by 2
-		found = true;
 		if (drop >= max)
 		{
 			retIt = it;
+			found = true;
 		}
 		++it;
 	}
@@ -109,4 +117,60 @@ const std::string Enemy::GetDropItem()
 
 	return (*retIt).first;
 
+}
+
+void Enemy::StartAttack()
+{
+	//Particle based attack that does damage in front of enemy, has a timer for about 4 secs maybe
+}
+
+void Enemy::Update(const GameTimer& gt)
+{
+	//Follow Player
+	if (times.isAttacking)
+	{
+		//Function to update attack animation (sets isAttacking to false when done)
+		UpdateAttack();
+
+		//Update the collision point
+		attackCollisionPoint = mpInstance->World;
+		attackCollisionPoint._41 -= 1.0f;		//AoE Attack
+	}
+	else
+	{
+		if (times.CanAttack())
+		{
+			StartAttack();
+			times.SetNextTimer();		//Makes attacking bool true and resets timer for next attack
+
+			attackCollisionPoint = mpInstance->World;
+			attackCollisionPoint._41 -= 1.0f;
+		}
+		else
+		{
+			attackCollisionPoint = mpInstance->World;		//Keeps enemy collision point at enemy rather than in front of enemy
+		}
+	}
+
+	times.UpdateTime();
+}
+
+void Enemy::UpdateAttack()
+{
+	if (times.currentTime.tm_sec > (times.nextAtkTime - times.attackDuration))
+	{
+		times.isAttacking = false;		//Attack has ended
+	}
+	//else
+	//{
+	//	//Do Attack animation
+	//}
+}
+
+
+DirectX::XMFLOAT3 Enemy::GetCollisionPoint()
+{
+	return DirectX::XMFLOAT3(attackCollisionPoint._41,
+							 attackCollisionPoint._42,
+							 attackCollisionPoint._43);
 }

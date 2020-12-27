@@ -8,6 +8,7 @@
 #include <vector>
 #include "Player.h"
 #include "Enemy.h"
+#include "AttackTimeDelay.h"
 
 using namespace DirectX;
 
@@ -40,18 +41,8 @@ private:
 	float weaponRotation;
 	float weaponEndRotation = 6.28319f;			//80 degress ending point for rotation
 	const float weaponIncrementRotationAmount = 0.05f;
-	bool attacking;
 
-	struct TimeDelay		//All variables used in the timing stuff, kept in struct to keep them close together
-	{
-		time_t timeAtNow;
-		struct tm currentTime;
-		int nextAtkTime;
-		const int AttackDelay = 1;	//1 Second
-		errno_t storeLocaltime;
-	};
-
-	TimeDelay times;
+	AttackTimeDelay times;
 };
 
 class CombatController

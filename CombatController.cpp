@@ -108,17 +108,18 @@ void PlayerWeapon::Initialize(const std::string& renderItemName)
 	// Setup a render item
 	AddRenderItemInstance("Weapon");
 
-	times.timeAtNow = time(0);
-	times.nextAtkTime = 0;
-	times.storeLocaltime = localtime_s(&times.currentTime, &times.timeAtNow);		//Gets current time from system and stores in currentTime struct
+	int attackDuration = 1;
+	int attackDelay = 1;
+
+	times.StartTime(attackDuration, attackDelay);
 
 	weaponRotation = weaponStartingRotation;		//Sets to -80 degrees
-	attacking = false;
+	times.isAttacking = false;
 }
 
 void PlayerWeapon::Attack()
 {
-	if (times.currentTime.tm_sec > times.nextAtkTime)
+	if (times.CanAttack())
 	{
 		PositionWeapon();
 		SwingWeapon();
@@ -127,8 +128,7 @@ void PlayerWeapon::Attack()
 
 void PlayerWeapon::PositionWeapon()
 {
-	times.nextAtkTime = times.currentTime.tm_sec + times.AttackDelay;	//Resets timer on attack delay (Currentime + 1 sec)
-	attacking = true;
+	times.SetNextTimer();
 
 	if (playerDirection > 1)		//If the player direction is Up (2 in the enum) or Down (3 in the enum)
 	{
@@ -160,7 +160,7 @@ void PlayerWeapon::SwingWeapon()
 void PlayerWeapon::ResetWeaponPosition()
 {
 	weaponRotation = weaponStartingRotation;			//Resets rotation to -80 degrees
-	attacking = false;
+	times.isAttacking = false;
 
 	weaponPositionMatrix = XMMatrixTranslation(0.0f, -5.0f, 2.0f);		//Resets the sword back underneath the map until attack is used again
 	XMStoreFloat4x4(&mpInstance->World, weaponPositionMatrix);
@@ -168,9 +168,7 @@ void PlayerWeapon::ResetWeaponPosition()
 
 void PlayerWeapon::UpdateTimer()
 {
-	times.timeAtNow = time(0);
-	times.storeLocaltime = localtime_s(&times.currentTime, &times.timeAtNow);
-	if (times.currentTime.tm_sec == 0)	times.nextAtkTime = 0;		//Prevents it from doing multiple attacks per frame once hit 60 secs
+	times.UpdateTime();
 }
 
 void PlayerWeapon::UpdateWeaponMatrix()
@@ -214,7 +212,7 @@ void PlayerWeapon::UpdateWeaponMatrix()
 
 bool PlayerWeapon::GetAttackStatus()
 {
-	return attacking;
+	return times.isAttacking;
 }
 
 int PlayerWeapon::GetWeaponStats(std::string equippedWeapon)
