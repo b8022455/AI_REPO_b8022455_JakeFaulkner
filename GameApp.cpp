@@ -86,12 +86,21 @@ bool GameApp::Initialize()
 
 		// Creates an 'engine' for sound effects. 
 		mGameAudio.CreateEngine("sfx", AUDIO_ENGINE_TYPE::SFX);
-		// Loads a sound onto an 'engine'
 		mGameAudio.LoadSound("sfx", "chord", L"Data/Sounds/chord.wav");
 		// Plays up to 20 instances at once. SFX only
 		mGameAudio.SetCacheSize("sfx", 20);
 		// New instance to play when cache is full. Oldest instance removed SFX only
 		mGameAudio.ForceAudio("sfx", true);
+
+		mGameAudio.CreateEngine("ui", AUDIO_ENGINE_TYPE::SFX);
+		// Loads a sound onto an 'engine'
+		mGameAudio.LoadSound("ui", "clickDown", L"Data/Sounds/clickDown.wav");
+		mGameAudio.LoadSound("ui", "clickUpFail", L"Data/Sounds/clickUpFail.wav");
+		mGameAudio.LoadSound("ui", "clickUpSuccess", L"Data/Sounds/clickUpSuccess.wav");
+
+		mGameAudio.SetCacheSize("ui", 30);
+		// New instance to play when cache is full. Oldest instance removed SFX only
+		mGameAudio.ForceAudio("ui", true);
 
 		//Music 'engine'
 		mGameAudio.CreateEngine("music", AUDIO_ENGINE_TYPE::MUSIC);
@@ -103,8 +112,8 @@ bool GameApp::Initialize()
 		// Plays audio from 'music' engine. No need to specify engine
 		mGameAudio.Play("ring9", nullptr, true);
 		// Is that better?
-		mGameAudio.SetEngineVolume("music", 0.005f);
-		mGameAudio.SetEngineVolume("sfx", 0.005f);
+		mGameAudio.SetEngineVolume("music", 0.1f);
+		mGameAudio.SetEngineVolume("sfx", 0.1f);
 	}
 
 
@@ -187,9 +196,14 @@ void GameApp::OnResize()
 	}
 }
 
-void GameApp::DrawFont(size_t i, const std::string & output, const XMFLOAT2 & pos, bool centre)
+void GameApp::DrawString(size_t i, const std::string & output, const XMFLOAT2 & pos, bool centre)
 {
-	mSpriteManager.DrawFont(i, output.c_str(), pos, centre);
+	mSpriteManager.DrawString(i, output.c_str(), pos, centre);
+}
+
+void GameApp::DrawString(const Text & t)
+{
+	mSpriteManager.DrawString(t);
 }
 
 void GameApp::ChangeState(const std::string & name)
@@ -205,6 +219,28 @@ State * GameApp::GetState(const std::string & name)
 XMFLOAT2 GameApp::GetClientSize()
 {
 	return {(float)mClientWidth, (float)mClientHeight};
+}
+
+XMINT2 GameApp::GetClientSizeU2()
+{
+	return {(int) mClientWidth,(int)mClientHeight };
+}
+
+void GameApp::PlayClickDownAudio()
+{
+	mGameAudio.Play("clickDown");
+}
+
+void GameApp::PlayClickUpAudio(bool success)
+{
+	if (success)
+	{
+		mGameAudio.Play("clickUpSuccess");
+	}
+	else
+	{
+		mGameAudio.Play("clickUpFail");
+	}
 }
 
 void GameApp::Update(const GameTimer& gt)
@@ -292,8 +328,15 @@ void GameApp::Draw(const GameTimer& gt)
 	// Bind all the textures used in this scene.
 	mCommandList->SetGraphicsRootDescriptorTable(3, mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
-	DrawRenderItems(mCommandList.Get(), mOpaqueRitems);
 
+
+	// dont render if its a menu
+	if (!mStateManager.IsMenu())
+	{
+		DrawRenderItems(mCommandList.Get(), mOpaqueRitems);
+	}
+
+	mCommandList->SetPipelineState(mPSOs["opaque"].Get());
 	// Sprite drawing
 	mSpriteManager.DrawBegin(mCommandList.Get(), mScreenViewport);
 
@@ -509,22 +552,22 @@ void GameApp::LoadTexture(const std::string & name, const std::wstring & filenam
 
 void GameApp::LoadTextures()
 {
-
+	mTextures.reserve(20);
 	LoadTexture("bricksTex", L"Data/Textures/bricks.dds");
 	LoadTexture("stoneTex", L"Data/Textures/stone.dds");
 	LoadTexture("tileTex", L"Data/Textures/tile.dds");
-	LoadTexture("crateTex", L"Data/Textures/WoodCrate01.dds");
 	LoadTexture("iceTex", L"Data/Textures/ice.dds");
+	LoadTexture("crateTex", L"Data/Textures/WoodCrate01.dds");
 	LoadTexture("grassTex", L"Data/Textures/grass.dds");
 	LoadTexture("mudTex", L"Data/Textures/LostMeadow_dirt.dds");
 	LoadTexture("defaultTex", L"Data/Textures/white1x1.dds");
-
+	LoadTexture("uiTex", L"Data/Textures/ui.dds");
 }
 
 void GameApp::BuildRootSignature()
 {
 	CD3DX12_DESCRIPTOR_RANGE texTable;
-	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 9, 0, 0);
+	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 11, 0, 0); // inc 2 fonts
 
 	// Root parameter can be a table, root descriptor or root constants.
 	CD3DX12_ROOT_PARAMETER slotRootParameter[4];
@@ -567,7 +610,7 @@ void GameApp::BuildDescriptorHeaps()
 	// Create the SRV heap.
 	//
 	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-	srvHeapDesc.NumDescriptors = 9;
+	srvHeapDesc.NumDescriptors = 11; // including 2 fonts
 	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	ThrowIfFailed(md3dDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&mSrvDescriptorHeap)));
@@ -586,6 +629,7 @@ void GameApp::BuildDescriptorHeaps()
 	auto grassTex = mTextures["grassTex"]->Resource;
 	auto mudTex = mTextures["mudTex"]->Resource;
 	auto defaultTex = mTextures["defaultTex"]->Resource;
+	auto uiTex = mTextures["uiTex"]->Resource;
 
 	//Brick 0
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -593,7 +637,6 @@ void GameApp::BuildDescriptorHeaps()
 	srvDesc.Format = bricksTex->GetDesc().Format;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
-
 	srvDesc.Texture2D.MipLevels = bricksTex->GetDesc().MipLevels;
 	srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 	md3dDevice->CreateShaderResourceView(bricksTex.Get(), &srvDesc, hCpuDescriptor);
@@ -661,6 +704,16 @@ void GameApp::BuildDescriptorHeaps()
 	md3dDevice->CreateShaderResourceView(defaultTex.Get(), &srvDesc, hCpuDescriptor);
 	md3dDevice->CreateShaderResourceView(defaultTex.Get(), &srvDesc, hCpuDescriptor);
 	
+	// next descriptor
+	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+
+	// UI tex 7
+	srvDesc.Format = uiTex->GetDesc().Format;
+	srvDesc.Texture2D.MipLevels = uiTex->GetDesc().MipLevels;
+	md3dDevice->CreateShaderResourceView(uiTex.Get(), &srvDesc, hCpuDescriptor);
+
+	// next descriptor
 	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
 

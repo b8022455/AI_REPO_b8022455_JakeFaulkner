@@ -5,39 +5,72 @@
 #include "MenuState.h"
 #include "TradeState.h"
 
+void StateManager::EvaluateState()
+{
+	if (mCurrentState == GC::STATE_PLAY || mCurrentState == GC::STATE_PAUSE || mCurrentState == GC::STATE_TRADE)
+	{
+		mIsMenu = false;
+	}
+	else // menus
+	{
+		mIsMenu = true;
+	}
+}
+
 bool StateManager::IsValidState(const std::string stateName)
 {
 	return mStates.count(stateName) == 1;
 }
 void StateManager::Init()
 {
+	mMenuBackground.Initialise("iceTex");
+
+	DirectX::XMINT2 s = GameApp::Get().GetClientSizeU2(); //todo on resize
+	mMenuBackground.sourceRectangle = { 0,0,s.x,s.y };
+
+
+	//set position of text elements of menus
+	Text menuTitle, menuBody;
+	menuTitle.position = GC::MENU_TITLE_POSITION;
+	menuBody.position = GC::MENU_BODY_POSITION;
 
 	// Set up menu buttons
 	Sprite buttonBg;
-	buttonBg.Initialise("iceTex",true);
+	buttonBg.textureSize.x = buttonBg.textureSize.x >> 1;
+	buttonBg.textureSize.y = buttonBg.textureSize.y >> 1;
+	buttonBg.sourceRectangle = { 0,0,(LONG)buttonBg.textureSize.x,(LONG)buttonBg.textureSize.y >> 2 };
+	buttonBg.destinationRectangle = { -1,-1,-1,-1 };
+	buttonBg.Initialise("uiTex",true);
+	
 	
 	// Main menu
+	menuTitle.string = "Game Name";
+	menuBody.string = "Placeholder text";
 	Button btnW(buttonBg, "W Play", Button::Action::GOTO_GAME);
 	Button btnA(buttonBg, "A Play", Button::Action::GOTO_GAME);
 	Button btnD(buttonBg, "D Play", Button::Action::GOTO_GAME);
 	Button btnS(buttonBg, "S Play", Button::Action::GOTO_GAME);
-	AddState("MainMenu", std::make_unique<MenuState>(btnW, btnA, btnD, btnS));
+	AddState("MainMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS));
 
 	//PauseMenu
+	menuTitle.string = "Pause";
+	menuBody.string = "Placeholder text";
 	btnW = Button(buttonBg, "W Resume", Button::Action::GOTO_GAME);
 	btnA = Button(buttonBg, "A Resume", Button::Action::GOTO_GAME);
-	btnD = Button(buttonBg, "D Resume", Button::Action::GOTO_GAME);
+	btnD = Button(buttonBg, "D Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnS = Button(buttonBg, "S Resume", Button::Action::GOTO_GAME);
-	AddState("PauseMenu", std::make_unique<MenuState>(btnW, btnA, btnD, btnS));
+	AddState("PauseMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS));
 
 	// GameState
 	AddState(GC::STATE_PLAY, std::make_unique<PlayState>());
-
+	
 	//Trade state
 	AddState(GC::STATE_TRADE, std::make_unique<TradeState>());
 
 	// Init all states
 	std::for_each(mStates.begin(), mStates.end(), [](auto& s) { s.second->Initialize(); });
+
+	EvaluateState();
 
 }
 void StateManager::Update(const GameTimer & gt)
@@ -62,6 +95,11 @@ void StateManager::Draw(const GameTimer & gt)
 {
 	if (IsValidState(mCurrentState))
 	{
+		if (IsMenu())
+		{
+			mMenuBackground.Draw();
+		}
+
 		mStates[mCurrentState]->Draw(gt);
 	}
 	else
@@ -102,7 +140,9 @@ void StateManager::ChangeState(const std::string & name)
 {
 	if (IsValidState(name))
 	{
+
 		mCurrentState = name;
+		EvaluateState();
 		mStates[name]->OnResume();
 	}
 	else

@@ -4,12 +4,15 @@
 
 class MenuState : public State
 {
+	Text mTitle;
+	Text mBody;
 	std::vector<Button> mButtons;
 
 public:
+	MenuState(const Text& t1, const Text& b, const Button& b0, const Button& b1, const Button& b2, const Button& b3);
 	MenuState(const Button& b0, const Button& b1, const Button& b2, const Button& b3);
 
-	virtual void Initialize() override {};
+	virtual void Initialize() override ;
 	virtual void Update(const GameTimer& gt) override ;
 	virtual void Draw(const GameTimer& gt) override ;
 
@@ -18,11 +21,6 @@ public:
 	virtual void OnMouseMove(WPARAM btnState, int x, int y) override{};
 	virtual void OnKeyboardInput(const GameTimer& gt)		override{};
 	virtual void OnResume()									override{};
-
-	bool InputUp();
-	bool InputDown();
-	bool InputRight();
-	bool InputLeft();
 };
 
 

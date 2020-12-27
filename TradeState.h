@@ -3,6 +3,7 @@
 #include "SpriteManager.h"
 #include <vector>
 #include "Item.h"
+#include <array>
 //
 
 class Player;
@@ -12,6 +13,10 @@ class Item;
 
 class TradeState : public State
 {
+	enum{
+		TEXT_TRADER=0,TEXT_REWARD,TEXT_REQUEST,TEXT_COUNT,
+		PANEL_TOP = 0,PANEL_LEFT,PANEL_RIGHT,PANEL_COUNT
+	};
 	// from playstate on resume
 	Player* mpPlayer = nullptr;
 	//from playstate on resume
@@ -20,10 +25,14 @@ class TradeState : public State
 	Inventory* mpInventory = nullptr;
 	Inventory::iterator* mpInventoryPosition;
 
+	Sprite mBackground;
+	std::array<Text, TEXT_COUNT> mText;
+	std::array<Panel, PANEL_COUNT> mPanels;
+	
 public:
 	TradeState();
 
-	virtual void Initialize()								override {};
+	virtual void Initialize()								override;
 	virtual void Update(const GameTimer& gt)				override;
 	virtual void Draw(const GameTimer& gt)					override;
 	virtual void OnResume()									override;
@@ -33,11 +42,9 @@ public:
 	virtual void OnMouseUp(WPARAM btnState, int x, int y)	override {};
 	virtual void OnMouseMove(WPARAM btnState, int x, int y) override {};
 	virtual void OnKeyboardInput(const GameTimer& gt)		override {};
-	bool InputUp();
-	bool InputDown();
-	bool InputRight();
-	bool InputLeft();
 	void CleanInventory(Inventory& inv);
 	bool Trade();
+	// on resume and on trade
+	void RefreshText();
 };
 

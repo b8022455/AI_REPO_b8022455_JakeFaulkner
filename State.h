@@ -6,6 +6,7 @@
 #include <map>
 #include <string>
 #include "GameObject.h"
+#include "SpriteManager.h"
 
 class GameTimer;
 
@@ -33,6 +34,15 @@ class StateManager
 	std::unordered_map<std::string, std::unique_ptr<State> > mStates;
 	// Key to the state that will update and render
 	std::string mCurrentState;
+
+	Sprite mMenuBackground;
+
+	// For enabling rendering in GameApp
+	bool mIsMenu;
+
+	// Menu or 3d
+	void EvaluateState();
+
 	// Validate state exists
 	bool IsValidState(const std::string stateName);
 public:
@@ -49,7 +59,12 @@ public:
 	void ChangeState(const std::string& name);
 	// Access data between states
 	State* GetState(const std::string& name);
-	
+	// For enabling rendering 3d in GameApp of menu bg
+	bool IsMenu()
+	{
+		return mIsMenu;
+	}
+
 	void OnMouseDown(WPARAM btnState, int x, int y);
 	void OnMouseUp(WPARAM btnState, int x, int y);
 	void OnMouseMove(WPARAM btnState, int x, int y);

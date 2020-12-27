@@ -23,6 +23,8 @@
 void SpriteManager::Init(ID3D12Device * device, ID3D12CommandQueue* commandQueue, UINT srvDescSize,DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthStencilFormat, CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle)
 {
 
+	UINT size = GameApp::Get().GetCbvSrvDescriptorSize();
+
 	mGraphicsMemory = std::make_unique<DirectX::GraphicsMemory>(device);
 
 	DirectX::ResourceUploadBatch resourceUpload(device);
@@ -30,7 +32,7 @@ void SpriteManager::Init(ID3D12Device * device, ID3D12CommandQueue* commandQueue
 	resourceUpload.Begin();
 	{
 		DirectX::RenderTargetState rtState(backBufferFormat,depthStencilFormat);
-		DirectX::SpriteBatchPipelineStateDescription sbPipelineDesc(rtState);
+		DirectX::SpriteBatchPipelineStateDescription sbPipelineDesc(rtState,nullptr,nullptr,nullptr);
 
 		mSpriteBatch = std::make_unique<DirectX::SpriteBatch>(device,resourceUpload, sbPipelineDesc);
 
@@ -42,9 +44,18 @@ void SpriteManager::Init(ID3D12Device * device, ID3D12CommandQueue* commandQueue
 			gpuHandle
 			);
 
+		cpuHandle.Offset(size);
+		gpuHandle.Offset(size);
+
 		//todo next
 		//mSpriteFont.at(1) = std::make_unique<DirectX::SpriteFont>( .. )
-
+		mSpriteFont.at(1) = std::make_unique<DirectX::SpriteFont>(
+			device,
+			resourceUpload,
+			L"Data/Fonts/Traveling__Typewriter_16.spritefont",
+			cpuHandle,
+			gpuHandle
+			);
 	}
 
 	auto uploadResourceEnd = resourceUpload.End(commandQueue);
@@ -70,7 +81,7 @@ void SpriteManager::DrawBegin(ID3D12GraphicsCommandList * commandList, const D3D
 void SpriteManager::DrawEnd()
 {
 	// Prints debug string
-	mSpriteFont.at(0)->DrawString(mSpriteBatch.get(), GameApp::Get().mDebugLog.str().c_str(), DirectX::XMFLOAT2(10.0f, 10.0f));
+	mSpriteFont.at(1)->DrawString(mSpriteBatch.get(), GameApp::Get().mDebugLog.str().c_str(), DirectX::XMFLOAT2(10.0f, 10.0f));
 
 	//Ends spritebatch
 	mSpriteBatch->End();
@@ -86,22 +97,38 @@ void SpriteManager::DrawSprite(const std::string & textureName)
 
 void SpriteManager::DrawSprite(const Sprite & s)
 {
-	
-	mSpriteBatch->Draw(
-		s.texture, 
-		s.textureSize, 
-		s.position,
-		//s.destinationRectangle, 
-		&s.sourceRectangle, 
-		s.color, 
-		s.rotation, 
-		s.origin, 
-		s.scale,
-		s.effects
-	);
+	if (s.destinationRectangle.left < 0)
+	{
+		mSpriteBatch->Draw(
+			s.texture, 
+			s.textureSize, 
+			s.position,
+			&s.sourceRectangle, 
+			s.color, 
+			s.rotation, 
+			s.origin, 
+			s.scale,
+			s.effects
+		);
+	}
+	else
+	{
+		mSpriteBatch->Draw(
+			s.texture,
+			s.textureSize,
+			s.destinationRectangle,
+			&s.sourceRectangle,
+			s.color,
+			s.rotation,
+			s.origin,
+			s.effects
+		);
+	}
+
+
 }
 
-void SpriteManager::DrawFont(size_t i, const std::string & output, const DirectX::XMFLOAT2& pos, bool centre)
+void SpriteManager::DrawString(size_t i, const std::string & output, const DirectX::XMFLOAT2& pos, bool centre)
 {
 	if (i < mSpriteFont.size())
 	{
@@ -125,6 +152,24 @@ void SpriteManager::DrawFont(size_t i, const std::string & output, const DirectX
 
 }
 
+void SpriteManager::DrawString(const Text & t)
+{
+	if (t.fontIndex < mSpriteFont.size())
+	{
+		const char* string = t.string.c_str();
+
+		const DirectX::SimpleMath::Vector2 origin =	(t.center)? 
+			mSpriteFont.at(t.fontIndex)->MeasureString(string, true) *-0.5f : //center 
+			t.origin;															// predefined origin
+	
+		mSpriteFont.at(t.fontIndex)->DrawString(mSpriteBatch.get(), string, t.position, t.color, t.rotation, origin, t.scale);
+	}
+	else
+	{
+		assert(false);
+	}
+}
+
 Sprite::Sprite(const std::string & textureName)
 {
 	Initialise(textureName);
@@ -133,7 +178,6 @@ Sprite::Sprite(const std::string & textureName)
 void Sprite::Initialise(const std::string & textureName, bool centreOrigin)
 {
 	texture = GameApp::Get().GetSpriteGpuDescHandle(textureName);
-
 	if (centreOrigin)
 	{
 		origin.x = 0.5f * (float)(sourceRectangle.right - sourceRectangle.left);
@@ -155,12 +199,11 @@ Button::Button(const Sprite & s, const std::string & t, const Action & a)
 	
 }
 
-
 void Button::Draw()
 {
 	sprite.Draw();
 
-	GameApp::Get().DrawFont(0, text,sprite.position, true);
+	GameApp::Get().DrawString(0, text,sprite.position, true);
 }
 
 void Button::SetPos(const XMFLOAT2 & pos)
@@ -170,6 +213,11 @@ void Button::SetPos(const XMFLOAT2 & pos)
 	//todo postion text and sprite
 }
 
+void Button::SetColor(const DirectX::SimpleMath::Vector4 & color)
+{
+	sprite.color = color;
+}
+
 void Button::Activate()
 {
 	switch (action)
@@ -177,12 +225,104 @@ void Button::Activate()
 	case Button::NO_ACTION:
 		break;
 	case Button::GOTO_MAIN_MENU:
-		GameApp::Get().ChangeState("MainMenu");
+		GameApp::Get().ChangeState(GC::STATE_MAINMENU);
 		break;
 	case Button::GOTO_GAME:
 		GameApp::Get().ChangeState(GC::STATE_PLAY);
 		break;
 	default:
 		break;
+	}
+}
+
+void Text::Draw()
+{
+	GameApp::Get().DrawString(*this);
+}
+
+void Panel::CalcSpriteRects()
+{
+	long midX = (mSourceRect.right + mSourceRect.left) >> 1;
+	long midY = (mSourceRect.bottom + mSourceRect.top) >> 1;
+
+	//subdivided by 1
+	long sizeX = (mSourceRect.right - mSourceRect.left) >> 1; 
+	long sizeY = (mSourceRect.bottom - mSourceRect.top) >> 1;
+
+	// top left
+	const std::array<RECT, COUNT> slice =
+	{
+		RECT{mSourceRect.left,		mSourceRect.top,			midX,				midY	},				//CORNER_TL
+		RECT{midX,					mSourceRect.top,			mSourceRect.right ,	midY	},				//CORNER_TR
+		RECT{mSourceRect.left,		midY,					midX,				mSourceRect.bottom},		//CORNER_BL
+		RECT{midX,					midY,					mSourceRect.right,	mSourceRect.bottom},		//CORNER_BR
+		//edges
+		RECT{mSourceRect.left,					midY,					midX,		midY + 1},				// left edge
+		RECT{midX,					mSourceRect.top,					midX + 1,		midY},				// top edge
+		RECT{midX,					midY,					mSourceRect.right,		midY + 1},				// right edge
+		RECT{midX,					midY,					midX + 1,					mSourceRect.bottom},// top edge
+
+		RECT{midX,					midY,					midX + 1,					midY + 1},			// middle
+	};
+
+	long inOffsetX = midX >> 1;
+	long inOffestY = midY >> 1;
+
+	const std::array<RECT, COUNT> destRects =
+	{
+		RECT{	mDestRect.left,mDestRect.top,	mDestRect.left + sizeX,	mDestRect.top + sizeY	},//CORNER_TL
+
+		RECT{	mDestRect.right - sizeX,  mDestRect.top,mDestRect.right,mDestRect.top + sizeY},//CORNER_TR
+		RECT{	mDestRect.left, mDestRect.bottom - sizeY, mDestRect.left + sizeX, mDestRect.bottom},//CORNER_BL
+		RECT{	mDestRect.right - sizeX,mDestRect.bottom - sizeY,mDestRect.right,mDestRect.bottom},//CORNER_BR
+
+		RECT{	mDestRect.left,mDestRect.top + sizeY,mDestRect.left + sizeX,mDestRect.bottom - sizeY}, //EDGE_L
+		RECT{	mDestRect.left + sizeX,mDestRect.top,mDestRect.right - sizeX,mDestRect.top + sizeY}, //edge t
+		RECT{	mDestRect.right - sizeX,	mDestRect.top + sizeY,	mDestRect.right,	mDestRect.bottom - sizeY	},
+		RECT{	mDestRect.left + sizeX,	mDestRect.bottom - sizeY,	mDestRect.right - sizeX,	mDestRect.bottom	},
+
+		RECT{mDestRect.left + sizeX,	mDestRect.top + sizeY,	mDestRect.right - sizeX,	mDestRect.bottom - sizeY	}
+	};
+
+
+
+	for (size_t i = 0; i < COUNT; ++i)
+	{
+		mSprites.at(i).sourceRectangle = slice.at(i);
+		mSprites.at(i).destinationRectangle = destRects.at(i);
+	}
+}
+
+void Panel::Initialize(const std::string & textureName, const RECT & src, const RECT & dst)
+{
+	mSourceRect = src;
+	mDestRect = dst;
+
+	for (auto& s : mSprites)
+	{
+		s.Initialise(textureName);
+	}
+
+	CalcSpriteRects();
+
+}
+
+void Panel::Move(DirectX::SimpleMath::Vector2 v)
+{
+	mDestRect.top += (long)v.y;
+	mDestRect.bottom += (long)v.y;
+
+	mDestRect.right += (long)v.x;
+	mDestRect.left += (long)v.x;
+
+	//re calc
+	CalcSpriteRects();
+}
+
+void Panel::Draw()
+{
+	for (auto& s : mSprites)
+	{
+		s.Draw();
 	}
 }

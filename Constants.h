@@ -63,8 +63,6 @@ namespace GC
 		TRADER_RADIUS = 1.75f
 		;
 
-
-
 	const std::string
 		GO_PLAYER = "Player",
 		GO_ENEMY = "Enemy",
@@ -75,6 +73,8 @@ namespace GC
 
 		STATE_PLAY = "PlayState",
 		STATE_TRADE = "TradeState",
+		STATE_PAUSE = "PauseMenu",
+		STATE_MAINMENU = "MainMenu",
 
 		TRADER_NAME_TEST = "TravellerTest",
 		TRADER_NAME_1 = "Traveller1",
@@ -82,6 +82,13 @@ namespace GC
 		TRADER_NAME_3 = "Traveller3",
 		TRADER_NAME_4 = "Traveller4"
 		;
+
+	const DirectX::XMFLOAT2
+		MENU_BUTTON_PIVOT{0.5f,0.6f},
+		MENU_BUTTON_DISTANCE{200.0f,100.0f}, // distance from pivot
+		MENU_TITLE_POSITION{20.0f,20.0f},
+		MENU_BODY_POSITION{20.0f,50.0f}
+	;
 
 	const DirectX::XMFLOAT3
 		DIRECTION_FWD({ 0.0f,	0.0f,	1.0f }),
@@ -91,7 +98,17 @@ namespace GC
 		DIRECTION_RAISE({ 0.0f,	1.0f,	0.0f }),
 		DIRECTION_LOWER({ 0.0f,	-1.0f,	0.0f })
 		;
+	const DirectX::XMFLOAT4
+		BUTTON_DOWN_COLOR({ 0.7f, 0.7f, 0.7f, 1.0f}),
+		BUTTON_UP_COLOR{ 1.0f, 1.0f, 1.0f, 1.0f },
 
+		TEXT_DARK_COLOR{ 0.2f, 0.2f, 0.2f, 1.0f},
+		TEXT_LIGHT_COLOR{ 1.0f, 1.0f, 1.0f, 1.0f }
+		;
+
+	const long
+		PANEL_SRC[4]{ 192, 128,256,192 }
+	;
 
 	const ItemMap ITEM_LIST = {
 		{"Empty",			{ItemCategory::None,	0}}, // 
@@ -135,10 +152,10 @@ namespace GC
 
 	const std::map<std::string, DialogPair> DIALOG_PAIR
 	{
-		{ TRADER_NAME_TEST,	{"Got some rare things to trade, stranger","heh heh heh. Thank you."	}},
-		{ TRADER_NAME_1,	{"Trade with me","Now on your way."	}},
-		{ TRADER_NAME_2,	{"I need some things, you need some things","Now I need some peace and quiet and you need to leave."	}}, //
-		{ TRADER_NAME_3,	{"Trade with me","Now on your way."	}}, //todo change 
-		{ TRADER_NAME_4, 	{"Trade with me","Now on your way."	}}, // no reward, charity
+		{ TRADER_NAME_TEST,	{"Got some rare things to trade, stranger","heh heh heh Thank you"	}},
+		{ TRADER_NAME_1,	{"Trade with me","Now on your way"	}},
+		{ TRADER_NAME_2,	{"I need some things   you need some things","Now I need some peace and quiet and you need to leave"	}}, //
+		{ TRADER_NAME_3,	{"Trade with me","Now on your way"	}}, //todo change 
+		{ TRADER_NAME_4, 	{"Trade with me","Now on your way"	}}, // no reward, charity
 	};
 }

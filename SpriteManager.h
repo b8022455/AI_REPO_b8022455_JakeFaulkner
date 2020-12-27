@@ -3,7 +3,7 @@
 #include <array>
 
 #ifndef FONT_SIZE
-#define FONT_SIZE 1
+#define FONT_SIZE 2
 #endif // !FONT_SIZE
 #include "DescriptorHeap.h"
 
@@ -12,17 +12,44 @@
 #include "Common/d3dx12.h"
 #include <GraphicsMemory.h>
 #include <d3d12.h>
+#include <CommonStates.h>
+#include "SimpleMath.h"
 
+struct Text
+{
+	std::string string = "";
+	DirectX::SimpleMath::Vector2 position = { 0,0 };
+	DirectX::SimpleMath::Vector4 color = {0.0f,0.0f,0.0f,1.0f};
+	float rotation = 0.0f; 
+	DirectX::SimpleMath::Vector2 origin = { 0,0 };
+	float scale = 1.0f;
+	size_t fontIndex = 0;
+	bool center = false;
+
+	void operator=(const Text& text)
+	{
+		string = text.string;
+		position = text.position;
+		color = text.color;
+		rotation = text.rotation;
+		origin = text.origin;
+		scale = text.scale;
+		fontIndex = text.fontIndex;
+		center = text.center;
+	}
+
+	void Draw();
+};
 
 struct Sprite
 {
 	std::string textureName; //lookup gpu handle
 	D3D12_GPU_DESCRIPTOR_HANDLE texture;
-	DirectX::XMUINT2 textureSize = DirectX::XMUINT2(128,128);
-	DirectX::XMFLOAT2 position = { 20.0f,20.0f };
-	//RECT destinationRectangle = {0,0,128,128};
-	RECT sourceRectangle = {0,0,128,128 };   //todo array for animations?
-	DirectX::FXMVECTOR color = DirectX::Colors::White;
+	DirectX::XMUINT2 textureSize = DirectX::XMUINT2(512,512);
+	DirectX::XMFLOAT2 position = { 0.0f,0.0f };
+	RECT destinationRectangle = {-1,-1,-1,-1}; //ignore if left = -1
+	RECT sourceRectangle = {0,0,512,512 };   //todo array for animations?
+	DirectX::SimpleMath::Vector4 color = DirectX::Colors::White;
 	float rotation = 0.0f;
 	float scale = 1.0f;
 	DirectX::XMFLOAT2 origin = DirectX::XMFLOAT2(0.0f, 0.0f);
@@ -37,7 +64,7 @@ struct Sprite
 		textureSize = s.textureSize;
 		texture = s.texture;
 		position = s.position;
-		//destinationRectangle = s.destinationRectangle;
+		destinationRectangle = s.destinationRectangle;
 		sourceRectangle = s.sourceRectangle;
 		rotation = s.rotation;
 		scale = s.scale;
@@ -49,6 +76,36 @@ struct Sprite
 	// Give a valid texture name
 	void Initialise(const std::string& textureName, bool centreOrigin = false);
 
+	void Draw();
+
+	
+};
+
+class Panel
+{
+	// array names
+	enum
+	{ 
+		CORNER_TL, 		CORNER_TR,		CORNER_BL,		CORNER_BR,
+		EDGE_L,		EDGE_T,		EDGE_R,		EDGE_B,
+		MIDDLE,		COUNT
+	};
+
+	// sprites making up the panel display
+	std::array<Sprite, COUNT> mSprites;
+	RECT mSourceRect = { 0,0,512,512 };
+	// Screen scace of panel
+	RECT mDestRect = { 0,0,512,512 };
+	
+
+	void CalcSpriteRects();
+	
+
+public:
+	void Initialize(const std::string& textureName, const RECT& src, const RECT& dst);
+
+	void Move(DirectX::SimpleMath::Vector2 v);
+	
 	void Draw();
 };
 
@@ -62,7 +119,7 @@ public:
 	};
 private:
 	Sprite sprite;
-	std::string text;
+	std::string text; // convert to Text
 	Action action;
 	bool enabled = true;
 
@@ -72,7 +129,7 @@ public:
 	void Draw();
 	void SetPos(const DirectX::XMFLOAT2& pos);
 
-
+	void SetColor(const DirectX::SimpleMath::Vector4& color);
 	void Activate();
 };
 
@@ -98,6 +155,8 @@ public:
 	// Called in State::Draw method. Begin and End methods are called in GameApp::Draw
 	void DrawSprite(const Sprite& sprite);
 	// Called in State::Draw method. Begin and End methods are called in GameApp::Draw
-	void DrawFont(size_t i, const std::string& output, const DirectX::XMFLOAT2& pos, bool centre = false);
+	void DrawString(size_t i, const std::string& output, const DirectX::XMFLOAT2& pos, bool centre = false);
+
+	void DrawString(const Text& t);
 };
 

@@ -9,37 +9,45 @@ TradeState::TradeState()
 {
 }
 
+void TradeState::Initialize()
+{
+	const DirectX::XMINT2 s = GameApp::Get().GetClientSizeU2(); //todo on resize
+
+	const long
+		top = s.y - (s.y / 2),// 2/3s down
+		colTop = top + 64,
+		colDivX = s.x / 2; // split down the middle
+
+	const float topStartFloat = (float)top,
+		colTopFloat = (float)colTop,
+		colDivXFloat = (float)colDivX,
+		textPadding = 20.0f;
+
+
+	mBackground.destinationRectangle = { 0, top, s.x, s.y };
+	mBackground.Initialise("iceTex");
+
+	
+	mText[TEXT_TRADER].position = { textPadding ,topStartFloat + textPadding }; // top
+	mText[TEXT_REQUEST].position = { textPadding , colTopFloat + textPadding }; // left col
+	mText[TEXT_REWARD].position = { colDivXFloat + textPadding, colTopFloat + textPadding}; // right col
+	
+	for (auto& t : mText)
+	{
+		t.fontIndex = 1;
+		t.color = GC::TEXT_LIGHT_COLOR;
+	}
+
+	const RECT r{		GC::PANEL_SRC[0],		GC::PANEL_SRC[1],		GC::PANEL_SRC[2],		GC::PANEL_SRC[3],	};
+
+	mPanels.at(PANEL_TOP).Initialize("uiTex", r, { 0, top, s.x, colTop });// top
+	mPanels.at(PANEL_LEFT).Initialize("uiTex", r, { 0,colTop,colDivX,s.y });// left col
+	mPanels.at(PANEL_RIGHT).Initialize("uiTex", r, { colDivX,colTop,s.x,s.y });// right col
+}
+
 void TradeState::Update(const GameTimer & gt)
 {
 	{
-		if (mpTrader)
-		{
-			GameApp::Get().mDebugLog << "Traded? " << !mpTrader->CanTrade() << "\n\n " << mpTrader->GetDialog() << "\n\n ";
-
-			//display trade details debug
-			if (mpTrader->CanTrade())
-			{
-				const InventoryUnordered* request = mpTrader->GetRequestItems();
-
-				GameApp::Get().mDebugLog << "\nRequest:\n";
-
-				std::for_each(request->begin(), request->end(), [](auto& inv)
-				{
-					GameApp::Get().mDebugLog << inv.first << " : " << inv.second << "\n";
-				});
-
-
-				GameApp::Get().mDebugLog << "\nReward:\n";
-
-				const InventoryUnordered* reward = mpTrader->GetRewardItems();
-
-				std::for_each(reward->begin(), reward->end(), [](auto& inv)
-				{
-					GameApp::Get().mDebugLog << inv.first << " : " << inv.second << "\n";
-				});
-			}
-			
-		}
 
 		//show inventory debug
 		GameApp::Get().mDebugLog << "\nInventory:\n";
@@ -53,30 +61,36 @@ void TradeState::Update(const GameTimer & gt)
 			GameApp::Get().mDebugLog << "Current Selected Item: " << (*mpInventoryPosition)->first << " x" << (*mpInventoryPosition)->second << "\n";
 	}
 
-	if (InputUp()) // W
+	if (Input::Get().AnyMenuButtonPressed())
 	{
-		
+		GameApp::Get().PlayClickDownAudio();
 	}
 
-	if (InputLeft()) // A
+	if (Input::Get().MenuInputUp()) // W
 	{
-		
 	}
 
-	if (InputRight()) // D
+	if (Input::Get().MenuInputLeft()) // A
+	{
+	}
+
+	if (Input::Get().MenuInputRight()) // D
 	{
 		if (Trade())
 		{
-			// todo play success noise
+			RefreshText(); // update text
+			GameApp::Get().PlayClickUpAudio(true);
 		}
 		else
 		{
-			// todo play fail noise
+			GameApp::Get().PlayClickUpAudio(false);
 		}
 	}
 
-	if (InputDown()) // S
+	if (Input::Get().MenuInputDown()) // S
 	{
+		GameApp::Get().PlayClickUpAudio(true);
+
 		// return to game
 		GameApp::Get().ChangeState(GC::STATE_PLAY);
 	}
@@ -84,6 +98,17 @@ void TradeState::Update(const GameTimer & gt)
 
 void TradeState::Draw(const GameTimer & gt)
 {
+	mBackground.Draw();
+
+	for (auto& p : mPanels)
+	{
+		p.Draw();
+	}
+	for (auto& t : mText)
+	{
+		t.Draw();
+	}
+
 }
 
 void TradeState::OnResume()
@@ -101,36 +126,12 @@ void TradeState::OnResume()
 		assert(false);
 		GameApp::Get().ChangeState(GC::STATE_PLAY);
 	}
+	else
+	{
+		RefreshText();
+	}
 
-}
 
-bool TradeState::InputUp()
-{
-	return
-		Input::Get().KeyHeld(GC::KEY_FW) ||
-		Input::Get().GamePad().dpadUp == ButtonState::RELEASED ||
-		Input::Get().GamePad().y == ButtonState::RELEASED;
-}
-
-bool TradeState::InputDown()
-{
-	return Input::Get().KeyHeld(GC::KEY_BK) ||
-		Input::Get().GamePad().dpadDown == ButtonState::RELEASED ||
-		Input::Get().GamePad().a == ButtonState::RELEASED;
-}
-
-bool TradeState::InputRight()
-{
-	return Input::Get().KeyHeld(GC::KEY_RT) ||
-		Input::Get().GamePad().dpadRight == ButtonState::RELEASED ||
-		Input::Get().GamePad().b == ButtonState::RELEASED;
-}
-
-bool TradeState::InputLeft()
-{
-	return Input::Get().KeyHeld(GC::KEY_LT) ||
-		Input::Get().GamePad().dpadLeft == ButtonState::RELEASED ||
-		Input::Get().GamePad().x == ButtonState::RELEASED;
 }
 
 void TradeState::CleanInventory(Inventory& inv)
@@ -175,6 +176,7 @@ bool TradeState::Trade()
 		if (temp.at(rIt->first) < 0)
 		{
 			validTrader = false;
+
 		}
 
 		++rIt;
@@ -211,5 +213,23 @@ bool TradeState::Trade()
 	}
 
 	return ret;
+}
 
+void TradeState::RefreshText()
+{
+	
+	mText[TEXT_TRADER].string = mpTrader->GetDialog().c_str();
+
+	if (mpTrader->CanTrade())
+	{
+		// show trade items if can trade
+		mText[TEXT_REQUEST].string = mpTrader->GetRequestAsString().c_str();
+		mText[TEXT_REWARD].string = mpTrader->GetRewardAsString().c_str();
+	}
+	else
+	{
+		//show nothing
+		mText[TEXT_REQUEST].string = "";
+		mText[TEXT_REWARD].string = mText[TEXT_REQUEST].string;
+	}
 }

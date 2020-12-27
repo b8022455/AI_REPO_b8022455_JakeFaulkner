@@ -12,6 +12,8 @@ class Trader : public GameObject
 	DialogPair mDialog;
 	
 	bool traded = false;
+
+
 public:
 
 	Trader(const std::string& dialog, const std::string& requestList, const std::string& rewardItems);
@@ -57,11 +59,45 @@ public:
 		return mRewardItems;
 	}
 	// Returns dialog before and after trading.
-	std::string GetDialog()
+	const std::string GetDialog() const
 	{
 		return mDialog.first;
 	}
 
+	const std::string GetRewardAsString()
+	{
+		std::ostringstream s;
+
+		s << "  Reward";
+
+		std::for_each(mRewardItems->begin(), mRewardItems->end(), [&s](auto& inv)
+		{
+			s << "\n    ";
+			s << inv.first;
+			s << "  Qty ";
+			s << inv.second;
+		});
+
+		return s.str();
+	}
+
+	const std::string GetRequestAsString()
+	{
+		std::ostringstream s;
+
+		s << "Request";
+
+		std::for_each(mRequestItems->begin(), mRequestItems->end(), [&s](auto& inv)
+		{
+			s << "\n    ";
+			s << inv.first;
+			s << "  Qty ";
+			s << inv.second;
+
+		});
+
+		return s.str();
+	}
 
 
 };

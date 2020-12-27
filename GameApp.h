@@ -15,7 +15,6 @@
 #include "TextConsole.h"
 #include "Player.h"
 #include "State.h"
-
 #include "Input.h"
 
 
@@ -59,15 +58,45 @@ public:
 		mSpriteManager.DrawSprite(sprite);
 	}
 
-	void DrawFont(size_t i, const std::string& output, const XMFLOAT2& pos, bool centre = false);
+	void DrawString(size_t i, const std::string& output, const XMFLOAT2& pos, bool centre = false);
 
+	void DrawString(const Text& t);
 
 	void ChangeState(const std::string& name);
 
 	State* GetState(const std::string& name);
 
+	const Texture* const GetTexture(const std::string& name)
+	{
+		if (mTextures.count(name) == 1)
+		{
+			return mTextures[name].get();
+		}
+		else
+		{
+			assert(false);
+			return nullptr;
+		}
+	}
 
 	XMFLOAT2 GetClientSize();
+	XMINT2 GetClientSizeU2();
+
+	const UINT GetCbvSrvDescriptorSize() const
+	{
+		return mCbvSrvDescriptorSize;
+	}
+
+	GameAudio& GetAudio()
+	{
+		return mGameAudio;
+	}
+
+	//audio trigger for menu button press
+	void PlayClickDownAudio();
+	// audio trigger for menu button release. Bool passed if the button is unable take actions
+	void PlayClickUpAudio(bool success);
+
 	// Output to viewport
 	std::ostringstream mDebugLog;
 	UINT mInstanceCount = 0;
@@ -104,10 +133,10 @@ private:
 	std::unique_ptr<RenderItem> BuildRenderItem(UINT& objCBindex,const std::string& geoName, const std::string& subGeoName);
 	void BuildRenderItems();
 	void DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems);
-	
 
+public:
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GetStaticSamplers();
-	
+private:
 
 	
 private:

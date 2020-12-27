@@ -5,6 +5,29 @@
 using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
 
+MenuState::MenuState(const Text & t, const Text & b, const Button & b0, const Button & b1, const Button & b2, const Button & b3)
+{
+	DirectX::SimpleMath::Vector2 clientSize = GameApp::Get().GetClientSize();
+
+	mTitle = t;
+	mBody = b;
+
+	mButtons.reserve(4);
+
+	mButtons.push_back(b0);
+	mButtons.push_back(b1);
+	mButtons.push_back(b2);
+	mButtons.push_back(b3);
+
+
+	DirectX::XMFLOAT2 relButtonPivot = clientSize * GC::MENU_BUTTON_PIVOT;
+
+	mButtons.at(0).SetPos({ relButtonPivot.x								,	relButtonPivot.y - GC::MENU_BUTTON_DISTANCE.y });
+	mButtons.at(1).SetPos({ relButtonPivot.x - GC::MENU_BUTTON_DISTANCE.x	,	relButtonPivot.y });
+	mButtons.at(2).SetPos({ relButtonPivot.x + GC::MENU_BUTTON_DISTANCE.x	,	relButtonPivot.y });
+	mButtons.at(3).SetPos({ relButtonPivot.x								,	relButtonPivot.y + GC::MENU_BUTTON_DISTANCE.y });
+}
+
 MenuState::MenuState(const Button & b0, const Button & b1, const Button & b2, const Button & b3)
 {
 	mButtons.reserve(4);
@@ -26,67 +49,65 @@ MenuState::MenuState(const Button & b0, const Button & b1, const Button & b2, co
 	mButtons.at(3).SetPos({ centre.x			,	centre.y + offset.y		});
 }
 
+void MenuState::Initialize()
+{
+	
+}
+
 void MenuState::Update(const GameTimer & gt)
 { 
 	assert(mButtons.size() == 4);
 
-	//todo on release
-
-	if (InputUp()) // W
+	if (Input::Get().AnyMenuButtonPressed())
 	{
+		GameApp::Get().PlayClickDownAudio();
+	}
+
+	//down
+	if (Input::Get().MenuUpHeld()) mButtons.at(0).SetColor(GC::BUTTON_DOWN_COLOR);
+	if(Input::Get().MenuLeftHeld()) mButtons.at(1).SetColor(GC::BUTTON_DOWN_COLOR);
+	if(Input::Get().MenuRightHeld())mButtons.at(2).SetColor(GC::BUTTON_DOWN_COLOR);
+	if(Input::Get().MenuDownHeld())mButtons.at(3).SetColor(GC::BUTTON_DOWN_COLOR);
+
+	//Release
+
+	if (Input::Get().MenuInputUp()) // W
+	{
+		GameApp::Get().PlayClickUpAudio(true);
+		mButtons.at(3).SetColor(GC::BUTTON_UP_COLOR);
 		mButtons.at(0).Activate();
 	}
 
-	if (InputLeft()) // A
+	if (Input::Get().MenuInputLeft()) // A
 	{
+		GameApp::Get().PlayClickUpAudio(true);
+		mButtons.at(3).SetColor(GC::BUTTON_UP_COLOR);
 		mButtons.at(1).Activate();
 	}
 	
-	if (InputRight()) // D
+	if (Input::Get().MenuInputRight()) // D
 	{
+		GameApp::Get().PlayClickUpAudio(true);
+		mButtons.at(3).SetColor(GC::BUTTON_UP_COLOR);
 		mButtons.at(2).Activate();
 	}
 	
-	if (InputDown()) // S
+	if (Input::Get().MenuInputDown()) // S
 	{
+		GameApp::Get().PlayClickUpAudio(true);
+		mButtons.at(3).SetColor(GC::BUTTON_UP_COLOR);
 		mButtons.at(3).Activate();
 	}
-
 }
 
 void MenuState::Draw(const GameTimer & gt)
 {
+	mTitle.Draw();
+	mBody.Draw();
+	//mTempPanel.Draw();
+
 	for (auto& b : mButtons)
 	{
 		b.Draw();
 	}
-}
-
-bool MenuState::InputUp()
-{
-	return 
-		Input::Get().KeyHeld(GC::KEY_FW) || 
-		Input::Get().GamePad().dpadUp == ButtonState::RELEASED || 
-		Input::Get().GamePad().y == ButtonState::RELEASED;
-}
-
-bool MenuState::InputDown()
-{
-	return Input::Get().KeyHeld(GC::KEY_BK) ||
-		Input::Get().GamePad().dpadDown == ButtonState::RELEASED ||
-		Input::Get().GamePad().a == ButtonState::RELEASED;
-}
-
-bool MenuState::InputRight()
-{
-	return Input::Get().KeyHeld(GC::KEY_RT) ||
-		Input::Get().GamePad().dpadRight == ButtonState::RELEASED ||
-		Input::Get().GamePad().b == ButtonState::RELEASED;
-}
-
-bool MenuState::InputLeft()
-{
-	return Input::Get().KeyHeld(GC::KEY_LT) ||
-		Input::Get().GamePad().dpadLeft == ButtonState::RELEASED ||
-		Input::Get().GamePad().x == ButtonState::RELEASED;
 }
