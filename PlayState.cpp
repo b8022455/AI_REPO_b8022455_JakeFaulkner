@@ -246,7 +246,7 @@ void PlayState::Update(const GameTimer & gt)
 		e.Update(gt); 
 		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetCollisionPoint()))
 		{
-			mPlayer.DamagePlayer(e.attack);
+			mPlayer.DamagePlayer(e.GetAttack());
 		}
 
 		if (mCombatController.CheckCollision(

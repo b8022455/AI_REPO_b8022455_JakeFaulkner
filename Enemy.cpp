@@ -167,10 +167,14 @@ void Enemy::UpdateAttack()
 	//}
 }
 
-
 DirectX::XMFLOAT3 Enemy::GetCollisionPoint()
 {
 	return DirectX::XMFLOAT3(attackCollisionPoint._41,
 							 attackCollisionPoint._42,
 							 attackCollisionPoint._43);
+}
+
+void Enemy::SetDirection(int dir)
+{
+	playerDirection = dir;
 }
