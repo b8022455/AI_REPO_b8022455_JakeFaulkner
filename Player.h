@@ -33,6 +33,7 @@ public:
 
   float hazardTimer = 0; // needs to be set as needed, used to apply hazard effects (not every frame)
   bool Slowed = false;
+  bool Slippy = false;
 
   // used to apply boundaries to player
   const float PLAYER_RIGHTBOUND = 15.0f;
