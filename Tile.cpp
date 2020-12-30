@@ -121,9 +121,15 @@ void TileManager::Initialize()
 								// xgrid = i -H1Dist + Xcycle + x
 								// ygrid = o + Ycycle - x
 								if ((i - H2Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-									(i - H2Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
-									if (coords[i - H2Dist + Xcycle + x][o + Ycycle - x] == 6)
-										SAFE = false;
+									(i - H2Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) {
+									if (H2Priority == 0) // own tiles
+										if (coords[i - H2Dist + Xcycle + x][o + Ycycle - x] == 6)
+											SAFE = false;
+									if (H2Priority == 1) // prevent covering poison
+										if ((coords[i - H1Dist + Xcycle + x][o + Ycycle - x] == 6) || 
+											(coords[i - H1Dist + Xcycle + x][o + Ycycle - x] == 5))
+											SAFE = false;
+								}
 							}
 							Xcycle++;
 						}
@@ -132,9 +138,15 @@ void TileManager::Initialize()
 								// xgrid = i(-H1Dist+1) + Xcycle + x
 								// ygrid = o + Ycyle - x
 								if ((i - H2Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-									(i - H2Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
-									if (coords[i - H2Dist + Xcycle + x][o + Ycycle - x] == 6)
-										SAFE = false;
+									(i - H2Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) {
+									if (H2Priority == 0) // own tiles
+										if (coords[i - H2Dist + Xcycle + x][o + Ycycle - x] == 6)
+											SAFE = false;
+									if (H2Priority == 1) // can't cover poison
+										if ((coords[i - H2Dist + Xcycle + x][o + Ycycle - x] == 6) || 
+											(coords[i - H2Dist + Xcycle + x][o + Ycycle - x] == 5))
+											SAFE = false;
+								}
 							}
 							Ycycle++;
 						}
@@ -185,9 +197,20 @@ void TileManager::Initialize()
 								// xgrid = i -H1Dist + Xcycle + x
 								// ygrid = o + Ycycle - x
 								if ((i - H3Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-									(i - H3Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
-									if (coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 4)
-										SAFE = false;
+									(i - H3Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) {
+									if (H3Priority == 0) // can't cover own tiles
+										if (coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 4)
+											SAFE = false;
+									if (H3Priority == 1) // can't cover mud
+										if ((coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 4) ||
+											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 6))
+											SAFE = false;
+									if (H3Priority == 2) // can't cover mud or poison
+										if ((coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 4) ||
+											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 6) ||
+											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 5))
+											SAFE = false;
+								}
 							}
 							Xcycle++;
 						}
@@ -196,9 +219,20 @@ void TileManager::Initialize()
 								// xgrid = i(-H1Dist+1) + Xcycle + x
 								// ygrid = o + Ycyle - x
 								if ((i - H3Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-									(i - H3Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
-									if (coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 4)
-										SAFE = false;
+									(i - H3Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) {
+									if (H3Priority == 0) // own tiles
+										if (coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 4)
+											SAFE = false;
+									if (H3Priority == 1) // can't cover mud
+										if ((coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 4) ||
+											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 6))
+											SAFE = false;
+									if (H3Priority == 2) // can't cover mud or poison
+										if ((coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 4) ||
+											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 6) ||
+											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 5))
+											SAFE = false;
+								}
 							}
 							Ycycle++;
 						}
@@ -538,6 +572,7 @@ void TileManager::Initialize()
 			//}
 		}
 	}
+	// TODO: (NOTE) not sure but tiles may be getting saved into tilegrid twice (as tile & gameobject) if possible
 
 	// create tiles
 	mTileGrid.reserve(mDimention);

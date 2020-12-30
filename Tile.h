@@ -76,19 +76,31 @@ public:
 
 	int H1 = 2; // frequency of hazard spots to generate / health
 	int H2 = 4; // frequency of hazard spots to generate / slow
-	int H3 = 1;// frequency of hazard spots to generate / slip?
+	int H3 = 1;// frequency of hazard spots to generate / slip
 	int H1MaxSize = 3; // maximum size of hazard spot / health - ADVANCED GENERATION
 	int H2MaxSize = 3; // maximum size of hazard spot / slow - ADVANCED GENERATION
-	int H3MaxSize = 3; // maximum size of hazard spot / slip? - ADVANCED GENERATION
+	int H3MaxSize = 3; // maximum size of hazard spot / slip - ADVANCED GENERATION
 	int H1MinSize = 2; // minimum size of hazard spot / health - ADVANCED GENERATION
 	int H2MinSize = 2; // minimum size of hazard spot / slow - ADVANCED GENERATION
-	int H3MinSize = 2; // minimum size of hazard spot / slip? - ADVANCED GENERATION
+	int H3MinSize = 2; // minimum size of hazard spot / slip - ADVANCED GENERATION
+
+	// TODO: IMPLEMENT LEVELS OF HAZARD AVOIDANCE (OVERLAP, NONE, ALL)
+	// DEFAULT - TILES OF OWN TYPE DON'T OVERLAP = 0
+	// ORDER IS: POISON THEN MUD THEN ICE
+	// POISON - NOT OWN						(CAN'T COVER ANYTHING ELSE by design (first in generation))
+	// MUD - NOT OWN, POISON, NOT ICE		(CAN COVER POISON)
+	// ICE - NOT OWN, NOT POISON, NOT MUD	(CAN'T COVER ANYTHING ELSE)
+	// 0 own tiles, 1 means tile before, 2 etc, NEED MORE LATER FOR SPECIFIC HAZARD ORDER
+	//int H1Priority = 0; // NOT NEEDED DUE TO POSITION IN GENERATION ORDER (1ST)
+	int H2Priority = 0; // affects positioning of central based on other hazards / slow - ADVANCED GENERATION
+	int H3Priority = 2; // affects positioning of central based on other hazards / slip - ADVANCED GENERATION
+
 	int H1Dist = 5; // distance between other hazards from central spot / health - ADVANCED GENERATION
 	int H2Dist = 3; // distance between other hazards from central spot / slow - ADVANCED GENERATION
-	int H3Dist = 3; // distance between other hazards from central spot / slip? - ADVANCED GENERATION
+	int H3Dist = 3; // distance between other hazards from central spot / slip - ADVANCED GENERATION
 	int H1Random = 50; // randomness attributed to hazard generation / health - ADVANCED GENERATION
 	int H2Random = 200; // randomness attributed to hazard generation / slow - ADVANCED GENERATION
-	int H3Random = 150; // randomness attributed to hazard generation / slip? - ADVANCED GENERATION
+	int H3Random = 150; // randomness attributed to hazard generation / slip - ADVANCED GENERATION
 	int H1RandomDist = 2; // distance from regular gen / health - ADVANCED GENERATION
 	int H2RandomDist = 3; // distance from regular gen / slow - ADVANCED GENERATION
 	int H3RandomDist = 3; // distance from regular gen / slip - ADVANCED GENERATION

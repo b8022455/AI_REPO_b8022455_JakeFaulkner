@@ -26,32 +26,38 @@ void Player::Update(const GameTimer & gt)
 		DOWN_velocity = 0;
 	
 	if (mpInstance->World._41 <= PLAYER_RIGHTBOUND) {
-		if (Slowed == true) {
+		if (Slowed == true) 
 			mpInstance->World._41 += (0.5f * RIGHT_velocity) * dt;
-		}
-		if (Slowed != true) {
+		if (Slippy == true) 
+			mpInstance->World._41 += (1.5f * RIGHT_velocity) * dt;
+		if (Slowed != true && Slippy != true) 
 			mpInstance->World._41 += RIGHT_velocity * dt;
-		}
 	}
 	if (mpInstance->World._41 >= PLAYER_LEFTBOUND)
 	{
 		if (Slowed == true)
 			mpInstance->World._41 -= (0.5f * LEFT_velocity) * dt;
-		if (Slowed == false)
+		if (Slippy == true)
+			mpInstance->World._41 -= (1.5f * LEFT_velocity) * dt;
+		if (Slowed == false && Slippy == false)
 			mpInstance->World._41 -= LEFT_velocity * dt;
 	}
 	if (mpInstance->World._43 <= PLAYER_UPBOUND)
 	{
 		if (Slowed == true)
 			mpInstance->World._43 += (0.5f * UP_velocity) * dt;
-		if (Slowed == false)
+		if (Slippy == true)
+			mpInstance->World._43 += (1.5f * UP_velocity) * dt;
+		if (Slowed == false && Slippy == false)
 			mpInstance->World._43 += UP_velocity * dt;
 	}
 	if (mpInstance->World._43 >= PLAYER_DOWNBOUND)
 	{
 		if (Slowed == true)
 			mpInstance->World._43 -= (0.5f * DOWN_velocity) * dt;
-		if (Slowed == false)
+		if (Slippy == true)
+			mpInstance->World._43 -= (1.5f * DOWN_velocity) * dt;
+		if (Slowed == false && Slippy == false)
 			mpInstance->World._43 -= DOWN_velocity * dt;
 	}
 

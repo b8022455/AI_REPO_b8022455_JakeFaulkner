@@ -238,6 +238,13 @@ void PlayState::Update(const GameTimer & gt)
 			mPlayer.Slowed = false;
 		}
 	
+		if (mTileManager.GetIndex(tileX, tileZ) == 4 || mTileManager.GetIndex(tileX2, tileZ2) == 4) {
+			mPlayer.Slippy = true;
+		}
+
+		if (mTileManager.GetIndex(tileX, tileZ) != 4 && mTileManager.GetIndex(tileX2, tileZ2) != 4) {
+			mPlayer.Slippy = false;
+		}
 	}
 	
 
