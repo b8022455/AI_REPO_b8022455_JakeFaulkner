@@ -100,7 +100,7 @@ public:
 		return GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT];
 	}
 
-
+	
 	const float CAM_ANGLE = 45.0f;
 	const DirectX::XMFLOAT3 CAM_OFFSET{ 0.0f,10.0f,-10.0f }; 
 	Experience mExperience;

@@ -57,13 +57,14 @@ namespace GC
 
 		;
 
-
 	const float
 		ZOOM_SPEED = 20.0f,
 		MOVE_SPEED = 5.0f,
 
 		TRADER_RADIUS = 1.75f
 		;
+
+
 
 	const float FOOTSTEP_PITCH[6]
 	{
@@ -85,8 +86,8 @@ namespace GC
 
 	const float VOICE_PITCH[5]
 	{
+		0.4f,
 		0.7f,
-		0.8f,
 		0.9f,
 		0.95f,
 		1.0f
@@ -113,6 +114,18 @@ namespace GC
 		TRADER_NAME_3 = "Traveller3",
 		TRADER_NAME_4 = "Traveller4"
 		;
+
+	const std::string TRADER_TALK[6]
+	{
+		"trader01",
+		"trader02",
+		"trader03",
+		"trader04",
+		"trader05",
+		"trader06"
+	};
+
+	const size_t TRADER_TALK_COUNT = sizeof(TRADER_TALK) / sizeof(TRADER_TALK[0]);
 
 	const DirectX::XMFLOAT2
 		MENU_BUTTON_PIVOT{0.5f,0.6f},

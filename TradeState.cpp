@@ -128,7 +128,9 @@ void TradeState::OnResume()
 	}
 	else
 	{
+		mPitch = mpTrader->GetPitch();
 		RefreshText();
+
 	}
 
 
@@ -219,6 +221,8 @@ void TradeState::RefreshText()
 {
 	
 	mText[TEXT_TRADER].string = mpTrader->GetDialog().c_str();
+
+	GameApp::Get().GetAudio().Play(GC::TRADER_TALK[rand()%GC::TRADER_TALK_COUNT],nullptr,false,1.0f,mPitch);
 
 	if (mpTrader->CanTrade())
 	{

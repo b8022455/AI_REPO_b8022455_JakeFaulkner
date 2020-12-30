@@ -7,11 +7,12 @@
 #include "Common/Camera.h"
 #include "GameObject.h"
 #include "Velocity.h"
-
+#include "DeltaTimer.h"
 
 //using namespace DirectX;
 
 enum PlayerFacingDirection {Left, Right, Up, Down};
+
 
 class Player : public GameObject
 {
@@ -42,6 +43,8 @@ public:
 
   PlayerFacingDirection playerDir = PlayerFacingDirection::Right;
   int attack = 10;		//Base attack stat (base amount + weapon amount), need to make private but public for debugging purposes
+
+  DeltaTimer mFootstepTimer;
 
 private:
   void DamageEnemy();		

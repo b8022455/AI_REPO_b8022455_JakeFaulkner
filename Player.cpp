@@ -55,6 +55,14 @@ void Player::Update(const GameTimer & gt)
 			mpInstance->World._43 -= DOWN_velocity * dt;
 	}
 
+	// if moving count down to next step
+	if (RIGHT_velocity > 0.1f || LEFT_velocity > 0.1f || UP_velocity > 0.1f || DOWN_velocity > 0.1f)
+	{
+		if (mFootstepTimer.HasTimeElapsed(gt.DeltaTime(), 0.5f))
+		{
+			GameApp::Get().GetAudio().Play("playerFootstep", nullptr, false, 1.0f, GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT]);
+		}
+	}
 }
 
 void Player::MoveUp( const GameTimer& gt)

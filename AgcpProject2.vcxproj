@@ -191,6 +191,7 @@
     <ClInclude Include="Common\MathHelper.h" />
     <ClInclude Include="Common\UploadBuffer.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="DeltaTimer.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="FrameResource.h" />
     <ClInclude Include="GameApp.h" />

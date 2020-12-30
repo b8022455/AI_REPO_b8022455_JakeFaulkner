@@ -133,8 +133,13 @@ bool GameApp::Initialize()
 		// Plays audio from 'music' engine. No need to specify engine
 		mGameAudio.Play("ring9", nullptr, true);
 		// Is that better?
-		mGameAudio.SetEngineVolume("music", 0.1f);
-		mGameAudio.SetEngineVolume("sfx", 0.1f);
+
+		float volume = 0.2f;
+		mGameAudio.SetEngineVolume("music", volume);
+		mGameAudio.SetEngineVolume("sfx", volume);
+		mGameAudio.SetEngineVolume("trader", volume);
+		mGameAudio.SetEngineVolume("ui", volume);
+		mGameAudio.SetEngineVolume("player", volume);
 	}
 
 

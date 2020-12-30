@@ -12,7 +12,7 @@ using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
 void PlayState::InitializeTraders()
 {
-
+	
 	mTraders.push_back(Trader(GC::TRADER_NAME_TEST, GC::TRADER_NAME_TEST, GC::TRADER_NAME_TEST));
 	mTraders.push_back(Trader(GC::TRADER_NAME_1, GC::TRADER_NAME_1, GC::TRADER_NAME_1));
 	mTraders.push_back(Trader(GC::TRADER_NAME_2, GC::TRADER_NAME_2, GC::TRADER_NAME_2));
@@ -200,8 +200,8 @@ void PlayState::Update(const GameTimer & gt)
 	// LAST COMPONENT OF THE CALCULATION WILL CAUSE PROBLEMS IF SIZE OF EACH TILE ITSELF INCREASED
 	//const float diff = float(mTileManager.MaxGen) / 30.0f;
 	const float diff2 = 30.0f / float(mTileManager.MaxGen); // WORLDSPACE / GRID SIZE
-	int underX = round(mPlayer.GetPos().x); // worldspace position does not correspond to tilemap coordinate
-	int underZ = round(mPlayer.GetPos().z);
+	int underX = (int)round(mPlayer.GetPos().x); // worldspace position does not correspond to tilemap coordinate
+	int underZ = (int)round(mPlayer.GetPos().z);
 	float tileX = (underX + (0.5f * (mTileManager.MaxGen))/* * diff*/); // greater
 	float tileZ = (underZ + (0.5f *(mTileManager.MaxGen)))/* * diff*/; // greater
 	float tileX2 = (underX + (0.5f * (mTileManager.MaxGen)) * diff2); //lesser

@@ -10,7 +10,7 @@ class Trader : public GameObject
 	const InventoryUnordered* mRewardItems;
 	// Swap when traded
 	DialogPair mDialog;
-	
+	size_t mPitchIndex;
 	bool traded = false;
 
 
@@ -99,6 +99,9 @@ public:
 		return s.str();
 	}
 
-
+	float GetPitch()
+	{
+		return GC::VOICE_PITCH[mPitchIndex];
+	}
 };
 

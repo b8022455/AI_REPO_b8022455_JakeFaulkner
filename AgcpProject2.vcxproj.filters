@@ -218,6 +218,9 @@
     <ClInclude Include="AttackTimeDelay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DeltaTimer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Default.hlsl">

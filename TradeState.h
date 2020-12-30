@@ -28,6 +28,7 @@ class TradeState : public State
 	Sprite mBackground;
 	std::array<Text, TEXT_COUNT> mText;
 	std::array<Panel, PANEL_COUNT> mPanels;
+	float mPitch = 1.0f;
 	
 public:
 	TradeState();
