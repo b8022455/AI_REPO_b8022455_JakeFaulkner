@@ -87,17 +87,38 @@ bool GameApp::Initialize()
 		// Creates an 'engine' for sound effects. 
 		mGameAudio.CreateEngine("sfx", AUDIO_ENGINE_TYPE::SFX);
 		mGameAudio.LoadSound("sfx", "chord", L"Data/Sounds/chord.wav");
+		mGameAudio.LoadSound("sfx", "playerFootstep", L"Data/Sounds/playerFootstep.wav");
+		mGameAudio.LoadSound("sfx", "EnemyDie1", L"Data/Sounds/enemyrDie01.wav");
+		mGameAudio.LoadSound("sfx", "EnemyAttack1", L"Data/Sounds/enemyrAttack01.wav");
+		mGameAudio.LoadSound("sfx", "EnemyHit1", L"Data/Sounds/enemyrHit01.wav");
+
 		// Plays up to 20 instances at once. SFX only
 		mGameAudio.SetCacheSize("sfx", 20);
 		// New instance to play when cache is full. Oldest instance removed SFX only
 		mGameAudio.ForceAudio("sfx", true);
+
+		mGameAudio.CreateEngine("trader", AUDIO_ENGINE_TYPE::SFX);
+		mGameAudio.LoadSound("trader", "trader01", L"Data/Sounds/trader01.wav");
+		mGameAudio.LoadSound("trader", "trader02", L"Data/Sounds/trader02.wav");
+		mGameAudio.LoadSound("trader", "trader03", L"Data/Sounds/trader03.wav");
+		mGameAudio.LoadSound("trader", "trader04", L"Data/Sounds/trader04.wav");
+		mGameAudio.LoadSound("trader", "trader05", L"Data/Sounds/trader05.wav");
+		mGameAudio.LoadSound("trader", "trader06", L"Data/Sounds/trader06.wav");
+		// stops talking before saying something else
+		mGameAudio.ForceAudio("trader", true);
+		mGameAudio.SetCacheSize("trader", 1);
+
+		mGameAudio.CreateEngine("player", AUDIO_ENGINE_TYPE::SFX);
+		mGameAudio.LoadSound("player", "playerHit01", L"Data/Sounds/playerHit01.wav");
+		// player can only make one sound at a time
+		mGameAudio.ForceAudio("player", true);
+		mGameAudio.SetCacheSize("player", 1);
 
 		mGameAudio.CreateEngine("ui", AUDIO_ENGINE_TYPE::SFX);
 		// Loads a sound onto an 'engine'
 		mGameAudio.LoadSound("ui", "clickDown", L"Data/Sounds/clickDown.wav");
 		mGameAudio.LoadSound("ui", "clickUpFail", L"Data/Sounds/clickUpFail.wav");
 		mGameAudio.LoadSound("ui", "clickUpSuccess", L"Data/Sounds/clickUpSuccess.wav");
-
 		mGameAudio.SetCacheSize("ui", 30);
 		// New instance to play when cache is full. Oldest instance removed SFX only
 		mGameAudio.ForceAudio("ui", true);

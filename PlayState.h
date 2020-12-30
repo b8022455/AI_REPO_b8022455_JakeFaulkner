@@ -90,6 +90,17 @@ public:
 	// Only use after changes have been made of inventory. Removes items with 0 quantity.
 	void CleanInventory(Inventory& inv);
 
+	const float GetRandomVoicePitch() const
+	{
+		return GC::VOICE_PITCH[rand()%GC::VOICE_PITCH_COUNT];
+	}
+
+	const float GetRandomFootstepPitch() const
+	{
+		return GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT];
+	}
+
+
 	const float CAM_ANGLE = 45.0f;
 	const DirectX::XMFLOAT3 CAM_OFFSET{ 0.0f,10.0f,-10.0f }; 
 	Experience mExperience;

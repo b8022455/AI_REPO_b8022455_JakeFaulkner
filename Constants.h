@@ -7,6 +7,8 @@
 #include <vector>
 #include <map>
 
+
+
 typedef std::pair<std::string, std::string> DialogPair;
 
 namespace GC
@@ -62,6 +64,35 @@ namespace GC
 
 		TRADER_RADIUS = 1.75f
 		;
+
+	const float FOOTSTEP_PITCH[6]
+	{
+		0.5f,
+		0.6f,
+		0.7f,
+		0.8f,
+		0.9f,
+		1.0f
+	};
+	const size_t FOOTSTEP_PITCH_COUNT = sizeof(GC::FOOTSTEP_PITCH) / sizeof(GC::FOOTSTEP_PITCH[0]);
+
+	/*
+	// todo place in playstate
+	float RandomFootstepPitch()
+	{
+		return FOOTSTEP_PITCH[rand() % 7];
+	}*/
+
+	const float VOICE_PITCH[5]
+	{
+		0.7f,
+		0.8f,
+		0.9f,
+		0.95f,
+		1.0f
+	};
+
+	const size_t VOICE_PITCH_COUNT = sizeof(GC::VOICE_PITCH) / sizeof(GC::VOICE_PITCH[0]);
 
 	const std::string
 		GO_PLAYER = "Player",

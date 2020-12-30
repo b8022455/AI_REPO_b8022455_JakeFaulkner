@@ -247,6 +247,7 @@ void PlayState::Update(const GameTimer & gt)
 		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetCollisionPoint()))
 		{
 			mPlayer.DamagePlayer(e.GetAttack());
+			GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f,GetRandomVoicePitch());
 		}
 
 		if (mCombatController.CheckCollision(
@@ -270,6 +271,12 @@ void PlayState::Update(const GameTimer & gt)
 				e.mpInstance->World._42 -= 200.0f;
 				//e.mpInstance = nullptr;
 				mEnemies.erase(mEnemies.begin() + i);
+
+				GameApp::Get().GetAudio().Play("EnemyDie1", nullptr, false, 1.0f, GetRandomVoicePitch());
+			}
+			else
+			{
+				GameApp::Get().GetAudio().Play("EnemyHit1", nullptr, false, 1.0f, GetRandomVoicePitch());
 			}
 		}
 		i++;
