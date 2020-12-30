@@ -132,7 +132,12 @@ bool GameApp::Initialize()
 		mGameAudio.SetFade("music", 3.0f);
 		// Plays audio from 'music' engine. No need to specify engine
 		mGameAudio.Play("ring9", nullptr, true);
-		// Is that better?
+
+		mGameAudio.CreateEngine("ambient", AUDIO_ENGINE_TYPE::MUSIC);
+		mGameAudio.LoadSound("ambient", "ambientCrows", L"Data/Sounds/ambientCrows.wav");
+		mGameAudio.LoadSound("ambient", "ambientWind", L"Data/Sounds/ambientWind.wav");
+		mGameAudio.SetFade("ambient", 10.0f);
+		mGameAudio.Play("ambientWind", nullptr, true);
 
 		float volume = 0.2f;
 		mGameAudio.SetEngineVolume("music", volume);
@@ -140,10 +145,8 @@ bool GameApp::Initialize()
 		mGameAudio.SetEngineVolume("trader", volume);
 		mGameAudio.SetEngineVolume("ui", volume);
 		mGameAudio.SetEngineVolume("player", volume);
+		mGameAudio.SetEngineVolume("ambient", volume*0.5f);
 	}
-
-
-	
 
 	LoadTextures();
 	BuildRootSignature();
@@ -303,9 +306,17 @@ void GameApp::Update(const GameTimer& gt)
 	{
 		bool r = rand() % 2;
 		if (r)
+		{
 			mGameAudio.Play("ring5", nullptr, true);
+			mGameAudio.Play("ambientWind", nullptr, true);
+
+		}
 		else
+		{
 			mGameAudio.Play("ring9", nullptr, true);
+			mGameAudio.Play("ambientCrows", nullptr, true);
+
+		}
 	}
 
 }
