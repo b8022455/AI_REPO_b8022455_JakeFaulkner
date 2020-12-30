@@ -89,7 +89,6 @@ void PlayState::Initialize()
 	//mTile.Initialize("Tiles");
 	mTileManager.Initialize();
 
-	//Inventory.push_back({ "Potion" });		//Testing Item usage
 	++mInventory["Radio"];
 	++mInventory["Potion"];
 	inventoryPosition = mInventory.begin();
@@ -133,9 +132,9 @@ void PlayState::Initialize()
 	// Setup temp enemies
 	{
 		// inserts n of enemies
-		mEnemies.push_back(Enemy("EnemyType1"));
-		mEnemies.push_back(Enemy("EnemyType1"));
-		mEnemies.push_back(Enemy("EnemyType1"));
+		mEnemies.push_back(Enemy("EnemyType1", 25));
+		mEnemies.push_back(Enemy("EnemyType1", 25));
+		mEnemies.push_back(Enemy("EnemyType1", 25));
 
 		//Init all enemies
 		std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e) 
@@ -252,12 +251,9 @@ void PlayState::Update(const GameTimer & gt)
 	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
 	{ 
 		e.Update(gt); 
-		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetPosition()))
+		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetCollisionPoint()))
 		{
-			float x = 5.0f;
-			mPlayer.DamagePlayer(5);
-			/*mCamera.Strafe(-x * gt.DeltaTime());
-			mCamera.UpdateViewMatrix();*/
+			mPlayer.DamagePlayer(e.GetAttack());
 		}
 
 		if (mCombatController.CheckCollision(
@@ -549,7 +545,7 @@ void PlayState::Controls(const GameTimer & gt)
 			// Debug random enemy pos
 			if (Input::Get().KeyReleased(GC::KEY_DEBUG_ENEMY_POS))
 			{
-				mEnemies.push_back(Enemy("EnemyType1"));
+				mEnemies.push_back(Enemy("EnemyType1", 25));
 				mEnemies.back().Initialize("Enemy");
 
 				std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
