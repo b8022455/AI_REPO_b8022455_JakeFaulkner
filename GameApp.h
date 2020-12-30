@@ -101,6 +101,8 @@ public:
 	// Output to viewport
 	std::ostringstream mDebugLog;
 	UINT mInstanceCount = 0;
+	UINT GetMaterialIndex(const std::string& materialName);
+	
 
 private:
 	virtual void Update(const GameTimer& gt)override;
@@ -137,9 +139,7 @@ private:
 
 public:
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GetStaticSamplers();
-private:
 
-	
 private:
 
 	std::vector<std::unique_ptr<FrameResource>> mFrameResources;

@@ -11,6 +11,8 @@
 
 typedef std::pair<std::string, std::string> DialogPair;
 
+
+
 namespace GC
 {
 	//Keyboard keys
@@ -77,13 +79,6 @@ namespace GC
 		0.5f
 	};
 	const size_t FOOTSTEP_PITCH_COUNT = sizeof(GC::FOOTSTEP_PITCH) / sizeof(GC::FOOTSTEP_PITCH[0]);
-
-	/*
-	// todo place in playstate
-	float RandomFootstepPitch()
-	{
-		return FOOTSTEP_PITCH[rand() % 7];
-	}*/
 
 	const float VOICE_PITCH[5]
 	{

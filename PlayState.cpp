@@ -26,7 +26,7 @@ void PlayState::InitializeTraders()
 		void operator()(Trader& t)
 		{
 			t.Initialize(GC::GO_TRADER);
-			t.mpInstance->MaterialIndex = 6;
+			t.mpInstance->MaterialIndex = GameApp::Get().GetMaterialIndex("tileTex");
 			x+= 1.0f + (rand() % biggestGap);
 			t.SetPos({ x, 0.0f, 3.0f });
 		}

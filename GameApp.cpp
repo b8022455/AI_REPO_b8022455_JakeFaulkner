@@ -272,6 +272,28 @@ void GameApp::PlayClickUpAudio(bool success)
 	}
 }
 
+UINT GameApp::GetMaterialIndex(const std::string & materialName)
+{
+
+	UINT i = 0;
+	std::find_if(mMaterials.begin(), mMaterials.end(), [&](auto& p)
+	{
+		if (p.first == materialName)
+		{
+			return true;
+		}
+		else
+		{
+			++i;
+			return false;
+		}
+	});
+
+	assert(i < mMaterials.size()); // out of bounds. Material isnt there
+
+	return i;
+}
+
 void GameApp::Update(const GameTimer& gt)
 {
 	assert(mpActiveCamera);
@@ -658,7 +680,7 @@ void GameApp::BuildDescriptorHeaps()
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hCpuDescriptor(mSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 	CD3DX12_GPU_DESCRIPTOR_HANDLE hGpuDescriptor(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
-	auto bricksTex = mTextures["bricksTex"]->Resource;
+	/*auto bricksTex = mTextures["bricksTex"]->Resource;
 	auto stoneTex = mTextures["stoneTex"]->Resource;
 	auto tileTex = mTextures["tileTex"]->Resource;
 	auto crateTex = mTextures["crateTex"]->Resource;
@@ -666,94 +688,29 @@ void GameApp::BuildDescriptorHeaps()
 	auto grassTex = mTextures["grassTex"]->Resource;
 	auto mudTex = mTextures["mudTex"]->Resource;
 	auto defaultTex = mTextures["defaultTex"]->Resource;
-	auto uiTex = mTextures["uiTex"]->Resource;
+	auto uiTex = mTextures["uiTex"]->Resource;*/
 
 	//Brick 0
 	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.Format = bricksTex->GetDesc().Format;
 	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = bricksTex->GetDesc().MipLevels;
 	srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
-	md3dDevice->CreateShaderResourceView(bricksTex.Get(), &srvDesc, hCpuDescriptor);
 
-	// next descriptor
-	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
-	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
-	
-	// Stone 1
-	srvDesc.Format = stoneTex->GetDesc().Format;
-	srvDesc.Texture2D.MipLevels = stoneTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(stoneTex.Get(), &srvDesc, hCpuDescriptor);
+	Microsoft::WRL::ComPtr<ID3D12Resource> r;
+	// in texture order
+	for (auto& t : mTextures)
+	{
+		r = t.second->Resource;
+		srvDesc.Format = r->GetDesc().Format;
+		srvDesc.Texture2D.MipLevels = r->GetDesc().MipLevels;
+		md3dDevice->CreateShaderResourceView(r.Get(), &srvDesc, hCpuDescriptor);
 
-	// next descriptor
-	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
-	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+		hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+		hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
+	}
 
-	// Tile 2
-	srvDesc.Format = tileTex->GetDesc().Format;
-	srvDesc.Texture2D.MipLevels = tileTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(tileTex.Get(), &srvDesc, hCpuDescriptor);
-
-	// next descriptor
-	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
-	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
-
-	// Crate 3
-	srvDesc.Format = crateTex->GetDesc().Format;
-	srvDesc.Texture2D.MipLevels = crateTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(crateTex.Get(), &srvDesc, hCpuDescriptor);
-
-	// next descriptor
-	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
-	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
-
-	// Ice 4
-	srvDesc.Format = iceTex->GetDesc().Format;
-	srvDesc.Texture2D.MipLevels = iceTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(iceTex.Get(), &srvDesc, hCpuDescriptor);
-
-	// next descriptor
-	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
-	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
-
-	// Grass 5
-	srvDesc.Format = grassTex->GetDesc().Format;
-	srvDesc.Texture2D.MipLevels = grassTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(grassTex.Get(), &srvDesc, hCpuDescriptor);
-
-	// next descriptor
-	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
-	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
-
-	srvDesc.Format = mudTex->GetDesc().Format;
-	srvDesc.Texture2D.MipLevels = mudTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(mudTex.Get(), &srvDesc, hCpuDescriptor);
-
-	// next descriptor
-	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
-	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
-	
-	// Default 6
-	srvDesc.Format = defaultTex->GetDesc().Format;
-	srvDesc.Texture2D.MipLevels = defaultTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(defaultTex.Get(), &srvDesc, hCpuDescriptor);
-	md3dDevice->CreateShaderResourceView(defaultTex.Get(), &srvDesc, hCpuDescriptor);
-	
-	// next descriptor
-	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
-	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
-
-	// UI tex 7
-	srvDesc.Format = uiTex->GetDesc().Format;
-	srvDesc.Texture2D.MipLevels = uiTex->GetDesc().MipLevels;
-	md3dDevice->CreateShaderResourceView(uiTex.Get(), &srvDesc, hCpuDescriptor);
-
-	// next descriptor
-	hCpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
-	hGpuDescriptor.Offset(1, mCbvSrvDescriptorSize);
-
+	// sprites
 	{
 		mSpriteManager.Init(md3dDevice.Get(), mCommandQueue.Get(), mCbvSrvDescriptorSize, mBackBufferFormat, mDepthStencilFormat, hCpuDescriptor,hGpuDescriptor);
 	}
@@ -1123,15 +1080,13 @@ void GameApp::BuildMaterial(int& matCBIndex, int texSrvHeapIndex, const std::str
 void GameApp::BuildMaterials()
 {
 	int matIndex = 0;
+	mMaterials.reserve(20);
 
-	BuildMaterial(matIndex, matIndex, "bricks0", 0.1f, { 1.0f,1.0f,1.0f,1.0f }, { 0.02f, 0.02f, 0.02f });
-	BuildMaterial(matIndex, matIndex, "stone0", 0.3f);
-	BuildMaterial(matIndex, matIndex, "tile0", 0.3f, { 1.0f,1.0f,1.0f,1.0f }, { 0.02f, 0.02f, 0.02f });
-	BuildMaterial(matIndex, matIndex, "checkboard0", 0.2f);
-	BuildMaterial(matIndex, matIndex, "ice0", 0.0f, { 1.0f,1.0f,1.0f,1.0f }, { 0.01f, 0.01f, 0.01f });
-	BuildMaterial(matIndex, matIndex, "grass0", 0.0f, { 1.0f,1.0f,1.0f,1.0f });
-	BuildMaterial(matIndex, matIndex, "skullMat");
-
+	// Material names are same as texture names
+	std::for_each(mTextures.begin(), mTextures.end(), [&](auto& p) 
+	{
+		BuildMaterial(matIndex, matIndex, p.first);
+	});
 }
 
 std::unique_ptr<RenderItem> GameApp::BuildRenderItem(UINT& objCBindex, const std::string& geoName, const std::string& subGeoName)
