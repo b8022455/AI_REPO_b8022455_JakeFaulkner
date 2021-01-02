@@ -83,15 +83,18 @@ public:
 	int H1MinSize = 2; // minimum size of hazard spot / health - ADVANCED GENERATION
 	int H2MinSize = 2; // minimum size of hazard spot / slow - ADVANCED GENERATION
 	int H3MinSize = 2; // minimum size of hazard spot / slip - ADVANCED GENERATION
-
-	// TODO: IMPLEMENT LEVELS OF HAZARD AVOIDANCE (OVERLAP, NONE, ALL)
+	int H1Chance = 10; // range out of dimsquare for generation chance / health - ADVANCED GENERATION
+	int H2Chance = 10; // range out of dimsquare for generation chance / health - ADVANCED GENERATION
+	int H3Chance = 10; // range out of dimsquare for generation chance / health - ADVANCED GENERATION
+	int H1Drop = 16; // cripples generation chance by half if x is equal or below this / health - ADVANCED GENERTAION 
+	int H2Drop = 16; // cripples generation chance by half if x is equal or below this / health - ADVANCED GENERTAION
+	int H3Drop = 16; // cripples generation chance by half if x is equal or below this / health - ADVANCED GENERTAION
 	// DEFAULT - TILES OF OWN TYPE DON'T OVERLAP = 0
 	// ORDER IS: POISON THEN MUD THEN ICE
 	// POISON - NOT OWN						(CAN'T COVER ANYTHING ELSE by design (first in generation))
 	// MUD - NOT OWN, POISON, NOT ICE		(CAN COVER POISON)
 	// ICE - NOT OWN, NOT POISON, NOT MUD	(CAN'T COVER ANYTHING ELSE)
 	// 0 own tiles, 1 means tile before, 2 etc, NEED MORE LATER FOR SPECIFIC HAZARD ORDER
-	//int H1Priority = 0; // NOT NEEDED DUE TO POSITION IN GENERATION ORDER (1ST)
 	int H2Priority = 0; // affects positioning of central based on other hazards / slow - ADVANCED GENERATION
 	int H3Priority = 2; // affects positioning of central based on other hazards / slip - ADVANCED GENERATION
 

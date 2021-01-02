@@ -5,12 +5,14 @@ void TileManager::Initialize()
 	MaxGen = mDimention; // set up for tilefinder in playstate for player hazard detection
 
 	srand(time(NULL));
-	std::mt19937 rng(time(NULL)); // seed the generator
 
-	std::uniform_int_distribution<int> grid(0,mDimention);
-	std::uniform_int_distribution<int> gen1(H1MinSize, H1MaxSize); // uniform, unbiased
-	std::uniform_int_distribution<int> gen2(H2MinSize, H2MaxSize); // uniform, unbiased
-	std::uniform_int_distribution<int> gen3(H3MinSize, H3MaxSize); // uniform, unbiased
+	std::random_device dev;
+	std::mt19937 rng(dev()); // seed the generator
+
+	std::uniform_int_distribution<int> grid(0,dimSquare); // 0 to grid size, placement for central hazard
+	std::uniform_int_distribution<int> gen1(H1MinSize, H1MaxSize); // size of hazard spot
+	std::uniform_int_distribution<int> gen2(H2MinSize, H2MaxSize); // size of hazard spot
+	std::uniform_int_distribution<int> gen3(H3MinSize, H3MaxSize); // size of hazard spot
 
 	std::vector<std::vector<int>> coords(mDimention);
 	for (int u = 0; u < mDimention; u++) {
@@ -27,12 +29,14 @@ void TileManager::Initialize()
 
 	// hazard type 1 - find hazard spots and check not within distance of other hazard
 	while (H1 > 0) { // until all hazards have been placed repeat (may cause issue )
-		for (int i = 0; i < mDimention; i++) {
-			for (int o = 0; o < mDimention; o++) {
+		for (int i = 0; i < mDimention; i++) { // x
+			for (int o = 0; o < mDimention; o++) { // y
 				// calculate random variable to figure out hazard spot
-				int r = rand() % dimSquare; // favors the lower numbers
-				//int r = grid(rng); // causes a worse problem
-				if (r <= 10 && H1 > 0) { // if tile is selected
+				//int r = rand() % dimSquare; // favors the lower numbers
+				int r = grid(rng);  // slightly better
+				// TODO: IF WITHIN THE LOWER SPECTRUM (LEFT) THEN CUT MAX IN HALF TO LOWER CHANCES OF SELECTION
+				if ((r <= int(H1Chance / 2) && H1 > 0 && i <= H1Drop) || (r <= H1Chance && H1 > 0 && i > H1Drop)) { 
+					// if tile is selected
 					// DISTANCE CHECK HERE
 					// main is central square (number to square)
 					//			  o
@@ -96,19 +100,13 @@ void TileManager::Initialize()
 
 	// hazard type 2 - find hazard spots and check not within distance of other hazard
 	while (H2 > 0) { // until all hazards have been placed repeat (may cause issue )
-		for (int i = 0; i < mDimention; i++) {
-			for (int o = 0; o < mDimention; o++) {
+		for (int i = 0; i < mDimention; i++) { // x
+			for (int o = 0; o < mDimention; o++) { // y
 				// calculate random variable to figure out hazard spot
-				int r = rand() % dimSquare;
-				//int r = grid(rng); // causes worse problems
-				if (r <= 10 && H2 > 0) { // if tile is selected
-					// DISTANCE CHECK HERE
-					// main is central square (number to square)
-					//			  o
-					//	 o		 ooo
-					//	ooo		ooooo
-					//	 o		 ooo
-					//			  o
+				//int r = rand() % dimSquare;
+				int r = grid(rng); // causes worse problems
+				if ((r <= int(H2Chance / 2) && H2 > 0 && i <= H2Drop) || (r <= H2Chance && H2 > 0 && i > H2Drop)) { 
+					// if tile is selected
 					bool SAFE = true;
 					int Cycles = (H2Dist * 2) + 1; // max number / for loop
 					bool odd = true; // whether or not to run odd or even logic
@@ -172,19 +170,13 @@ void TileManager::Initialize()
 
 	// hazard type 3 - find hazard spots and check not within distance of other hazard
 	while (H3 > 0) { // until all hazards have been placed repeat (may cause issue )
-		for (int i = 0; i < mDimention; i++) {
-			for (int o = 0; o < mDimention; o++) {
+		for (int i = 0; i < mDimention; i++) { // x
+			for (int o = 0; o < mDimention; o++) { // y
 				// calculate random variable to figure out hazard spot
-				int r = rand() % dimSquare;
-				//int r = grid(rng); // causes a worse problem
-				if (r <= 10 && H3 > 0) { // if tile is selected
-					// DISTANCE CHECK HERE
-					// main is central square (number to square)
-					//			  o
-					//	 o		 ooo
-					//	ooo		ooooo
-					//	 o		 ooo
-					//			  o
+				//int r = rand() % dimSquare;
+				int r = grid(rng); // causes a worse problem
+				if ((r <= int(H3Chance / 2) && H3 > 0 && i <= H3Drop) || (r <= H3Chance && H3 > 0 && i > H3Drop)) { 
+					// if tile is selected
 					bool SAFE = true;
 					int Cycles = (H3Dist * 2) + 1; // max number / for loop
 					bool odd = true; // whether or not to run odd or even logic
