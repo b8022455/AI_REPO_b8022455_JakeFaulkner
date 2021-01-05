@@ -4,6 +4,7 @@
 #include "PlayState.h"
 #include "MenuState.h"
 #include "TradeState.h"
+#include "GameOverState.h"
 
 void StateManager::EvaluateState()
 {
@@ -66,6 +67,16 @@ void StateManager::Init()
 	
 	//Trade state
 	AddState(GC::STATE_TRADE, std::make_unique<TradeState>());
+
+	//Game Over State
+	Text GOTitle;
+	GOTitle.scale = 1.5f;
+	GOTitle.position = GC::MENU_TITLE_POSITION;
+	GOTitle.string = "Game Over";
+
+	Button btnRestart(buttonBg, "W Restart", Button::Action::GOTO_GAME);
+	AddState(GC::STATE_GAMEOVER, std::make_unique<GameOverState>(GOTitle, btnRestart));
+
 
 	// Init all states
 	std::for_each(mStates.begin(), mStates.end(), [](auto& s) { s.second->Initialize(); });

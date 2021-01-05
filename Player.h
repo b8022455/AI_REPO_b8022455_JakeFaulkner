@@ -11,7 +11,7 @@
 
 //using namespace DirectX;
 
-enum PlayerFacingDirection {Left, Right, Up, Down};
+enum PlayerFacingDirection { Left, Right, Up, Down };			//Have the rotation of the players model replace this
 
 
 class Player : public GameObject

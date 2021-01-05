@@ -36,7 +36,7 @@ public:
 private:
 	int GetRandomValue(int min, int max);				//Gets random value of spawning enemy position & loot drops
 
-	int mHealth = 1;
+	int mHealth = 100;
 	int mAttack;
 	std::string mEnemyType; // for item lookup
 	int playerDirection;								//Gets enum value of which way player is facing

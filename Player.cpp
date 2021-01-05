@@ -5,7 +5,7 @@
 
 void Player::Update(const GameTimer & gt)
 {
-	const float dt = gt.DeltaTime();	
+	const float dt = gt.DeltaTime();
 	GameApp::Get().mDebugLog << "Health:" << health << "\n";
 	// APPLY VELOCITY HERE
 	if (RIGHT_velocity >= 0)
@@ -24,13 +24,13 @@ void Player::Update(const GameTimer & gt)
 		DOWN_velocity -= dt * 8;
 	if (DOWN_velocity < 0)
 		DOWN_velocity = 0;
-	
+
 	if (mpInstance->World._41 <= PLAYER_RIGHTBOUND) {
-		if (Slowed == true) 
+		if (Slowed == true)
 			mpInstance->World._41 += (0.5f * RIGHT_velocity) * dt;
-		if (Slippy == true) 
+		if (Slippy == true)
 			mpInstance->World._41 += (1.5f * RIGHT_velocity) * dt;
-		if (Slowed != true && Slippy != true) 
+		if (Slowed != true && Slippy != true)
 			mpInstance->World._41 += RIGHT_velocity * dt;
 	}
 	if (mpInstance->World._41 >= PLAYER_LEFTBOUND)
@@ -69,24 +69,30 @@ void Player::Update(const GameTimer & gt)
 			GameApp::Get().GetAudio().Play("playerFootstep", nullptr, false, 1.0f, GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT]);
 		}
 	}
+
 }
 
-void Player::MoveUp( const GameTimer& gt)
+void Player::MoveUp(const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
 
-  // INCREASE VELOCITY HERE
-  if (UP_velocity < MAX_VELOCITY)
-	  UP_velocity += dt * 12; // add double time to velocity
+	// INCREASE VELOCITY HERE
+	if (UP_velocity < MAX_VELOCITY)
+		UP_velocity += dt * 12; // add double time to velocity
 
-  /*if (mpInstance->World._43 <= PLAYER_UPBOUND)
-  {
-	  if (Slowed == true) 
-		mpInstance->World._43 += (0.5f * MOVE) * dt;
-	  if (Slowed == false)
-		  mpInstance->World._43 += MOVE * dt;
-  }*/
-  playerDir = PlayerFacingDirection::Up;
+	/*if (mpInstance->World._43 <= PLAYER_UPBOUND)
+	{
+		if (Slowed == true)
+		  mpInstance->World._43 += (0.5f * MOVE) * dt;
+		if (Slowed == false)
+			mpInstance->World._43 += MOVE * dt;
+	}*/
+	playerDir = PlayerFacingDirection::Up;
+
+	//Positions player model facing upwards (Looking away from camera)
+	XMMATRIX rotation = XMMatrixRotationY(0.0f);
+	rotation *= XMMatrixTranslation(mpInstance->World._41, mpInstance->World._42, mpInstance->World._43);
+	XMStoreFloat4x4(&mpInstance->World, rotation);
 }
 
 void Player::MoveDown(const GameTimer& gt)
@@ -105,6 +111,11 @@ void Player::MoveDown(const GameTimer& gt)
 			mpInstance->World._43 -= MOVE * dt;
 	}*/
 	playerDir = PlayerFacingDirection::Down;
+
+	//Positions player model facing downwards (Looking towards the camera)
+	XMMATRIX rotation = XMMatrixRotationY(3.14159f);
+	rotation *= XMMatrixTranslation(mpInstance->World._41, mpInstance->World._42, mpInstance->World._43);
+	XMStoreFloat4x4(&mpInstance->World, rotation);
 }
 
 void Player::MoveLeft(const GameTimer& gt)
@@ -124,6 +135,10 @@ void Player::MoveLeft(const GameTimer& gt)
 		}*/
 	playerDir = PlayerFacingDirection::Left;
 
+	//Positions player model facing left
+	XMMATRIX rotation = XMMatrixRotationY(4.71239f);
+	rotation *= XMMatrixTranslation(mpInstance->World._41, mpInstance->World._42, mpInstance->World._43);
+	XMStoreFloat4x4(&mpInstance->World, rotation);
 }
 
 void Player::MoveRight(const GameTimer& gt)
@@ -143,6 +158,11 @@ void Player::MoveRight(const GameTimer& gt)
 	//		mpInstance->World._41 += MOVE * dt;
 	//}
 	playerDir = PlayerFacingDirection::Right;
+
+	//Positions player model facing right
+	XMMATRIX rotation = XMMatrixRotationY(1.5708f);
+	rotation *= XMMatrixTranslation(mpInstance->World._41, mpInstance->World._42, mpInstance->World._43);
+	XMStoreFloat4x4(&mpInstance->World, rotation);
 }
 
 
@@ -178,19 +198,19 @@ void Player::DamagePlayer(int damage)			//When enemy hits with player
 	switch (playerDir)
 	{
 	case 0:									//Left
-		x = 5.0f;
+		x = 2.5f;
 		break;
 
 	case 1:									//Right
-		x = -5.0f;
+		x = -2.5f;
 		break;
 
 	case 2:									//Up
-		z = -5.0f;
+		z = -2.5f;
 		break;
 
 	case 3:									//Down
-		z = 5.0f;
+		z = 2.5f;
 		break;
 	}
 

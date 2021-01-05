@@ -221,32 +221,32 @@ void PlayState::Update(const GameTimer & gt)
 		// POSSIBLE GLITCH HERE (TILE ACTIVE WHEN PLAYER NOT OVER IT, TILE RIGHT / RIGHT&UP) - FIXED ITSELF??
 		// 
 		// if the player is over a poison/damage tile
-		if (mTileManager.GetIndex(tileX, tileZ) == mTileManager.Haz1Tex || 
-			mTileManager.GetIndex(tileX2, tileZ2) == mTileManager.Haz1Tex) {
+		if (mTileManager.GetIndex(static_cast<int>(tileX), static_cast<int>(tileZ)) == mTileManager.Haz1Tex || 
+			mTileManager.GetIndex(static_cast<int>(tileX2), static_cast<int>(tileZ2)) == mTileManager.Haz1Tex) {
 			if (mPlayer.hazardTimer <= 0) { // if hazard should be active
 				mPlayer.health -= 5;
-				mPlayer.hazardTimer = 3; // reset hazard timer
+				mPlayer.hazardTimer = 3; // reset hazard timer 
 			}
 		}
 
 		// if the player is over a slow tile
-		if (mTileManager.GetIndex(tileX, tileZ) == mTileManager.Haz2Tex || 
-			mTileManager.GetIndex(tileX2, tileZ2) == mTileManager.Haz2Tex) {
+		if (mTileManager.GetIndex(static_cast<int>(tileX), static_cast<int>(tileZ)) == mTileManager.Haz2Tex ||
+			mTileManager.GetIndex(static_cast<int>(tileX2), static_cast<int>(tileZ2)) == mTileManager.Haz2Tex) {
 			mPlayer.Slowed = true;
 		}
 
-		if (mTileManager.GetIndex(tileX, tileZ) != mTileManager.Haz2Tex && 
-			mTileManager.GetIndex(tileX2, tileZ2) != mTileManager.Haz2Tex) {
+		if (mTileManager.GetIndex(static_cast<int>(tileX), static_cast<int>(tileZ)) != mTileManager.Haz2Tex &&
+			mTileManager.GetIndex(static_cast<int>(tileX2), static_cast<int>(tileZ2)) != mTileManager.Haz2Tex) {
 			mPlayer.Slowed = false;
 		}
 	
-		if (mTileManager.GetIndex(tileX, tileZ) == mTileManager.Haz3Tex || 
-			mTileManager.GetIndex(tileX2, tileZ2) == mTileManager.Haz3Tex) {
+		if (mTileManager.GetIndex(static_cast<int>(tileX), static_cast<int>(tileZ)) == mTileManager.Haz3Tex ||
+			mTileManager.GetIndex(static_cast<int>(tileX2), static_cast<int>(tileZ2)) == mTileManager.Haz3Tex) {
 			mPlayer.Slippy = true;
 		}
 
-		if (mTileManager.GetIndex(tileX, tileZ) != mTileManager.Haz3Tex && 
-			mTileManager.GetIndex(tileX2, tileZ2) != mTileManager.Haz3Tex) {
+		if (mTileManager.GetIndex(static_cast<int>(tileX), static_cast<int>(tileZ)) != mTileManager.Haz3Tex &&
+			mTileManager.GetIndex(static_cast<int>(tileX2), static_cast<int>(tileZ2)) != mTileManager.Haz3Tex) {
 			mPlayer.Slippy = false;
 		}
 	}
@@ -346,7 +346,12 @@ void PlayState::Update(const GameTimer & gt)
 			GameApp::Get().mDebugLog << "Current Selected Item: " << (*inventoryPosition).first << " x" << (*inventoryPosition).second << "\n";
 	}
 
-
+	//If players health is below 0, change state to Game Over state
+	if (mPlayer.health <= 0)
+	{
+		mPlayer.health = 100;		//Just to check that restart changes state, will load most recent save instead
+		GameApp::Get().ChangeState("GameOver");
+	}
 
 
 
@@ -685,8 +690,8 @@ void PlayState::CleanInventory(Inventory& inv)
 }
 
 void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED TO REMOVE TEXTURES FROM OBJECTS
-	srand(time(NULL));
-	std::mt19937 rng(time(NULL)); // seed the generator
+	srand(static_cast<int>(time(NULL)));
+	std::mt19937 rng(static_cast<int>(time(NULL))); // seed the generator
 
 	std::uniform_int_distribution<int> grid(0, mTileManager.mDimention);
 	std::uniform_int_distribution<int> gen1(mTileManager.H1MinSize, mTileManager.H1MaxSize); // uniform, unbiased

@@ -4,7 +4,7 @@ void TileManager::Initialize()
 {
 	MaxGen = mDimention; // set up for tilefinder in playstate for player hazard detection
 
-	srand(time(NULL));
+	srand(static_cast<int>(time(NULL)));
 
 	std::random_device dev;
 	std::mt19937 rng(dev()); // seed the generator
