@@ -221,7 +221,8 @@ void PlayState::Update(const GameTimer & gt)
 		// POSSIBLE GLITCH HERE (TILE ACTIVE WHEN PLAYER NOT OVER IT, TILE RIGHT / RIGHT&UP) - FIXED ITSELF??
 		// 
 		// if the player is over a poison/damage tile
-		if (mTileManager.GetIndex(tileX, tileZ) == 5 || mTileManager.GetIndex(tileX2, tileZ2) == 5) {
+		if (mTileManager.GetIndex(tileX, tileZ) == mTileManager.Haz1Tex || 
+			mTileManager.GetIndex(tileX2, tileZ2) == mTileManager.Haz1Tex) {
 			if (mPlayer.hazardTimer <= 0) { // if hazard should be active
 				mPlayer.health -= 5;
 				mPlayer.hazardTimer = 3; // reset hazard timer
@@ -229,19 +230,23 @@ void PlayState::Update(const GameTimer & gt)
 		}
 
 		// if the player is over a slow tile
-		if (mTileManager.GetIndex(tileX, tileZ) == 6 || mTileManager.GetIndex(tileX2, tileZ2) == 6) {
+		if (mTileManager.GetIndex(tileX, tileZ) == mTileManager.Haz2Tex || 
+			mTileManager.GetIndex(tileX2, tileZ2) == mTileManager.Haz2Tex) {
 			mPlayer.Slowed = true;
 		}
 
-		if (mTileManager.GetIndex(tileX, tileZ) != 6 && mTileManager.GetIndex(tileX2, tileZ2) != 6) {
+		if (mTileManager.GetIndex(tileX, tileZ) != mTileManager.Haz2Tex && 
+			mTileManager.GetIndex(tileX2, tileZ2) != mTileManager.Haz2Tex) {
 			mPlayer.Slowed = false;
 		}
 	
-		if (mTileManager.GetIndex(tileX, tileZ) == 4 || mTileManager.GetIndex(tileX2, tileZ2) == 4) {
+		if (mTileManager.GetIndex(tileX, tileZ) == mTileManager.Haz3Tex || 
+			mTileManager.GetIndex(tileX2, tileZ2) == mTileManager.Haz3Tex) {
 			mPlayer.Slippy = true;
 		}
 
-		if (mTileManager.GetIndex(tileX, tileZ) != 4 && mTileManager.GetIndex(tileX2, tileZ2) != 4) {
+		if (mTileManager.GetIndex(tileX, tileZ) != mTileManager.Haz3Tex && 
+			mTileManager.GetIndex(tileX2, tileZ2) != mTileManager.Haz3Tex) {
 			mPlayer.Slippy = false;
 		}
 	}

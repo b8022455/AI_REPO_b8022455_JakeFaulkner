@@ -612,15 +612,15 @@ void GameApp::LoadTexture(const std::string & name, const std::wstring & filenam
 void GameApp::LoadTextures()
 {
 	mTextures.reserve(20);
-	LoadTexture("bricksTex", L"Data/Textures/bricks.dds");
-	LoadTexture("stoneTex", L"Data/Textures/stone.dds");
-	LoadTexture("tileTex", L"Data/Textures/tile.dds");
-	LoadTexture("iceTex", L"Data/Textures/ice.dds");
-	LoadTexture("crateTex", L"Data/Textures/WoodCrate01.dds");
-	LoadTexture("grassTex", L"Data/Textures/grass.dds");
-	LoadTexture("mudTex", L"Data/Textures/LostMeadow_dirt.dds");
-	LoadTexture("defaultTex", L"Data/Textures/white1x1.dds");
-	LoadTexture("uiTex", L"Data/Textures/ui.dds");
+	LoadTexture("bricksTex", L"Data/Textures/bricks.dds"); //1
+	LoadTexture("stoneTex", L"Data/Textures/stone.dds"); // 2
+	LoadTexture("mudTex", L"Data/Textures/LostMeadow_dirt.dds"); // 3
+	LoadTexture("iceTex", L"Data/Textures/ice.dds"); // 4
+	LoadTexture("crateTex", L"Data/Textures/WoodCrate01.dds"); // 5
+	LoadTexture("grassTex", L"Data/Textures/grass.dds"); // 6
+	LoadTexture("tileTex", L"Data/Textures/tile.dds"); // 7
+	LoadTexture("defaultTex", L"Data/Textures/white1x1.dds"); // 8
+	LoadTexture("uiTex", L"Data/Textures/ui.dds"); // 9
 }
 
 void GameApp::BuildRootSignature()
@@ -680,7 +680,8 @@ void GameApp::BuildDescriptorHeaps()
 	CD3DX12_CPU_DESCRIPTOR_HANDLE hCpuDescriptor(mSrvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 	CD3DX12_GPU_DESCRIPTOR_HANDLE hGpuDescriptor(mSrvDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
 
-	/*auto bricksTex = mTextures["bricksTex"]->Resource;
+	/*auto bricksTex = m
+	["bricksTex"]->Resource;
 	auto stoneTex = mTextures["stoneTex"]->Resource;
 	auto tileTex = mTextures["tileTex"]->Resource;
 	auto crateTex = mTextures["crateTex"]->Resource;

@@ -74,6 +74,11 @@ public:
 	void SetTile(int x, int y, const Tile& tile);
 	int GetIndex(int x, int y); // maybe remove 
 
+	// TODO: UPDATE TEXTURES FOR HAZARDS & OTHER TILES HERE WHEN THE LOAD ORDER IS CHANGED
+	const int Haz1Tex = 6; // POISON
+	const int Haz2Tex = 3; // MUD / SLOW
+	const int Haz3Tex = 5; // ICE / SLIP
+
 	int H1 = 2; // frequency of hazard spots to generate / health
 	int H2 = 4; // frequency of hazard spots to generate / slow
 	int H3 = 1;// frequency of hazard spots to generate / slip

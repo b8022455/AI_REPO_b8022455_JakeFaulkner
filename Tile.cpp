@@ -59,7 +59,7 @@ void TileManager::Initialize()
 								int checky = (o + Ycycle - x);
 								if ((i - H1Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 									(i - H1Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
-									if (coords[i - H1Dist + Xcycle + x][o + Ycycle - x] == 5)
+									if (coords[i - H1Dist + Xcycle + x][o + Ycycle - x] == Haz1Tex)
 										SAFE = false;
 							}
 							Xcycle++;
@@ -72,7 +72,7 @@ void TileManager::Initialize()
 								int checky = (o + Ycycle - x);
 								if ((i - H1Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 									(i - H1Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention)
-									if (coords[i - H1Dist + Xcycle + x][o + Ycycle - x] == 5)
+									if (coords[i - H1Dist + Xcycle + x][o + Ycycle - x] == Haz1Tex)
 										SAFE = false;
 							}
 							Ycycle++;
@@ -87,9 +87,10 @@ void TileManager::Initialize()
 						}
 					}
 
-					if (SAFE == true) {
-						coords[i][o] = 5;
-						origin[i][o] = 5; // 
+					if (SAFE == true) { // TODO: (GAME NOTE) TEXTURES NEED TO BE UPDATED HERE WHEN LOAD ORDER CHANGED
+						//LoadTexture("grassTex", L"Data/Textures/grass.dds"); // 6
+						coords[i][o] = Haz1Tex;
+						origin[i][o] = Haz1Tex; // 
 						H1 -= 1;
 					}
 				}
@@ -121,11 +122,11 @@ void TileManager::Initialize()
 								if ((i - H2Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 									(i - H2Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) {
 									if (H2Priority == 0) // own tiles
-										if (coords[i - H2Dist + Xcycle + x][o + Ycycle - x] == 6)
+										if (coords[i - H2Dist + Xcycle + x][o + Ycycle - x] == Haz2Tex)
 											SAFE = false;
 									if (H2Priority == 1) // prevent covering poison
-										if ((coords[i - H1Dist + Xcycle + x][o + Ycycle - x] == 6) || 
-											(coords[i - H1Dist + Xcycle + x][o + Ycycle - x] == 5))
+										if ((coords[i - H1Dist + Xcycle + x][o + Ycycle - x] == Haz2Tex) || 
+											(coords[i - H1Dist + Xcycle + x][o + Ycycle - x] == Haz1Tex))
 											SAFE = false;
 								}
 							}
@@ -138,11 +139,11 @@ void TileManager::Initialize()
 								if ((i - H2Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 									(i - H2Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) {
 									if (H2Priority == 0) // own tiles
-										if (coords[i - H2Dist + Xcycle + x][o + Ycycle - x] == 6)
+										if (coords[i - H2Dist + Xcycle + x][o + Ycycle - x] == Haz2Tex)
 											SAFE = false;
 									if (H2Priority == 1) // can't cover poison
-										if ((coords[i - H2Dist + Xcycle + x][o + Ycycle - x] == 6) || 
-											(coords[i - H2Dist + Xcycle + x][o + Ycycle - x] == 5))
+										if ((coords[i - H2Dist + Xcycle + x][o + Ycycle - x] == Haz2Tex) || 
+											(coords[i - H2Dist + Xcycle + x][o + Ycycle - x] == Haz1Tex))
 											SAFE = false;
 								}
 							}
@@ -158,9 +159,10 @@ void TileManager::Initialize()
 						}
 					}
 
-					if (SAFE == true) {
-						coords[i][o] = 6;
-						origin[i][o] = 6;
+					if (SAFE == true) {// TODO: (GAME NOTE) TEXTURES NEED TO BE UPDATED HERE WHEN LOAD ORDER CHANGED
+						//LoadTexture("mudTex", L"Data/Textures/LostMeadow_dirt.dds"); // 7
+						coords[i][o] = Haz2Tex;
+						origin[i][o] = Haz2Tex;
 						H2 -= 1;
 					}
 				}
@@ -191,16 +193,16 @@ void TileManager::Initialize()
 								if ((i - H3Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 									(i - H3Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) {
 									if (H3Priority == 0) // can't cover own tiles
-										if (coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 4)
+										if (coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == Haz3Tex)
 											SAFE = false;
 									if (H3Priority == 1) // can't cover mud
-										if ((coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 4) ||
-											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 6))
+										if ((coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == Haz3Tex) ||
+											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == Haz2Tex))
 											SAFE = false;
 									if (H3Priority == 2) // can't cover mud or poison
-										if ((coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 4) ||
-											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 6) ||
-											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 5))
+										if ((coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == Haz3Tex) ||
+											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == Haz2Tex) ||
+											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == Haz1Tex))
 											SAFE = false;
 								}
 							}
@@ -213,16 +215,16 @@ void TileManager::Initialize()
 								if ((i - H3Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 									(i - H3Dist + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) {
 									if (H3Priority == 0) // own tiles
-										if (coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 4)
+										if (coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == Haz1Tex)
 											SAFE = false;
 									if (H3Priority == 1) // can't cover mud
-										if ((coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 4) ||
-											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 6))
+										if ((coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == Haz1Tex) ||
+											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == Haz2Tex))
 											SAFE = false;
 									if (H3Priority == 2) // can't cover mud or poison
-										if ((coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 4) ||
-											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 6) ||
-											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == 5))
+										if ((coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == Haz1Tex) ||
+											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == Haz2Tex) ||
+											(coords[i - H3Dist + Xcycle + x][o + Ycycle - x] == Haz3Tex))
 											SAFE = false;
 								}
 							}
@@ -238,9 +240,10 @@ void TileManager::Initialize()
 						}
 					}
 
-					if (SAFE == true) {
-						coords[i][o] = 4;
-						origin[i][o] = 4;
+					if (SAFE == true) {// TODO: (GAME NOTE) TEXTURES NEED TO BE UPDATED HERE WHEN LOAD ORDER CHANGED
+						//LoadTexture("iceTex", L"Data/Textures/ice.dds"); // 4
+						coords[i][o] = Haz3Tex;
+						origin[i][o] = Haz3Tex;
 						H3 -= 1;
 					}
 				}
@@ -256,7 +259,7 @@ void TileManager::Initialize()
 	for (int i = 0; i < mDimention; i++) {
 		for (int o = 0; o < mDimention; o++) {
 			// use origin to select central tiles & set all tiles within gen 
-			if (origin[i][o] == 5){ // if central tile found
+			if (origin[i][o] == Haz1Tex){ // if central tile found
 				int haz1 = gen1(rng); // random between min & max
 				// use for loop to set all tiles within gen1 to hazard
 				int Cycles = (int(haz1) * 2) + 1; // max number / for loop
@@ -271,7 +274,7 @@ void TileManager::Initialize()
 							// ygrid = o + Ycycle - x
 							if ((i - haz1 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 								(i - haz1 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
-								coords[i - haz1 + Xcycle + x][o + Ycycle - x] = 5; // sets coord to hazard
+								coords[i - haz1 + Xcycle + x][o + Ycycle - x] = Haz1Tex; // sets coord to hazard
 						}
 						Xcycle++;
 					}
@@ -283,7 +286,7 @@ void TileManager::Initialize()
 							int checky = (o + Ycycle - x);
 							if ((i - haz1 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 								(i - haz1 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
-								coords[i - haz1 + Xcycle + x][o + Ycycle - x] = 5;
+								coords[i - haz1 + Xcycle + x][o + Ycycle - x] = Haz1Tex;
 						}
 						Ycycle++;
 					}
@@ -313,11 +316,11 @@ void TileManager::Initialize()
 							// ygrid = o + Ycycle - x
 							if ((i - Rand1 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 								(i - Rand1 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
-								if (coords[i - Rand1 + Xcycle + x][o + Ycycle - x] != 5) { // not already a hazard
+								if (coords[i - Rand1 + Xcycle + x][o + Ycycle - x] != Haz1Tex) { // not already a hazard
 									// ADJUST HERE AS NEEDED
 									int use = (rand() % dimSquare);
 									if (use <= H1Random)
-										coords[i - Rand1 + Xcycle + x][o + Ycycle - x] = 5;
+										coords[i - Rand1 + Xcycle + x][o + Ycycle - x] = Haz1Tex;
 								}
 						}
 						Xcycle++;
@@ -330,11 +333,11 @@ void TileManager::Initialize()
 							//int checky = (o + Ycycle - x); // DEBUG
 							if ((i - Rand1 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 								(i - Rand1 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
-								if (coords[i - Rand1 + Xcycle + x][o + Ycycle - x] != 5) { // not already a hazard
+								if (coords[i - Rand1 + Xcycle + x][o + Ycycle - x] != Haz1Tex) { // not already a hazard
 									// ADJUST HERE AS NEEDED
 									int use = (rand() % dimSquare);
 									if (use <= H1Random)
-										coords[i - Rand1 + Xcycle + x][o + Ycycle - x] = 5;
+										coords[i - Rand1 + Xcycle + x][o + Ycycle - x] = Haz1Tex;
 								}
 						}
 						Ycycle++;
@@ -350,7 +353,7 @@ void TileManager::Initialize()
 				}
 			}
 			// HAZARD 2
-			if (origin[i][o] == 6) { // if central tile found
+			if (origin[i][o] == Haz2Tex) { // if central tile found
 				int haz2 = gen2(rng); // random between min & max
 				// use for loop to set all tiles within gen1 to hazard
 				int Cycles = (int(haz2) * 2) + 1; // max number / for loop
@@ -365,7 +368,7 @@ void TileManager::Initialize()
 							// ygrid = o + Ycycle - x
 							if ((i - haz2 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 								(i - haz2 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
-								coords[i - haz2 + Xcycle + x][o + Ycycle - x] = 6; // sets coord to hazard
+								coords[i - haz2 + Xcycle + x][o + Ycycle - x] = Haz2Tex; // sets coord to hazard
 						}
 						Xcycle++;
 					}
@@ -375,7 +378,7 @@ void TileManager::Initialize()
 							// ygrid = o + Ycyle - x
 							if ((i - haz2 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 								(i - haz2 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
-								coords[i - haz2 + Xcycle + x][o + Ycycle - x] = 6;
+								coords[i - haz2 + Xcycle + x][o + Ycycle - x] = Haz2Tex;
 						}
 						Ycycle++;
 					}
@@ -405,11 +408,11 @@ void TileManager::Initialize()
 							// ygrid = o + Ycycle - x
 							if ((i - Rand2 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 								(i - Rand2 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
-								if (coords[i - Rand2 + Xcycle + x][o + Ycycle - x] != 6) { // not already a hazard
+								if (coords[i - Rand2 + Xcycle + x][o + Ycycle - x] != Haz2Tex) { // not already a hazard
 									// ADJUST HERE AS NEEDED
 									int use = (rand() % dimSquare);
 									if (use <= H2Random)
-										coords[i - Rand2 + Xcycle + x][o + Ycycle - x] = 6;
+										coords[i - Rand2 + Xcycle + x][o + Ycycle - x] = Haz2Tex;
 								}
 						}
 						Xcycle++;
@@ -422,11 +425,11 @@ void TileManager::Initialize()
 							//int checky = (o + Ycycle - x); // DEBUG
 							if ((i - Rand2 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 								(i - Rand2 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
-								if (coords[i - Rand2 + Xcycle + x][o + Ycycle - x] != 6) { // not already a hazard
+								if (coords[i - Rand2 + Xcycle + x][o + Ycycle - x] != Haz2Tex) { // not already a hazard
 									// ADJUST HERE AS NEEDED
 									int use = (rand() % dimSquare);
 									if (use <= H2Random)
-										coords[i - Rand2 + Xcycle + x][o + Ycycle - x] = 6;
+										coords[i - Rand2 + Xcycle + x][o + Ycycle - x] = Haz2Tex;
 								}
 						}
 						Ycycle++;
@@ -442,7 +445,7 @@ void TileManager::Initialize()
 				}
 			}
 			// HAZARD 3
-			if (origin[i][o] == 4) { // if central tile found
+			if (origin[i][o] == Haz3Tex) { // if central tile found
 				int haz3 = gen3(rng); // random between min & max
 				// use for loop to set all tiles within gen1 to hazard
 				int Cycles = (int(haz3) * 2) + 1; // max number / for loop
@@ -457,7 +460,7 @@ void TileManager::Initialize()
 							// ygrid = o + Ycycle - x
 							if ((i - haz3 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 								(i - haz3 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
-								coords[i - haz3 + Xcycle + x][o + Ycycle - x] = 4; // sets coord to hazard
+								coords[i - haz3 + Xcycle + x][o + Ycycle - x] = Haz3Tex; // sets coord to hazard
 						}
 						Xcycle++;
 					}
@@ -467,7 +470,7 @@ void TileManager::Initialize()
 							// ygrid = o + Ycyle - x
 							if ((i - haz3 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 								(i - haz3 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
-								coords[i - haz3 + Xcycle + x][o + Ycycle - x] = 4;
+								coords[i - haz3 + Xcycle + x][o + Ycycle - x] = Haz3Tex;
 						}
 						Ycycle++;
 					}
@@ -497,11 +500,11 @@ void TileManager::Initialize()
 							// ygrid = o + Ycycle - x
 							if ((i - Rand3 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 								(i - Rand3 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
-								if (coords[i - Rand3 + Xcycle + x][o + Ycycle - x] != 4) { // not already a hazard
+								if (coords[i - Rand3 + Xcycle + x][o + Ycycle - x] != Haz3Tex) { // not already a hazard
 									// ADJUST HERE AS NEEDED
 									int use = (rand() % dimSquare);
 									if (use <= H3Random)
-										coords[i - Rand3 + Xcycle + x][o + Ycycle - x] = 4;
+										coords[i - Rand3 + Xcycle + x][o + Ycycle - x] = Haz3Tex;
 								}
 						}
 						Xcycle++;
@@ -514,11 +517,11 @@ void TileManager::Initialize()
 							//int checky = (o + Ycycle - x); // DEBUG
 							if ((i - Rand3 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
 								(i - Rand3 + Xcycle + x) < mDimention && (o + Ycycle - x) < mDimention) // error catcher
-								if (coords[i - Rand3 + Xcycle + x][o + Ycycle - x] != 4) { // not already a hazard
+								if (coords[i - Rand3 + Xcycle + x][o + Ycycle - x] != Haz3Tex) { // not already a hazard
 									// ADJUST HERE AS NEEDED
 									int use = (rand() % dimSquare);
 									if (use <= H3Random)
-										coords[i - Rand3 + Xcycle + x][o + Ycycle - x] = 4;
+										coords[i - Rand3 + Xcycle + x][o + Ycycle - x] = Haz3Tex;
 								}
 						}
 						Ycycle++;
