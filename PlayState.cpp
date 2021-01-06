@@ -690,8 +690,23 @@ void PlayState::CleanInventory(Inventory& inv)
 }
 
 void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED TO REMOVE TEXTURES FROM OBJECTS
+	
+	// TODO: PROBLEM WITH RANDOM BEING USED HERE, FAVORS LEFT ABSOLUTELY & NEEDS MAJOR REWORKING
+	// FIXED ABOVE ISSUE BY USING RAND INSTEAD OF OTHER, TEMP FIX AND SHOULD BE LOOKED INTO LATER IF POSSIBLE
 	srand(static_cast<int>(time(NULL)));
-	std::mt19937 rng(static_cast<int>(time(NULL))); // seed the generator
+	std::mt19937 rng(static_cast<int>(time(NULL))); // seed the generator - 
+
+	mTileManager.H1 = mTileManager.HAZARD1;
+	mTileManager.H2 = mTileManager.HAZARD2;
+	mTileManager.H3 = mTileManager.HAZARD3;
+
+	for (int j = 0; j < mTileManager.mDimention; j++){
+		for (int k = 0; k < mTileManager.mDimention; k++){
+
+			mTileManager.mTileGrid.at(j).at(k).mpInstance->MaterialIndex = 0; 
+			// TODO: (NOTE) NUMBER USED MUSTN'T HAVE SIGNIFICANT MEANING FOR TEXTURES 
+		}
+	}
 
 	std::uniform_int_distribution<int> grid(0, mTileManager.mDimention);
 	std::uniform_int_distribution<int> gen1(mTileManager.H1MinSize, mTileManager.H1MaxSize); // uniform, unbiased
@@ -713,12 +728,15 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 
 	// hazard type 1 - find hazard spots and check not within distance of other hazard
 	while (mTileManager.H1 > 0) { // until all hazards have been placed repeat (may cause issue )
-		for (int i = 0; i < mTileManager.mDimention; i++) {
-			for (int o = 0; o < mTileManager.mDimention; o++) {
+		for (int i = 0; i < mTileManager.mDimention; i++) { // x
+			for (int o = 0; o < mTileManager.mDimention; o++) { // y
 				// calculate random variable to figure out hazard spot
 				int r = rand() % mTileManager.dimSquare; // favors the lower numbers
-				//int r = grid(rng); // causes a worse problem
-				if (r <= 10 && mTileManager.H1 > 0) { // if tile is selected
+				//int r = grid(rng);  // slightly better
+				// IF WITHIN THE LOWER SPECTRUM (LEFT) THEN CUT MAX IN HALF TO LOWER CHANCES OF SELECTION
+				if ((r <= int(mTileManager.H1Chance / 2) && mTileManager.H1 > 0 && i <= mTileManager.H1Drop) ||
+					(r <= mTileManager.H1Chance && mTileManager.H1 > 0 && i > mTileManager.H1Drop)) {
+					// if tile is selected
 					// DISTANCE CHECK HERE
 					// main is central square (number to square)
 					//			  o
@@ -740,9 +758,9 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 								int checkx = (i - mTileManager.H1Dist + Xcycle + x);
 								int checky = (o + Ycycle - x);
 								if ((i - mTileManager.H1Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-									(i - mTileManager.H1Dist + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x)
-									< mTileManager.mDimention)
-									if (coords[i - mTileManager.H1Dist + Xcycle + x][o + Ycycle - x] == 5)
+									(i - mTileManager.H1Dist + Xcycle + x) < mTileManager.mDimention && 
+									(o + Ycycle - x) < mTileManager.mDimention)
+									if (coords[i - mTileManager.H1Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz1Tex)
 										SAFE = false;
 							}
 							Xcycle++;
@@ -754,9 +772,9 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 								int checkx = (i - mTileManager.H1Dist + Xcycle + x);
 								int checky = (o + Ycycle - x);
 								if ((i - mTileManager.H1Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-									(i - mTileManager.H1Dist + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x)
-									< mTileManager.mDimention)
-									if (coords[i - mTileManager.H1Dist + Xcycle + x][o + Ycycle - x] == 5)
+									(i - mTileManager.H1Dist + Xcycle + x) < mTileManager.mDimention && 
+									(o + Ycycle - x) < mTileManager.mDimention)
+									if (coords[i - mTileManager.H1Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz1Tex)
 										SAFE = false;
 							}
 							Ycycle++;
@@ -771,9 +789,10 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 						}
 					}
 
-					if (SAFE == true) {
-						coords[i][o] = 5;
-						origin[i][o] = 5; // 
+					if (SAFE == true) { 
+						//LoadTexture("grassTex", L"Data/Textures/grass.dds"); // 6
+						coords[i][o] = mTileManager.Haz1Tex;
+						origin[i][o] = mTileManager.Haz1Tex; // 
 						mTileManager.H1 -= 1;
 					}
 				}
@@ -784,19 +803,14 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 
 	// hazard type 2 - find hazard spots and check not within distance of other hazard
 	while (mTileManager.H2 > 0) { // until all hazards have been placed repeat (may cause issue )
-		for (int i = 0; i < mTileManager.mDimention; i++) {
-			for (int o = 0; o < mTileManager.mDimention; o++) {
+		for (int i = 0; i < mTileManager.mDimention; i++) { // x
+			for (int o = 0; o < mTileManager.mDimention; o++) { // y
 				// calculate random variable to figure out hazard spot
 				int r = rand() % mTileManager.dimSquare;
 				//int r = grid(rng); // causes worse problems
-				if (r <= 10 && mTileManager.H2 > 0) { // if tile is selected
-					// DISTANCE CHECK HERE
-					// main is central square (number to square)
-					//			  o
-					//	 o		 ooo
-					//	ooo		ooooo
-					//	 o		 ooo
-					//			  o
+				if ((r <= int(mTileManager.H2Chance / 2) && mTileManager.H2 > 0 && i <= mTileManager.H2Drop) || 
+					(r <= mTileManager.H2Chance && mTileManager.H2 > 0 && i > mTileManager.H2Drop)) {
+					// if tile is selected
 					bool SAFE = true;
 					int Cycles = (mTileManager.H2Dist * 2) + 1; // max number / for loop
 					bool odd = true; // whether or not to run odd or even logic
@@ -809,10 +823,16 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 								// xgrid = i -H1Dist + Xcycle + x
 								// ygrid = o + Ycycle - x
 								if ((i - mTileManager.H2Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-									(i - mTileManager.H2Dist + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x)
-									< mTileManager.mDimention)
-									if (coords[i - mTileManager.H2Dist + Xcycle + x][o + Ycycle - x] == 6)
-										SAFE = false;
+									(i - mTileManager.H2Dist + Xcycle + x) < mTileManager.mDimention && 
+									(o + Ycycle - x) < mTileManager.mDimention) {
+									if (mTileManager.H2Priority == 0) // own tiles
+										if (coords[i - mTileManager.H2Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz2Tex)
+											SAFE = false;
+									if (mTileManager.H2Priority == 1) // prevent covering poison
+										if ((coords[i - mTileManager.H1Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz2Tex) ||
+											(coords[i - mTileManager.H1Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz1Tex))
+											SAFE = false;
+								}
 							}
 							Xcycle++;
 						}
@@ -821,10 +841,16 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 								// xgrid = i(-H1Dist+1) + Xcycle + x
 								// ygrid = o + Ycyle - x
 								if ((i - mTileManager.H2Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-									(i - mTileManager.H2Dist + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x)
-									< mTileManager.mDimention)
-									if (coords[i - mTileManager.H2Dist + Xcycle + x][o + Ycycle - x] == 6)
-										SAFE = false;
+									(i - mTileManager.H2Dist + Xcycle + x) < mTileManager.mDimention && 
+									(o + Ycycle - x) < mTileManager.mDimention) {
+									if (mTileManager.H2Priority == 0) // own tiles
+										if (coords[i - mTileManager.H2Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz2Tex)
+											SAFE = false;
+									if (mTileManager.H2Priority == 1) // can't cover poison
+										if ((coords[i - mTileManager.H2Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz2Tex) ||
+											(coords[i - mTileManager.H2Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz1Tex))
+											SAFE = false;
+								}
 							}
 							Ycycle++;
 						}
@@ -839,8 +865,9 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 					}
 
 					if (SAFE == true) {
-						coords[i][o] = 6;
-						origin[i][o] = 6;
+						//LoadTexture("mudTex", L"Data/Textures/LostMeadow_dirt.dds"); // 7
+						coords[i][o] = mTileManager.Haz2Tex;
+						origin[i][o] = mTileManager.Haz2Tex;
 						mTileManager.H2 -= 1;
 					}
 				}
@@ -850,19 +877,14 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 
 	// hazard type 3 - find hazard spots and check not within distance of other hazard
 	while (mTileManager.H3 > 0) { // until all hazards have been placed repeat (may cause issue )
-		for (int i = 0; i < mTileManager.mDimention; i++) {
-			for (int o = 0; o < mTileManager.mDimention; o++) {
+		for (int i = 0; i < mTileManager.mDimention; i++) { // x
+			for (int o = 0; o < mTileManager.mDimention; o++) { // y
 				// calculate random variable to figure out hazard spot
 				int r = rand() % mTileManager.dimSquare;
 				//int r = grid(rng); // causes a worse problem
-				if (r <= 10 && mTileManager.H3 > 0) { // if tile is selected
-					// DISTANCE CHECK HERE
-					// main is central square (number to square)
-					//			  o
-					//	 o		 ooo
-					//	ooo		ooooo
-					//	 o		 ooo
-					//			  o
+				if ((r <= int(mTileManager.H3Chance / 2) && mTileManager.H3 > 0 && i <= mTileManager.H3Drop) || 
+					(r <= mTileManager.H3Chance && mTileManager.H3 > 0 && i > mTileManager.H3Drop)) {
+					// if tile is selected
 					bool SAFE = true;
 					int Cycles = (mTileManager.H3Dist * 2) + 1; // max number / for loop
 					bool odd = true; // whether or not to run odd or even logic
@@ -875,10 +897,21 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 								// xgrid = i -H1Dist + Xcycle + x
 								// ygrid = o + Ycycle - x
 								if ((i - mTileManager.H3Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-									(i - mTileManager.H3Dist + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x)
-									< mTileManager.mDimention)
-									if (coords[i - mTileManager.H3Dist + Xcycle + x][o + Ycycle - x] == 4)
-										SAFE = false;
+									(i - mTileManager.H3Dist + Xcycle + x) < mTileManager.mDimention && 
+									(o + Ycycle - x) < mTileManager.mDimention) {
+									if (mTileManager.H3Priority == 0) // can't cover own tiles
+										if (coords[i - mTileManager.H3Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz3Tex)
+											SAFE = false;
+									if (mTileManager.H3Priority == 1) // can't cover mud
+										if ((coords[i - mTileManager.H3Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz3Tex) ||
+											(coords[i - mTileManager.H3Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz2Tex))
+											SAFE = false;
+									if (mTileManager.H3Priority == 2) // can't cover mud or poison
+										if ((coords[i - mTileManager.H3Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz3Tex) ||
+											(coords[i - mTileManager.H3Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz2Tex) ||
+											(coords[i - mTileManager.H3Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz1Tex))
+											SAFE = false;
+								}
 							}
 							Xcycle++;
 						}
@@ -887,10 +920,21 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 								// xgrid = i(-H1Dist+1) + Xcycle + x
 								// ygrid = o + Ycyle - x
 								if ((i - mTileManager.H3Dist + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-									(i - mTileManager.H3Dist + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x)
-									< mTileManager.mDimention)
-									if (coords[i - mTileManager.H3Dist + Xcycle + x][o + Ycycle - x] == 4)
-										SAFE = false;
+									(i - mTileManager.H3Dist + Xcycle + x) < mTileManager.mDimention && 
+									(o + Ycycle - x) < mTileManager.mDimention) {
+									if (mTileManager.H3Priority == 0) // own tiles
+										if (coords[i - mTileManager.H3Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz1Tex)
+											SAFE = false;
+									if (mTileManager.H3Priority == 1) // can't cover mud
+										if ((coords[i - mTileManager.H3Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz1Tex) ||
+											(coords[i - mTileManager.H3Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz2Tex))
+											SAFE = false;
+									if (mTileManager.H3Priority == 2) // can't cover mud or poison
+										if ((coords[i - mTileManager.H3Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz1Tex) ||
+											(coords[i - mTileManager.H3Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz2Tex) ||
+											(coords[i - mTileManager.H3Dist + Xcycle + x][o + Ycycle - x] == mTileManager.Haz3Tex))
+											SAFE = false;
+								}
 							}
 							Ycycle++;
 						}
@@ -905,8 +949,9 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 					}
 
 					if (SAFE == true) {
-						coords[i][o] = 4;
-						origin[i][o] = 4;
+						//LoadTexture("iceTex", L"Data/Textures/ice.dds"); // 4
+						coords[i][o] = mTileManager.Haz3Tex;
+						origin[i][o] = mTileManager.Haz3Tex;
 						mTileManager.H3 -= 1;
 					}
 				}
@@ -922,7 +967,7 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 	for (int i = 0; i < mTileManager.mDimention; i++) {
 		for (int o = 0; o < mTileManager.mDimention; o++) {
 			// use origin to select central tiles & set all tiles within gen 
-			if (origin[i][o] == 5) { // if central tile found
+			if (origin[i][o] == mTileManager.Haz1Tex) { // if central tile found
 				int haz1 = gen1(rng); // random between min & max
 				// use for loop to set all tiles within gen1 to hazard
 				int Cycles = (int(haz1) * 2) + 1; // max number / for loop
@@ -936,9 +981,9 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 							// xgrid = i -H1Dist + Xcycle + x
 							// ygrid = o + Ycycle - x
 							if ((i - haz1 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-								(i - haz1 + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x)
-								< mTileManager.mDimention) // error catcher
-								coords[i - haz1 + Xcycle + x][o + Ycycle - x] = 5; // sets coord to hazard
+								(i - haz1 + Xcycle + x) < mTileManager.mDimention && 
+								(o + Ycycle - x) < mTileManager.mDimention) // error catcher
+								coords[i - haz1 + Xcycle + x][o + Ycycle - x] = mTileManager.Haz1Tex; // sets coord to hazard
 						}
 						Xcycle++;
 					}
@@ -949,9 +994,9 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 							int checkx = (i - haz1 + Xcycle + x);
 							int checky = (o + Ycycle - x);
 							if ((i - haz1 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-								(i - haz1 + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x) 
-								< mTileManager.mDimention) // error catcher
-								coords[i - haz1 + Xcycle + x][o + Ycycle - x] = 5;
+								(i - haz1 + Xcycle + x) < mTileManager.mDimention && 
+								(o + Ycycle - x) < mTileManager.mDimention) // error catcher
+								coords[i - haz1 + Xcycle + x][o + Ycycle - x] = mTileManager.Haz1Tex;
 						}
 						Ycycle++;
 					}
@@ -980,13 +1025,13 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 							// xgrid = i -H1Dist + Xcycle + x
 							// ygrid = o + Ycycle - x
 							if ((i - Rand1 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-								(i - Rand1 + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x) 
-								< mTileManager.mDimention) // error catcher
-								if (coords[i - Rand1 + Xcycle + x][o + Ycycle - x] != 5) { // not already a hazard
+								(i - Rand1 + Xcycle + x) < mTileManager.mDimention && 
+								(o + Ycycle - x) < mTileManager.mDimention) // error catcher
+								if (coords[i - Rand1 + Xcycle + x][o + Ycycle - x] != mTileManager.Haz1Tex) { // not already a hazard
 									// ADJUST HERE AS NEEDED
 									int use = (rand() % mTileManager.dimSquare);
 									if (use <= mTileManager.H1Random)
-										coords[i - Rand1 + Xcycle + x][o + Ycycle - x] = 5;
+										coords[i - Rand1 + Xcycle + x][o + Ycycle - x] = mTileManager.Haz1Tex;
 								}
 						}
 						Xcycle++;
@@ -998,13 +1043,13 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 							//int checkx = (i - haz1 + Xcycle + x); // DEBUG
 							//int checky = (o + Ycycle - x); // DEBUG
 							if ((i - Rand1 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-								(i - Rand1 + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x) 
-								< mTileManager.mDimention) // error catcher
-								if (coords[i - Rand1 + Xcycle + x][o + Ycycle - x] != 5) { // not already a hazard
+								(i - Rand1 + Xcycle + x) < mTileManager.mDimention && 
+								(o + Ycycle - x) < mTileManager.mDimention) // error catcher
+								if (coords[i - Rand1 + Xcycle + x][o + Ycycle - x] != mTileManager.Haz1Tex) { // not already a hazard
 									// ADJUST HERE AS NEEDED
 									int use = (rand() % mTileManager.dimSquare);
 									if (use <= mTileManager.H1Random)
-										coords[i - Rand1 + Xcycle + x][o + Ycycle - x] = 5;
+										coords[i - Rand1 + Xcycle + x][o + Ycycle - x] = mTileManager.Haz1Tex;
 								}
 						}
 						Ycycle++;
@@ -1020,7 +1065,7 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 				}
 			}
 			// HAZARD 2
-			if (origin[i][o] == 6) { // if central tile found
+			if (origin[i][o] == mTileManager.Haz2Tex) { // if central tile found
 				int haz2 = gen2(rng); // random between min & max
 				// use for loop to set all tiles within gen1 to hazard
 				int Cycles = (int(haz2) * 2) + 1; // max number / for loop
@@ -1034,9 +1079,9 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 							// xgrid = i -H1Dist + Xcycle + x
 							// ygrid = o + Ycycle - x
 							if ((i - haz2 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-								(i - haz2 + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x) 
-								< mTileManager.mDimention) // error catcher
-								coords[i - haz2 + Xcycle + x][o + Ycycle - x] = 6; // sets coord to hazard
+								(i - haz2 + Xcycle + x) < mTileManager.mDimention && 
+								(o + Ycycle - x) < mTileManager.mDimention) // error catcher
+								coords[i - haz2 + Xcycle + x][o + Ycycle - x] = mTileManager.Haz2Tex; // sets coord to hazard
 						}
 						Xcycle++;
 					}
@@ -1045,9 +1090,9 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 							// xgrid = i(-H1Dist+1) + Xcycle + x
 							// ygrid = o + Ycyle - x
 							if ((i - haz2 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-								(i - haz2 + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x) 
-								< mTileManager.mDimention) // error catcher
-								coords[i - haz2 + Xcycle + x][o + Ycycle - x] = 6;
+								(i - haz2 + Xcycle + x) < mTileManager.mDimention && 
+								(o + Ycycle - x) < mTileManager.mDimention) // error catcher
+								coords[i - haz2 + Xcycle + x][o + Ycycle - x] = mTileManager.Haz2Tex;
 						}
 						Ycycle++;
 					}
@@ -1076,13 +1121,13 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 							// xgrid = i -H1Dist + Xcycle + x
 							// ygrid = o + Ycycle - x
 							if ((i - Rand2 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-								(i - Rand2 + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x) 
-								< mTileManager.mDimention) // error catcher
-								if (coords[i - Rand2 + Xcycle + x][o + Ycycle - x] != 6) { // not already a hazard
+								(i - Rand2 + Xcycle + x) < mTileManager.mDimention && 
+								(o + Ycycle - x) < mTileManager.mDimention) // error catcher
+								if (coords[i - Rand2 + Xcycle + x][o + Ycycle - x] != mTileManager.Haz2Tex) { // not already a hazard
 									// ADJUST HERE AS NEEDED
 									int use = (rand() % mTileManager.dimSquare);
 									if (use <= mTileManager.H2Random)
-										coords[i - Rand2 + Xcycle + x][o + Ycycle - x] = 6;
+										coords[i - Rand2 + Xcycle + x][o + Ycycle - x] = mTileManager.Haz2Tex;
 								}
 						}
 						Xcycle++;
@@ -1094,13 +1139,13 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 							//int checkx = (i - haz1 + Xcycle + x); // DEBUG
 							//int checky = (o + Ycycle - x); // DEBUG
 							if ((i - Rand2 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-								(i - Rand2 + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x) 
-								< mTileManager.mDimention) // error catcher
-								if (coords[i - Rand2 + Xcycle + x][o + Ycycle - x] != 6) { // not already a hazard
+								(i - Rand2 + Xcycle + x) < mTileManager.mDimention && 
+								(o + Ycycle - x) < mTileManager.mDimention) // error catcher
+								if (coords[i - Rand2 + Xcycle + x][o + Ycycle - x] != mTileManager.Haz2Tex) { // not already a hazard
 									// ADJUST HERE AS NEEDED
 									int use = (rand() % mTileManager.dimSquare);
 									if (use <= mTileManager.H2Random)
-										coords[i - Rand2 + Xcycle + x][o + Ycycle - x] = 6;
+										coords[i - Rand2 + Xcycle + x][o + Ycycle - x] = mTileManager.Haz2Tex;
 								}
 						}
 						Ycycle++;
@@ -1116,7 +1161,7 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 				}
 			}
 			// HAZARD 3
-			if (origin[i][o] == 4) { // if central tile found
+			if (origin[i][o] == mTileManager.Haz3Tex) { // if central tile found
 				int haz3 = gen3(rng); // random between min & max
 				// use for loop to set all tiles within gen1 to hazard
 				int Cycles = (int(haz3) * 2) + 1; // max number / for loop
@@ -1130,9 +1175,9 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 							// xgrid = i -H1Dist + Xcycle + x
 							// ygrid = o + Ycycle - x
 							if ((i - haz3 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-								(i - haz3 + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x) 
-								< mTileManager.mDimention) // error catcher
-								coords[i - haz3 + Xcycle + x][o + Ycycle - x] = 4; // sets coord to hazard
+								(i - haz3 + Xcycle + x) < mTileManager.mDimention && 
+								(o + Ycycle - x) < mTileManager.mDimention) // error catcher
+								coords[i - haz3 + Xcycle + x][o + Ycycle - x] = mTileManager.Haz3Tex; // sets coord to hazard
 						}
 						Xcycle++;
 					}
@@ -1141,9 +1186,9 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 							// xgrid = i(-H1Dist+1) + Xcycle + x
 							// ygrid = o + Ycyle - x
 							if ((i - haz3 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-								(i - haz3 + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x) 
-								< mTileManager.mDimention) // error catcher
-								coords[i - haz3 + Xcycle + x][o + Ycycle - x] = 4;
+								(i - haz3 + Xcycle + x) < mTileManager.mDimention && 
+								(o + Ycycle - x) < mTileManager.mDimention) // error catcher
+								coords[i - haz3 + Xcycle + x][o + Ycycle - x] = mTileManager.Haz3Tex;
 						}
 						Ycycle++;
 					}
@@ -1172,13 +1217,13 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 							// xgrid = i -H1Dist + Xcycle + x
 							// ygrid = o + Ycycle - x
 							if ((i - Rand3 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-								(i - Rand3 + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x) 
-								< mTileManager.mDimention) // error catcher
-								if (coords[i - Rand3 + Xcycle + x][o + Ycycle - x] != 4) { // not already a hazard
+								(i - Rand3 + Xcycle + x) < mTileManager.mDimention && 
+								(o + Ycycle - x) < mTileManager.mDimention) // error catcher
+								if (coords[i - Rand3 + Xcycle + x][o + Ycycle - x] != mTileManager.Haz3Tex) { // not already a hazard
 									// ADJUST HERE AS NEEDED
 									int use = (rand() % mTileManager.dimSquare);
 									if (use <= mTileManager.H3Random)
-										coords[i - Rand3 + Xcycle + x][o + Ycycle - x] = 4;
+										coords[i - Rand3 + Xcycle + x][o + Ycycle - x] = mTileManager.Haz3Tex;
 								}
 						}
 						Xcycle++;
@@ -1190,13 +1235,13 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 							//int checkx = (i - haz1 + Xcycle + x); // DEBUG
 							//int checky = (o + Ycycle - x); // DEBUG
 							if ((i - Rand3 + Xcycle + x) >= 0 && (o + Ycycle - x) >= 0 &&
-								(i - Rand3 + Xcycle + x) < mTileManager.mDimention && (o + Ycycle - x) 
-								< mTileManager.mDimention) // error catcher
-								if (coords[i - Rand3 + Xcycle + x][o + Ycycle - x] != 4) { // not already a hazard
+								(i - Rand3 + Xcycle + x) < mTileManager.mDimention && 
+								(o + Ycycle - x) < mTileManager.mDimention) // error catcher
+								if (coords[i - Rand3 + Xcycle + x][o + Ycycle - x] != mTileManager.Haz3Tex) { // not already a hazard
 									// ADJUST HERE AS NEEDED
 									int use = (rand() % mTileManager.dimSquare);
 									if (use <= mTileManager.H3Random)
-										coords[i - Rand3 + Xcycle + x][o + Ycycle - x] = 4;
+										coords[i - Rand3 + Xcycle + x][o + Ycycle - x] = mTileManager.Haz3Tex;
 								}
 						}
 						Ycycle++;
@@ -1214,65 +1259,17 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 		}
 	}
 
-	// use randomness attributed to that hazard to activate / deactivate other tiles outside up to range of 2 & 
-	// interior tiles, use gen value + 2
-
-
-	// 4 = ICE, 5 = POISON/MARSH, 6 = MUD
-
 	//setup data array
-	for (int k = 0; k < mTileManager.mDimention; ++k)
-	{
-		mTileManager.mMapData.push_back(std::vector<mapData>());
-
-		for (int j = 0; j < mTileManager.mDimention; ++j)
-		{
-			mTileManager.mMapData.back().push_back(mapData());
+	for (int k = 0; k < mTileManager.mDimention; ++k) {
+		for (int j = 0; j < mTileManager.mDimention; ++j) {
 
 			if (coords[k][j] <= 0)
-				mTileManager.mMapData.back().back().texIndex = rand() % 2; // random plain tile
+				mTileManager.mMapData[k][j].texIndex = rand() % 2; // random plain tile
 			else
-				mTileManager.mMapData.back().back().texIndex = coords[k][j]; // set as hazard
+				mTileManager.mMapData[k][j].texIndex = coords[k][j]; // set as hazard
 
-			//if (k == 0 || j == 0 || k == 31 || j == 31) { // DEBUG CODE, NEEDS REMOVING AFTER TESTING FINISHED
-			//	mMapData.back().back().texIndex = 5;
-			//} // 4 = ICE, 5 = POISON/MARSH, 6 = MUD
-			//else {
-			//	mMapData.back().back().texIndex = rand() % 2; // TODO: NOTE: TEXTURE IS RANDOMIZED HERE
-			//}
+			mTileManager.mTileGrid.at(j).at(k).mpInstance->MaterialIndex = mTileManager.mMapData[k][j].texIndex;
+
 		}
-	}
-
-	// create tiles
-	mTileManager.mTileGrid.reserve(mTileManager.mDimention);
-	for (int k = 0; k < mTileManager.mDimention; ++k)
-	{
-		TileLine tl;
-		tl.reserve(mTileManager.mDimention);
-
-		for (int j = 0; j < mTileManager.mDimention; ++j)
-		{
-			tl.push_back(Tile());
-			tl.back().Initialize(mTileManager.mRenderItemName); //Creates instances
-
-			// Position instanced along a 3D grid.
-			tl.back().mpInstance->World = DirectX::XMFLOAT4X4(
-				1.0f, 0.0f, 0.0f, 0.0f,
-				0.0f, 1.0f, 0.0f, 0.0f,
-				0.0f, 0.0f, 1.0f, 0.0f,
-				mTileManager.x + j * mTileManager.dx, 0.0f, mTileManager.z + k * mTileManager.dz, 1.0f);
-			// TODO: NEED TO REMOVE THE FIRST TEXTURE FROM THE OBJECTS FIRST
-			
-			//Selects random index from array of textures WIP - will be using auto generated clumping 2d array
-			tl.back().mpInstance->MaterialIndex = mTileManager.mMapData[j][k].texIndex; // set tile texture to struct data
-			
-
-			// set all tiles to a default texture, this can then be used to determine the tile type
-			//tl.back().mpInstance->MaterialIndex = 0; //0 = MOSS STONE BRICK, 1 = MOSS STONE, 2 LAB TILES,
-			//3 = DEFUALT CRATE, 4 = ICE, 5 = POISON/MARSH, 6 = MUD, 7 = black now (was white), 8 = BLACK ONWARDS
-		}
-
-		mTileManager.mTileGrid.push_back(std::move(tl));
-
 	}
 }

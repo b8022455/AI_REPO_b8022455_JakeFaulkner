@@ -34,7 +34,7 @@ void TileManager::Initialize()
 				// calculate random variable to figure out hazard spot
 				//int r = rand() % dimSquare; // favors the lower numbers
 				int r = grid(rng);  // slightly better
-				// TODO: IF WITHIN THE LOWER SPECTRUM (LEFT) THEN CUT MAX IN HALF TO LOWER CHANCES OF SELECTION
+				// IF WITHIN THE LOWER SPECTRUM (LEFT) THEN CUT MAX IN HALF TO LOWER CHANCES OF SELECTION
 				if ((r <= int(H1Chance / 2) && H1 > 0 && i <= H1Drop) || (r <= H1Chance && H1 > 0 && i > H1Drop)) { 
 					// if tile is selected
 					// DISTANCE CHECK HERE
@@ -87,7 +87,7 @@ void TileManager::Initialize()
 						}
 					}
 
-					if (SAFE == true) { // TODO: (GAME NOTE) TEXTURES NEED TO BE UPDATED HERE WHEN LOAD ORDER CHANGED
+					if (SAFE == true) {
 						//LoadTexture("grassTex", L"Data/Textures/grass.dds"); // 6
 						coords[i][o] = Haz1Tex;
 						origin[i][o] = Haz1Tex; // 
@@ -159,7 +159,7 @@ void TileManager::Initialize()
 						}
 					}
 
-					if (SAFE == true) {// TODO: (GAME NOTE) TEXTURES NEED TO BE UPDATED HERE WHEN LOAD ORDER CHANGED
+					if (SAFE == true) {
 						//LoadTexture("mudTex", L"Data/Textures/LostMeadow_dirt.dds"); // 7
 						coords[i][o] = Haz2Tex;
 						origin[i][o] = Haz2Tex;
@@ -240,7 +240,7 @@ void TileManager::Initialize()
 						}
 					}
 
-					if (SAFE == true) {// TODO: (GAME NOTE) TEXTURES NEED TO BE UPDATED HERE WHEN LOAD ORDER CHANGED
+					if (SAFE == true) {
 						//LoadTexture("iceTex", L"Data/Textures/ice.dds"); // 4
 						coords[i][o] = Haz3Tex;
 						origin[i][o] = Haz3Tex;
@@ -587,14 +587,13 @@ void TileManager::Initialize()
 				0.0f, 1.0f, 0.0f, 0.0f,
 				0.0f, 0.0f, 1.0f, 0.0f,
 				x + j * dx, 0.0f, z + k * dz, 1.0f);
-	
+			
+			// TODO: (NOTE) A SLIGHT ERROR HERE, J & K SHOULD BE SWAPPED, BUT I THINK IT HELPS A LITTLE LIKE THIS
 			//Selects random index from array of textures WIP - will be using auto generated clumping 2d array
 			tl.back().mpInstance->MaterialIndex = mMapData[j][k].texIndex; // set tile texture to struct data
-			// set all tiles to a default texture, this can then be used to determine the tile type
-			//tl.back().mpInstance->MaterialIndex = 0; //0 = MOSS STONE BRICK, 1 = MOSS STONE, 2 LAB TILES,
-			//3 = DEFUALT CRATE, 4 = ICE, 5 = POISON/MARSH, 6 = MUD, 7 = black now (was white), 8 = BLACK ONWARDS
+			//tl.back().mpInstance->MaterialIndex = 0; // USED IN TESTING
 		}
-		
+
 		mTileGrid.push_back(std::move(tl));
 	
 	}

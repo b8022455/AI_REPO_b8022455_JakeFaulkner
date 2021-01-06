@@ -618,7 +618,7 @@ void GameApp::LoadTextures()
 	LoadTexture("iceTex", L"Data/Textures/ice.dds"); // 4
 	LoadTexture("crateTex", L"Data/Textures/WoodCrate01.dds"); // 5
 	LoadTexture("grassTex", L"Data/Textures/grass.dds"); // 6
-	LoadTexture("tileTex", L"Data/Textures/tile.dds"); // 7
+	LoadTexture("tileTex", L"Data/Textures/tile.dds"); // 7 // POSSIBLE ERROR WITH TEXTURE LOADED INTO POSITION 7
 	LoadTexture("defaultTex", L"Data/Textures/white1x1.dds"); // 8
 	LoadTexture("uiTex", L"Data/Textures/ui.dds"); // 9
 }
