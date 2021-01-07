@@ -106,11 +106,11 @@ void PlayState::Initialize()
 	mPlayer.Initialize("Player");
 	mPlayerWeapon.Initialize("Weapon");
 	
-	/*mTile.Initialize("Tiles");
-	{
-		mTile.mpInstance->MaterialIndex = 4;*/
-		/*mTile.SetRandomPosition();
-	}*/
+	// ui bar
+	mPlayerHealthBar.Initialise(GC::BAR_GRN, GC::BAR_RED);
+	mPlayerHealthBar.SetMinMax(0, mPlayer.health); // todo change to max health
+	mPlayerHealthBar.SetValue(mPlayer.health);
+	mPlayerHealthBar.SetPosition({ 200.0f, 20.0f }); // todo add values to constants.h
 
 	InitializeTraders();
 	
@@ -225,7 +225,9 @@ void PlayState::Update(const GameTimer & gt)
 			mTileManager.GetIndex(static_cast<int>(tileX2), static_cast<int>(tileZ2)) == mTileManager.Haz1Tex) {
 			if (mPlayer.hazardTimer <= 0) { // if hazard should be active
 				mPlayer.health -= 5;
+				mPlayerHealthBar.SetValue(mPlayer.health);
 				mPlayer.hazardTimer = 3; // reset hazard timer 
+
 			}
 		}
 
@@ -259,6 +261,7 @@ void PlayState::Update(const GameTimer & gt)
 		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetCollisionPoint()))
 		{
 			mPlayer.DamagePlayer(e.GetAttack());
+			mPlayerHealthBar.SetValue(mPlayer.health);
 			GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f,GetRandomVoicePitch());
 		}
 
@@ -318,9 +321,11 @@ void PlayState::Update(const GameTimer & gt)
 
 	//mCamera.SetPosition(0, 50, 0);
 
+
+	UiUpdate(gt);
+
 	// Sprite update
-	mSprites["testSpriteFirst"].rotation = cosf(gt.TotalTime()) * 0.1f;
-	mSprites["testSpriteSecond"].rotation = sinf(gt.TotalTime());
+	
 
 
 	if (mExperience.HasLeveledUp())
@@ -350,6 +355,7 @@ void PlayState::Update(const GameTimer & gt)
 	if (mPlayer.health <= 0)
 	{
 		mPlayer.health = 100;		//Just to check that restart changes state, will load most recent save instead
+		mPlayerHealthBar.SetValue(mPlayer.health);
 		GameApp::Get().ChangeState("GameOver");
 	}
 
@@ -364,11 +370,14 @@ void PlayState::Update(const GameTimer & gt)
 
 void PlayState::Draw(const GameTimer & gt)
 {
+	// UI
 
 	std::for_each(mSprites.begin(), mSprites.end(), [](auto& sp)
 	{
 		sp.second.Draw();
 	});
+
+	mPlayerHealthBar.Draw();
 
 }
 
@@ -408,7 +417,6 @@ void PlayState::OnResume()
 	// remove focus from trader
 	mpActiveTrader = nullptr;
 }
-
 
 /*
 
@@ -650,6 +658,7 @@ void PlayState::ItemAction()
 		{
 			--inventoryPosition->second; //removes a potion
 			mPlayer.health += GC::HEAL_SMALL;
+			mPlayerHealthBar.SetValue(mPlayer.health);
 		}
 		break;
 	case ItemCategory::Weapons:
@@ -1272,4 +1281,12 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 
 		}
 	}
+}
+
+void PlayState::UiUpdate(const GameTimer & gt)
+{
+	mSprites["testSpriteFirst"].rotation = cosf(gt.TotalTime()) * 0.1f;
+	mSprites["testSpriteSecond"].rotation = sinf(gt.TotalTime());
+
+	mPlayerHealthBar.Update(gt);
 }
