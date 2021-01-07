@@ -12,6 +12,7 @@
 #include "Constants.h"
 #include "Trader.h"
 #include <math.h>
+#include "Bar.h"
 using namespace std;
 
 class PlayState : public State
@@ -41,8 +42,10 @@ class PlayState : public State
 	};
 
 	CAMERA_TYPE mCamType = CAMERA_TYPE::GAME;
-
 	std::array<Camera, CAMERA_TYPE::SIZE> mCameras;
+
+	Bar mPlayerHealthBar;
+
 
 	void InitializeTraders();
 	bool FindNearestTraderInRadius();
@@ -58,7 +61,6 @@ public:
 	virtual void OnMouseMove(WPARAM btnState, int x, int y) override;
 	virtual void OnKeyboardInput(const GameTimer& gt)		override;
 	virtual void OnResume()									override;
-
 
 	void Controls(const GameTimer& gt);
 
@@ -105,6 +107,10 @@ public:
 	const DirectX::XMFLOAT3 CAM_OFFSET{ 0.0f,10.0f,-10.0f }; 
 	Experience mExperience;
 
+	// todo Sam/Jake description here please
 	void ReGen();
+
+	void UiUpdate(const GameTimer& gt);
+
 };
 

@@ -147,9 +147,23 @@ namespace GC
 		TEXT_LIGHT_COLOR{ 1.0f, 1.0f, 1.0f, 1.0f }
 		;
 
+	
 	const long
-		PANEL_SRC[4]{ 192, 128,256,192 }
+		// RECT
+		PANEL_SRC[4]{ 192, 128,256,192 },
+
+		BAR_MIN {32}, // for source rect limits 0% - 100%
+		BAR_MAX { 160}, // for source rect limits 0% - 100%
+		BAR_BG[4]	{ BAR_MIN,128,BAR_MAX,160 }, // Bar background
+		BAR_GRN[4]	{ BAR_MIN,160,BAR_MAX,192 },
+		BAR_YLW[4]	{ BAR_MIN,192,BAR_MAX,224 },
+		BAR_RED[4]	{ BAR_MIN,224,BAR_MAX,256 },
+		BAR_SIZE{ BAR_MAX - BAR_MIN } //max - min.
 	;
+
+	
+
+
 
 	const ItemMap ITEM_LIST = {
 		{"Empty",			{ItemCategory::None,	0}}, // 
