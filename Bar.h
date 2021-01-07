@@ -4,6 +4,7 @@
 #include <utility>
 class GameTimer;
 
+// A horizontal pair to sprites overlapping.
 class Bar
 {
 	std::pair<Sprite,Sprite> mSprites; // first is background, second is forground
@@ -26,6 +27,7 @@ public:
 		assert(mMin <= mValue);
 	}
 
+	// draw both sprites
 	void Draw()
 	{
 		mSprites.first.Draw();

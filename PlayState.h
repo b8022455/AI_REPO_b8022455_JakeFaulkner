@@ -42,7 +42,6 @@ class PlayState : public State
 	};
 
 	CAMERA_TYPE mCamType = CAMERA_TYPE::GAME;
-
 	std::array<Camera, CAMERA_TYPE::SIZE> mCameras;
 
 	Bar mPlayerHealthBar;
