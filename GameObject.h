@@ -26,5 +26,6 @@ public:
 	void SetPos(const DirectX::XMFLOAT3& newPos);
 	const DirectX::XMFLOAT3 GetPos() const;
 	const DirectX::SimpleMath::Vector3 GetPosV3() const;
+	void SetScale(const float& scale);
 
 };

@@ -166,6 +166,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Experience.cpp" />
     <ClCompile Include="MenuState.cpp" />
+    <ClCompile Include="Plant.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="State.cpp" />
@@ -205,6 +206,7 @@
     <ClInclude Include="Experience.h" />
     <ClInclude Include="MenuState.h" />
     <ClInclude Include="OBJ_Loader.h" />
+    <ClInclude Include="Plant.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayState.h" />
     <ClInclude Include="Singleton.h" />
