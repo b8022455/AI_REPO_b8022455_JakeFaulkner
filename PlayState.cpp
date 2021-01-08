@@ -105,6 +105,8 @@ void PlayState::Initialize()
 
 	mPlayer.Initialize("Player");
 	mPlayerWeapon.Initialize("Weapon");
+
+	mPlants.reserve(20);
 	
 	// ui bar
 	mPlayerHealthBar.Initialise(GC::BAR_GRN, GC::BAR_RED);
@@ -319,7 +321,8 @@ void PlayState::Update(const GameTimer & gt)
 		pMainPassCB->Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
 	}
 
-	//mCamera.SetPosition(0, 50, 0);
+	UpdatePlants(gt);
+
 
 
 	UiUpdate(gt);
@@ -523,6 +526,19 @@ void PlayState::Controls(const GameTimer & gt)
 				//Update active camera
 				GameApp::Get().SetActiveCamera(&mCameras.at(CAMERA_TYPE::DEBUG));
 			}
+
+			// Plant
+			if (Input::Get().KeyReleased('7'))
+			{
+				CreatePlant();
+			}
+
+
+			if (Input::Get().KeyReleased('8'))
+			{
+				HarvestByRadius();
+			}
+
 		}
 		break;
 		case CAMERA_TYPE::DEBUG:
@@ -566,7 +582,6 @@ void PlayState::Controls(const GameTimer & gt)
 				GameApp::Get().SetActiveCamera(&mCameras.at(CAMERA_TYPE::GAME));
 			}
 
-
 			// Debug random enemy pos
 			if (Input::Get().KeyReleased(GC::KEY_DEBUG_ENEMY_POS))
 			{
@@ -578,6 +593,10 @@ void PlayState::Controls(const GameTimer & gt)
 					e.SetRandomPosition();
 				});
 			}
+			
+			
+			
+
 		}
 		break;
 		}
@@ -620,10 +639,6 @@ void PlayState::Controls(const GameTimer & gt)
 		{
 			//todo sound fail sound
 		}
-
-
-
-		
 	}
 }
 
@@ -1289,4 +1304,86 @@ void PlayState::UiUpdate(const GameTimer & gt)
 	mSprites["testSpriteSecond"].rotation = sinf(gt.TotalTime());
 
 	mPlayerHealthBar.Update(gt);
+}
+
+void PlayState::CreatePlant()
+{
+	
+	// to tile nearest to player
+	SimpleMath::Vector3 pos(mPlayer.GetPosV3());
+	pos.x = round(pos.x);
+	pos.y = round(pos.y);
+	pos.z = round(pos.z);
+
+	// check if plant is already at location
+	bool found = false;
+	int i = 0;
+
+	while (i < mPlants.size() && !found)
+	{
+		if (SimpleMath::Vector3::Distance(pos, mPlants.at(i).GetPosV3()) < 0.1f) 
+		{
+			// There is already a plant at this location
+			found = true;
+		}
+		++i;
+	}
+
+
+	if (!found)
+	{
+		// todo Luc change basic on item rather than random
+		int r = rand() % 3;
+		switch (r)
+		{
+		case 0:	mPlants.push_back(Plant(GC::PLANT_0)); break;
+		case 1:	mPlants.push_back(Plant(GC::PLANT_1)); break;
+		case 2:	mPlants.push_back(Plant(GC::PLANT_2)); break;
+		default:
+			break;
+		}
+
+		mPlants.back().Initialize(GC::GO_ENEMY);
+		mPlants.back().SetPos(pos);
+	}
+	
+}
+
+void PlayState::UpdatePlayer(const GameTimer & gt)
+{
+}
+
+void PlayState::UpdatePlants(const GameTimer & gt)
+{
+	for (auto& p : mPlants)
+	{
+		p.Update(gt);
+	}
+}
+
+void PlayState::UpdateTiles(const GameTimer & gt)
+{
+}
+
+void PlayState::UpdateEnemies(const GameTimer & gt)
+{
+}
+
+void PlayState::HarvestByRadius()
+{
+	for (auto& p : mPlants)
+	{
+		// player within range
+		if (SimpleMath::Vector3::Distance(mPlayer.GetPosV3(), p.GetPosV3()) < 1.5f) // todo Luc move to constant.h
+		{
+			if (p.Harvest() ) // applies changes to instance state
+			{
+				// add all items from lookup to inventory
+				for (auto& m : GC::PLANT_LOOKUP_HARVEST.at( p.GetName() ) )
+				{
+					mInventory[m.first] += m.second;
+				}
+			}
+		}
+	}
 }
