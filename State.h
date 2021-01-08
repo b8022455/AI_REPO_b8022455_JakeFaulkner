@@ -45,6 +45,7 @@ class StateManager
 
 	// Validate state exists
 	bool IsValidState(const std::string stateName);
+
 public:
 	// Adds the game states
 	void Init() ;
@@ -64,6 +65,8 @@ public:
 	{
 		return mIsMenu;
 	}
+
+	static bool Story; // no use at current
 
 	void OnMouseDown(WPARAM btnState, int x, int y);
 	void OnMouseUp(WPARAM btnState, int x, int y);

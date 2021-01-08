@@ -6,6 +6,8 @@
 #include "TradeState.h"
 #include "GameOverState.h"
 
+bool StateManager::Story = true;
+
 void StateManager::EvaluateState()
 {
 	if (mCurrentState == GC::STATE_PLAY || mCurrentState == GC::STATE_PAUSE || mCurrentState == GC::STATE_TRADE)
@@ -22,13 +24,14 @@ bool StateManager::IsValidState(const std::string stateName)
 {
 	return mStates.count(stateName) == 1;
 }
-void StateManager::Init()
+void StateManager::Init() // initialised in gameapp
 {
-	mMenuBackground.Initialise("iceTex");
+	//mMenuBackground.Initialise("iceTex"); // initialize background for ALL menus
+
+	mMenuBackground.Initialise("tileTex"); 
 
 	DirectX::XMINT2 s = GameApp::Get().GetClientSizeU2(); //todo on resize
 	mMenuBackground.sourceRectangle = { 0,0,s.x,s.y };
-
 
 	//set position of text elements of menus
 	Text menuTitle, menuBody;
@@ -41,18 +44,29 @@ void StateManager::Init()
 	buttonBg.textureSize.y = buttonBg.textureSize.y >> 1;
 	buttonBg.sourceRectangle = { 0,0,(LONG)buttonBg.textureSize.x,(LONG)buttonBg.textureSize.y >> 2 };
 	buttonBg.destinationRectangle = { -1,-1,-1,-1 };
-	buttonBg.Initialise("uiTex",true);
+	buttonBg.Initialise("uiTex",true); // initialise button texture for ALL menus
 	
-	
+	// INTRO SCREEN	
+	menuTitle.string = "";
+	menuBody.string = "It began in the 20th year of the 2nd millenium, on a tuesday, when the plague was \nreleased. The world quickly fell to ruin as it quickly spread & mutated moving between\nhosts, human, animal & plant alike. A few wars & civil uprisings later. And this is the\nworld as we now know it.\nTerrifying I know.\n\n\n                                                                            Press W to play";
+	Button btnW(buttonBg, "W Play", Button::Action::GOTO_MAIN_MENU);
+	Button btnA(buttonBg, "A Play", Button::Action::NO_ACTION);
+	Button btnD(buttonBg, "D Play", Button::Action::NO_ACTION);
+	Button btnS(buttonBg, "S Play", Button::Action::NO_ACTION);
+	AddState("Story1", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS));
+	//menuBody.string = "It began in the 20th year of the 2nd millenium, on a tuesday when \n ";
+
 	// Main menu
 	menuTitle.string = "Game Name";
-	menuBody.string = "Placeholder text";
-	Button btnW(buttonBg, "W Play", Button::Action::GOTO_GAME);
-	Button btnA(buttonBg, "A Play", Button::Action::GOTO_GAME);
-	Button btnD(buttonBg, "D Play", Button::Action::GOTO_GAME);
-	Button btnS(buttonBg, "S Play", Button::Action::GOTO_GAME);
+	menuBody.string = "PlaceHolder text";
+	btnW = Button(buttonBg, "W Play", Button::Action::GOTO_GAME);
+	btnA = Button(buttonBg, "A Play", Button::Action::GOTO_GAME);
+	btnD = Button(buttonBg, "D Play", Button::Action::GOTO_GAME);
+	btnS = Button(buttonBg, "S Play", Button::Action::GOTO_GAME);
 	AddState("MainMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS));
 
+
+	//mMenuBackground.Initialise("iceTex"); // overrides previous set
 	//PauseMenu
 	menuTitle.string = "Pause";
 	menuBody.string = "Placeholder text";
@@ -151,6 +165,16 @@ void StateManager::ChangeState(const std::string & name)
 {
 	if (IsValidState(name))
 	{
+
+		if (name != "Story1") {// changes background if state isn't Story1
+			mMenuBackground.Initialise("iceTex");
+			Story = false;
+		}
+		else {
+			mMenuBackground.Initialise("tileTex");
+			Story = true;
+		} // all implemented for story screens & changing the background for menus (NOT TESTED FOR PERFORMANCE ISSUES,
+		// E.G. MULTIPLE TEXTURES BEING LOADED INTO BACKGROUND VARIABLE)
 
 		mCurrentState = name;
 		EvaluateState();

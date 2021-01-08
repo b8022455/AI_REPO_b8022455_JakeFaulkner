@@ -108,6 +108,7 @@ void MenuState::Draw(const GameTimer & gt)
 
 	for (auto& b : mButtons)
 	{
-		b.Draw();
+		if (StateManager::Story != true) // story screen code
+			b.Draw();
 	}
 }
