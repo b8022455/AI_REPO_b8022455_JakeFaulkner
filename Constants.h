@@ -11,7 +11,7 @@
 
 typedef std::pair<std::string, std::string> DialogPair;
 
-
+typedef std::pair<std::string, float> PlantData;
 
 namespace GC
 {
@@ -109,8 +109,19 @@ namespace GC
 		TRADER_NAME_1 = "Traveller1",
 		TRADER_NAME_2 = "Traveller2",
 		TRADER_NAME_3 = "Traveller3",
-		TRADER_NAME_4 = "Traveller4"
+		TRADER_NAME_4 = "Traveller4",
+
+		PLANT_NAME_0 = "Sour Potato",
+		PLANT_NAME_1 = "Worm Herb",
+		PLANT_NAME_2 = "Skull Rose"
 		;
+
+	const PlantData
+		PLANT_0 = { PLANT_NAME_0 , 0.1f },
+		PLANT_1 = { PLANT_NAME_1 , 0.05f },
+		PLANT_2 = { PLANT_NAME_2 , 0.01f }
+	;
+
 
 	const std::string TRADER_TALK[6]
 	{
@@ -175,7 +186,11 @@ namespace GC
 		{"Plastic Spork",	{ItemCategory::Weapons,  00}},
 		{"Holy Water",		{ItemCategory::Farming, 120}},
 		{"Magical Seeds",	{ItemCategory::Farming, 200}},
-		{"Key To Valhalla",	{ItemCategory::KeyItems,  0}}
+		{"Key To Valhalla",	{ItemCategory::KeyItems,  0}},
+		{PLANT_NAME_0,		{ItemCategory::Farming, 100}},
+		{PLANT_NAME_1,		{ItemCategory::Farming, 200}},
+		{PLANT_NAME_2,		{ItemCategory::Farming, 350}},
+
 	};
 
 	const ItemLookup ITEM_LOOKUP_ENEMIES =
@@ -188,11 +203,11 @@ namespace GC
 	//Trader requests. upto 3
 	const ItemLookup ITEM_LOOKUP_REQUEST
 	{
-		{ TRADER_NAME_TEST,			{{"Potion",1 }													}},
-		{ TRADER_NAME_1,			{{"Leadpipe",2 }	}},
-		{ TRADER_NAME_2,			{{"Potion",2}, {"Plastic Spork",2},{ "Holy Water",2}			}   },
-		{ TRADER_NAME_3,			{{"Potion",2}, {"Nail Bat",2},{ "Leadpipe",2}					}   }, //todo change 
-		{ TRADER_NAME_4,			{{"Potion",2}, {"Leadpipe",2},{ "Holy Water",2}					}   }, //todo change
+		{ TRADER_NAME_TEST,			{{"Potion",1 }												}	},
+		{ TRADER_NAME_1,			{{"Leadpipe",2 }											}	},
+		{ TRADER_NAME_2,			{{"Potion",2}, {"Plastic Spork",2},{ "Holy Water",2}		}   },
+		{ TRADER_NAME_3,			{{"Potion",2}, {"Nail Bat",2},{ "Leadpipe",2}				}   }, //todo change 
+		{ TRADER_NAME_4,			{{"Potion",2}, {"Leadpipe",2},{ "Holy Water",2}				}   }, //todo change
 	};
 
 	const ItemLookup ITEM_LOOKUP_REWARD
@@ -202,6 +217,13 @@ namespace GC
 		{ TRADER_NAME_2,		{{"Potion",2}, {"Leadpipe",2},{ "Holy Water",2}					}	}, //
 		{ TRADER_NAME_3,		{{"Potion",2}, {"Holy Water",2},{ "Holy Water",2}				}	}, //todo change 
 		{ TRADER_NAME_4,		{																}	}, // no reward, charity
+	};
+
+	const ItemLookup PLANT_LOOKUP_HARVEST
+	{
+		{PLANT_NAME_0, {{ PLANT_NAME_0,1}}},
+		{PLANT_NAME_1, {{ PLANT_NAME_1,1}}},
+		{PLANT_NAME_2, {{ PLANT_NAME_2,1}}},
 	};
 
 

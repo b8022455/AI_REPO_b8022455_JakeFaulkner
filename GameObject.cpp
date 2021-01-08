@@ -45,3 +45,10 @@ const DirectX::SimpleMath::Vector3 GameObject::GetPosV3() const
 	};
 }
 
+void GameObject::SetScale(const float& scale)
+{
+	mpInstance->World._11 = scale;
+	mpInstance->World._22 = scale;
+	mpInstance->World._33 = scale;
+}
+

@@ -11,6 +11,7 @@
 #include "Experience.h"
 #include "Constants.h"
 #include "Trader.h"
+#include "Plant.h"
 #include <math.h>
 #include "Bar.h"
 using namespace std;
@@ -21,6 +22,7 @@ class PlayState : public State
 	PlayerWeapon mPlayerWeapon;
 	std::vector<Trader> mTraders;
 	std::vector<Enemy> mEnemies;
+	std::vector<Plant> mPlants;
 	Inventory mInventory;
 
 
@@ -111,6 +113,13 @@ public:
 	void ReGen();
 
 	void UiUpdate(const GameTimer& gt);
+	void CreatePlant();
+	void UpdatePlayer(const GameTimer& gt);
+	void UpdatePlants(const GameTimer& gt);
+	void UpdateTiles(const GameTimer& gt);
+	void UpdateEnemies(const GameTimer& gt);
+	void HarvestByRadius();
+
 
 };
 
