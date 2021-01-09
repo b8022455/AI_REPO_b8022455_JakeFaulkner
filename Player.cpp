@@ -88,11 +88,7 @@ void Player::MoveUp(const GameTimer& gt)
 			mpInstance->World._43 += MOVE * dt;
 	}*/
 	playerDir = PlayerFacingDirection::Up;
-
-	//Positions player model facing upwards (Looking away from camera)
-	XMMATRIX rotation = XMMatrixRotationY(0.0f);
-	rotation *= XMMatrixTranslation(mpInstance->World._41, mpInstance->World._42, mpInstance->World._43);
-	XMStoreFloat4x4(&mpInstance->World, rotation);
+	SetRotationY(0);						//Positions player model facing upwards (away from camera)
 }
 
 void Player::MoveDown(const GameTimer& gt)
@@ -111,11 +107,7 @@ void Player::MoveDown(const GameTimer& gt)
 			mpInstance->World._43 -= MOVE * dt;
 	}*/
 	playerDir = PlayerFacingDirection::Down;
-
-	//Positions player model facing downwards (Looking towards the camera)
-	XMMATRIX rotation = XMMatrixRotationY(3.14159f);
-	rotation *= XMMatrixTranslation(mpInstance->World._41, mpInstance->World._42, mpInstance->World._43);
-	XMStoreFloat4x4(&mpInstance->World, rotation);
+	SetRotationY(180);							//Positions player model facing downwards (towards camera)
 }
 
 void Player::MoveLeft(const GameTimer& gt)
@@ -134,11 +126,7 @@ void Player::MoveLeft(const GameTimer& gt)
 			mpInstance->World._41 -= MOVE * dt;
 		}*/
 	playerDir = PlayerFacingDirection::Left;
-
-	//Positions player model facing left
-	XMMATRIX rotation = XMMatrixRotationY(4.71239f);
-	rotation *= XMMatrixTranslation(mpInstance->World._41, mpInstance->World._42, mpInstance->World._43);
-	XMStoreFloat4x4(&mpInstance->World, rotation);
+	SetRotationY(-90);							//Positions player model facing left
 }
 
 void Player::MoveRight(const GameTimer& gt)
@@ -158,27 +146,30 @@ void Player::MoveRight(const GameTimer& gt)
 	//		mpInstance->World._41 += MOVE * dt;
 	//}
 	playerDir = PlayerFacingDirection::Right;
-
-	//Positions player model facing right
-	XMMATRIX rotation = XMMatrixRotationY(1.5708f);
-	rotation *= XMMatrixTranslation(mpInstance->World._41, mpInstance->World._42, mpInstance->World._43);
-	XMStoreFloat4x4(&mpInstance->World, rotation);
+	SetRotationY(90);						//Positions player model facing right
 }
-
 
 
 void Player::Move(const GameTimer & gt, const DirectX::SimpleMath::Vector3 & vec)
 {
 	//Changes position of sword depending on where player is facing
 	if (vec.x < 0)
-		playerDir = PlayerFacingDirection::Left;
+	{
+		//playerDir = PlayerFacingDirection::Left;
+	}
 	else if (vec.x > 0)
-		playerDir = PlayerFacingDirection::Right;
+	{
+		//playerDir = PlayerFacingDirection::Right;
+	}
 
 	if (vec.z > 0)
-		playerDir = PlayerFacingDirection::Up;
+	{
+		//playerDir = PlayerFacingDirection::Up;
+	}
 	else if (vec.z < 0)
-		playerDir = PlayerFacingDirection::Down;
+	{
+		//playerDir = PlayerFacingDirection::Down;
+	}
 
 	//todo simplify
 

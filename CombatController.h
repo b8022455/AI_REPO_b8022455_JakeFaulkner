@@ -31,11 +31,10 @@ private:
 	void ResetWeaponPosition();
 	void UpdateWeaponMatrix();
 
-	XMMATRIX weaponPositionMatrix;
 	float weaponStartingRotation = 0.0f;		//0 degrees starting point for rotation
 	float weaponRotation;
-	float weaponEndRotation = 6.28319f;			//80 degress ending point for rotation
-	const float weaponIncrementRotationAmount = 0.05f;
+	float weaponEndRotation = 360.f;			//80 degress ending point for rotation
+	const float weaponIncrementRotationAmount = 4.f;
 	int playerDirection;			//Gets enum value of which way player is facing, could remove and define weaponMatrix var in controller
 
 	AttackTimeDelay times;
@@ -50,8 +49,7 @@ public:
 	void Update();
 	void PlayerAttack();	//Connects to PlayerWeapon::Attack() function
 	bool CheckIfAttackIsFinished();					//Checks with PlayerWeapon Class to see if its possible to attack again
-	bool CheckCollision(float ObjX, float ObjY, float ObjZ);		//Used specifically for weapon and enemy collision
-	bool CheckCollision(XMFLOAT3 Object1, XMFLOAT3 Object2);								//Can be generically used for any type of collision involving 2 objs, need to move it somewhere outside of class
+	bool CheckCollision(XMFLOAT3 Object1, XMFLOAT3 Object2);		//Can be generically used for any type of collision involving 2 objs
 
 	std::string GetCurrentWeapon();					//Returns name of current weapon to check if selected weapon is already equipped
 	void EquipWeapon(std::string weaponName);		//Passes into SwitchWeapon in playerWeapon, used to get new attack value for player (base + weapon)

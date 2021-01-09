@@ -52,30 +52,15 @@ bool CombatController::CheckIfAttackIsFinished()
 	return mpPlayerWeapon->GetAttackStatus();
 }
 
-bool CombatController::CheckCollision(float ObjX, float ObjY, float ObjZ)
-{
-	//Gets the distance between both objects coordinates
-	float xDistance = ObjX - collisionPoint._41;
-	float yDistance = ObjY - collisionPoint._42;
-	float zDistance = ObjZ - collisionPoint._43;
-
-	if (xDistance > -1.5f && xDistance < 1.5f)							//If distance between X coordinate is within boundaries (-1.5 < X < 1.0)
-		if (yDistance > -1.5f && yDistance < 1.5f)						//If distance between Y coordinate is within boundaries (-1.5 < Y < 1.5)
-			if (zDistance > -1.5f && zDistance < 1.5f)					//If distance between Z coordinate is within boundaries (-1.0f < Z < 2.0f)
-				return true;				//There is a collision between the 2 objects
-
-	return false;				//If the distance between the objects is not within the boundaries, there is no collision
-}
-
 bool CombatController::CheckCollision(DirectX::XMFLOAT3 Obj1, DirectX::XMFLOAT3 Obj2)
 {
 	float xDistance = Obj1.x - Obj2.x;
 	float yDistance = Obj1.y - Obj2.y;
 	float zDistance = Obj1.z - Obj2.z;
 
-	if (xDistance > -1.0f && xDistance < 1.0f)							//If distance between X coordinate is within boundaries (-1.0 < X < 1.0)
+	if (xDistance > -1.f && xDistance < 1.f)							//If distance between X coordinate is within boundaries (-1.5 < X < 1.5)
 		if (yDistance > -1.5f && yDistance < 1.5f)						//If distance between Y coordinate is within boundaries (-1.5 < Y < 1.5)
-			if (zDistance > -1.0f && zDistance < 1.0f)					//If distance between Z coordinate is within boundaries (-1.0f < Z < 1.0f)
+			if (zDistance > -1.5f && zDistance < 1.5f)					//If distance between Z coordinate is within boundaries (-1.5 < Z < 1.5)
 				return true;				//There is a collision between the 2 objects
 
 	return false;				//If the distance between the objects is not within the boundaries, there is no collision
@@ -102,7 +87,6 @@ void PlayerWeapon::Initialize(const std::string& renderItemName)
 
 	times.StartTime(attackDuration, attackDelay);
 
-	weaponRotation = weaponStartingRotation;		//Sets to -80 degrees
 	times.isAttacking = false;
 }
 
@@ -126,13 +110,13 @@ void PlayerWeapon::PositionWeapon()
 
 	if (playerDirection > 1)		//If the player direction is Up (2 in the enum) or Down (3 in the enum)
 	{
-		weaponStartingRotation = 1.5708f;		//Sets new starting to rotation to 90 degrees for up/down
-		weaponEndRotation = 7.85398f;			//Sets new end rotation to 450 degrees
+		weaponStartingRotation = 90.f;		//Sets new starting to rotation to 90 degrees for up/down
+		weaponEndRotation = 450.f;			//Sets new end rotation to 450 degrees
 	}
 	else if (playerDirection <= 1)				//If player direction is Left (0 in the enum) or Right (1 in the enum)
 	{
-		weaponStartingRotation = 0.0f;
-		weaponEndRotation = 6.28319f;			//360 degrees
+		weaponStartingRotation = 0.f;
+		weaponEndRotation = 360.f;			//360 degrees
 	}
 
 	weaponRotation = weaponStartingRotation;
@@ -153,33 +137,35 @@ void PlayerWeapon::SwingWeapon()
 
 void PlayerWeapon::ResetWeaponPosition()
 {
-	weaponRotation = weaponStartingRotation;			//Resets rotation to -80 degrees
+	weaponRotation = weaponStartingRotation;
 	times.isAttacking = false;
 
-	weaponPositionMatrix = XMMatrixTranslation(0.0f, -5.0f, 2.0f);		//Resets the sword back underneath the map until attack is used again
-	XMStoreFloat4x4(&mpInstance->World, weaponPositionMatrix);
+	//Resets weapon underneath the map until used again
+	SetPos(XMFLOAT3(mpInstance->World._41, mpInstance->World._42 - 5.0f, mpInstance->World._43));
 }
 
 void PlayerWeapon::UpdateWeaponMatrix()
 {
+	XMMATRIX transformation;
+
 	switch (playerDirection)
 	{
 	case 0:						//Left
-		weaponPositionMatrix = XMMatrixTranslation(-1.0f, 0.0f, 0.0f);
+		transformation = XMMatrixTranslation(-1.0f, 0.0f, 0.0f);
 		break;
 
 	case 1:						//Right
-		weaponPositionMatrix = XMMatrixRotationZ(3.14159f);
-		weaponPositionMatrix *= XMMatrixTranslation(1.0f, 0.0f, 0.0f);
+		transformation = XMMatrixRotationZ(3.14159f);			//Rotate model before starting rotation around point
+		transformation *= XMMatrixTranslation(1.0f, 0.0f, 0.0f);
 		break;
 
 	case 2:						//Up
-		weaponPositionMatrix = XMMatrixTranslation(-1.0f, 0.0f, 0.0f);
+		transformation = XMMatrixTranslation(-1.0f, 0.0f, 0.0f);
 		break;
 
 	case 3:						//Down
-		weaponPositionMatrix = XMMatrixRotationZ(3.14159f);
-		weaponPositionMatrix *= XMMatrixTranslation(1.0f, 0.0f, 0.0f);
+		transformation = XMMatrixRotationZ(3.14159f);			//Rotate model before starting rotation around point
+		transformation *= XMMatrixTranslation(1.0f, 0.0f, 0.0f);
 		break;
 
 	default:
@@ -187,16 +173,7 @@ void PlayerWeapon::UpdateWeaponMatrix()
 		break;
 	}
 
-	///Find way to do rotation around a point using 1 matrix
-	weaponPositionMatrix *= XMMatrixRotationY(weaponRotation);
-	//Positions the weapon at the players position + offset
-	weaponPositionMatrix *= XMMatrixTranslation(
-		mpInstance->World._41,
-		mpInstance->World._42 + 1.0f,
-		mpInstance->World._43
-	);
-
-	XMStoreFloat4x4(&mpInstance->World, weaponPositionMatrix);		//Stores above calculated matrix into the world matrix for the obj
+	RotationAroundPoint(transformation, weaponRotation, XMFLOAT3(mpInstance->World._41, mpInstance->World._42 + 1.0f, mpInstance->World._43));
 }
 
 bool PlayerWeapon::GetAttackStatus()
