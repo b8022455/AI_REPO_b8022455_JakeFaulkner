@@ -26,7 +26,7 @@ void PlayState::InitializeTraders()
 		void operator()(Trader& t)
 		{
 			t.Initialize(GC::GO_TRADER);
-			t.mpInstance->MaterialIndex = GameApp::Get().GetMaterialIndex("tileTex");
+			t.mpInstance->MaterialIndex = 0/*GameApp::Get().GetMaterialIndex("tileTex")*/;
 			x+= 1.0f + (rand() % biggestGap);
 			t.SetPos({ x, 0.0f, 3.0f });
 		}
@@ -129,7 +129,6 @@ void PlayState::Initialize()
 		}
 		n++;
 	}
-
 
 	// Setup temp enemies
 	{

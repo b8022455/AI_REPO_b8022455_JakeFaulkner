@@ -63,7 +63,10 @@ namespace GC
 		ZOOM_SPEED = 20.0f,
 		MOVE_SPEED = 5.0f,
 
-		TRADER_RADIUS = 1.75f
+		TRADER_RADIUS = 1.75f,
+
+
+		TILE_UV_INC = 1.0f/8.0f // tile is 1/8 of texture atlus
 		;
 
 

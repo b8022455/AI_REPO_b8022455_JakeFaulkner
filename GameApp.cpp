@@ -612,7 +612,8 @@ void GameApp::LoadTexture(const std::string & name, const std::wstring & filenam
 void GameApp::LoadTextures()
 {
 	mTextures.reserve(20);
-	LoadTexture("bricksTex", L"Data/Textures/bricks.dds"); //1
+	LoadTexture("bricksTex", L"Data/Textures/textureAtlus.dds"); //1
+	//LoadTexture("bricksTex", L"Data/Textures/bricks.dds"); //1
 	LoadTexture("stoneTex", L"Data/Textures/stone.dds"); // 2
 	LoadTexture("mudTex", L"Data/Textures/LostMeadow_dirt.dds"); // 3
 	LoadTexture("iceTex", L"Data/Textures/ice.dds"); // 4
@@ -796,7 +797,7 @@ void GameApp::BuildObjGeometry(const std::string& filepath, const std::string& m
 			{
 				{v.Position.X,v.Position.Y,v.Position.Z},
 				{v.Normal.X,v.Normal.Y,v.Normal.Z},
-				{v.TextureCoordinate.X,v.TextureCoordinate.Y}
+				{v.TextureCoordinate.X,-v.TextureCoordinate.Y} // flipped Y coor from blender
 			};
 		}
 	};
