@@ -38,46 +38,19 @@ typedef std::vector<TileLine> TileGid; // 2D Tile Array
 
 class TileManager 
 {
-	//const int mDimention = 32;
-	//const int dimSquare = mDimention * mDimention;
-	//std::vector<std::vector<mapData>> mMapData;
-	const float mUnitSize = 1.0f;
-	//TileGid  mTileGrid;
-
-
-	//const float mWidth = 30.0f;
-	//const float mHeight = 30.0f;
-	//const float mDepth = 30.0f;
-	//const float x = -0.5f*mWidth;
-	//const float z = -0.5f*mDepth;
-	//const float dx = mWidth / (mDimention - 1);
-	//const float dz = mDepth / (mDimention - 1);
-	//const std::string mRenderItemName = "Tiles";
-
-public:
 	const int mDimention = 32;
 	const int dimSquare = mDimention * mDimention;
-	const std::string mRenderItemName = "Tiles";
+	std::vector<std::vector<mapData>> mMapData;
+	const float mUnitSize = 1.0f;
+	TileGid  mTileGrid;
 	const float mWidth = 30.0f;
 	const float mHeight = 30.0f;
 	const float mDepth = 30.0f;
-	const float x = -0.5f * mWidth;
-	const float z = -0.5f * mDepth;
+	const float x = -0.5f*mWidth;
+	const float z = -0.5f*mDepth;
 	const float dx = mWidth / (mDimention - 1);
 	const float dz = mDepth / (mDimention - 1);
-	int MaxGen;
-	TileGid  mTileGrid;
-	std::vector<std::vector<mapData>> mMapData;
-	void Initialize();
-	void Update(const GameTimer& gt);
-	Tile& GetTile(int x, int y);
-	void SetTile(int x, int y, const Tile& tile);
-	int GetIndex(int x, int y); // maybe remove 
-
-	// TODO: (NOTE) UPDATE TEXTURES FOR HAZARDS & OTHER TILES HERE WHEN THE LOAD ORDER IS CHANGED
-	const int Haz1Tex = 6; // POISON
-	const int Haz2Tex = 3; // MUD / SLOW
-	const int Haz3Tex = 5; // ICE / SLIP
+	const std::string mRenderItemName = "Tiles";
 
 	const int HAZARD1 = 2;
 	const int HAZARD2 = 4;
@@ -115,4 +88,21 @@ public:
 	int H1RandomDist = 2; // distance from regular gen / health - ADVANCED GENERATION
 	int H2RandomDist = 3; // distance from regular gen / slow - ADVANCED GENERATION
 	int H3RandomDist = 3; // distance from regular gen / slip - ADVANCED GENERATION
+
+public:
+	
+	int MaxGen;
+	void Initialize();
+	void Update(const GameTimer& gt);
+	Tile& GetTile(int x, int y);
+	void SetTile(int x, int y, const Tile& tile);
+	int GetIndex(int x, int y); // maybe remove 
+
+	void REGEN();
+
+	// TODO: (NOTE) UPDATE TEXTURES FOR HAZARDS & OTHER TILES HERE WHEN THE LOAD ORDER IS CHANGED
+	const int Haz1Tex = 6; // POISON
+	const int Haz2Tex = 3; // MUD / SLOW
+	const int Haz3Tex = 5; // ICE / SLIP
+
 };
