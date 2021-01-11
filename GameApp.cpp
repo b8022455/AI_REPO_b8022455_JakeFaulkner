@@ -158,6 +158,7 @@ bool GameApp::Initialize()
 	BuildObjGeometry("Data/Models/tempEnemy.obj", "tempEnemyGeo", "tempEnemy");
 	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" ); //quad rather than cube
 	BuildObjGeometry("Data/Models/building04.obj","traderGeo", "trader" ); //quad rather than cube
+	BuildObjGeometry("Data/Models/plantPotato.obj","potatoGeo", "potato" ); 
 	BuildSwordGeometry();
 	BuildPlayerGeometry();
 	BuildMaterials();
@@ -581,14 +582,17 @@ void GameApp::UpdateMainPassCB(const GameTimer& gt)
 	mMainPassCB.FarZ = 1000.0f;
 	mMainPassCB.TotalTime = gt.TotalTime();
 	mMainPassCB.DeltaTime = gt.DeltaTime();
-	mMainPassCB.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
-
+	//mMainPassCB.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
+	mMainPassCB.AmbientLight = { 0.06f, 0.126f, 0.06f, 1.0f };
+	
 	mMainPassCB.Lights[0].Direction = { 0.57735f, -0.57735f, 0.57735f };
+	mMainPassCB.Lights[0].Strength = { 1.0f, 0.9f, 0.6f };
 
-	mMainPassCB.Lights[1].Direction = { -0.57735f, -0.57735f, 0.57735f };
-	mMainPassCB.Lights[1].Strength = { 0.4f, 0.4f, 0.4f };
-	mMainPassCB.Lights[2].Direction = { 0.0f, -0.707f, -0.707f };
-	mMainPassCB.Lights[2].Strength = { 0.2f, 0.2f, 0.2f };
+	//mMainPassCB.Lights[1].Direction = { -0.57735f, -0.57735f, 0.57735f };
+	//mMainPassCB.Lights[1].Strength = { 0.4f, 0.4f, 0.4f };
+	//mMainPassCB.Lights[1].Strength = { 1.0f, 0.9f, 0.6f };
+	//mMainPassCB.Lights[2].Direction = { 0.0f, -0.707f, -0.707f };
+	//mMainPassCB.Lights[2].Strength = { 0.0f, 0.0f, 0.0f };
 
 	auto currPassCB = mCurrFrameResource->PassCB.get();
 	currPassCB->CopyData(0, mMainPassCB);
@@ -612,7 +616,8 @@ void GameApp::LoadTexture(const std::string & name, const std::wstring & filenam
 void GameApp::LoadTextures()
 {
 	mTextures.reserve(20);
-	LoadTexture("bricksTex", L"Data/Textures/bricks.dds"); //1
+	LoadTexture("bricksTex", L"Data/Textures/textureAtlus.dds"); //1
+	//LoadTexture("bricksTex", L"Data/Textures/bricks.dds"); //1
 	LoadTexture("stoneTex", L"Data/Textures/stone.dds"); // 2
 	LoadTexture("mudTex", L"Data/Textures/LostMeadow_dirt.dds"); // 3
 	LoadTexture("iceTex", L"Data/Textures/ice.dds"); // 4
@@ -796,7 +801,7 @@ void GameApp::BuildObjGeometry(const std::string& filepath, const std::string& m
 			{
 				{v.Position.X,v.Position.Y,v.Position.Z},
 				{v.Normal.X,v.Normal.Y,v.Normal.Z},
-				{v.TextureCoordinate.X,v.TextureCoordinate.Y}
+				{v.TextureCoordinate.X,-v.TextureCoordinate.Y} // flipped Y coor from blender
 			};
 		}
 	};
@@ -1121,6 +1126,7 @@ void GameApp::BuildRenderItems()
 	mAllRitems["Player"] = BuildRenderItem(objCbIndex, "tempPlayerGeo", "tempPlayer");
 	mAllRitems["Enemy"] = BuildRenderItem(objCbIndex, "tempEnemyGeo", "tempEnemy");
 	mAllRitems["Trader"] = BuildRenderItem(objCbIndex, "traderGeo", "trader");
+	mAllRitems["Potato"] = BuildRenderItem(objCbIndex, "potatoGeo", "potato");
 
 
 	//Uncomment this if testing weapon collision, will be removed once the function in enemy class is available in GameApp

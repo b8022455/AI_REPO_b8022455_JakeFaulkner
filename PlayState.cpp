@@ -26,7 +26,7 @@ void PlayState::InitializeTraders()
 		void operator()(Trader& t)
 		{
 			t.Initialize(GC::GO_TRADER);
-			t.mpInstance->MaterialIndex = GameApp::Get().GetMaterialIndex("tileTex");
+			t.mpInstance->MaterialIndex = 0/*GameApp::Get().GetMaterialIndex("tileTex")*/;
 			x+= 1.0f + (rand() % biggestGap);
 			t.SetPos({ x, 0.0f, 3.0f });
 		}
@@ -129,7 +129,6 @@ void PlayState::Initialize()
 		}
 		n++;
 	}
-
 
 	// Setup temp enemies
 	{
@@ -318,7 +317,7 @@ void PlayState::Update(const GameTimer & gt)
 	{
 		float strength = sin(gt.TotalTime()*5.0f) * 0.5f + 0.5f;
 
-		pMainPassCB->Lights[0].Strength = { strength ,0.0f,0.0f };
+		pMainPassCB->Lights[1].Strength = { strength ,0.1f,0.1f };
 
 		// Less intense vibration
 		strength *= 0.1f;
@@ -326,10 +325,9 @@ void PlayState::Update(const GameTimer & gt)
 		Input::Get().SetVibration(strength, strength);
 
 	}
-
 	else
 	{
-		pMainPassCB->Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
+		pMainPassCB->Lights[1].Strength = { 0.0f, 0.0f, 0.0f };
 	}
 
 	UpdatePlants(gt);
@@ -774,7 +772,7 @@ void PlayState::CreatePlant()
 			break;
 		}
 
-		mPlants.back().Initialize(GC::GO_ENEMY);
+		mPlants.back().Initialize("Potato");
 		mPlants.back().SetPos(pos);
 	}
 	
