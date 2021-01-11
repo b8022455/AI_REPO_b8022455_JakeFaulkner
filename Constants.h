@@ -42,7 +42,7 @@ namespace GC
 		;
 
 	const size_t
-		NUM_DIFF_RENDER_OBJS = 5 // for frame resource
+		NUM_DIFF_RENDER_OBJS = 6 // for frame resource
 		;
 
 	const int
@@ -100,6 +100,7 @@ namespace GC
 		GO_WEAPON = "Weapon",
 		GO_TILE = "Tiles",
 		GO_TRADER = "Trader",
+		GO_POTATO = "Potato",
 
 
 		STATE_PLAY = "PlayState",
@@ -142,8 +143,33 @@ namespace GC
 		MENU_BUTTON_PIVOT{0.5f,0.6f},
 		MENU_BUTTON_DISTANCE{200.0f,100.0f}, // distance from pivot
 		MENU_TITLE_POSITION{20.0f,20.0f},
-		MENU_BODY_POSITION{20.0f,50.0f}
+		MENU_BODY_POSITION{20.0f,50.0f},
+
+
+		// Add this to uv coords for texture on atlus
+		TILE_UV_STONE{ 0.0f , 0.0f },
+		TILE_UV_JUNK{ 0.0f , 0.5f },
+		TILE_UV_DANGER{ 0.125f , 0.0f },
+		TILE_UV_GRASS{ 0.125f , 0.5f },
+		TILE_UV_SPIKES{ 0.25f , 0.0f },
+		TILE_UV_NOTHING{ 0.25f , 0.5f },
+		TILE_UV_EMPTY{ 0.375f , 0.0f },
+		TILE_UV_BLANK{ 0.375f , 0.5f }
+
 	;
+	const size_t NUM_TILE_UV_RAND = 4;
+
+	// Add a random element to tile uvcoords for texture on atlus
+	const DirectX::XMFLOAT2 TILE_UV_RANDOM[ NUM_TILE_UV_RAND ]{
+		{	0.000f , 	0.000f },
+		{	0.000f , 	0.125f },
+		{	0.000f , 	0.250f },
+		{	0.000f , 	0.375f } 
+	};
+
+	// eg stoneTileUV +=  GC::TILE_UV_STONE  + GC::TILE_UV_RANDOM[rand() % GC::NUM_TILE_UV_RAND]
+	// eg dangerTileUV += GC::TILE_UV_DANGER + GC::TILE_UV_RANDOM[rand() % GC::NUM_TILE_UV_RAND]
+
 
 	const DirectX::XMFLOAT3
 		DIRECTION_FWD({ 0.0f,	0.0f,	1.0f }),
@@ -236,6 +262,6 @@ namespace GC
 		{ TRADER_NAME_1,	{"Trade with me","Now on your way"	}},
 		{ TRADER_NAME_2,	{"I need some things   you need some things","Now I need some peace and quiet and you need to leave"	}}, //
 		{ TRADER_NAME_3,	{"Trade with me","Now on your way"	}}, //todo change 
-		{ TRADER_NAME_4, 	{"Trade with me","Now on your way"	}}, // no reward, charity
+		{ TRADER_NAME_4, 	{"Trade with me","Now on your way"	}} // no reward, charity
 	};
 }

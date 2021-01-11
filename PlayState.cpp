@@ -306,7 +306,7 @@ void PlayState::Update(const GameTimer & gt)
 	{
 		float strength = sin(gt.TotalTime()*5.0f) * 0.5f + 0.5f;
 
-		pMainPassCB->Lights[0].Strength = { strength ,0.0f,0.0f };
+		pMainPassCB->Lights[1].Strength = { strength ,0.1f,0.1f };
 
 		// Less intense vibration
 		strength *= 0.1f;
@@ -314,10 +314,9 @@ void PlayState::Update(const GameTimer & gt)
 		Input::Get().SetVibration(strength, strength);
 
 	}
-
 	else
 	{
-		pMainPassCB->Lights[0].Strength = { 0.8f, 0.8f, 0.8f };
+		pMainPassCB->Lights[1].Strength = { 0.0f, 0.0f, 0.0f };
 	}
 
 	UpdatePlants(gt);
@@ -1342,7 +1341,7 @@ void PlayState::CreatePlant()
 			break;
 		}
 
-		mPlants.back().Initialize(GC::GO_ENEMY);
+		mPlants.back().Initialize("Potato");
 		mPlants.back().SetPos(pos);
 	}
 	
