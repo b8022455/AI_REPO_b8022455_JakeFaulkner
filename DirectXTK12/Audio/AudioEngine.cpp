@@ -1245,7 +1245,7 @@ float AudioEngine::GetMasterVolume() const noexcept
 }
 
 
-void AudioEngine::SetMasterVolume(float volume)
+void AudioEngine::SetMasterVolume(float volume, bool increment)
 {
     assert(volume >= -XAUDIO2_MAX_VOLUME_LEVEL && volume <= XAUDIO2_MAX_VOLUME_LEVEL);
 

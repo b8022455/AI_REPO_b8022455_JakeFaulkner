@@ -152,9 +152,6 @@ void PlayState::Initialize()
 
 	mCombatController.Initialize(&mPlayer,&mPlayerWeapon,&mEnemies);
 
-	
-
-	
 	// Sprites
 	{
 		Sprite spriteSample;
@@ -165,6 +162,32 @@ void PlayState::Initialize()
 
 		spriteSample.Initialise("stoneTex");
 		mSprites["testSpriteSecond"] = spriteSample;
+
+		// inv panel
+		{
+			const DirectX::XMINT2 s = GameApp::Get().GetClientSizeU2(); //todo on resize
+			const RECT src{ GC::PANEL_SRC[0],	GC::PANEL_SRC[1],	GC::PANEL_SRC[2],	GC::PANEL_SRC[3], };
+			const RECT dst
+			{
+				s.x,							//  starts off viewport to the right
+				10,								// padding
+				s.x + (s.x / 3)+ 128,			//  third of viewport plus offset
+				s.y - 10						// padding
+			};
+
+			mInventoryPanel.Initialize("uiTex", src, dst);
+
+			SimpleMath::Vector2 v = GameApp::Get().GetClientSize();
+			mInventoryLocation.second.x = v.x - (v.x / 3);
+			mInventoryLocation.second.y = 10;
+
+			mInventoryLocation.first.x = v.x + 64;
+			mInventoryLocation.first.y = 10;
+
+			mInventoryText.color = DirectX::Colors::White;
+			mInventoryText.fontIndex = 1;
+			
+		}
 	}
 
 
@@ -323,7 +346,6 @@ void PlayState::Update(const GameTimer & gt)
 		strength *= 0.1f;
 
 		Input::Get().SetVibration(strength, strength);
-
 	}
 	else
 	{
@@ -349,18 +371,30 @@ void PlayState::Update(const GameTimer & gt)
 	// show/hide item menu
 	if (itemMenuOpen)
 	{
-		GameApp::Get().mDebugLog << "Inventory:  (size " << mInventory.size() << ")\n";
+		mInventoryText.string = "Inventory:  (size " + std::to_string( mInventory.size()) + ")\n";
+		//GameApp::Get().mDebugLog << "Inventory:  (size " << mInventory.size() << ")\n";
 
-		//Debug purposes: shows which items are in inventory
+		
 		std::for_each(mInventory.begin(), mInventory.end(), [&](auto& inv)
 		{
-			GameApp::Get().mDebugLog << inv.first << " : " << inv.second << "\n";
+			if (inventoryPosition != mInventory.end())
+			{
+				//Debug purposes: shows the currently selected item based on inventoryPosition value
+				GameApp::Get().mDebugLog << "Current Selected Item: " << (*inventoryPosition).first << " x" << (*inventoryPosition).second << "\n";
+
+				if((*inventoryPosition).first == inv.first)
+				{
+					mInventoryText.string += ">";
+				}
+				else
+				{
+					mInventoryText.string += " ";
+				}
+
+			}
+			mInventoryText.string += " " + inv.first + " (" + std::to_string(inv.second) + ")\n";
+
 		});
-
-
-		//Debug purposes: shows the currently selected item based on inventoryPosition value
-		if (inventoryPosition != mInventory.end())
-			GameApp::Get().mDebugLog << "Current Selected Item: " << (*inventoryPosition).first << " x" << (*inventoryPosition).second << "\n";
 	}
 
 	//If players health is below 0, change state to Game Over state
@@ -390,6 +424,9 @@ void PlayState::Draw(const GameTimer & gt)
 	});
 
 	mPlayerHealthBar.Draw();
+
+	mInventoryPanel.Draw();
+	mInventoryText.Draw();
 
 }
 
@@ -625,6 +662,7 @@ void PlayState::Controls(const GameTimer & gt)
 		if (Input::Get().KeyReleased(GC::KEY_INVENTORY))
 		{
 			itemMenuOpen = !itemMenuOpen;
+			std::swap(mInventoryLocation.first, mInventoryLocation.second);
 		}
 	}
 
@@ -733,6 +771,13 @@ void PlayState::UiUpdate(const GameTimer & gt)
 	mSprites["testSpriteSecond"].rotation = sinf(gt.TotalTime());
 
 	mPlayerHealthBar.Update(gt);
+
+	// animate inventory toggle
+	SimpleMath::Vector2 move = SimpleMath::Vector2::Lerp(mInventoryPanel.GetPos(), mInventoryLocation.first,gt.DeltaTime() * 2.0f); // todo Luc move to constant.h
+	mInventoryPanel.Move(move, false);
+	// padding for text
+	move += SimpleMath::Vector2{32.0f, 32.0f};
+	mInventoryText.position = move;
 }
 
 void PlayState::CreatePlant()

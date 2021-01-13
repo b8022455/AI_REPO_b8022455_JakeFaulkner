@@ -48,6 +48,10 @@ class PlayState : public State
 
 	Bar mPlayerHealthBar;
 
+	Panel mInventoryPanel;
+	// swaps on toggle and lerps on update
+	std::pair<SimpleMath::Vector2, SimpleMath::Vector2> mInventoryLocation;
+	Text mInventoryText;
 
 	void InitializeTraders();
 	bool FindNearestTraderInRadius();
@@ -104,7 +108,6 @@ public:
 		return GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT];
 	}
 
-	
 	const float CAM_ANGLE = 45.0f;
 	const DirectX::XMFLOAT3 CAM_OFFSET{ 0.0f,10.0f,-10.0f }; 
 	Experience mExperience;
