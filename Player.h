@@ -8,6 +8,7 @@
 #include "GameObject.h"
 #include "Velocity.h"
 #include "DeltaTimer.h"
+#include <d2d1helper.h>
 
 //using namespace DirectX;
 
@@ -49,7 +50,6 @@ public:
 
 private:
 
-	const float MOVE = 5.0f;
 	const float MAX_VELOCITY = 5.0f; // change as needed, replace move
 	const float START_VELOCITY = 1.0f; // may not be needed
 	// velocity increases with time as long as the button is held, velocity decreases to nothing when button not held
@@ -58,4 +58,11 @@ private:
 	float DOWN_velocity = 0.0f; //  increases when moving downwards up to max, decreases when not moving
 	float LEFT_velocity = 0.0f; //  increases when moving leftwards up to max, decreases when not moving
 	float RIGHT_velocity = 0.0f; //  increases when moving rightwards up to max, decreases when not moving
+
+	D2D1_RECT_F VELOCITY { 0.0f, //LEFT = left
+	0.0f, //UP = top
+	0.0f, //RIGHT = right
+	0.0f //DOWN = bottom
+	};
+
 };
