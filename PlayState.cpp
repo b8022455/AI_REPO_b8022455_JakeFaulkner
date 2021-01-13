@@ -154,6 +154,10 @@ void PlayState::Initialize()
 
 	// Sprites
 	{
+		const DirectX::XMINT2 s = GameApp::Get().GetClientSizeU2(); //todo on resize
+		SimpleMath::Vector2 v = GameApp::Get().GetClientSize();
+
+
 		Sprite spriteSample;
 		spriteSample.scale = 0.1f;
 
@@ -165,7 +169,6 @@ void PlayState::Initialize()
 
 		// inv panel
 		{
-			const DirectX::XMINT2 s = GameApp::Get().GetClientSizeU2(); //todo on resize
 			const RECT src{ GC::PANEL_SRC[0],	GC::PANEL_SRC[1],	GC::PANEL_SRC[2],	GC::PANEL_SRC[3], };
 			const RECT dst
 			{
@@ -177,7 +180,6 @@ void PlayState::Initialize()
 
 			mInventoryPanel.Initialize("uiTex", src, dst);
 
-			SimpleMath::Vector2 v = GameApp::Get().GetClientSize();
 			mInventoryLocation.second.x = v.x - (v.x / 3);
 			mInventoryLocation.second.y = 10;
 
@@ -188,8 +190,15 @@ void PlayState::Initialize()
 			mInventoryText.fontIndex = 1;
 			
 		}
-	}
 
+		// message text
+		{
+			mMessage.mText.center = true;
+			mMessage.mText.string = "Start!";
+			mMessage.mText.position = v / 2.0f;
+			mMessage.mText.color = DirectX::Colors::Red;
+		}
+	}
 
 	// needed in init for dirty frame
 	for (auto& c : mCameras)
@@ -364,7 +373,8 @@ void PlayState::Update(const GameTimer & gt)
 
 	if (mExperience.HasLeveledUp())
 	{
-		GameApp::Get().ChangeState("PauseMenu");
+		mMessage.Activate("LEVEL UP", 5.0f);
+		//GameApp::Get().ChangeState("PauseMenu");
 	}
 
 
@@ -427,6 +437,8 @@ void PlayState::Draw(const GameTimer & gt)
 
 	mInventoryPanel.Draw();
 	mInventoryText.Draw();
+
+	mMessage.Draw();
 
 }
 
@@ -778,6 +790,8 @@ void PlayState::UiUpdate(const GameTimer & gt)
 	// padding for text
 	move += SimpleMath::Vector2{32.0f, 32.0f};
 	mInventoryText.position = move;
+
+	mMessage.Update(gt);
 }
 
 void PlayState::CreatePlant()

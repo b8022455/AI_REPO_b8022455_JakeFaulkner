@@ -15,4 +15,9 @@ struct DeltaTimer
 
 		return elapsed;
 	}
+
+	void Reset(float time)
+	{
+		timer = time;
+	}
 };
