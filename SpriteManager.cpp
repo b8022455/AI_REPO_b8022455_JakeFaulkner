@@ -203,7 +203,7 @@ void Button::Draw()
 {
 	sprite.Draw();
 
-	GameApp::Get().DrawString(0, text,sprite.position, true);
+	GameApp::Get().DrawString(1, text,sprite.position, true);
 }
 
 void Button::SetPos(const XMFLOAT2 & pos)
@@ -229,6 +229,15 @@ void Button::Activate()
 		break;
 	case Button::GOTO_GAME:
 		GameApp::Get().ChangeState(GC::STATE_PLAY);
+		break;
+	case Button::GOTO_VOLUME:
+		GameApp::Get().ChangeState("Volume"); // todo Luc add to constants as STATE_VOLUME
+		break;
+	case Button::VOLUME_UP:
+		GameApp::Get().GetAudio().SetVolume(0.1f, true); // todo Luc add to constants
+		break;
+	case Button::VOLUME_DOWN:
+		GameApp::Get().GetAudio().SetVolume(-0.1f, true); // todo Luc add to constants
 		break;
 	default:
 		break;
@@ -307,16 +316,33 @@ void Panel::Initialize(const std::string & textureName, const RECT & src, const 
 
 }
 
-void Panel::Move(DirectX::SimpleMath::Vector2 v)
+void Panel::Move(DirectX::SimpleMath::Vector2 v, bool increment)
 {
-	mDestRect.top += (long)v.y;
-	mDestRect.bottom += (long)v.y;
+	if (increment)
+	{
+		mDestRect.top += (long)v.y;
+		mDestRect.bottom += (long)v.y;
+		mDestRect.right += (long)v.x;
+		mDestRect.left += (long)v.x;
+	}
+	else
+	{
+		const long w = mDestRect.right - mDestRect.left;
+		const long h = mDestRect.bottom - mDestRect.top;
 
-	mDestRect.right += (long)v.x;
-	mDestRect.left += (long)v.x;
+		mDestRect.top = (long)v.y;
+		mDestRect.bottom = mDestRect.top + h;
 
-	//re calc
+		mDestRect.left = (long)v.x;
+		mDestRect.right = mDestRect.left + w;
+	}
+
 	CalcSpriteRects();
+}
+
+const SimpleMath::Vector2 Panel::GetPos() const
+{
+	return { (float)mDestRect.left	,(float)mDestRect.top };
 }
 
 void Panel::Draw()
