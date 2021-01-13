@@ -517,11 +517,19 @@ void GameAudio::SetFade(const std::string & name, float secs)
 	}
 }
 
-void GameAudio::SetEngineVolume(const std::string & engineName, float volume)
+void GameAudio::SetEngineVolume(const std::string & engineName, float volume, bool increment)
 {
 	if (ValidEngine(engineName))
 	{
-		mEngines[engineName]->SetEngineVolume(volume);
+		mEngines[engineName]->SetEngineVolume(volume, increment);
+	}
+}
+
+void GameAudio::SetVolume(float volume, bool increment)
+{
+	for (auto& e : mEngines)
+	{
+		e.second->SetEngineVolume(volume, increment);
 	}
 }
 
@@ -580,9 +588,32 @@ AUDIO_ENGINE_TYPE SoundEngine::GetType()
 	return mType;
 }
 
-void SoundEngine::SetEngineVolume(float volume)
+void SoundEngine::SetEngineVolume(float volume, bool increment)
 {
+	if (increment)
+	{
+		volume += mAudioEngine->GetMasterVolume();
+	}
+
+	// set limits
+	if (volume < 0.0f)
+	{
+		volume = 0.0f;
+	}
+	else
+	{
+		if (volume > 1.0f)
+		{
+			volume = 1.0f;
+		}
+	}
+
 	mAudioEngine->SetMasterVolume(volume);
+}
+
+const float SoundEngine::GetEngineVolume()
+{
+	return mAudioEngine->GetMasterVolume();
 }
 
 

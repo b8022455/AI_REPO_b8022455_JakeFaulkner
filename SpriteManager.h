@@ -104,8 +104,8 @@ class Panel
 public:
 	void Initialize(const std::string& textureName, const RECT& src, const RECT& dst);
 
-	void Move(DirectX::SimpleMath::Vector2 v);
-	
+	void Move(DirectX::SimpleMath::Vector2 v, bool increment = true);
+	const DirectX::SimpleMath::Vector2 GetPos() const;
 	void Draw();
 };
 
@@ -115,7 +115,10 @@ public:
 	enum Action {
 		NO_ACTION,
 		GOTO_MAIN_MENU,
-		GOTO_GAME
+		GOTO_GAME,
+		GOTO_VOLUME,
+		VOLUME_UP,
+		VOLUME_DOWN
 	};
 private:
 	Sprite sprite;
