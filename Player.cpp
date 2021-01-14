@@ -88,6 +88,11 @@ void Player::Update(const GameTimer & gt)
 		}
 	}
 
+	SimpleMath::Vector3 pos = GetPos();
+	SimpleMath::Vector3 v = vel.GetVelocity();
+
+	SetPos(pos + v);
+
 }
 
 void Player::MoveUp(const GameTimer& gt)
@@ -102,7 +107,7 @@ void Player::MoveUp(const GameTimer& gt)
 	//	UP_velocity += dt * 12; // add double time to velocity
 
 	playerDir = PlayerFacingDirection::Up;
-	SetRotationY(0);						//Positions player model facing upwards (away from camera)
+	SetRotationY(90);						//Positions player model facing upwards (away from camera)
 }
 
 void Player::MoveDown(const GameTimer& gt)
@@ -117,7 +122,7 @@ void Player::MoveDown(const GameTimer& gt)
 	//	DOWN_velocity += dt * 12; // add double time to velocity
 
 	playerDir = PlayerFacingDirection::Down;
-	SetRotationY(180);							//Positions player model facing downwards (towards camera)
+	SetRotationY(-90);							//Positions player model facing downwards (towards camera)
 }
 
 void Player::MoveLeft(const GameTimer& gt)
@@ -132,7 +137,7 @@ void Player::MoveLeft(const GameTimer& gt)
 	//	LEFT_velocity += dt * 12; // add double time to velocity
 
 	playerDir = PlayerFacingDirection::Left;
-	SetRotationY(-90);							//Positions player model facing left
+	SetRotationY(0);							//Positions player model facing left
 }
 
 void Player::MoveRight(const GameTimer& gt)
@@ -147,7 +152,7 @@ void Player::MoveRight(const GameTimer& gt)
 	//	RIGHT_velocity += dt * 12; // add double time to velocity
 
 	playerDir = PlayerFacingDirection::Right;
-	SetRotationY(90);						//Positions player model facing right
+	SetRotationY(180);						//Positions player model facing right
 }
 
 
@@ -156,29 +161,29 @@ void Player::Move(const GameTimer & gt, const DirectX::SimpleMath::Vector3 & vec
 	//Changes position of sword depending on where player is facing
 	if (vec.x < 0)
 	{
-		//playerDir = PlayerFacingDirection::Left;
+		playerDir = PlayerFacingDirection::Left;
+		SetRotationY(0);							//Positions player model facing left
 	}
 	else if (vec.x > 0)
 	{
-		//playerDir = PlayerFacingDirection::Right;
+		playerDir = PlayerFacingDirection::Right;
+		SetRotationY(180);						//Positions player model facing right
 	}
 
 	if (vec.z > 0)
 	{
-		//playerDir = PlayerFacingDirection::Up;
+		playerDir = PlayerFacingDirection::Up;
+		SetRotationY(90);						//Positions player model facing upwards (away from camera)
 	}
 	else if (vec.z < 0)
 	{
-		//playerDir = PlayerFacingDirection::Down;
+		playerDir = PlayerFacingDirection::Down;
+		SetRotationY(-90);							//Positions player model facing downwards (towards camera)
 	}
 
 	//todo simplify
 
 	vel.SetVel(vec, 1.0f*gt.DeltaTime());
-	SimpleMath::Vector3 pos = GetPos();
-	SimpleMath::Vector3 v = vel.GetVelocity();
-
-	SetPos(pos + v);
 }
 
 void Player::DamagePlayer(int damage)			//When enemy hits with player
@@ -208,4 +213,42 @@ void Player::DamagePlayer(int damage)			//When enemy hits with player
 
 	mpInstance->World._41 += x;
 	mpInstance->World._43 += z;
+}
+
+XMFLOAT3 Player::GetPositionWithVelocity(const GameTimer& gt)
+{
+	//Gets the 'potential' next position of the player before actually assigning it to the player position
+	//Used to prevent player entering collision boxes
+	float dt = gt.DeltaTime();
+	XMFLOAT3 playerPosWithVelocity = this->GetPos();
+
+	if (Input::Get().GamePadConnected())		//Why is there different velocity variables for keyboard and controller?
+	{
+		playerPosWithVelocity.x += vel.GetVelocity().x;
+		playerPosWithVelocity.z += vel.GetVelocity().z;
+	}
+	else
+	{
+		playerPosWithVelocity.x += VELOCITY.right * dt;
+		playerPosWithVelocity.x -= VELOCITY.left * dt;
+
+		playerPosWithVelocity.z += VELOCITY.top * dt;
+		playerPosWithVelocity.z -= VELOCITY.bottom * dt;
+	}
+
+	return playerPosWithVelocity;
+}
+
+void Player::SetVelocity(const float newVel)
+{
+	//Only change the velocity of the direction that caused the collision
+
+	//Solution until velocity is vec2f
+	VELOCITY.top = newVel;
+	VELOCITY.bottom = newVel;
+	VELOCITY.left = newVel;
+	VELOCITY.right = newVel;
+
+	const SimpleMath::Vector3 t = {0.0f, 0.0f, 0.0f};
+	vel.SetVel(t, newVel);
 }

@@ -118,3 +118,18 @@ const void GameObject::RotationAroundPoint(const DirectX::XMMATRIX translate1, c
 
 	XMStoreFloat4x4(&mpInstance->World, transformation);
 }
+
+bool GameObject::CheckCollision(XMFLOAT3 Object1, XMFLOAT3 Object2)
+{
+	//Could change to have Mathf.Abs() to only check the positive boundary?
+	float distanceInX = Object1.x - Object2.x;
+	float distanceInY = Object1.y - Object2.y;
+	float distanceInZ = Object1.z - Object2.z;
+
+	if (distanceInX > -1.0f && distanceInX < 1.0f)
+		if (distanceInY > -1.5f && distanceInY < 1.5f)
+			if (distanceInZ > -1.0f && distanceInZ < 1.0f)
+				return true;
+
+	return false;
+}

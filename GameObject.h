@@ -35,4 +35,6 @@ public:
 
 	const void RotationAroundPoint(const DirectX::XMFLOAT3 translation1, const float rotation, const DirectX::XMFLOAT3 translation2) const;
 	const void RotationAroundPoint(const DirectX::XMMATRIX translation1, const float rotation, const DirectX::XMFLOAT3 translation2) const;
+
+	bool CheckCollision(const DirectX::XMFLOAT3 Object1, const DirectX::XMFLOAT3 Object2);
 };

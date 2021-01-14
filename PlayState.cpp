@@ -211,8 +211,18 @@ void PlayState::Initialize()
 void PlayState::Update(const GameTimer & gt)
 {
 	//mTileManager.Update(gt);
-	mPlayer.Update(gt);
 	mCombatController.Update();
+
+	std::for_each(mTraders.begin(), mTraders.end(), [&](Trader& t)		//Every trader in the game
+	{
+		if (mPlayer.CheckCollision(mPlayer.GetPositionWithVelocity(gt), t.GetPos()))		//Checks next possible position for player based on position + velocity
+		{
+			mPlayer.SetVelocity(0.0f);		//Prevents the player from going to the next position while it creates a collision
+		}
+
+	});
+
+	mPlayer.Update(gt);
 
 	// reset hazard timer for tile hazards 
 	if (mPlayer.hazardTimer >= 0) {
@@ -339,7 +349,20 @@ void PlayState::Update(const GameTimer & gt)
 			}
 		}
 		i++;
-	
+
+		bool isConnection = false;
+		std::for_each(mTraders.begin(), mTraders.end(), [&](Trader& t)
+		{
+			if (e.CheckCollision(e.GetPos() + e.newPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounce back position
+			{
+				isConnection = true;		//Disable ability for bounce back to occur, does kill enemy faster due to multiple collisions with weapon
+			}
+
+		});
+
+		if (!isConnection)		//If there was no collisions detected between any trader and enemy bounce back position
+			e.ApplyBounceback();
+
 	});
 
 	PassConstants* pMainPassCB = GameApp::Get().GetMainPassCB();

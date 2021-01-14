@@ -25,6 +25,9 @@ public:
 	void MoveLeft(const GameTimer& gt);
 	void MoveRight(const GameTimer& gt);
 
+	DirectX::XMFLOAT3 GetPositionWithVelocity(const GameTimer& gt);
+	void SetVelocity(const float newVelocity);
+
 	Velocity vel;
 	// Gamepad
 	void Move(const GameTimer& gt, const DirectX::SimpleMath::Vector3& vec);
@@ -43,7 +46,7 @@ public:
 	const float PLAYER_UPBOUND = 15.0f;
 	const float PLAYER_DOWNBOUND = -15.0f;
 
-	PlayerFacingDirection playerDir = PlayerFacingDirection::Right;
+	PlayerFacingDirection playerDir = PlayerFacingDirection::Left;
 	int attack = 10;		//Base attack stat (base amount + weapon amount), need to make private but public for debugging purposes
 
 	DeltaTimer mFootstepTimer;

@@ -73,8 +73,15 @@ void Enemy::DamageEnemy(int dmg)
 		break;
 	}
 
-	mpInstance->World._41 += x;
-	mpInstance->World._43 += z;
+	newPosition.x = x;
+	newPosition.z = z;
+}
+
+void Enemy::ApplyBounceback()
+{
+	DirectX::XMFLOAT3 currentPos = this->GetPos();
+	SetPos(DirectX::XMFLOAT3(currentPos.x + newPosition.x, currentPos.y, currentPos.z + newPosition.z));
+	newPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 }
 
 int Enemy::GetRandomValue(int min, int max)

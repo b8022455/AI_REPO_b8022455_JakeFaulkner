@@ -33,6 +33,9 @@ public:
 	void UpdateAttack();
 	DirectX::XMFLOAT3 GetCollisionPoint();
 
+	DirectX::XMFLOAT3 newPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);		//Gets enemy position once bounceback has taken effect
+	void ApplyBounceback();		//Applies bounceback when checked that it wont cause a collision
+
 private:
 	int GetRandomValue(int min, int max);				//Gets random value of spawning enemy position & loot drops
 
