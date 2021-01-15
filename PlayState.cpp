@@ -138,16 +138,25 @@ void PlayState::Initialize()
 		mEnemies.push_back(Enemy("EnemyType1", 25));
 
 		//Init all enemies
-		std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e) 
-		{ 
-			e.Initialize("Enemy"); 
+		for (auto& e : mEnemies)
+		{
+			e.Initialize("Enemy");
 
 			e.SetPosition({
-				static_cast<float>(rand() % 10 + 2.0f),
-				1.0f,
-				static_cast<float>(rand() % 10 + 2.0f)
-			});
-		});
+							static_cast<float>(rand() % 10 + 2.0f),
+							1.0f,
+							static_cast<float>(rand() % 10 + 2.0f)
+				});
+
+			for(auto t : mTraders)								//Check each trader in the game
+				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+					e.SetPos({
+						static_cast<float>(rand() % 10 + 2.0f),
+						1.0f,
+						static_cast<float>(rand() % 10 + 2.0f)
+						});
+		}
+
 	}
 
 	mCombatController.Initialize(&mPlayer,&mPlayerWeapon,&mEnemies);
@@ -213,14 +222,18 @@ void PlayState::Update(const GameTimer & gt)
 	//mTileManager.Update(gt);
 	mCombatController.Update();
 
-	std::for_each(mTraders.begin(), mTraders.end(), [&](Trader& t)		//Every trader in the game
+	for (auto& t : mTraders)		//Checks all traders in the game
 	{
-		if (mPlayer.CheckCollision(mPlayer.GetPositionWithVelocity(gt), t.GetPos()))		//Checks next possible position for player based on position + velocity
+		if (mPlayer.CheckCollision(mPlayer.GetPositionWithVelocity(gt), t.GetPos()) ||		//Prevents player from walking through trader and being pushed by an enemy into trader
+			mPlayer.CheckCollision(mPlayer.GetPos() + mPlayer.BouncebackPosition, t.GetPos()))
 		{
-			mPlayer.SetVelocity(0.0f);		//Prevents the player from going to the next position while it creates a collision
+			mPlayer.SetVelocity(0.0f);		//Prevents moving through the trader
+			mPlayer.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);		//Prevents the bounceback from happening
 		}
 
-	});
+		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), t.GetPos()))	//Prevents weapon from going through trader
+			mPlayerWeapon.ResetWeaponPosition();
+	}
 
 	mPlayer.Update(gt);
 
@@ -300,7 +313,6 @@ void PlayState::Update(const GameTimer & gt)
 	int i = 0;
 	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
 	{ 
-		e.Update(gt); 
 		//Enemy look at players position (Currently Working On)
 		if (mPlayer.GetPos().x > e.GetPos().x)
 			if (mPlayer.GetPos().z > e.GetPos().z)		//X and Z are bigger
@@ -348,20 +360,13 @@ void PlayState::Update(const GameTimer & gt)
 				GameApp::Get().GetAudio().Play("EnemyHit1", nullptr, false, 1.0f, GetRandomVoicePitch());
 			}
 		}
+
+		for (auto& t : mTraders)
+			if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
+				e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+		e.Update(gt); 
 		i++;
-
-		bool isConnection = false;
-		std::for_each(mTraders.begin(), mTraders.end(), [&](Trader& t)
-		{
-			if (e.CheckCollision(e.GetPos() + e.newPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounce back position
-			{
-				isConnection = true;		//Disable ability for bounce back to occur, does kill enemy faster due to multiple collisions with weapon
-			}
-
-		});
-
-		if (!isConnection)		//If there was no collisions detected between any trader and enemy bounce back position
-			e.ApplyBounceback();
 
 	});
 

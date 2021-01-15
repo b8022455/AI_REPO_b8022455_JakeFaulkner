@@ -25,6 +25,18 @@ void Player::Update(const GameTimer & gt)
 	if (DOWN_velocity < 0)
 		DOWN_velocity = 0;*/
 
+	//Check if player is invincible from recent hit
+	times.UpdateTime();
+	if (times.currentTime.tm_sec > times.nextInvincibleDelay)
+		times.SetInvincibleStatus(false);
+
+	if (BouncebackPosition.x != 0.0f || BouncebackPosition.z != 0.0f)		//If there has been a bounceback
+	{
+		DirectX::XMFLOAT3 currentPos = this->GetPos();
+		SetPos(DirectX::XMFLOAT3(currentPos.x + BouncebackPosition.x, currentPos.y, currentPos.z + BouncebackPosition.z));
+		BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	}
+
 	if (VELOCITY.right >= 0)
 		VELOCITY.right -= dt * 8;
 	if (VELOCITY.right < 0)
@@ -107,7 +119,7 @@ void Player::MoveUp(const GameTimer& gt)
 	//	UP_velocity += dt * 12; // add double time to velocity
 
 	playerDir = PlayerFacingDirection::Up;
-	SetRotationY(90);						//Positions player model facing upwards (away from camera)
+	SetRotationY(-90);						//Positions player model facing upwards (away from camera)
 }
 
 void Player::MoveDown(const GameTimer& gt)
@@ -122,7 +134,7 @@ void Player::MoveDown(const GameTimer& gt)
 	//	DOWN_velocity += dt * 12; // add double time to velocity
 
 	playerDir = PlayerFacingDirection::Down;
-	SetRotationY(-90);							//Positions player model facing downwards (towards camera)
+	SetRotationY(90);							//Positions player model facing downwards (towards camera)
 }
 
 void Player::MoveLeft(const GameTimer& gt)
@@ -173,12 +185,12 @@ void Player::Move(const GameTimer & gt, const DirectX::SimpleMath::Vector3 & vec
 	if (vec.z > 0)
 	{
 		playerDir = PlayerFacingDirection::Up;
-		SetRotationY(90);						//Positions player model facing upwards (away from camera)
+		SetRotationY(-90);						//Positions player model facing upwards (away from camera)
 	}
 	else if (vec.z < 0)
 	{
 		playerDir = PlayerFacingDirection::Down;
-		SetRotationY(-90);							//Positions player model facing downwards (towards camera)
+		SetRotationY(90);							//Positions player model facing downwards (towards camera)
 	}
 
 	//todo simplify
@@ -188,9 +200,16 @@ void Player::Move(const GameTimer & gt, const DirectX::SimpleMath::Vector3 & vec
 
 void Player::DamagePlayer(int damage)			//When enemy hits with player
 {
+	if (!times.IsInvincible)
+	{
+		health -= damage;
+		times.SetInvincibleStatus(true);
+		times.nextInvincibleDelay = times.currentTime.tm_sec + times.InvincibleDelay;
+		if (times.nextInvincibleDelay >= 60)	times.nextInvincibleDelay -= 60;
+	}
+
 	float x = 0.0f;
 	float z = 0.0f;
-	health -= damage;
 
 	switch (playerDir)
 	{
@@ -211,8 +230,8 @@ void Player::DamagePlayer(int damage)			//When enemy hits with player
 		break;
 	}
 
-	mpInstance->World._41 += x;
-	mpInstance->World._43 += z;
+	BouncebackPosition.x = x;
+	BouncebackPosition.z = z;
 }
 
 XMFLOAT3 Player::GetPositionWithVelocity(const GameTimer& gt)
