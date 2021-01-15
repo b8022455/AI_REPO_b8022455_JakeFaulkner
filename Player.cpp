@@ -94,6 +94,14 @@ void Player::Update(const GameTimer & gt)
 	if (VELOCITY.right/*RIGHT_velocity*/ > 0.1f || VELOCITY.left/*LEFT_velocity*/ > 0.1f || 
 		VELOCITY.top/*UP_velocity*/ > 0.1f || VELOCITY.bottom/*DOWN_velocity*/ > 0.1f)
 	{
+		if (mAnimationTimer.HasTimeElapsed(gt.DeltaTime(), 0.5f))
+		{
+			if (scaleYValue == 0.8f)	scaleYValue = 1.f;				//Could find way to do alter between scales differently
+			else if (scaleYValue == 1.f) scaleYValue = 0.8f;
+
+			SetScaleY(scaleYValue);
+		}
+
 		if (mFootstepTimer.HasTimeElapsed(gt.DeltaTime(), 0.5f))
 		{
 			GameApp::Get().GetAudio().Play("playerFootstep", nullptr, false, 1.0f, GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT]);
@@ -196,6 +204,24 @@ void Player::Move(const GameTimer & gt, const DirectX::SimpleMath::Vector3 & vec
 	//todo simplify
 
 	vel.SetVel(vec, 1.0f*gt.DeltaTime());
+
+	//Copied from Player::Move since keyboard/controller have diff functions to apply velocity
+	if (vel.GetVelocity().x != 0.0f || vel.GetVelocity().z != 0.0f)
+	{
+		if (mAnimationTimer.HasTimeElapsed(gt.DeltaTime(), 0.5f))
+		{
+			if (scaleYValue == 0.8f)	scaleYValue = 1.f;				//Could find way to do alter between scales differently
+			else if (scaleYValue == 1.f) scaleYValue = 0.8f;
+
+			SetScaleY(scaleYValue);
+		}
+
+		if (mFootstepTimer.HasTimeElapsed(gt.DeltaTime(), 0.5f))
+		{
+			GameApp::Get().GetAudio().Play("playerFootstep", nullptr, false, 1.0f, GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT]);
+
+		}
+	}
 }
 
 void Player::DamagePlayer(int damage)			//When enemy hits with player

@@ -26,7 +26,11 @@ public:
 	void SetPos(const DirectX::XMFLOAT3& newPos);
 	const DirectX::XMFLOAT3 GetPos() const;
 	const DirectX::SimpleMath::Vector3 GetPosV3() const;
+
 	void SetScale(const float& scale);
+	void SetScaleX(const float scaleX);
+	void SetScaleY(const float scaleY);
+	void SetScaleZ(const float scaleZ);
 
 	void SetRotationX(const float newRotation);
 	void SetRotationY(const float newRotation);
