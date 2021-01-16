@@ -8,23 +8,6 @@ void Player::Update(const GameTimer & gt)
 	const float dt = gt.DeltaTime();
 	GameApp::Get().mDebugLog << "Health:" << health << "\n";
 	// APPLY VELOCITY HERE
-	/*if (RIGHT_velocity >= 0)
-		RIGHT_velocity -= dt * 8;
-	if (RIGHT_velocity < 0)
-		RIGHT_velocity = 0;
-	if (LEFT_velocity >= 0)
-		LEFT_velocity -= dt * 8;
-	if (LEFT_velocity < 0)
-		LEFT_velocity = 0;
-	if (UP_velocity >= 0)
-		UP_velocity -= dt * 8;
-	if (UP_velocity < 0)
-		UP_velocity = 0;
-	if (DOWN_velocity >= 0)
-		DOWN_velocity -= dt * 8;
-	if (DOWN_velocity < 0)
-		DOWN_velocity = 0;*/
-
 	if (VELOCITY.right >= 0)
 		VELOCITY.right -= dt * 8;
 	if (VELOCITY.right < 0)
@@ -44,43 +27,42 @@ void Player::Update(const GameTimer & gt)
 
 	if (mpInstance->World._41 <= PLAYER_RIGHTBOUND) {
 		if (Slowed == true)
-			mpInstance->World._41 += (0.5f * VELOCITY.right/*RIGHT_velocity*/) * dt;
+			mpInstance->World._41 += (0.5f * VELOCITY.right) * dt;
 		if (Slippy == true)
-			mpInstance->World._41 += (1.5f * VELOCITY.right/*RIGHT_velocity*/) * dt;
+			mpInstance->World._41 += (1.5f * VELOCITY.right) * dt;
 		if (Slowed != true && Slippy != true)
-			mpInstance->World._41 += VELOCITY.right/*RIGHT_velocity*/ * dt;
+			mpInstance->World._41 += VELOCITY.right * dt;
 	}
 	if (mpInstance->World._41 >= PLAYER_LEFTBOUND)
 	{
 		if (Slowed == true)
-			mpInstance->World._41 -= (0.5f * VELOCITY.left/*LEFT_velocity*/) * dt;
+			mpInstance->World._41 -= (0.5f * VELOCITY.left) * dt;
 		if (Slippy == true)
-			mpInstance->World._41 -= (1.5f * VELOCITY.left/*LEFT_velocity*/) * dt;
+			mpInstance->World._41 -= (1.5f * VELOCITY.left) * dt;
 		if (Slowed == false && Slippy == false)
-			mpInstance->World._41 -= VELOCITY.left/*LEFT_velocity*/ * dt;
+			mpInstance->World._41 -= VELOCITY.left * dt;
 	}
 	if (mpInstance->World._43 <= PLAYER_UPBOUND)
 	{
 		if (Slowed == true)
-			mpInstance->World._43 += (0.5f * VELOCITY.top/*UP_velocity*/) * dt;
+			mpInstance->World._43 += (0.5f * VELOCITY.top) * dt;
 		if (Slippy == true)
-			mpInstance->World._43 += (1.5f * VELOCITY.top/*UP_velocity*/) * dt;
+			mpInstance->World._43 += (1.5f * VELOCITY.top) * dt;
 		if (Slowed == false && Slippy == false)
-			mpInstance->World._43 += VELOCITY.top/*UP_velocity*/ * dt;
+			mpInstance->World._43 += VELOCITY.top * dt;
 	}
 	if (mpInstance->World._43 >= PLAYER_DOWNBOUND)
 	{
 		if (Slowed == true)
-			mpInstance->World._43 -= (0.5f * VELOCITY.bottom/*DOWN_velocity*/) * dt;
+			mpInstance->World._43 -= (0.5f * VELOCITY.bottom) * dt;
 		if (Slippy == true)
-			mpInstance->World._43 -= (1.5f * VELOCITY.bottom/*DOWN_velocity*/) * dt;
+			mpInstance->World._43 -= (1.5f * VELOCITY.bottom) * dt;
 		if (Slowed == false && Slippy == false)
-			mpInstance->World._43 -= VELOCITY.bottom/*DOWN_velocity*/ * dt;
+			mpInstance->World._43 -= VELOCITY.bottom * dt;
 	}
 
 	// if moving count down to next step
-	if (VELOCITY.right/*RIGHT_velocity*/ > 0.1f || VELOCITY.left/*LEFT_velocity*/ > 0.1f || 
-		VELOCITY.top/*UP_velocity*/ > 0.1f || VELOCITY.bottom/*DOWN_velocity*/ > 0.1f)
+	if (VELOCITY.right > 0.1f || VELOCITY.left > 0.1f || VELOCITY.top > 0.1f || VELOCITY.bottom > 0.1f)
 	{
 		if (mFootstepTimer.HasTimeElapsed(gt.DeltaTime(), 0.5f))
 		{
@@ -97,10 +79,6 @@ void Player::MoveUp(const GameTimer& gt)
 	if (VELOCITY.top < MAX_VELOCITY)
 		VELOCITY.top += dt * 12;
 
-	// INCREASE VELOCITY HERE
-	//if (UP_velocity < MAX_VELOCITY)
-	//	UP_velocity += dt * 12; // add double time to velocity
-
 	playerDir = PlayerFacingDirection::Up;
 	SetRotationY(0);						//Positions player model facing upwards (away from camera)
 }
@@ -111,10 +89,6 @@ void Player::MoveDown(const GameTimer& gt)
 
 	if (VELOCITY.bottom < MAX_VELOCITY)
 		VELOCITY.bottom += dt * 12;
-
-	// INCREASE VELOCITY HERE
-	//if (DOWN_velocity < MAX_VELOCITY)
-	//	DOWN_velocity += dt * 12; // add double time to velocity
 
 	playerDir = PlayerFacingDirection::Down;
 	SetRotationY(180);							//Positions player model facing downwards (towards camera)
@@ -127,10 +101,6 @@ void Player::MoveLeft(const GameTimer& gt)
 	if (VELOCITY.left < MAX_VELOCITY)
 		VELOCITY.left += dt * 12;
 
-	// INCREASE VELOCITY HERE
-	//if (LEFT_velocity < MAX_VELOCITY)
-	//	LEFT_velocity += dt * 12; // add double time to velocity
-
 	playerDir = PlayerFacingDirection::Left;
 	SetRotationY(-90);							//Positions player model facing left
 }
@@ -141,10 +111,6 @@ void Player::MoveRight(const GameTimer& gt)
 
 	if (VELOCITY.right < MAX_VELOCITY)
 		VELOCITY.right += dt * 12;
-
-	// INCREASE VELOCITY HERE
-	//if (RIGHT_velocity < MAX_VELOCITY)
-	//	RIGHT_velocity += dt * 12; // add double time to velocity
 
 	playerDir = PlayerFacingDirection::Right;
 	SetRotationY(90);						//Positions player model facing right
