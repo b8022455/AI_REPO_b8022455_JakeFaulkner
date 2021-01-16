@@ -60,7 +60,7 @@ bool CombatController::CheckCollision(DirectX::XMFLOAT3 Obj1, DirectX::XMFLOAT3 
 
 	if (xDistance > -1.f && xDistance < 1.f)							//If distance between X coordinate is within boundaries (-1.5 < X < 1.5)
 		if (yDistance > -1.5f && yDistance < 1.5f)						//If distance between Y coordinate is within boundaries (-1.5 < Y < 1.5)
-			if (zDistance > -1.5f && zDistance < 1.5f)					//If distance between Z coordinate is within boundaries (-1.5 < Z < 1.5)
+			if (zDistance > -1.f && zDistance < 1.f)					//If distance between Z coordinate is within boundaries (-1.5 < Z < 1.5)
 				return true;				//There is a collision between the 2 objects
 
 	return false;				//If the distance between the objects is not within the boundaries, there is no collision

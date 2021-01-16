@@ -136,6 +136,18 @@ public:
 	void Activate();
 };
 
+class GameTimer;
+
+class FadeText
+{
+	float mTimer = 1.0f;
+public:
+	Text mText;
+	float mSpeed = 1.0f;
+	void Activate(const std::string& str, float t);
+	void Update(const GameTimer& gt);
+	void Draw();
+};
 // Handles fonts and viewport sprites
 class SpriteManager
 {

@@ -20,6 +20,7 @@ public:
 	void Initialize(const std::string& renderItemName) override;	//Sets up the TimeDelay struct values
 	void Attack();
 	void SwingWeapon();				//Swings the weapon based on the rotation var
+	void ResetWeaponPosition();
 	bool GetAttackStatus();			//Lets the Combat Controller class know when the attack has ended
 	void SetDirection(int dir);
 	void UpdateTime();
@@ -28,7 +29,6 @@ public:
 
 private:
 	void PositionWeapon();
-	void ResetWeaponPosition();
 	void UpdateWeaponMatrix();
 
 	float weaponStartingRotation = 0.0f;		//0 degrees starting point for rotation

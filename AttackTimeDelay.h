@@ -10,6 +10,14 @@ struct AttackTimeDelay		//All variables used in the timing stuff, kept in struct
 	int attackDuration;
 	errno_t storeLocaltime;
 	bool isAttacking = false;
+	int InvincibleDelay = 2;
+	int nextInvincibleDelay;
+	bool IsInvincible = false;
+
+	void SetInvincibleStatus(bool foo)
+	{
+		this->IsInvincible = foo;
+	}
 
 	void StartTime(int attDuration, int attDelay)
 	{

@@ -49,32 +49,32 @@ void Enemy::DamageEnemy(int dmg)
 {
 	mHealth -= dmg;
 	mpInstance->MaterialIndex = 5;		//Visual check, remove eventually
-
+	
 	float x = 0.0f;
 	float z = 0.0f;
-
+	
 	//Blows back enemy based on what position the enemy was hit from
 	switch (playerDirection)
 	{
 	case 0:										//Left
 		x = -2.0f;
 		break;
-
+	
 	case 1:										//Right
 		x = 2.0f;
 		break;
-
+	
 	case 2:										//Up
 		z = 2.0f;
 		break;
-
+	
 	case 3:										//Down
 		z = -2.0f;
 		break;
 	}
-
-	mpInstance->World._41 += x;
-	mpInstance->World._43 += z;
+	
+	BouncebackPosition.x = x;
+	BouncebackPosition.z = z;
 }
 
 int Enemy::GetRandomValue(int min, int max)
@@ -153,6 +153,15 @@ void Enemy::Update(const GameTimer& gt)
 	}
 
 	times.UpdateTime();
+
+	//Update enemy position based on bounceback
+	if (BouncebackPosition.x != 0.0f || BouncebackPosition.z != 0.0f)		//If there was a bounceback
+	{
+		DirectX::XMFLOAT3 currentPos = this->GetPos();		//Get current position of player
+		SetPos(DirectX::XMFLOAT3(currentPos.x + BouncebackPosition.x, currentPos.y, currentPos.z + BouncebackPosition.z));		//Add the bounceback position to it, will be 0 if there is a collision
+		BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	}
+
 }
 
 void Enemy::UpdateAttack()

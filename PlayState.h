@@ -52,6 +52,8 @@ class PlayState : public State
 	// swaps on toggle and lerps on update
 	std::pair<SimpleMath::Vector2, SimpleMath::Vector2> mInventoryLocation;
 	Text mInventoryText;
+	// "Level Up", "You can't go there"
+	FadeText mMessage;
 
 	void InitializeTraders();
 	bool FindNearestTraderInRadius();

@@ -7,7 +7,20 @@ void Player::Update(const GameTimer & gt)
 {
 	const float dt = gt.DeltaTime();
 	GameApp::Get().mDebugLog << "Health:" << health << "\n";
-	// APPLY VELOCITY HERE
+	
+
+	//Check if player is invincible from recent hit
+	times.UpdateTime();
+	if (times.currentTime.tm_sec > times.nextInvincibleDelay)
+		times.SetInvincibleStatus(false);
+
+	if (BouncebackPosition.x != 0.0f || BouncebackPosition.z != 0.0f)		//If there has been a bounceback
+	{
+		DirectX::XMFLOAT3 currentPos = this->GetPos();
+		SetPos(DirectX::XMFLOAT3(currentPos.x + BouncebackPosition.x, currentPos.y, currentPos.z + BouncebackPosition.z));
+		BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	}
+
 	if (VELOCITY.right >= 0)
 		VELOCITY.right -= dt * 8;
 	if (VELOCITY.right < 0)
@@ -64,11 +77,24 @@ void Player::Update(const GameTimer & gt)
 	// if moving count down to next step
 	if (VELOCITY.right > 0.1f || VELOCITY.left > 0.1f || VELOCITY.top > 0.1f || VELOCITY.bottom > 0.1f)
 	{
+		if (mAnimationTimer.HasTimeElapsed(gt.DeltaTime(), 0.5f))
+		{
+			if (scaleYValue == 0.8f)	scaleYValue = 1.f;				//Could find way to do alter between scales differently
+			else if (scaleYValue == 1.f) scaleYValue = 0.8f;
+
+			SetScaleY(scaleYValue);
+		}
+
 		if (mFootstepTimer.HasTimeElapsed(gt.DeltaTime(), 0.5f))
 		{
 			GameApp::Get().GetAudio().Play("playerFootstep", nullptr, false, 1.0f, GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT]);
 		}
 	}
+
+	SimpleMath::Vector3 pos = GetPos();
+	SimpleMath::Vector3 v = vel.GetVelocity();
+
+	SetPos(pos + v);
 
 }
 
@@ -80,7 +106,7 @@ void Player::MoveUp(const GameTimer& gt)
 		VELOCITY.top += dt * 12;
 
 	playerDir = PlayerFacingDirection::Up;
-	SetRotationY(0);						//Positions player model facing upwards (away from camera)
+	SetRotationY(-90);						//Positions player model facing upwards (away from camera)
 }
 
 void Player::MoveDown(const GameTimer& gt)
@@ -91,7 +117,7 @@ void Player::MoveDown(const GameTimer& gt)
 		VELOCITY.bottom += dt * 12;
 
 	playerDir = PlayerFacingDirection::Down;
-	SetRotationY(180);							//Positions player model facing downwards (towards camera)
+	SetRotationY(90);							//Positions player model facing downwards (towards camera)
 }
 
 void Player::MoveLeft(const GameTimer& gt)
@@ -102,7 +128,7 @@ void Player::MoveLeft(const GameTimer& gt)
 		VELOCITY.left += dt * 12;
 
 	playerDir = PlayerFacingDirection::Left;
-	SetRotationY(-90);							//Positions player model facing left
+	SetRotationY(0);							//Positions player model facing left
 }
 
 void Player::MoveRight(const GameTimer& gt)
@@ -113,7 +139,7 @@ void Player::MoveRight(const GameTimer& gt)
 		VELOCITY.right += dt * 12;
 
 	playerDir = PlayerFacingDirection::Right;
-	SetRotationY(90);						//Positions player model facing right
+	SetRotationY(180);						//Positions player model facing right
 }
 
 
@@ -122,36 +148,61 @@ void Player::Move(const GameTimer & gt, const DirectX::SimpleMath::Vector3 & vec
 	//Changes position of sword depending on where player is facing
 	if (vec.x < 0)
 	{
-		//playerDir = PlayerFacingDirection::Left;
+		playerDir = PlayerFacingDirection::Left;
+		SetRotationY(0);							//Positions player model facing left
 	}
 	else if (vec.x > 0)
 	{
-		//playerDir = PlayerFacingDirection::Right;
+		playerDir = PlayerFacingDirection::Right;
+		SetRotationY(180);						//Positions player model facing right
 	}
 
 	if (vec.z > 0)
 	{
-		//playerDir = PlayerFacingDirection::Up;
+		playerDir = PlayerFacingDirection::Up;
+		SetRotationY(-90);						//Positions player model facing upwards (away from camera)
 	}
 	else if (vec.z < 0)
 	{
-		//playerDir = PlayerFacingDirection::Down;
+		playerDir = PlayerFacingDirection::Down;
+		SetRotationY(90);							//Positions player model facing downwards (towards camera)
 	}
 
 	//todo simplify
 
 	vel.SetVel(vec, 1.0f*gt.DeltaTime());
-	SimpleMath::Vector3 pos = GetPos();
-	SimpleMath::Vector3 v = vel.GetVelocity();
 
-	SetPos(pos + v);
+	//Copied from Player::Move since keyboard/controller have diff functions to apply velocity
+	if (vel.GetVelocity().x != 0.0f || vel.GetVelocity().z != 0.0f)
+	{
+		if (mAnimationTimer.HasTimeElapsed(gt.DeltaTime(), 0.5f))
+		{
+			if (scaleYValue == 0.8f)	scaleYValue = 1.f;				//Could find way to do alter between scales differently
+			else if (scaleYValue == 1.f) scaleYValue = 0.8f;
+
+			SetScaleY(scaleYValue);
+		}
+
+		if (mFootstepTimer.HasTimeElapsed(gt.DeltaTime(), 0.5f))
+		{
+			GameApp::Get().GetAudio().Play("playerFootstep", nullptr, false, 1.0f, GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT]);
+
+		}
+	}
 }
 
 void Player::DamagePlayer(int damage)			//When enemy hits with player
 {
+	if (!times.IsInvincible)
+	{
+		health -= damage;
+		times.SetInvincibleStatus(true);
+		times.nextInvincibleDelay = times.currentTime.tm_sec + times.InvincibleDelay;
+		if (times.nextInvincibleDelay >= 60)	times.nextInvincibleDelay -= 60;
+	}
+
 	float x = 0.0f;
 	float z = 0.0f;
-	health -= damage;
 
 	switch (playerDir)
 	{
@@ -172,6 +223,44 @@ void Player::DamagePlayer(int damage)			//When enemy hits with player
 		break;
 	}
 
-	mpInstance->World._41 += x;
-	mpInstance->World._43 += z;
+	BouncebackPosition.x = x;
+	BouncebackPosition.z = z;
+}
+
+XMFLOAT3 Player::GetPositionWithVelocity(const GameTimer& gt)
+{
+	//Gets the 'potential' next position of the player before actually assigning it to the player position
+	//Used to prevent player entering collision boxes
+	float dt = gt.DeltaTime();
+	XMFLOAT3 playerPosWithVelocity = this->GetPos();
+
+	if (Input::Get().GamePadConnected())		//Why is there different velocity variables for keyboard and controller?
+	{
+		playerPosWithVelocity.x += vel.GetVelocity().x;
+		playerPosWithVelocity.z += vel.GetVelocity().z;
+	}
+	else
+	{
+		playerPosWithVelocity.x += VELOCITY.right * dt;
+		playerPosWithVelocity.x -= VELOCITY.left * dt;
+
+		playerPosWithVelocity.z += VELOCITY.top * dt;
+		playerPosWithVelocity.z -= VELOCITY.bottom * dt;
+	}
+
+	return playerPosWithVelocity;
+}
+
+void Player::SetVelocity(const float newVel)
+{
+	//Only change the velocity of the direction that caused the collision
+
+	//Solution until velocity is vec2f
+	VELOCITY.top = newVel;
+	VELOCITY.bottom = newVel;
+	VELOCITY.left = newVel;
+	VELOCITY.right = newVel;
+
+	const SimpleMath::Vector3 t = {0.0f, 0.0f, 0.0f};
+	vel.SetVel(t, newVel);
 }

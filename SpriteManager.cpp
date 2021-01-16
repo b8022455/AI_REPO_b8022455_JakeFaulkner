@@ -5,6 +5,7 @@
 #include "Common/d3dUtil.h"
 #include "Common/d3dx12.h"
 #include "GameApp.h"
+#include "DeltaTimer.h"
 
 
 #define IID_PPV_ARGS(ppType) __uuidof(**(ppType)), IID_PPV_ARGS_Helper(ppType)
@@ -350,5 +351,33 @@ void Panel::Draw()
 	for (auto& s : mSprites)
 	{
 		s.Draw();
+	}
+}
+
+void FadeText::Activate(const std::string & str, float t)
+{
+	mText.string = str;
+	mTimer = t;
+}
+
+void FadeText::Update(const GameTimer & gt)
+{
+	if (mTimer >= 0.0f)
+	{
+		mTimer -= gt.DeltaTime() * mSpeed;
+	}
+	else
+	{
+		mTimer = 0.0f;
+	}
+
+	mText.color.w = mTimer;
+}
+
+void FadeText::Draw()
+{
+	if (mTimer > 0.0f)
+	{
+		mText.Draw();	
 	}
 }

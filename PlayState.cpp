@@ -138,22 +138,35 @@ void PlayState::Initialize()
 		mEnemies.push_back(Enemy("EnemyType1", 25));
 
 		//Init all enemies
-		std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e) 
-		{ 
-			e.Initialize("Enemy"); 
+		for (auto& e : mEnemies)
+		{
+			e.Initialize("Enemy");
 
 			e.SetPosition({
-				static_cast<float>(rand() % 10 + 2.0f),
-				1.0f,
-				static_cast<float>(rand() % 10 + 2.0f)
-			});
-		});
+							static_cast<float>(rand() % 10 + 2.0f),
+							1.0f,
+							static_cast<float>(rand() % 10 + 2.0f)
+				});
+
+			for(auto t : mTraders)								//Check each trader in the game
+				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+					e.SetPos({
+						static_cast<float>(rand() % 10 + 2.0f),
+						1.0f,
+						static_cast<float>(rand() % 10 + 2.0f)
+						});
+		}
+
 	}
 
 	mCombatController.Initialize(&mPlayer,&mPlayerWeapon,&mEnemies);
 
 	// Sprites
 	{
+		const DirectX::XMINT2 s = GameApp::Get().GetClientSizeU2(); //todo on resize
+		SimpleMath::Vector2 v = GameApp::Get().GetClientSize();
+
+
 		Sprite spriteSample;
 		spriteSample.scale = 0.1f;
 
@@ -165,7 +178,6 @@ void PlayState::Initialize()
 
 		// inv panel
 		{
-			const DirectX::XMINT2 s = GameApp::Get().GetClientSizeU2(); //todo on resize
 			const RECT src{ GC::PANEL_SRC[0],	GC::PANEL_SRC[1],	GC::PANEL_SRC[2],	GC::PANEL_SRC[3], };
 			const RECT dst
 			{
@@ -177,7 +189,6 @@ void PlayState::Initialize()
 
 			mInventoryPanel.Initialize("uiTex", src, dst);
 
-			SimpleMath::Vector2 v = GameApp::Get().GetClientSize();
 			mInventoryLocation.second.x = v.x - (v.x / 3);
 			mInventoryLocation.second.y = 10;
 
@@ -188,8 +199,15 @@ void PlayState::Initialize()
 			mInventoryText.fontIndex = 1;
 			
 		}
-	}
 
+		// message text
+		{
+			mMessage.mText.center = true;
+			mMessage.mText.string = "Start!";
+			mMessage.mText.position = v / 2.0f;
+			mMessage.mText.color = DirectX::Colors::Red;
+		}
+	}
 
 	// needed in init for dirty frame
 	for (auto& c : mCameras)
@@ -202,8 +220,22 @@ void PlayState::Initialize()
 void PlayState::Update(const GameTimer & gt)
 {
 	//mTileManager.Update(gt);
-	mPlayer.Update(gt);
 	mCombatController.Update();
+
+	for (auto& t : mTraders)		//Checks all traders in the game
+	{
+		if (mPlayer.CheckCollision(mPlayer.GetPositionWithVelocity(gt), t.GetPos()) ||		//Prevents player from walking through trader and being pushed by an enemy into trader
+			mPlayer.CheckCollision(mPlayer.GetPos() + mPlayer.BouncebackPosition, t.GetPos()))
+		{
+			mPlayer.SetVelocity(0.0f);		//Prevents moving through the trader
+			mPlayer.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);		//Prevents the bounceback from happening
+		}
+
+		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), t.GetPos()))	//Prevents weapon from going through trader
+			mPlayerWeapon.ResetWeaponPosition();
+	}
+
+	mPlayer.Update(gt);
 
 	// reset hazard timer for tile hazards 
 	if (mPlayer.hazardTimer >= 0) {
@@ -281,7 +313,6 @@ void PlayState::Update(const GameTimer & gt)
 	int i = 0;
 	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
 	{ 
-		e.Update(gt); 
 		//Enemy look at players position (Currently Working On)
 		if (mPlayer.GetPos().x > e.GetPos().x)
 			if (mPlayer.GetPos().z > e.GetPos().z)		//X and Z are bigger
@@ -329,8 +360,14 @@ void PlayState::Update(const GameTimer & gt)
 				GameApp::Get().GetAudio().Play("EnemyHit1", nullptr, false, 1.0f, GetRandomVoicePitch());
 			}
 		}
+
+		for (auto& t : mTraders)
+			if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
+				e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+		e.Update(gt); 
 		i++;
-	
+
 	});
 
 	PassConstants* pMainPassCB = GameApp::Get().GetMainPassCB();
@@ -364,7 +401,8 @@ void PlayState::Update(const GameTimer & gt)
 
 	if (mExperience.HasLeveledUp())
 	{
-		GameApp::Get().ChangeState("PauseMenu");
+		mMessage.Activate("LEVEL UP", 5.0f);
+		//GameApp::Get().ChangeState("PauseMenu");
 	}
 
 
@@ -427,6 +465,8 @@ void PlayState::Draw(const GameTimer & gt)
 
 	mInventoryPanel.Draw();
 	mInventoryText.Draw();
+
+	mMessage.Draw();
 
 }
 
@@ -778,6 +818,8 @@ void PlayState::UiUpdate(const GameTimer & gt)
 	// padding for text
 	move += SimpleMath::Vector2{32.0f, 32.0f};
 	mInventoryText.position = move;
+
+	mMessage.Update(gt);
 }
 
 void PlayState::CreatePlant()

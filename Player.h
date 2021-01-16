@@ -8,6 +8,7 @@
 #include "GameObject.h"
 #include "Velocity.h"
 #include "DeltaTimer.h"
+#include "AttackTimeDelay.h"
 #include <d2d1helper.h>
 
 //using namespace DirectX;
@@ -24,6 +25,9 @@ public:
 	void MoveDown(const GameTimer& gt);
 	void MoveLeft(const GameTimer& gt);
 	void MoveRight(const GameTimer& gt);
+
+	DirectX::XMFLOAT3 GetPositionWithVelocity(const GameTimer& gt);
+	void SetVelocity(const float newVelocity);
 
 	Velocity vel;
 	// Gamepad
@@ -43,10 +47,13 @@ public:
 	const float PLAYER_UPBOUND = 15.0f;
 	const float PLAYER_DOWNBOUND = -15.0f;
 
-	PlayerFacingDirection playerDir = PlayerFacingDirection::Right;
+	PlayerFacingDirection playerDir = PlayerFacingDirection::Left;
 	int attack = 10;		//Base attack stat (base amount + weapon amount), need to make private but public for debugging purposes
 
 	DeltaTimer mFootstepTimer;
+	AttackTimeDelay times;
+
+	DirectX::XMFLOAT3 BouncebackPosition = { 0.0f, 0.0f, 0.0f };
 
 private:
 
@@ -58,6 +65,9 @@ private:
 	float DOWN_velocity = 0.0f; //  increases when moving downwards up to max, decreases when not moving
 	float LEFT_velocity = 0.0f; //  increases when moving leftwards up to max, decreases when not moving
 	float RIGHT_velocity = 0.0f; //  increases when moving rightwards up to max, decreases when not moving
+
+	float scaleYValue = 0.8f;
+	DeltaTimer mAnimationTimer;		//Used currently for bobbing of player when moving
 
 	D2D1_RECT_F VELOCITY { 0.0f, //LEFT = left
 	0.0f, //UP = top
