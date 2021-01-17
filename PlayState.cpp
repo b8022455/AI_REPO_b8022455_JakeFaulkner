@@ -313,19 +313,9 @@ void PlayState::Update(const GameTimer & gt)
 	int i = 0;
 	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
 	{ 
-		//Enemy look at players position (Currently Working On)
-		if (mPlayer.GetPos().x > e.GetPos().x)
-			if (mPlayer.GetPos().z > e.GetPos().z)		//X and Z are bigger
-				e.SetRotationY(90);
-			else										//X is bigger
-				e.SetRotationY(180);
-		else											//X is not bigger
-		{
-			if (mPlayer.GetPos().z > e.GetPos().z)
-				e.SetRotationY(0);
-			else										//X and Z are not bigger
-				e.SetRotationY(-90);
-		}
+		//Enemy look at players position (only do when in range)
+		XMVECTOR playerPosition = XMLoadFloat3(&mPlayer.GetPos());
+		e.LookAt(playerPosition);
 
 		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetPos()))
 		{

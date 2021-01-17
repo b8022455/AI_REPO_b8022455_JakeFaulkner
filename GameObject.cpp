@@ -173,3 +173,18 @@ bool GameObject::CheckCollision(XMFLOAT3 Object1, XMFLOAT3 Object2)
 
 	return false;
 }
+
+const void GameObject::LookAt(DirectX::XMVECTOR target) const
+{
+	DirectX::XMVECTOR eyePosition = DirectX::XMLoadFloat3(&this->GetPos());
+
+	DirectX::XMMATRIX transformation = DirectX::XMMatrixLookAtRH(eyePosition, target, DirectX::SimpleMath::Vector3::Up);
+	DirectX::XMFLOAT4X4 storeMatrix;
+	DirectX::XMStoreFloat4x4(&storeMatrix, transformation);
+
+	//May not work for every gameobject, need to test
+	this->mpInstance->World._11 = -storeMatrix._11;
+	this->mpInstance->World._13 = storeMatrix._13;
+	this->mpInstance->World._31 = storeMatrix._31;
+	this->mpInstance->World._33 = -storeMatrix._33;
+}
