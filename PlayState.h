@@ -21,7 +21,7 @@ class PlayState : public State
 	Player mPlayer;
 	PlayerWeapon mPlayerWeapon;
 	std::vector<Trader> mTraders;
-	std::vector<Enemy> mEnemies;
+	std::vector<Enemy> mEnemies; // TODO: (NOTE) ENEMIES ACTUALLY INITIALIZED HERE
 	std::vector<Plant> mPlants;
 	Inventory mInventory;
 
@@ -69,6 +69,8 @@ public:
 	virtual void OnMouseMove(WPARAM btnState, int x, int y) override;
 	virtual void OnKeyboardInput(const GameTimer& gt)		override;
 	virtual void OnResume()									override;
+
+	void reInitialize();
 
 	void Controls(const GameTimer& gt);
 

@@ -217,6 +217,47 @@ void PlayState::Initialize()
 	
 }
 
+void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN LEAVING AN AREA
+	
+	ReGen();
+	// TODO: BELOW COULD CAUSE PROBLEMS & WILL DEFINITELY NEED REVISIONS
+	// Setup temp enemies
+	{
+		// inserts n of enemies
+		mEnemies.push_back(Enemy("EnemyType1", 25));
+		mEnemies.push_back(Enemy("EnemyType1", 25));
+		mEnemies.push_back(Enemy("EnemyType1", 25));
+
+		//Init all enemies
+		for (auto& e : mEnemies)
+		{
+			e.Initialize("Enemy");
+
+			e.SetPosition({
+							static_cast<float>(rand() % 10 + 2.0f),
+							1.0f,
+							static_cast<float>(rand() % 10 + 2.0f)
+				});
+
+			for (auto t : mTraders)								//Check each trader in the game
+				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+					e.SetPos({
+						static_cast<float>(rand() % 10 + 2.0f),
+						1.0f,
+						static_cast<float>(rand() % 10 + 2.0f)
+						});
+		}
+
+	}
+
+	mCombatController.Initialize(&mPlayer, &mPlayerWeapon, &mEnemies);
+
+	mPlayer.AreaClear = false;
+	mPlayer.genArea = false;
+	mPlayer.SetPos({ 0.0f,0.0f,0.0f }); // could expand upon this to be fancy, load player at opposite side of grid
+
+}
+
 void PlayState::Update(const GameTimer & gt)
 {
 	//mTileManager.Update(gt);
@@ -335,10 +376,10 @@ void PlayState::Update(const GameTimer & gt)
 		}
 
 		if (mCombatController.CheckCollision(mPlayerWeapon.GetPos(), e.GetPos()))
-		{
+		{ // TODO: (NOTE) ENEMY TAKES DAMAGE HERE
 			e.DamageEnemy(mPlayer.attack);		//Takes away health from enemy + blowsback enemy position
-			if (e.GetHealth() < 0)
-			{
+			if (e.GetHealth() <= 0) 
+			{ // ENEMY KILLED
 				// gain exp
 				mExperience.AddExp(GC::EXP_DEFAULT); 
 
@@ -443,7 +484,15 @@ void PlayState::Update(const GameTimer & gt)
 		GameApp::Get().ChangeState("GameOver");
 	}
 
+	// IMPLEMENT CHECK FOR ENEMIES HERE
+	if (mEnemies.empty() && mPlayer.AreaClear == false)
+		mPlayer.AreaClear = true;
 
+	if (mPlayer.AreaClear == true && mPlayer.genArea == true) { // TODO: IMPLEMENT CHANGE STATE FOR NEW AREA HERE
+		// change state, trigger regen
+		reInitialize(); // MAY CAUSE ERROR IF USED HERE
+		GameApp::Get().ChangeState("NewArea1");
+	}
 
 	// for dirty frame
 	for (auto& c : mCameras)
