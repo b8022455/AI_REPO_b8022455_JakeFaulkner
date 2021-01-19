@@ -42,7 +42,7 @@ struct MaterialData
 
 // An array of textures, which is only supported in shader model 5.1+.  Unlike Texture2DArray, the textures
 // in this array can be different sizes and formats, making it more flexible than texture arrays.
-Texture2D gDiffuseMap[8] : register(t0);
+Texture2D gDiffuseMap : register(t0);
 
 // Put in space1, so the texture array does not overlap with these resources.  
 // The texture array will occupy registers t0, t1, ..., t6 in space0. 
@@ -143,7 +143,8 @@ float4 PS(VertexOut pin) : SV_Target
 	uint diffuseTexIndex = matData.DiffuseMapIndex;
 	
 	// Dynamically look up the texture in the array.
-    diffuseAlbedo *= gDiffuseMap[diffuseTexIndex].Sample(gsamLinearWrap, pin.TexC);
+    diffuseAlbedo *= gDiffuseMap.Sample(gsamLinearWrap, pin.TexC);
+    //diffuseAlbedo *= gDiffuseMap[diffuseTexIndex].Sample(gsamLinearWrap, pin.TexC);
 	
     // Interpolating normal can unnormalize it, so renormalize it.
     pin.NormalW = normalize(pin.NormalW);
