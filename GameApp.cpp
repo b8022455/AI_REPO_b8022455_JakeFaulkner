@@ -158,6 +158,7 @@ bool GameApp::Initialize()
 	BuildObjGeometry("Data/Models/tempEnemy.obj", "tempEnemyGeo", "tempEnemy");
 	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" ); //quad rather than cube
 	BuildObjGeometry("Data/Models/building04.obj","traderGeo", "trader" ); //quad rather than cube
+	BuildObjGeometry("Data/Models/particle.obj", "particle", "particle");		//Particle used for enemy attack
 	BuildObjGeometry("Data/Models/plantPotato.obj","potatoGeo", "potato" ); 
 	BuildSwordGeometry();
 	BuildPlayerGeometry();
@@ -1127,11 +1128,7 @@ void GameApp::BuildRenderItems()
 	mAllRitems["Enemy"] = BuildRenderItem(objCbIndex, "tempEnemyGeo", "tempEnemy");
 	mAllRitems["Trader"] = BuildRenderItem(objCbIndex, "traderGeo", "trader");
 	mAllRitems["Potato"] = BuildRenderItem(objCbIndex, "potatoGeo", "potato");
-
-
-	//Uncomment this if testing weapon collision, will be removed once the function in enemy class is available in GameApp
-	#pragma region Weapon Collision Checking
-	#pragma endregion
+	mAllRitems["particle"] = BuildRenderItem(objCbIndex, "particle", "particle");
 
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)

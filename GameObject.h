@@ -37,6 +37,10 @@ public:
 	void SetRotationZ(const float newRotation);
 	void SetRotation(const float rotationX, const float rotationY, const float rotationZ);
 
+	const float GetRotationX() const;
+	const float GetRotationY() const;
+	const float GetRotationZ() const;
+
 	const void RotationAroundPoint(const DirectX::XMFLOAT3 translation1, const float rotation, const DirectX::XMFLOAT3 translation2) const;
 	const void RotationAroundPoint(const DirectX::XMMATRIX translation1, const float rotation, const DirectX::XMFLOAT3 translation2) const;
 

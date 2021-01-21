@@ -313,7 +313,7 @@ void PlayState::Update(const GameTimer & gt)
 	int i = 0;
 	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
 	{ 
-		//Enemy look at players position (only do when in range)
+		//Enemy look at players position (only do when in range), only look when not attacking either
 		XMVECTOR playerPosition = XMLoadFloat3(&mPlayer.GetPos());
 		e.LookAt(playerPosition);
 
@@ -322,6 +322,18 @@ void PlayState::Update(const GameTimer & gt)
 			mPlayer.DamagePlayer(e.GetAttack());
 			mPlayerHealthBar.SetValue(mPlayer.health);
 			GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f,GetRandomVoicePitch());
+		}
+
+		//When checking if enemy is in range, have this be in that section to prevent enemy particles from far from being checked
+		for (auto& p : e.particles)
+		{
+			if (mPlayer.CheckCollision(mPlayer.GetPos(), p.GetPos()))
+			{
+				mPlayer.DamagePlayer(e.GetAttack());
+				mPlayerHealthBar.SetValue(mPlayer.health);
+				GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
+				break;
+			}
 		}
 
 		if (mCombatController.CheckCollision(mPlayerWeapon.GetPos(), e.GetPos()))
@@ -339,8 +351,7 @@ void PlayState::Update(const GameTimer & gt)
 					++mInventory[droppedItem];
 				}
 
-				e.mpInstance->World._42 -= 200.0f;
-				//e.mpInstance = nullptr;
+				e.Delete();
 				mEnemies.erase(mEnemies.begin() + i);
 
 				GameApp::Get().GetAudio().Play("EnemyDie1", nullptr, false, 1.0f, GetRandomVoicePitch());

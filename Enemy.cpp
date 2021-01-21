@@ -8,6 +8,16 @@ void Enemy::InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int matI
 	mpInstance->World._43 = position.z;
 }
 
+void Enemy::Delete()
+{
+	//Removes enemy
+	this->mpInstance->World._42 = -200.f;
+
+	//Removes particles
+	for (auto& p : particles)
+		p.mpInstance->World._42 = -200.0f;
+}
+
 void Enemy::SetPosition(const DirectX::XMFLOAT3& newPosition)
 {
 	//Updates position on the object
@@ -20,9 +30,9 @@ void Enemy::SetPosition(const DirectX::XMFLOAT3& newPosition)
 
 	times.StartTime(attackDuration, attackDelay);
 
-	//Sets up collision point for attack
-	attackCollisionPoint = mpInstance->World;
-	//attackCollisionPoint._41 += 0.2f;
+	//Setup the enemy particles
+	for (int i = 1; i != 20; i++)
+		particles.push_back(EnemyParticle());		//Add 20 particles to vector
 
 }
 
@@ -119,38 +129,14 @@ const std::string Enemy::GetDropItem()
 
 }
 
-void Enemy::StartAttack()
-{
-	//Particle based attack that does damage in front of enemy, has a timer for about 4 secs maybe
-}
-
 void Enemy::Update(const GameTimer& gt)
 {
-	//Follow Player
 	if (times.isAttacking)
-	{
-		//Function to update attack animation (sets isAttacking to false when done)
 		UpdateAttack();
 
-		//Update the collision point
-		attackCollisionPoint = mpInstance->World;
-		attackCollisionPoint._41 -= 1.0f;		//AoE Attack
-	}
 	else
-	{
 		if (times.CanAttack())
-		{
-			StartAttack();
 			times.SetNextTimer();		//Makes attacking bool true and resets timer for next attack
-
-			attackCollisionPoint = mpInstance->World;
-			attackCollisionPoint._41 -= 1.0f;
-		}
-		else
-		{
-			attackCollisionPoint = mpInstance->World;		//Keeps enemy collision point at enemy rather than in front of enemy
-		}
-	}
 
 	times.UpdateTime();
 
@@ -169,18 +155,19 @@ void Enemy::UpdateAttack()
 	if (times.currentTime.tm_sec > (times.nextAtkTime - times.attackDuration))
 	{
 		times.isAttacking = false;		//Attack has ended
+		for (auto& p : particles)
+			p.RemoveEffect();
 	}
-	//else
-	//{
-	//	//Do Attack animation
-	//}
-}
+	else
+	{
+		//Get the rotation of the enemy currently
+		float angle = GetRotationY();
+		angle += 90;		//Adjust the angle to the enemys facing rotation
 
-DirectX::XMFLOAT3 Enemy::GetCollisionPoint()
-{
-	return DirectX::XMFLOAT3(attackCollisionPoint._41,
-							 attackCollisionPoint._42,
-							 attackCollisionPoint._43);
+		//Do Attack animation
+		for (auto& p : particles)
+			p.Effect(GetPos(), angle);
+	}
 }
 
 void Enemy::SetDirection(int dir)

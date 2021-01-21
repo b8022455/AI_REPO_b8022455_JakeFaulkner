@@ -136,6 +136,39 @@ void GameObject::SetRotation(const float x, const float y, const float z)
 	this->mpInstance->World._22 = cosineZ;
 }
 
+const float GameObject::GetRotationX() const
+{
+	float cosAngle = acos(this->mpInstance->World._33) * 180 / 3.14159f;
+	float sinAngle = asin(this->mpInstance->World._32);
+
+	if (sinAngle < 0)		//Angle is negative
+		cosAngle = -cosAngle;
+
+	return cosAngle;
+}
+
+const float GameObject::GetRotationY() const
+{
+	float cosAngle = acos(this->mpInstance->World._33) * 180 / 3.14159f;
+	float sinAngle = asin(this->mpInstance->World._13);
+
+	if (sinAngle < 0)		//Angle is negative
+		cosAngle = -cosAngle;
+
+	return cosAngle;
+}
+
+const float GameObject::GetRotationZ() const
+{
+	float cosAngle = acos(this->mpInstance->World._22) * 180 / 3.14159f;
+	float sinAngle = asin(this->mpInstance->World._21);
+
+	if (sinAngle < 0)		//Angle is negative
+		cosAngle = -cosAngle;
+
+	return cosAngle;
+}
+
 const void GameObject::RotationAroundPoint(const DirectX::XMFLOAT3 translate1, const float rotation, const DirectX::XMFLOAT3 translate2) const
 {
 	float convertToRad = rotation * 3.14159f / 180.0f;
