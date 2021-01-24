@@ -176,9 +176,11 @@ void PlayState::Initialize()
 		spriteSample.Initialise("stoneTex");
 		mSprites["testSpriteSecond"] = spriteSample;
 
+
+		// panel soruce
+		const RECT src{ GC::PANEL_SRC[0],	GC::PANEL_SRC[1],	GC::PANEL_SRC[2],	GC::PANEL_SRC[3], };
 		// inv panel
 		{
-			const RECT src{ GC::PANEL_SRC[0],	GC::PANEL_SRC[1],	GC::PANEL_SRC[2],	GC::PANEL_SRC[3], };
 			const RECT dst
 			{
 				s.x,							//  starts off viewport to the right
@@ -198,6 +200,28 @@ void PlayState::Initialize()
 			mInventoryText.color = DirectX::Colors::White;
 			mInventoryText.fontIndex = 1;
 			
+
+		}
+
+		//Help panel
+		{
+			const RECT dst
+			{
+				10,							//  starts off viewport to the right
+				s.y,								// padding
+				s.x - 10	,					// padding
+				s.y + (s.y / 3) + 128			//  third of viewport plus offset
+			};
+			mHelpPanel.Initialize("uiTex", src, dst);
+
+
+			mHelpLocation.second.y = v.y - (v.y / 3);
+			mHelpLocation.second.x = 10;
+			mHelpLocation.first.y = v.y + 64;
+			mHelpLocation.first.x = 10;
+			mHelpText.color = DirectX::Colors::White;
+			mHelpText.fontIndex = 1;
+			mHelpText.string = "Something helpful should go here"; //todo help text
 		}
 
 		// message text
@@ -469,6 +493,9 @@ void PlayState::Draw(const GameTimer & gt)
 	mInventoryPanel.Draw();
 	mInventoryText.Draw();
 
+	mHelpPanel.Draw();
+	mHelpText.Draw();
+
 	mMessage.Draw();
 
 }
@@ -706,6 +733,12 @@ void PlayState::Controls(const GameTimer & gt)
 		{
 			itemMenuOpen = !itemMenuOpen;
 			std::swap(mInventoryLocation.first, mInventoryLocation.second);
+
+		}
+
+		if (Input::Get().KeyReleased('H'))
+		{
+			std::swap(mHelpLocation.first, mHelpLocation.second); 
 		}
 	}
 
@@ -819,8 +852,16 @@ void PlayState::UiUpdate(const GameTimer & gt)
 	SimpleMath::Vector2 move = SimpleMath::Vector2::Lerp(mInventoryPanel.GetPos(), mInventoryLocation.first,gt.DeltaTime() * 2.0f); // todo Luc move to constant.h
 	mInventoryPanel.Move(move, false);
 	// padding for text
-	move += SimpleMath::Vector2{32.0f, 32.0f};
+	move += SimpleMath::Vector2{32.0f, 32.0f}; //todo luc move to constants.h
 	mInventoryText.position = move;
+
+	//animate help toggle
+	move = SimpleMath::Vector2::Lerp(mHelpPanel.GetPos(), mHelpLocation.first, gt.DeltaTime() * 2.0f); // todo Luc
+	mHelpPanel.Move(move, false);
+	//padding for help text
+	move += SimpleMath::Vector2{ 32.0f, 32.0f };//todo luc move to constants.h
+	mHelpText.position = move;
+
 
 	mMessage.Update(gt);
 }
