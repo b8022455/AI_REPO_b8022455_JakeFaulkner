@@ -133,9 +133,9 @@ void PlayState::Initialize()
 	// Setup temp enemies
 	{
 		// inserts n of enemies
-		mEnemies.push_back(Enemy("EnemyType1", 25));
-		mEnemies.push_back(Enemy("EnemyType1", 25));
-		mEnemies.push_back(Enemy("EnemyType1", 25));
+		mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 25));
+		mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 25));
+		mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 25));
 
 		//Init all enemies
 		for (auto& e : mEnemies)
@@ -315,6 +315,8 @@ void PlayState::Update(const GameTimer & gt)
 	{ 
 		//Enemy look at players position (only do when in range), only look when not attacking either
 		XMVECTOR playerPosition = XMLoadFloat3(&mPlayer.GetPos());
+
+		// TODO: COULD USE THIS IF PLAYER IN A CERTAIN RANGE
 		e.LookAt(playerPosition);
 
 		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetPos()))

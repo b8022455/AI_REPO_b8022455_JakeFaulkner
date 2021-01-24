@@ -192,6 +192,12 @@ const void GameObject::RotationAroundPoint(const DirectX::XMMATRIX translate1, c
 	XMStoreFloat4x4(&mpInstance->World, transformation);
 }
 
+void GameObject::MOVE(const float dt, const float speed, DirectX::XMFLOAT4X4 direction) { // TODO: 
+
+	//this->mpInstance->World(std::move(direction));
+
+}
+
 bool GameObject::CheckCollision(XMFLOAT3 Object1, XMFLOAT3 Object2)
 {
 	//Could change to have Mathf.Abs() to only check the positive boundary?
@@ -207,7 +213,7 @@ bool GameObject::CheckCollision(XMFLOAT3 Object1, XMFLOAT3 Object2)
 	return false;
 }
 
-const void GameObject::LookAt(DirectX::XMVECTOR target) const
+const void GameObject::LookAt(DirectX::XMVECTOR target) const // (NOTE) LOOKS AT A TARGET VECTOR HERE
 {
 	DirectX::XMVECTOR eyePosition = DirectX::XMLoadFloat3(&this->GetPos());
 

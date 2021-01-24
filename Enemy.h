@@ -5,6 +5,7 @@
 #include <random>
 #include "Constants.h"
 #include "AttackTimeDelay.h"
+#include "DeltaTimer.h"
 
 class EnemyParticle : public GameObject		//Stored in here for now in case it could be used for other things
 {

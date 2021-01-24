@@ -1,4 +1,5 @@
 #include "Enemy.h"
+// (NOTE) ENEMY LOOKS AT PLAYER IS IN GAMEOBJECT CLASS RATHER THAN HERE
 
 void Enemy::InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int matIndex)
 {
@@ -129,25 +130,38 @@ const std::string Enemy::GetDropItem()
 
 }
 
-void Enemy::Update(const GameTimer& gt)
+void Enemy::Update(const GameTimer & gt) // TODO: IMPLEMENT LOGIC FOR EACH POTENTIAL AI BASED ON ENEMY TYPE
 {
-	if (times.isAttacking)
-		UpdateAttack();
+	//const float dt = gt.DeltaTime(); // not working for some reason
 
-	else
-		if (times.CanAttack())
-			times.SetNextTimer();		//Makes attacking bool true and resets timer for next attack
+	if (mEnemyType == GC::ENEMY_TYPE_1) { // BARFING ENEMY
 
-	times.UpdateTime();
+		// const float speed, XMFLOAT4X4 direction
+		//float speed = 0.2f;
+		
+		// EITHER CREATE MOVEMENT MATRIX HERE OR IN GAMEOBJECT 
 
-	//Update enemy position based on bounceback
-	if (BouncebackPosition.x != 0.0f || BouncebackPosition.z != 0.0f)		//If there was a bounceback
-	{
-		DirectX::XMFLOAT3 currentPos = this->GetPos();		//Get current position of player
-		SetPos(DirectX::XMFLOAT3(currentPos.x + BouncebackPosition.x, currentPos.y, currentPos.z + BouncebackPosition.z));		//Add the bounceback position to it, will be 0 if there is a collision
-		BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+		//XMFLOAT4X4 direction = LookAt()
+		// TODO: IMPLEMENT MOVEMENT LOGIC (IMPLEMENT MOVEMENT LOGIC IN GAMEOBJECT)
+		//MOVE(dt, speed, direction);
+
+		if (times.isAttacking) // EXECUTES ATTACK
+			UpdateAttack();
+
+		else
+			if (times.CanAttack())
+				times.SetNextTimer();		//Makes attacking bool true and resets timer for next attack
+
+		times.UpdateTime();
+
+		//Update enemy position based on bounceback
+		if (BouncebackPosition.x != 0.0f || BouncebackPosition.z != 0.0f)		//If there was a bounceback
+		{
+			DirectX::XMFLOAT3 currentPos = this->GetPos();		//Get current position of player
+			SetPos(DirectX::XMFLOAT3(currentPos.x + BouncebackPosition.x, currentPos.y, currentPos.z + BouncebackPosition.z));		//Add the bounceback position to it, will be 0 if there is a collision
+			BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+		}
 	}
-
 }
 
 void Enemy::UpdateAttack()
@@ -170,7 +184,7 @@ void Enemy::UpdateAttack()
 	}
 }
 
-void Enemy::SetDirection(int dir)
+void Enemy::SetDirection(int dir) // may be enemy rotation?
 {
 	playerDirection = dir;
 }
