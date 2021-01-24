@@ -52,6 +52,10 @@ class PlayState : public State
 	// swaps on toggle and lerps on update
 	std::pair<SimpleMath::Vector2, SimpleMath::Vector2> mInventoryLocation;
 	Text mInventoryText;
+
+	std::pair<SimpleMath::Vector2, SimpleMath::Vector2> mHelpLocation;
+	Panel mHelpPanel;
+	Text mHelpText;
 	// "Level Up", "You can't go there"
 	FadeText mMessage;
 
