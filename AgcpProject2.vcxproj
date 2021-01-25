@@ -197,6 +197,7 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="DeltaTimer.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyParticle.h" />
     <ClInclude Include="FrameResource.h" />
     <ClInclude Include="GameApp.h" />
     <ClInclude Include="GameObject.h" />
