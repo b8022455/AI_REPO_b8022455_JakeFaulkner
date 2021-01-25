@@ -340,8 +340,16 @@ void PlayState::Update(const GameTimer & gt)
 		//Enemy look at players position (only do when in range), only look when not attacking either
 		XMVECTOR playerPosition = XMLoadFloat3(&mPlayer.GetPos());
 
-		// TODO: COULD USE THIS IF PLAYER IN A CERTAIN RANGE
-		e.LookAt(playerPosition);
+		if (e.GetType() == GC::ENEMY_TYPE_1) { // ENEMY TYPE EXCLUSIVE LOGIC LOCATED HERE
+			// TODO: (NOTE) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
+			if (mPlayer.GetPos().x >= (e.GetPos().x - GC::ENEMYTYPE1_RANGE) &&
+				mPlayer.GetPos().x <= (e.GetPos().x + GC::ENEMYTYPE1_RANGE)) { // player within - range on x
+				if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE1_RANGE) &&
+					mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
+					e.LookAt(playerPosition);
+				}
+			}
+		}
 
 		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetPos()))
 		{
