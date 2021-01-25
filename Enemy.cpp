@@ -134,7 +134,7 @@ void Enemy::Update(const GameTimer & gt) // TODO: IMPLEMENT LOGIC FOR EACH POTEN
 {
 	//const float dt = gt.DeltaTime(); // not working for some reason
 
-	if (mEnemyType == GC::ENEMY_TYPE_1) { // BARFING ENEMY
+	if (mEnemyType == GC::ENEMY_TYPE_1) { // BARFING ENEMY - SLOW MOVEMENT TOWARDS PLAYER WHEN NOT ATTACKING
 
 		// const float speed, XMFLOAT4X4 direction
 		//float speed = 0.2f;

@@ -192,7 +192,7 @@ const void GameObject::RotationAroundPoint(const DirectX::XMMATRIX translate1, c
 	XMStoreFloat4x4(&mpInstance->World, transformation);
 }
 
-void GameObject::MOVE(const float dt, const float speed, DirectX::XMFLOAT4X4 direction) { // TODO: 
+void GameObject::MOVE(const float dt, const float speed, DirectX::XMFLOAT4X4 direction) { // TODO: WORK ON MOVE HERE 
 
 	//this->mpInstance->World(std::move(direction));
 
