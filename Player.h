@@ -29,9 +29,6 @@ public:
 	DirectX::XMFLOAT3 GetPositionWithVelocity(const GameTimer& gt);
 	void SetVelocity(const float newVelocity);
 
-	bool AreaClear = false;
-	bool genArea = false;
-
 	Velocity vel;
 	// Gamepad
 	void Move(const GameTimer& gt, const DirectX::SimpleMath::Vector3& vec);

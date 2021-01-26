@@ -56,15 +56,6 @@ void StateManager::Init() // initialised in gameapp
 	Button btnS(buttonBg, "S - Play", Button::Action::NO_ACTION);
 	AddState("Story1", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS));
 
-	// PASSING LEVEL SCREEN?
-	menuTitle.string = "";
-	menuBody.string = "And so the story continues...";
-	btnW = Button(buttonBg, "W - Play", Button::Action::GOTO_GAME);
-	btnA = Button(buttonBg, "A - Play", Button::Action::NO_ACTION);
-	btnD = Button(buttonBg, "D - Play", Button::Action::NO_ACTION);
-	btnS = Button(buttonBg, "S - Play", Button::Action::NO_ACTION);
-	AddState("NewArea1", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS));
-
 	// Main menu
 	menuTitle.string = "Game Name";
 	menuBody.string = "PlaceHolder text";
@@ -178,7 +169,7 @@ void StateManager::RemoveState(const std::string & name)
 		assert(false);
 	}
 }
-void StateManager::ChangeState(const std::string & name) // TODO: (NOTE) CHANGESTATE HERE
+void StateManager::ChangeState(const std::string & name)
 {
 	if (IsValidState(name))
 	{
