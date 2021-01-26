@@ -74,6 +74,8 @@ public:
 	virtual void OnKeyboardInput(const GameTimer& gt)		override;
 	virtual void OnResume()									override;
 
+	void reInitialize();
+
 	void Controls(const GameTimer& gt);
 
 	Player* GetPlayer()

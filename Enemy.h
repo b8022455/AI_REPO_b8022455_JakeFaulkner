@@ -29,6 +29,7 @@ public:
 	const std::string GetDropItem();
 	int GetHealth() { return mHealth; }
 	int GetAttack() { return mAttack; }
+	std::string GetType() { return mEnemyType; }
 
 	void Update(const GameTimer& gt);
 	void Delete();			//Called when an enemy is defeated, removes the particles
@@ -41,7 +42,7 @@ public:
 private:
 	int GetRandomValue(int min, int max);				//Gets random value of spawning enemy position & loot drops
 
-	int mHealth = 100;
+	int mHealth = 10;
 	int mAttack;
 	std::string mEnemyType; // for item lookup
 	int playerDirection;								//Gets enum value of which way player is facing

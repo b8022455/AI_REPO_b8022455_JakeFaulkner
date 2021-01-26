@@ -38,6 +38,24 @@ void Player::Update(const GameTimer & gt)
 	if (VELOCITY.bottom < 0)
 		VELOCITY.bottom = 0;
 
+	// LOAD NEXT AREA BY WALKING TO BORDER HERE - currently within 1 tile of border
+	if (mpInstance->World._41 >= PLAYER_RIGHTBOUND - 0.9375f) { // 32 tiles = 30f world space, 1 tile = 0.9375f world space
+		genArea = true;
+
+	}
+	if (mpInstance->World._41 <= PLAYER_LEFTBOUND + 0.9375f) { // 32 tiles = 30f world space, 1 tile = 0.9375f world space
+		genArea = true;
+
+	}
+	if (mpInstance->World._43 >= PLAYER_UPBOUND - 0.9375f) { // 32 tiles = 30f world space, 1 tile = 0.9375f world space
+		genArea = true;
+
+	}
+	if (mpInstance->World._43 <= PLAYER_DOWNBOUND + 0.9375f) { // 32 tiles = 30f world space, 1 tile = 0.9375f world space
+		genArea = true;
+
+	}
+
 	if (mpInstance->World._41 <= PLAYER_RIGHTBOUND) {
 		if (Slowed == true)
 			mpInstance->World._41 += (0.5f * VELOCITY.right) * dt;
