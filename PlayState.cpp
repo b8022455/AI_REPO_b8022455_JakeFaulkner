@@ -609,7 +609,6 @@ else keyboard
 void PlayState::Controls(const GameTimer & gt)
 {
 
-	const float dt = gt.DeltaTime();
 
 	//bool playerMoved = false;
 
@@ -617,39 +616,8 @@ void PlayState::Controls(const GameTimer & gt)
 	if (Input::Get().GamePadConnected())
 	{
 
-		// Left stick
-		mPlayer.Move(  gt, Input::Get().LeftStickXZ()* GC::MOVE_SPEED);
+		Gamepad(gt);
 
-		// Attack
-		if (Input::Get().GamePad().rightTrigger == ButtonState::HELD)
-		{
-			mCombatController.PlayerAttack();
-		}
-
-		if (Input::Get().GamePad().start == ButtonState::PRESSED)
-		{
-			GameApp::Get().ChangeState("PauseMenu");
-		}
-
-		if (Input::Get().GamePad().y == ButtonState::PRESSED)
-		{
-			itemMenuOpen = !itemMenuOpen;
-		}
-
-		if (Input::Get().GamePad().dpadUp == ButtonState::PRESSED)
-		{
-			InventoryUp();
-		}
-
-		if (Input::Get().GamePad().dpadDown == ButtonState::PRESSED)
-		{
-			InventoryDown();
-		}
-
-		if (Input::Get().GamePad().a == ButtonState::PRESSED)
-		{
-			ItemAction();
-		}
 	}
 	else // Keyboard controls. Game/Debug cam
 	{
@@ -657,170 +625,20 @@ void PlayState::Controls(const GameTimer & gt)
 		{
 		case CAMERA_TYPE::GAME:
 		{
-			//Player keyboard movement
-			if (Input::Get().KeyHeld(GC::KEY_FW))
-			{
-				mPlayer.MoveUp(gt);
-			}
-
-			if (Input::Get().KeyHeld(GC::KEY_BK))
-			{
-				mPlayer.MoveDown(gt);
-			}
-
-			if (Input::Get().KeyHeld(GC::KEY_RT))
-			{
-				mPlayer.MoveRight(gt);
-			}
-
-			if (Input::Get().KeyHeld(GC::KEY_LT))
-			{
-				mPlayer.MoveLeft(gt);
-			}
-
-			//Player attack
-			if (Input::Get().KeyReleased(GC::KEY_ATTACK))
-			{
-				mCombatController.PlayerAttack();
-			}
-
-			if (Input::Get().KeyReleased(GC::KEY_DEBUG_GENERATE)) // VOID NEEDS FIXING FIRST
-			{
-				ReGen();
-			}
-
-			//Switch to debug cam
-			if (Input::Get().KeyReleased(GC::KEY_CAM))
-			{
-				mCamType = CAMERA_TYPE::DEBUG;
-
-				//Set debug cam to game position to avoid getting lost
-				mCameras.at(CAMERA_TYPE::DEBUG).SetPosition(mCameras.at(CAMERA_TYPE::GAME).GetPosition3f());
-
-				//Update active camera
-				GameApp::Get().SetActiveCamera(&mCameras.at(CAMERA_TYPE::DEBUG));
-			}
-
-			// Plant
-			if (Input::Get().KeyReleased('7'))
-			{
-				CreatePlant();
-			}
-
-
-			if (Input::Get().KeyReleased('8'))
-			{
-				HarvestByRadius();
-			}
-
+			Keyboard(gt);
 		}
 		break;
 		case CAMERA_TYPE::DEBUG:
 		{
-			//dpad debug cam
-			if (Input::Get().KeyHeld(GC::KEY_FW))
-			{
-				mCameras.at(CAMERA_TYPE::DEBUG).Walk(GC::ZOOM_SPEED * dt);
-			}
-
-			if (Input::Get().KeyHeld(GC::KEY_BK))
-			{
-				mCameras.at(CAMERA_TYPE::DEBUG).Walk(-GC::ZOOM_SPEED * dt);
-			}
-
-			if (Input::Get().KeyHeld(GC::KEY_RT))
-			{
-				mCameras.at(CAMERA_TYPE::DEBUG).Strafe(GC::MOVE_SPEED * dt);
-			}
-
-			if (Input::Get().KeyHeld(GC::KEY_LT))
-			{
-				mCameras.at(CAMERA_TYPE::DEBUG).Strafe(-GC::MOVE_SPEED * dt);
-			}
-
-			if (Input::Get().KeyHeld(GC::KEY_RAISE))
-			{
-				mCameras.at(CAMERA_TYPE::DEBUG).Elevate(GC::MOVE_SPEED * dt);
-			}
-
-			if (Input::Get().KeyHeld(GC::KEY_LOWER))
-			{
-				mCameras.at(CAMERA_TYPE::DEBUG).Elevate(-GC::MOVE_SPEED * dt);
-			}
-
-			// Switch to game camera
-			if (Input::Get().KeyReleased(GC::KEY_CAM))
-			{
-				mCamType = CAMERA_TYPE::GAME;
-				//Update active camera
-				GameApp::Get().SetActiveCamera(&mCameras.at(CAMERA_TYPE::GAME));
-			}
-
-			// Debug random enemy pos
-			if (Input::Get().KeyReleased(GC::KEY_DEBUG_ENEMY_POS))
-			{
-				mEnemies.push_back(Enemy("EnemyType1", 25));
-				mEnemies.back().Initialize("Enemy");
-
-				std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
-				{
-					e.SetRandomPosition();
-				});
-			}
-			
-			
-			
-
+			KeyboardDebug(gt);
 		}
 		break;
 		}
 
-		//Scrolling through inventory keys Debug
-		if (Input::Get().KeyReleased(VK_DOWN) & itemMenuOpen)
-		{
-			InventoryDown();
-		}
-
-		if (Input::Get().KeyReleased(VK_UP) & itemMenuOpen)
-		{
-			InventoryUp();
-		}
-
-		//Opens and closes item menu
-		if (Input::Get().KeyReleased(GC::KEY_INVENTORY))
-		{
-			itemMenuOpen = !itemMenuOpen;
-			std::swap(mInventoryLocation.first, mInventoryLocation.second);
-
-		}
-
-		if (Input::Get().KeyReleased('H'))
-		{
-			std::swap(mHelpLocation.first, mHelpLocation.second); 
-		}
+		
 	}
 
-	//Use Item Key, change to something else, or only allow when on item/pause menu
-	if (Input::Get().KeyReleased(GC::KEY_USEITEM) & itemMenuOpen)
-	{
-		ItemAction();
-	}
-
-	// trade
-	//todo move to trade state
-	if (Input::Get().KeyReleased('9'))
-	{
-		if (FindNearestTraderInRadius())
-		{
-			//todo play sound
-			assert(mpActiveTrader);
-			GameApp::Get().ChangeState(GC::STATE_TRADE);
-		}
-		else
-		{
-			//todo sound fail sound
-		}
-	}
+	
 }
 
 void PlayState::InventoryUp()
@@ -864,9 +682,11 @@ void PlayState::ItemAction()
 		}
 		break;
 	case ItemCategory::Farming:
-		--inventoryPosition->second;
 		// if there isnt a plant in a radius then instance 
-		//todo create an instance of a 'plant' gameobject at players location
+		if (CreatePlant())
+		{
+			--inventoryPosition->second;
+		}
 
 		break;
 	case ItemCategory::KeyItems:
@@ -924,7 +744,7 @@ void PlayState::UiUpdate(const GameTimer & gt)
 	mMessage.Update(gt);
 }
 
-void PlayState::CreatePlant()
+bool PlayState::CreatePlant()
 {
 	
 	// to tile nearest to player
@@ -964,6 +784,8 @@ void PlayState::CreatePlant()
 		mPlants.back().Initialize("Potato");
 		mPlants.back().SetPos(pos);
 	}
+
+	return !found;
 	
 }
 
@@ -1004,4 +826,212 @@ void PlayState::HarvestByRadius()
 			}
 		}
 	}
+}
+
+void PlayState::Keyboard(const GameTimer & gt)
+{
+
+	//Player keyboard movement
+	if (Input::Get().KeyHeld(GC::KEY_FW))
+	{
+		mPlayer.MoveUp(gt);
+	}
+
+	if (Input::Get().KeyHeld(GC::KEY_BK))
+	{
+		mPlayer.MoveDown(gt);
+	}
+
+	if (Input::Get().KeyHeld(GC::KEY_RT))
+	{
+		mPlayer.MoveRight(gt);
+	}
+
+	if (Input::Get().KeyHeld(GC::KEY_LT))
+	{
+		mPlayer.MoveLeft(gt);
+	}
+
+	//Player attack
+	if (Input::Get().KeyReleased(GC::KEY_ATTACK))
+	{
+		mCombatController.PlayerAttack();
+	}
+
+	
+
+	//Switch to debug cam
+	if (Input::Get().KeyReleased(GC::KEY_CAM))
+	{
+		mCamType = CAMERA_TYPE::DEBUG;
+
+		//Set debug cam to game position to avoid getting lost
+		mCameras.at(CAMERA_TYPE::DEBUG).SetPosition(mCameras.at(CAMERA_TYPE::GAME).GetPosition3f());
+
+		//Update active camera
+		GameApp::Get().SetActiveCamera(&mCameras.at(CAMERA_TYPE::DEBUG));
+	}
+
+	// Plant
+
+	// Debug Planting
+	if (Input::Get().KeyReleased('7'))
+	{
+		CreatePlant();
+	}
+
+	//Harvest
+	if (Input::Get().KeyReleased('8'))
+	{
+		HarvestByRadius();
+	}
+
+	// Inventory
+
+	// Scrolling through inventory keys Debug
+	if (Input::Get().KeyReleased(VK_DOWN) & itemMenuOpen)
+	{
+		InventoryDown();
+	}
+
+	if (Input::Get().KeyReleased(VK_UP) & itemMenuOpen)
+	{
+		InventoryUp();
+	}
+
+	// Opens and closes item menu
+	if (Input::Get().KeyReleased(GC::KEY_INVENTORY))
+	{
+		itemMenuOpen = !itemMenuOpen;
+		std::swap(mInventoryLocation.first, mInventoryLocation.second);
+	}
+
+	// Use Item Key, change to something else, or only allow when on item/pause menu
+	if (Input::Get().KeyReleased(GC::KEY_USEITEM) & itemMenuOpen)
+	{
+		ItemAction();
+	}
+
+	// Toggle Help
+	if (Input::Get().KeyReleased('H'))
+	{
+		std::swap(mHelpLocation.first, mHelpLocation.second);
+	}
+
+	// Trade
+	if (Input::Get().KeyReleased('9'))
+	{
+		if (FindNearestTraderInRadius())
+		{
+			//todo play sound
+			assert(mpActiveTrader);
+			GameApp::Get().ChangeState(GC::STATE_TRADE);
+		}
+		else
+		{
+			//todo sound fail sound
+		}
+	}
+	
+	// Debug generate
+	if (Input::Get().KeyReleased(GC::KEY_DEBUG_GENERATE)) //todo VOID NEEDS FIXING FIRST
+	{
+		ReGen();
+	}
+}
+
+void PlayState::KeyboardDebug(const GameTimer & gt)
+{
+
+	const float dt = gt.DeltaTime();
+
+	//dpad debug cam
+	if (Input::Get().KeyHeld(GC::KEY_FW))
+	{
+		mCameras.at(CAMERA_TYPE::DEBUG).Walk(GC::ZOOM_SPEED * dt);
+	}
+
+	if (Input::Get().KeyHeld(GC::KEY_BK))
+	{
+		mCameras.at(CAMERA_TYPE::DEBUG).Walk(-GC::ZOOM_SPEED * dt);
+	}
+
+	if (Input::Get().KeyHeld(GC::KEY_RT))
+	{
+		mCameras.at(CAMERA_TYPE::DEBUG).Strafe(GC::MOVE_SPEED * dt);
+	}
+
+	if (Input::Get().KeyHeld(GC::KEY_LT))
+	{
+		mCameras.at(CAMERA_TYPE::DEBUG).Strafe(-GC::MOVE_SPEED * dt);
+	}
+
+	if (Input::Get().KeyHeld(GC::KEY_RAISE))
+	{
+		mCameras.at(CAMERA_TYPE::DEBUG).Elevate(GC::MOVE_SPEED * dt);
+	}
+
+	if (Input::Get().KeyHeld(GC::KEY_LOWER))
+	{
+		mCameras.at(CAMERA_TYPE::DEBUG).Elevate(-GC::MOVE_SPEED * dt);
+	}
+
+	// Switch to game camera
+	if (Input::Get().KeyReleased(GC::KEY_CAM))
+	{
+		mCamType = CAMERA_TYPE::GAME;
+		//Update active camera
+		GameApp::Get().SetActiveCamera(&mCameras.at(CAMERA_TYPE::GAME));
+	}
+
+	// Debug random enemy pos
+	if (Input::Get().KeyReleased(GC::KEY_DEBUG_ENEMY_POS))
+	{
+		mEnemies.push_back(Enemy("EnemyType1", 25));
+		mEnemies.back().Initialize("Enemy");
+
+		std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
+		{
+			e.SetRandomPosition();
+		});
+	}
+}
+
+void PlayState::Gamepad(const GameTimer & gt)
+{
+
+	// Left stick
+	mPlayer.Move(gt, Input::Get().LeftStickXZ()* GC::MOVE_SPEED);
+
+	// Attack
+	if (Input::Get().GamePad().rightTrigger == ButtonState::HELD)
+	{
+		mCombatController.PlayerAttack();
+	}
+
+	if (Input::Get().GamePad().start == ButtonState::PRESSED)
+	{
+		GameApp::Get().ChangeState("PauseMenu");
+	}
+
+	if (Input::Get().GamePad().y == ButtonState::PRESSED)
+	{
+		itemMenuOpen = !itemMenuOpen;
+	}
+
+	if (Input::Get().GamePad().dpadUp == ButtonState::PRESSED)
+	{
+		InventoryUp();
+	}
+
+	if (Input::Get().GamePad().dpadDown == ButtonState::PRESSED)
+	{
+		InventoryDown();
+	}
+
+	if (Input::Get().GamePad().a == ButtonState::PRESSED)
+	{
+		ItemAction();
+	}
+
 }

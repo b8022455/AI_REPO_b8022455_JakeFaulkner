@@ -124,12 +124,17 @@ public:
 	void ReGen();
 
 	void UiUpdate(const GameTimer& gt);
-	void CreatePlant();
+	// Returns if planted successful
+	bool CreatePlant();
 	void UpdatePlayer(const GameTimer& gt);
 	void UpdatePlants(const GameTimer& gt);
 	void UpdateTiles(const GameTimer& gt);
 	void UpdateEnemies(const GameTimer& gt);
 	void HarvestByRadius();
+
+	void Keyboard(const GameTimer& gt);
+	void KeyboardDebug(const GameTimer& gt);
+	void Gamepad(const GameTimer& gt);
 
 
 };
