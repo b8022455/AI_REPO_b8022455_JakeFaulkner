@@ -30,8 +30,6 @@ public:
 	int GetHealth() { return mHealth; }
 	int GetAttack() { return mAttack; }
 
-	string GetType() { return mEnemyType; }
-
 	void Update(const GameTimer& gt);
 	void Delete();			//Called when an enemy is defeated, removes the particles
 	void UpdateAttack();

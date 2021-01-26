@@ -65,7 +65,6 @@ namespace GC
 
 		TRADER_RADIUS = 1.75f,
 
-		ENEMYTYPE1_RANGE = 8.0F,
 
 		TILE_UV_INC = 1.0f/8.0f // tile is 1/8 of texture atlus
 		;
