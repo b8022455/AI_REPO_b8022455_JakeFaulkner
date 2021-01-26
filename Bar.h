@@ -23,8 +23,16 @@ public:
 		// Max needs to be bigger than min
 		// check limits are set
 		assert(mMax >= mMin);
-		assert(mMax >= mValue);
-		assert(mMin <= mValue);
+
+		if (mMax < mValue)
+		{
+			mValue = mMax;
+		}
+		else if (mMin > mValue)
+		{
+			mValue = mMin;
+		}
+
 	}
 
 	// draw both sprites

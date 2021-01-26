@@ -8,9 +8,13 @@
 #include "DeltaTimer.h"
 #include "EnemyParticle.h"
 
+
+
 class Enemy : public GameObject
 {
 public:
+
+	enum Behaviour{NONE,CHASE};
 
 	Enemy(const std::string& type, int att)			//Gives enemy its type
 	{
@@ -39,6 +43,9 @@ public:
 
 	std::vector<EnemyParticle> particles;
 
+	void SetVelocity(const DirectX::SimpleMath::Vector3 target, const GameTimer& gt);
+
+	Behaviour mBehaviour = Behaviour::NONE;
 private:
 	int GetRandomValue(int min, int max);				//Gets random value of spawning enemy position & loot drops
 
@@ -50,4 +57,10 @@ private:
 	//Order of items is from Most Common -> Rarest
 	const InventoryUnordered* mpDropItems;
 	AttackTimeDelay times;
+
+	DirectX::SimpleMath::Vector3 mVelocity;
+	float mSpeed = 1.0f;
+	float mMaxSpeed = 1.0f;
+	float mDrag = 1.0f;
+
 };

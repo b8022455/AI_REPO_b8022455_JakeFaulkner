@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "GameApp.h"
 // (NOTE) ENEMY LOOKS AT PLAYER IS IN GAMEOBJECT CLASS RATHER THAN HERE
 
 void Enemy::InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int matIndex)
@@ -89,6 +90,20 @@ void Enemy::DamageEnemy(int dmg)
 	BouncebackPosition.z = z;
 }
 
+void Enemy::SetVelocity(const DirectX::SimpleMath::Vector3 target, const GameTimer& gt)
+{
+
+	DirectX::SimpleMath::Vector3 currentPos = GetPosition();
+	DirectX::SimpleMath::Vector3 direction = target - GetPosition(); // AB = B-A
+	direction.Normalize(); // 
+	direction.y = 0; // xz plane
+	direction *= mSpeed * gt.DeltaTime(); // apply speed
+
+	mVelocity = direction;
+
+	this->SetPos(currentPos + mVelocity);
+}
+
 int Enemy::GetRandomValue(int min, int max)
 {
 	std::random_device rd;     // only used once to initialise (seed) engine
@@ -133,18 +148,26 @@ const std::string Enemy::GetDropItem()
 
 void Enemy::Update(const GameTimer & gt) // TODO: IMPLEMENT LOGIC FOR EACH POTENTIAL AI BASED ON ENEMY TYPE
 {
-	//const float dt = gt.DeltaTime(); // not working for some reason
-
-	if (mEnemyType == GC::ENEMY_TYPE_1) { // BARFING ENEMY - SLOW MOVEMENT TOWARDS PLAYER WHEN NOT ATTACKING
-
-		// const float speed, XMFLOAT4X4 direction
-		//float speed = 0.2f;
-		
-		// EITHER CREATE MOVEMENT MATRIX HERE OR IN GAMEOBJECT 
-
-		//XMFLOAT4X4 direction = LookAt()
-		// TODO: IMPLEMENT MOVEMENT LOGIC (IMPLEMENT MOVEMENT LOGIC IN GAMEOBJECT)
-		//MOVE(dt, speed, direction);
+	switch (mBehaviour)
+	{
+	case NONE:
+		if (mSpeed > 0.0f)
+		{
+			mSpeed -= mDrag * gt.DeltaTime();
+		}
+		; break;
+	case CHASE:
+		if (mSpeed < mMaxSpeed)
+		{
+			mSpeed += mDrag * gt.DeltaTime();
+		}
+		; break;
+	default:; break;
+	}
+	
+	// BARFING ENEMY - SLOW MOVEMENT TOWARDS PLAYER WHEN NOT ATTACKING
+	if (mEnemyType == GC::ENEMY_TYPE_1) 
+	{ 
 
 		if (times.isAttacking) // EXECUTES ATTACK
 			UpdateAttack();
