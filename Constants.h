@@ -64,7 +64,9 @@ namespace GC
 		MOVE_SPEED = 5.0f,
 
 		TRADER_RADIUS = 1.75f,
-		ENEMYTYPE1_RANGE = 8.0F,
+		ENEMYTYPE1_RANGE = 8.0f,
+		ENEMYTYPE1_ATTACK_DURATION = 2.0f,
+		ENEMYTYPE1_ATTACK_DELAY = 8.0f,
 
 		TILE_UV_INC = 1.0f/8.0f // tile is 1/8 of texture atlus
 		;

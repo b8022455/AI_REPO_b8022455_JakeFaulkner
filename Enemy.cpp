@@ -26,10 +26,11 @@ void Enemy::SetPosition(const DirectX::XMFLOAT3& newPosition)
 	mpInstance->World._42 = newPosition.y;
 	mpInstance->World._43 = newPosition.z;
 
-	int attackDuration = 2;		//How long the attack plays for, not final time yet
-	int attackDelay = 4;		//How long between each attack
-
-	times.StartTime(attackDuration, attackDelay);
+	//int attackDuration = 2;		//How long the attack plays for, not final time yet
+	//int attackDelay = 4;		//How long between each attack
+	
+	// ATTACK DELAY & DURATION HELD IN CONSTANTS
+	times.StartTime(GC::ENEMYTYPE1_ATTACK_DURATION, GC::ENEMYTYPE1_ATTACK_DELAY);
 
 	//Setup the enemy particles
 	for (int i = 1; i != 20; i++)
@@ -152,7 +153,9 @@ void Enemy::Update(const GameTimer & gt) // TODO: IMPLEMENT LOGIC FOR EACH POTEN
 			if (times.CanAttack())
 				times.SetNextTimer();		//Makes attacking bool true and resets timer for next attack
 
-		times.UpdateTime();
+		// send int in instead of using gettype in the void
+		if (GetType() == GC::ENEMY_TYPE_1)
+			times.EnemyUpdateTime(1);
 
 		//Update enemy position based on bounceback
 		if (BouncebackPosition.x != 0.0f || BouncebackPosition.z != 0.0f)		//If there was a bounceback
