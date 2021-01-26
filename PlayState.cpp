@@ -441,6 +441,18 @@ void PlayState::Update(const GameTimer & gt)
 		for (auto& t : mTraders)
 			if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
 				e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+		
+
+		if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos())   < 6.0f )
+		{
+			e.mBehaviour = Enemy::Behaviour::CHASE;
+		}
+		else
+		{
+			e.mBehaviour = Enemy::Behaviour::NONE;
+		}
+
+		e.SetVelocity(mPlayer.GetPos(),gt);
 
 		e.Update(gt); 
 		i++;
