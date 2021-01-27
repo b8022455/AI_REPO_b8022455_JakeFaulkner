@@ -393,13 +393,13 @@ void PlayState::Update(const GameTimer & gt)
 			}
 		}
 
-		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetPos()))
+		if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()))
 		{
 			mPlayer.DamagePlayer(e.GetAttack());
 			mPlayerHealthBar.SetValue(mPlayer.health);
-			GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f,GetRandomVoicePitch());
+			GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
 		}
-
+		
 		//When checking if enemy is in range, have this be in that section to prevent enemy particles from far from being checked
 		for (auto& p : e.particles)
 		{
@@ -412,7 +412,7 @@ void PlayState::Update(const GameTimer & gt)
 			}
 		}
 
-		if (mCombatController.CheckCollision(mPlayerWeapon.GetPos(), e.GetPos()))
+		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), e.GetPos()))
 		{
 			e.DamageEnemy(mPlayer.attack);		//Takes away health from enemy + blowsback enemy position
 			if (e.GetHealth() <= 0)
@@ -458,6 +458,12 @@ void PlayState::Update(const GameTimer & gt)
 		i++;
 
 	});
+
+	if (mPlayer.health <= 0)
+	{
+		ResetState(gt);
+		GameApp::Get().ChangeState("GameOver");
+	}
 
 	PassConstants* pMainPassCB = GameApp::Get().GetMainPassCB();
 
@@ -522,14 +528,6 @@ void PlayState::Update(const GameTimer & gt)
 			mInventoryText.string += " " + inv.first + " (" + std::to_string(inv.second) + ")\n";
 
 		});
-	}
-
-	//If players health is below 0, change state to Game Over state
-	if (mPlayer.health <= 0)
-	{
-		mPlayer.health = 100;		//Just to check that restart changes state, will load most recent save instead
-		mPlayerHealthBar.SetValue(mPlayer.health);
-		GameApp::Get().ChangeState("GameOver");
 	}
 
 	// IMPLEMENT CHECK FOR ENEMIES HERE
@@ -1046,4 +1044,53 @@ void PlayState::Gamepad(const GameTimer & gt)
 		ItemAction();
 	}
 
+}
+
+void PlayState::ResetState(const GameTimer& gt)
+{
+	mPlayer.Reset(gt);
+	mCombatController.Reset();
+	mPlayerWeapon.Reset(gt);
+	mPlayerHealthBar.SetValue(100);
+
+	//Reset Inventory
+	mInventory.clear();
+	++mInventory["Radio"];
+	++mInventory["Potion"];
+	inventoryPosition = mInventory.begin();
+
+	//Reset Traders
+	float x = -10.5f;
+	const int biggestGap = 3;
+	for (auto& t : mTraders)
+	{
+		x += 1.0f + (rand() % biggestGap);
+		t.SetPos({ x, 0.0f, 3.0f });
+	}
+
+	//Reset Plants
+	mPlants.clear();		//Doesn't reset when a plant has already been placed, need to fix
+	mPlants.reserve(20);
+
+	//Reset Tiles
+	ReGen();
+
+	//Reset Enemies
+	for (auto& e : mEnemies)
+	{
+		e.Reset();
+		e.SetPos({
+		static_cast<float>(rand() % 10 + 2.0f),
+			1.0f,
+		static_cast<float>(rand() % 10 + 2.0f)
+			});
+
+		for (auto t : mTraders)
+			while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+				e.SetPos({
+					static_cast<float>(rand() % 10 + 2.0f),
+					1.0f,
+					static_cast<float>(rand() % 10 + 2.0f)
+					});
+	}
 }

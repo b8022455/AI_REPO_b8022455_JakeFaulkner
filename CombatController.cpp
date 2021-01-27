@@ -52,20 +52,6 @@ bool CombatController::CheckIfAttackIsFinished()
 	return mpPlayerWeapon->GetAttackStatus();
 }
 
-bool CombatController::CheckCollision(DirectX::XMFLOAT3 Obj1, DirectX::XMFLOAT3 Obj2)
-{
-	float xDistance = Obj1.x - Obj2.x;
-	float yDistance = Obj1.y - Obj2.y;
-	float zDistance = Obj1.z - Obj2.z;
-
-	if (xDistance > -1.f && xDistance < 1.f)							//If distance between X coordinate is within boundaries (-1.5 < X < 1.5)
-		if (yDistance > -1.5f && yDistance < 1.5f)						//If distance between Y coordinate is within boundaries (-1.5 < Y < 1.5)
-			if (zDistance > -1.f && zDistance < 1.f)					//If distance between Z coordinate is within boundaries (-1.5 < Z < 1.5)
-				return true;				//There is a collision between the 2 objects
-
-	return false;				//If the distance between the objects is not within the boundaries, there is no collision
-}
-
 void CombatController::EquipWeapon(std::string weaponName)
 {
 	equippedWeapon = weaponName;		//Sets the equipped weapon
@@ -75,6 +61,12 @@ void CombatController::EquipWeapon(std::string weaponName)
 std::string CombatController::GetCurrentWeapon()
 {
 	return equippedWeapon;
+}
+
+void CombatController::Reset()
+{
+	isAttacking = false;
+	equippedWeapon = "Stick";
 }
 
 void PlayerWeapon::Initialize(const std::string& renderItemName)
@@ -88,6 +80,14 @@ void PlayerWeapon::Initialize(const std::string& renderItemName)
 	times.StartTime(attackDuration, attackDelay);
 
 	times.isAttacking = false;
+}
+
+void PlayerWeapon::Reset(const GameTimer& gt)
+{
+	weaponRotation = weaponEndRotation;
+	times.isAttacking = false;
+	SetPos(DirectX::XMFLOAT3(0.f, -20.f, 0.f));
+	//When having different models for diff weapons, reset model to first weapon
 }
 
 void PlayerWeapon::UpdateTime()

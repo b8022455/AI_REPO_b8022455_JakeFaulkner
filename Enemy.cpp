@@ -20,6 +20,18 @@ void Enemy::Delete()
 		p.mpInstance->World._42 = -200.0f;
 }
 
+void Enemy::Reset()
+{
+	mHealth = 100;
+	BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
+	times.isAttacking = false;
+	for (auto& p : particles)
+		p.RemoveEffect();
+	times.UpdateTime();
+	if (times.CanAttack())
+		times.SetNextTimer();
+}
+
 void Enemy::SetPosition(const DirectX::XMFLOAT3& newPosition)
 {
 	//Updates position on the object

@@ -5,6 +5,7 @@
 #include "MenuState.h"
 #include "TradeState.h"
 #include "GameOverState.h"
+#include "WinState.h"
 
 bool StateManager::Story = true;
 
@@ -107,6 +108,14 @@ void StateManager::Init() // initialised in gameapp
 
 	Button btnRestart(buttonBg, "W Restart", Button::Action::GOTO_GAME);
 	AddState(GC::STATE_GAMEOVER, std::make_unique<GameOverState>(GOTitle, btnRestart));
+
+	//Win State
+	Text WinMenuTitle;
+	WinMenuTitle.scale = 1.5f;
+	WinMenuTitle.position = GC::MENU_TITLE_POSITION;
+	WinMenuTitle.string = "You Escaped!!!";
+
+	AddState(GC::STATE_WIN, std::make_unique<WinState>(WinMenuTitle));
 
 	// Init all states
 	std::for_each(mStates.begin(), mStates.end(), [](auto& s) { s.second->Initialize(); });

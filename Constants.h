@@ -113,6 +113,7 @@ namespace GC
 		STATE_PAUSE = "PauseMenu",
 		STATE_MAINMENU = "MainMenu",
 		STATE_GAMEOVER = "GameOver",
+		STATE_WIN = "WinState",
 
 		TRADER_NAME_TEST = "TravellerTest",
 		TRADER_NAME_1 = "Traveller1",
