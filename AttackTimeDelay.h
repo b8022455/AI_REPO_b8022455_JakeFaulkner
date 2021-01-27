@@ -42,7 +42,7 @@ struct AttackTimeDelay		//All variables used in the timing stuff, kept in struct
 		this->timeAtNow = time(0);
 		this->storeLocaltime = localtime_s(&this->currentTime, &this->timeAtNow);
 		if (this->currentTime.tm_sec < 2)	this->nextAtkTime = 0;
-		if (this->nextAtkTime >= 60) { if (e == 1)this->nextAtkTime = GC::ENEMYTYPE1_ATTACK_DELAY; }
+		if (this->nextAtkTime >= 60) { if (e == 1)this->nextAtkTime = static_cast<int>(GC::ENEMYTYPE1_ATTACK_DELAY); }
 	};
 
 	bool CanAttack()

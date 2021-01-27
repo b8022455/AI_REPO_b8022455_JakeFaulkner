@@ -1048,6 +1048,13 @@ void PlayState::Gamepad(const GameTimer & gt)
 
 void PlayState::ResetState(const GameTimer& gt)
 {
+	//Reset Camera
+	for (auto& c : mCameras)
+	{
+		c.SetPosition(0.0f, 25.0f, 0.0f);
+		c.UpdateViewMatrix();
+	}
+
 	mPlayer.Reset(gt);
 	mCombatController.Reset();
 	mPlayerWeapon.Reset(gt);
