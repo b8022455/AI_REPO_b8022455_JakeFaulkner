@@ -118,6 +118,10 @@ namespace GC
 		TRADER_NAME_3 = "Traveller3",
 		TRADER_NAME_4 = "Traveller4",
 
+		TRADER_OBJ_1 = "Car boot storage",
+		TRADER_OBJ_2 = "Car seats",
+		TRADER_OBJ_3 = "Car engine",
+
 		PLANT_NAME_0 = "Sour Potato",
 		PLANT_NAME_1 = "Worm Herb",
 		PLANT_NAME_2 = "Skull Rose"
@@ -129,7 +133,7 @@ namespace GC
 		PLANT_2 = { PLANT_NAME_2 , 0.01f }
 	;
 
-
+	//audio
 	const std::string TRADER_TALK[6]
 	{
 		"trader01",
@@ -137,7 +141,7 @@ namespace GC
 		"trader03",
 		"trader04",
 		"trader05",
-		"trader06"
+		"trader06",
 	};
 
 	const size_t TRADER_TALK_COUNT = sizeof(TRADER_TALK) / sizeof(TRADER_TALK[0]);
@@ -240,6 +244,9 @@ namespace GC
 		{ TRADER_NAME_2,			{{"Potion",2}, {"Plastic Spork",2},{ "Holy Water",2}		}   },
 		{ TRADER_NAME_3,			{{"Potion",2}, {"Nail Bat",2},{ "Leadpipe",2}				}   }, //todo change 
 		{ TRADER_NAME_4,			{{"Potion",2}, {"Leadpipe",2},{ "Holy Water",2}				}   }, //todo change
+		{ TRADER_OBJ_1,				{{"Potion",2}												}   }, // front of car  //todo change
+		{ TRADER_OBJ_2,				{{"Potion",2}												}   }, // mid car       //todo change
+		{ TRADER_OBJ_3,				{{"Potion",2}												}   }, // rear of car   //todo change
 	};
 
 	const ItemLookup ITEM_LOOKUP_REWARD
@@ -249,6 +256,9 @@ namespace GC
 		{ TRADER_NAME_2,		{{"Potion",2}, {"Leadpipe",2},{ "Holy Water",2}					}	}, //
 		{ TRADER_NAME_3,		{{"Potion",2}, {"Holy Water",2},{ "Holy Water",2}				}	}, //todo change 
 		{ TRADER_NAME_4,		{																}	}, // no reward, charity
+		{ TRADER_OBJ_1,			{																}   }, // front of car
+		{ TRADER_OBJ_2,			{																}   }, // mid car
+		{ TRADER_OBJ_3,			{																}   }, // rear of car
 	};
 
 	const ItemLookup PLANT_LOOKUP_HARVEST
@@ -265,6 +275,9 @@ namespace GC
 		{ TRADER_NAME_1,	{"Trade with me","Now on your way"	}},
 		{ TRADER_NAME_2,	{"I need some things   you need some things","Now I need some peace and quiet and you need to leave"	}}, //
 		{ TRADER_NAME_3,	{"Trade with me","Now on your way"	}}, //todo change 
-		{ TRADER_NAME_4, 	{"Trade with me","Now on your way"	}} // no reward, charity
+		{ TRADER_NAME_4, 	{"Trade with me","Now on your way"	}}, // no reward, charity
+		{ TRADER_OBJ_3, 	{"There's lots of space to store weapons here.","Locked and loaded"	}},			// rear of car
+		{ TRADER_OBJ_2, 	{"I have to load up on supplies for the journey","That should do it"}},			// middle of car
+		{ TRADER_OBJ_1, 	{"I need to install these parts to get this moving","Purrs like a kitten"	}}	// front of car
 	};
 }

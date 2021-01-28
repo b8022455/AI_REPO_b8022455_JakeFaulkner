@@ -19,6 +19,7 @@ void PlayState::InitializeTraders()
 	mTraders.push_back(Trader(GC::TRADER_NAME_3, GC::TRADER_NAME_3, GC::TRADER_NAME_3));
 	mTraders.push_back(Trader(GC::TRADER_NAME_1, GC::TRADER_NAME_2, GC::TRADER_NAME_3));
 
+	//sets up a line of traders
 	struct SetupTraders
 	{
 		float x = -10.5f;
@@ -28,11 +29,26 @@ void PlayState::InitializeTraders()
 			t.Initialize(GC::GO_TRADER);
 			t.mpInstance->MaterialIndex = 0/*GameApp::Get().GetMaterialIndex("tileTex")*/;
 			x+= 1.0f + (rand() % biggestGap);
-			t.SetPos({ x, 0.0f, 3.0f });
+			t.SetPos({ x, 0.0f, 4.0f });
 		}
 	};
 
-	std::for_each(mTraders.begin(), mTraders.end(), SetupTraders());
+	std::for_each(mTraders.begin(), mTraders.end(), SetupTraders()); // line of traders
+
+	// Side doors
+	mTraders.push_back(Trader(GC::TRADER_OBJ_1, GC::TRADER_OBJ_1, GC::TRADER_OBJ_1));
+	mTraders.back().Initialize("CarBody");
+	mTraders.back().SetPos({ 0.0f, 0.0f, 1.5f });
+
+	//Rear of car
+	mTraders.push_back(Trader(GC::TRADER_OBJ_2, GC::TRADER_OBJ_2, GC::TRADER_OBJ_2));
+	mTraders.back().Initialize("CarTire");
+	mTraders.back().SetPos({ -1.0f, 0.0f, 1.5f });
+
+	//Front of car - engine
+	mTraders.push_back(Trader(GC::TRADER_OBJ_3, GC::TRADER_OBJ_3, GC::TRADER_OBJ_3));
+	mTraders.back().Initialize("CarTire");
+	mTraders.back().SetPos({ 1.0f, 0.0f, 1.5f });
 
 }
 
@@ -116,6 +132,8 @@ void PlayState::Initialize()
 
 	InitializeTraders();
 	
+
+	// tile clumping
 	int n(0);
 	int clumpSize(5);
 	DirectX::XMFLOAT3 position = mTile.SetRandom();
@@ -300,6 +318,7 @@ void PlayState::Update(const GameTimer & gt)
 		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), t.GetPos()))	//Prevents weapon from going through trader
 			mPlayerWeapon.ResetWeaponPosition();
 	}
+
 
 	mPlayer.Update(gt);
 
