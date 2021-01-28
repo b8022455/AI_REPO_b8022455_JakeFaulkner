@@ -37,7 +37,7 @@ public:
 
 	void Update(const GameTimer& gt);
 	void Reset();
-	void Delete();			//Called when an enemy is defeated, removes the particles
+	void MoveOffScreen();			//Called when an enemy is defeated, removes the particles
 	void UpdateAttack();
 
 	DirectX::XMFLOAT3 BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);		//Gets enemy position once bounceback has taken effect

@@ -10,7 +10,7 @@ void Enemy::InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int matI
 	mpInstance->World._43 = position.z;
 }
 
-void Enemy::Delete()
+void Enemy::MoveOffScreen()
 {
 	//Removes enemy
 	this->mpInstance->World._42 = -200.f;

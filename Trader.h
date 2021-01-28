@@ -12,7 +12,7 @@ class Trader : public GameObject
 	DialogPair mDialog;
 	size_t mPitchIndex;
 	bool traded = false;
-
+	bool mIsStoryItem = false;
 
 public:
 
@@ -102,6 +102,16 @@ public:
 	float GetPitch()
 	{
 		return GC::VOICE_PITCH[mPitchIndex];
+	}
+
+	void SetAsStoryItem()
+	{
+		mIsStoryItem = true;
+	}
+
+	bool CompletedStoryItem()
+	{
+		return mIsStoryItem && !CanTrade();
 	}
 };
 

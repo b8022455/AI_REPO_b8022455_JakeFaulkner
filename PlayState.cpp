@@ -39,16 +39,19 @@ void PlayState::InitializeTraders()
 	mTraders.push_back(Trader(GC::TRADER_OBJ_1, GC::TRADER_OBJ_1, GC::TRADER_OBJ_1));
 	mTraders.back().Initialize("CarBody");
 	mTraders.back().SetPos({ 0.0f, 0.0f, 1.5f });
+	mTraders.back().SetAsStoryItem();
 
 	//Rear of car
 	mTraders.push_back(Trader(GC::TRADER_OBJ_2, GC::TRADER_OBJ_2, GC::TRADER_OBJ_2));
 	mTraders.back().Initialize("CarTire");
 	mTraders.back().SetPos({ -1.0f, 0.0f, 1.5f });
+	mTraders.back().SetAsStoryItem();
 
 	//Front of car - engine
 	mTraders.push_back(Trader(GC::TRADER_OBJ_3, GC::TRADER_OBJ_3, GC::TRADER_OBJ_3));
 	mTraders.back().Initialize("CarTire");
 	mTraders.back().SetPos({ 1.0f, 0.0f, 1.5f });
+	mTraders.back().SetAsStoryItem();
 
 }
 
@@ -412,6 +415,7 @@ void PlayState::Update(const GameTimer & gt)
 			}
 		}
 
+		// enemy collision with planyer
 		if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()))
 		{
 			mPlayer.DamagePlayer(e.GetAttack());
@@ -446,8 +450,8 @@ void PlayState::Update(const GameTimer & gt)
 					++mInventory[droppedItem];
 				}
 
-				e.Delete();
-				mEnemies.erase(mEnemies.begin() + i);
+				e.MoveOffScreen();
+				// mEnemies.erase(mEnemies.begin() + i);
 
 				GameApp::Get().GetAudio().Play("EnemyDie1", nullptr, false, 1.0f, GetRandomVoicePitch());
 			}
@@ -457,11 +461,12 @@ void PlayState::Update(const GameTimer & gt)
 			}
 		}
 
+		// enemy collides with traders
 		for (auto& t : mTraders)
 			if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
 				e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 		
-
+		// enemy movement behaviour based on player radius
 		if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos())   < 6.0f )
 		{
 			e.mBehaviour = Enemy::Behaviour::CHASE;
@@ -477,6 +482,13 @@ void PlayState::Update(const GameTimer & gt)
 		i++;
 
 	});
+
+
+	mEnemies.erase(std::remove_if(mEnemies.begin(), mEnemies.end(), [&](Enemy& e) 
+	{
+		return e.GetHealth() <= 0;
+	}
+	), mEnemies.end());
 
 	if (mPlayer.health <= 0)
 	{
@@ -1063,6 +1075,21 @@ void PlayState::Gamepad(const GameTimer & gt)
 		ItemAction();
 	}
 
+}
+
+bool PlayState::TraderStoryComplete()
+{
+	int count = 0;
+
+	for (auto& t : mTraders)
+	{
+		if (t.CompletedStoryItem()) 
+		{
+			++count;
+		}
+	}
+
+	return count >= 3; // todo constant to header
 }
 
 void PlayState::ResetState(const GameTimer& gt)
