@@ -15,7 +15,15 @@ void GameObject::RemoveRenderItemInstance()
 
 void GameObject::Initialize(const std::string & renderItemName)
 {
-	AddRenderItemInstance(renderItemName);
+	if (!mHasInitailized)
+	{
+		AddRenderItemInstance(renderItemName);
+		mHasInitailized = true;
+	}
+	else
+	{
+		OutputDebugStringA("Note: GO aready has render item instance. Additional instance not created\n");
+	}
 }
 
 void GameObject::SetPos(const DirectX::XMFLOAT3 & newPos)

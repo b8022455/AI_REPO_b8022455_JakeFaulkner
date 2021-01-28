@@ -12,6 +12,8 @@ class GameTimer;
 //Initialize needs to be called for every gameobject with render item name
 class GameObject
 {
+private:
+	bool mHasInitailized = false;
 protected:
 	// Adds and points to an existing render item
 	void AddRenderItemInstance(const std::string& renderItemName);
