@@ -126,6 +126,9 @@
     <ClCompile Include="Plant.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WinState.cpp">
+      <Filter>Source Files\States</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FrameResource.h">
@@ -241,6 +244,9 @@
     </ClInclude>
     <ClInclude Include="EnemyParticle.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WinState.h">
+      <Filter>Header Files\States</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

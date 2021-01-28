@@ -555,7 +555,7 @@ void TileManager::Initialize()
 			mMapData.back().push_back(mapData());
 
 			if (coords[k][j] <= 0)
-				mMapData.back().back().texIndex = rand() % 2; // random plain tile
+				mMapData.back().back().texIndex = (rand() % 2) + 1; // random plain tile
 			else
 				mMapData.back().back().texIndex = coords[k][j]; // set as hazard
 
@@ -1171,7 +1171,7 @@ void TileManager::REGEN() {
 		for (int j = 0; j < mDimention; ++j) {
 
 			if (coords[k][j] <= 0)
-				mMapData[k][j].texIndex = rand() % 2; // random plain tile
+				mMapData[k][j].texIndex = (rand() % 2) + 1; // random plain tile
 			else
 				mMapData[k][j].texIndex = coords[k][j]; // set as hazard
 

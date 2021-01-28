@@ -122,6 +122,7 @@ public:
 
 	// todo Sam/Jake description here please
 	void ReGen();
+	void ResetState(const GameTimer& gt);
 
 	void UiUpdate(const GameTimer& gt);
 	// Returns if planted successful

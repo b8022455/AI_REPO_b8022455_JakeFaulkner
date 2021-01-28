@@ -36,6 +36,7 @@ public:
 	std::string GetType() { return mEnemyType; }
 
 	void Update(const GameTimer& gt);
+	void Reset();
 	void Delete();			//Called when an enemy is defeated, removes the particles
 	void UpdateAttack();
 
