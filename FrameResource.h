@@ -4,7 +4,7 @@
 #include "Common/MathHelper.h"
 #include "Common/UploadBuffer.h"
 #include "Constants.h"
-const int differentRenderObjectsNum = 7;		//If adding another object with diff geo, increment this
+const int differentRenderObjectsNum = 9;		//If adding another object with diff geo, increment this
 
 struct InstanceData
 {
@@ -94,7 +94,7 @@ public:
 	// would need if we were not using instancing.  For example, if we were drawing 1000 objects without instancing,
 	// we would create a constant buffer with enough room for a 1000 objects.  With instancing, we would just
 	// create a structured buffer large enough to store the instance data for 1000 instances.  
-	std::unique_ptr<UploadBuffer<InstanceData>> InstanceBuffer[differentRenderObjectsNum];// [GC::NUM_DIFF_RENDER_OBJS];
+	std::unique_ptr<UploadBuffer<InstanceData>> InstanceBuffer[differentRenderObjectsNum];// todo change to [GC::NUM_DIFF_RENDER_OBJS];
 
 	// Fence value to mark commands up to this fence point.  This lets us
 	// check if these frame resources are still in use by the GPU.
