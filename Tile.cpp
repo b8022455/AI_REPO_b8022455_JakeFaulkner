@@ -570,15 +570,15 @@ void TileManager::Initialize()
 	// TODO: (NOTE) not sure but tiles may be getting saved into tilegrid twice (as tile & gameobject) if possible
 
 	// create tiles
-	mTileGrid.reserve(mDimention);
+	mTileGrid.resize(mDimention);
 	for (int k = 0; k < mDimention; ++k)
 	{
 		TileLine tl;
-		tl.reserve(mDimention);
+		tl.resize(mDimention);
 	
 		for (int j = 0; j < mDimention; ++j)
 		{
-			tl.push_back(Tile());
+			//tl.push_back(Tile());
 			tl.back().Initialize(mRenderItemName); //Creates instances
 
 			// Position instanced along a 3D grid.

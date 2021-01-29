@@ -8,6 +8,7 @@
 #include "SimpleMath.h"
 #include "OBJ_Loader.h"
 #include <cassert>
+#include <sstream>
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -216,6 +217,74 @@ InstanceData* GameApp::AddRenderItemInstance(const std::string & renderItemName)
 	}
 }
 
+void GameApp::RemoveRenderItemInstance(const std::string & renderItemName, InstanceData* id)
+{
+	if (mAllRitems.count(renderItemName) == 1)
+	{
+		if (id)
+		{
+			std::ostringstream oss;
+			oss << "Comparing instance data\n";
+
+			std::list<InstanceData>::iterator it = mAllRitems[renderItemName]->Instances.begin();
+
+			while (it != mAllRitems[renderItemName]->Instances.end())
+			{
+				oss << " &(*it) = " << &(*it) << " InstanceData* id = " << id << "\n";
+
+				if (id == &(*it)    )
+				{
+					mAllRitems[renderItemName]->Instances.erase(it);
+
+					// update instance count
+					--mAllRitems[renderItemName]->InstanceCount;
+					--mInstanceCount;
+
+					oss << "match and erased. " << renderItemName
+						<< " instance count: " << mAllRitems[renderItemName]->InstanceCount
+						<< " overal instance count: "  << mInstanceCount << "\n"
+						;
+
+					it = mAllRitems[renderItemName]->Instances.end();
+				}
+				else
+				{
+					++it;
+				}
+			}
+
+			oss << "post loop...\n";
+
+			 //removes instance data from list
+			/*mAllRitems[renderItemName]->Instances.erase(std::remove_if(
+				mAllRitems[renderItemName]->Instances.begin(),
+				mAllRitems[renderItemName]->Instances.end(), [&](InstanceData& i)
+			{
+				OutputDebugStringA("comparing InstanceData  ");
+				if (id == &i)
+				{
+					return id == &i;
+				}
+				else
+				{
+					return false;
+				}
+			}), mAllRitems[renderItemName]->Instances.end());
+
+			 decrement count
+*/
+
+			OutputDebugStringA(oss.str().c_str());
+
+		}
+	}
+	else
+	{
+		OutputDebugStringA("renderItemName doesnt exist");
+		assert(false);
+	}
+}
+
 void GameApp::OnResize()
 {
 	D3DApp::OnResize();
@@ -304,6 +373,9 @@ UINT GameApp::GetMaterialIndex(const std::string & materialName)
 void GameApp::Update(const GameTimer& gt)
 {
 	assert(mpActiveCamera);
+
+	mDebugLog << "Instance count: " << mInstanceCount << "\n\n";
+
 
 	OnKeyboardInput(gt);
 	Input::Get().Update();
@@ -498,6 +570,37 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 		i++;		//Increments the instance buffer for the next geo to be rendered
 		int visibleInstanceCount = 0;
 
+
+
+		for (auto& instance : instanceData)
+		{
+			XMMATRIX world = XMLoadFloat4x4(&instance.World);
+			XMMATRIX texTransform = XMLoadFloat4x4(&instance.TexTransform);
+
+			XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
+
+			// View space to the object's local space.
+			XMMATRIX viewToLocal = XMMatrixMultiply(invView, invWorld);
+
+			// Transform the camera frustum from view space to the object's local space.
+			BoundingFrustum localSpaceFrustum;
+			mCamFrustum.Transform(localSpaceFrustum, viewToLocal);
+
+			// Perform the box/frustum intersection test in local space.
+			if ((localSpaceFrustum.Contains(e.second->Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
+			{
+				InstanceData data;
+				XMStoreFloat4x4(&data.World, XMMatrixTranspose(world));
+				XMStoreFloat4x4(&data.TexTransform, XMMatrixTranspose(texTransform));
+				data.MaterialIndex = instance.MaterialIndex;
+
+				// Write the instance data to structured buffer for the visible objects.
+				currInstanceBuffer->CopyData(visibleInstanceCount++, data);
+			}
+		}
+
+		/*
+
 		for (UINT i = 0; i < (UINT)instanceData.size(); ++i)
 		{
 			XMMATRIX world = XMLoadFloat4x4(&instanceData[i].World);
@@ -524,6 +627,7 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 				currInstanceBuffer->CopyData(visibleInstanceCount++, data);
 			}
 		}
+		*/
 
 		e.second->InstanceCount = visibleInstanceCount;
 

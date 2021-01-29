@@ -45,9 +45,9 @@ void Enemy::SetPosition(const DirectX::XMFLOAT3& newPosition)
 	// ATTACK DELAY & DURATION HELD IN CONSTANTS
 	times.StartTime(static_cast<int>(GC::ENEMYTYPE1_ATTACK_DURATION), static_cast<int>(GC::ENEMYTYPE1_ATTACK_DELAY));
 
+
 	//Setup the enemy particles
-	for (int i = 1; i != 20; i++)
-		particles.push_back(EnemyParticle());		//Add 20 particles to vector
+	particles.resize(20);
 
 }
 

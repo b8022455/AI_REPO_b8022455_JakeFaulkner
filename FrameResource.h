@@ -14,6 +14,8 @@ struct InstanceData
 	UINT InstancePad0;
 	UINT InstancePad1;
 	UINT InstancePad2;
+
+
 };
 
 struct PassConstants

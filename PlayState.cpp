@@ -12,6 +12,8 @@ using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
 void PlayState::InitializeTraders()
 {
+
+	mTraders.reserve(10);
 	
 	mTraders.push_back(Trader(GC::TRADER_NAME_TEST, GC::TRADER_NAME_TEST, GC::TRADER_NAME_TEST));
 	mTraders.push_back(Trader(GC::TRADER_NAME_1, GC::TRADER_NAME_1, GC::TRADER_NAME_1));
@@ -169,7 +171,7 @@ void PlayState::Initialize()
 							static_cast<float>(rand() % 10 + 2.0f)
 				});
 
-			for(auto t : mTraders)								//Check each trader in the game
+			for(auto& t : mTraders)								//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
@@ -284,7 +286,7 @@ void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN 
 							static_cast<float>(rand() % 10 + 2.0f)
 				});
 
-			for (auto t : mTraders)								//Check each trader in the game
+			for (auto& t : mTraders)								//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
@@ -483,13 +485,6 @@ void PlayState::Update(const GameTimer & gt)
 
 	});
 
-
-	mEnemies.erase(std::remove_if(mEnemies.begin(), mEnemies.end(), [&](Enemy& e) 
-	{
-		return e.GetHealth() <= 0;
-	}
-	), mEnemies.end());
-
 	if (mPlayer.health <= 0)
 	{
 		ResetState(gt);
@@ -576,6 +571,14 @@ void PlayState::Update(const GameTimer & gt)
 	{
 		c.UpdateViewMatrix();
 	}
+
+
+	mEnemies.erase(std::remove_if(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
+	{
+		return e.GetHealth() <= 0;
+
+	}), mEnemies.end());
+
 }
 
 void PlayState::Draw(const GameTimer & gt)
