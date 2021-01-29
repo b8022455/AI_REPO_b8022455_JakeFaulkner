@@ -4,6 +4,7 @@
 
 void GameObject::AddRenderItemInstance(const std::string & renderItemName)
 {
+	mRenderItem = renderItemName;
 	mpInstance = GameApp::Get().AddRenderItemInstance(renderItemName);
 	assert(mpInstance);
 }
@@ -31,7 +32,6 @@ void GameObject::Initialize(const std::string & renderItemName)
 {
 	if (!mHasInitailized)
 	{
-		mRenderItem = renderItemName;
 		AddRenderItemInstance(renderItemName);
 		mHasInitailized = true;
 	}

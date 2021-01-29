@@ -982,6 +982,11 @@ void PlayState::Keyboard(const GameTimer & gt)
 	{
 		ReGen();
 	}
+
+	if (Input::Get().KeyReleased('M'))
+	{
+		mEnemies.clear();
+	}
 }
 
 void PlayState::KeyboardDebug(const GameTimer & gt)

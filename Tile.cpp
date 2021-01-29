@@ -579,10 +579,10 @@ void TileManager::Initialize()
 		for (int j = 0; j < mDimention; ++j)
 		{
 			//tl.push_back(Tile());
-			tl.back().Initialize(mRenderItemName); //Creates instances
+			tl.at(j).Initialize(mRenderItemName); //Creates instances
 
 			// Position instanced along a 3D grid.
-			tl.back().mpInstance->World = DirectX::XMFLOAT4X4(
+			tl.at(j).mpInstance->World = DirectX::XMFLOAT4X4(
 				1.0f, 0.0f, 0.0f, 0.0f,
 				0.0f, 1.0f, 0.0f, 0.0f,
 				0.0f, 0.0f, 1.0f, 0.0f,
@@ -590,11 +590,11 @@ void TileManager::Initialize()
 			
 			// TODO: (NOTE) A SLIGHT ERROR HERE, J & K SHOULD BE SWAPPED, BUT I THINK IT HELPS A LITTLE LIKE THIS
 			//Selects random index from array of textures WIP - will be using auto generated clumping 2d array
-			tl.back().mpInstance->MaterialIndex = mMapData[j][k].texIndex; // set tile texture to struct data
+			tl.at(j).mpInstance->MaterialIndex = mMapData[j][k].texIndex; // set tile texture to struct data
 			//tl.back().mpInstance->MaterialIndex = 0; // USED IN TESTING
 		}
 
-		mTileGrid.push_back(std::move(tl));
+		mTileGrid.at(k) = tl;
 	
 	}
 }
