@@ -31,7 +31,8 @@ void Enemy::SetPosition(const DirectX::XMFLOAT3& newPosition)
 	//int attackDelay = 4;		//How long between each attack
 	
 	// ATTACK DELAY & DURATION HELD IN CONSTANTS
-	times.StartTime(GC::ENEMYTYPE1_ATTACK_DURATION, GC::ENEMYTYPE1_ATTACK_DELAY);
+	if (this->GetType() == GC::ENEMY_TYPE_1)
+		times.StartTime(GC::ENEMYTYPE1_ATTACK_DURATION, GC::ENEMYTYPE1_ATTACK_DELAY);
 
 	//Setup the enemy particles
 	for (int i = 1; i != 20; i++)
@@ -148,37 +149,37 @@ const std::string Enemy::GetDropItem()
 
 void Enemy::Update(const GameTimer & gt) // TODO: IMPLEMENT LOGIC FOR EACH POTENTIAL AI BASED ON ENEMY TYPE
 {
-	switch (mBehaviour)
-	{
-	case NONE:
-		if (mSpeed > 0.0f)
-		{
-			mSpeed -= mDrag * gt.DeltaTime();
-		}
-		; break;
-	case CHASE:
-		if (mSpeed < mMaxSpeed)
-		{
-			mSpeed += mDrag * gt.DeltaTime();
-		}
-		; break;
-	default:; break;
-	}
-	
 	// BARFING ENEMY - SLOW MOVEMENT TOWARDS PLAYER WHEN NOT ATTACKING
 	if (mEnemyType == GC::ENEMY_TYPE_1) 
 	{ 
 
+		switch (mBehaviour)
+		{
+		case NONE:
+			if (mSpeed > 0.0f)
+			{
+				mSpeed -= mDrag * gt.DeltaTime();
+			}
+			; break;
+		case CHASE:
+			if (mSpeed < mMaxSpeed)
+			{
+				mSpeed += mDrag * gt.DeltaTime();
+			}
+			; break;
+		default:; break;
+		}
+
 		if (times.isAttacking) // EXECUTES ATTACK
-			UpdateAttack();
+			UpdateAttack(gt.DeltaTime());
 
 		else
-			if (times.CanAttack())
-				times.SetNextTimer();		//Makes attacking bool true and resets timer for next attack
+			if (times.EnemyCanAttack())
+				//times.SetNextTimer();		//Makes attacking bool true and resets timer for next attack
+				times.ResetTimer();
 
 		// send int in instead of using gettype in the void
-		if (GetType() == GC::ENEMY_TYPE_1)
-			times.EnemyUpdateTime(1);
+		times.EnemyUpdateTime(1, gt.DeltaTime());
 
 		//Update enemy position based on bounceback
 		if (BouncebackPosition.x != 0.0f || BouncebackPosition.z != 0.0f)		//If there was a bounceback
@@ -190,13 +191,18 @@ void Enemy::Update(const GameTimer & gt) // TODO: IMPLEMENT LOGIC FOR EACH POTEN
 	}
 }
 
-void Enemy::UpdateAttack()
+void Enemy::UpdateAttack(float dt) // TODO: NEED TO IMPLEMENT TIMER WORK HERE TOO
 {
-	if (times.currentTime.tm_sec > (times.nextAtkTime - times.attackDuration))
+	// IF DURATION IS LESS THAN 0 SHOULD BE HERE
+	times.attackDuration -= dt;
+
+	if (times.attackDuration <= 0.0f) // (NEXT ATTACK TIMER - DURATION)
 	{
+
 		times.isAttacking = false;		//Attack has ended
 		for (auto& p : particles)
 			p.RemoveEffect();
+		times.attackDuration = times.AtkDur;
 	}
 	else
 	{

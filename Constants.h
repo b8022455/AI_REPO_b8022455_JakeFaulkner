@@ -66,7 +66,7 @@ namespace GC
 		TRADER_RADIUS = 1.75f,
 		ENEMYTYPE1_RANGE = 8.0f,
 		ENEMYTYPE1_ATTACK_DURATION = 2.0f,
-		ENEMYTYPE1_ATTACK_DELAY = 8.0f,
+		ENEMYTYPE1_ATTACK_DELAY = float(8.0f), // definitely the attack duration - cant actually be less than other
 
 		TILE_UV_INC = 1.0f/8.0f // tile is 1/8 of texture atlus
 		;

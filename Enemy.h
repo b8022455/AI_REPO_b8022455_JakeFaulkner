@@ -34,10 +34,11 @@ public:
 	int GetHealth() { return mHealth; }
 	int GetAttack() { return mAttack; }
 	std::string GetType() { return mEnemyType; }
+	AttackTimeDelay getattacking() { return times; }
 
 	void Update(const GameTimer& gt);
 	void Delete();			//Called when an enemy is defeated, removes the particles
-	void UpdateAttack();
+	void UpdateAttack(float dt);
 
 	DirectX::XMFLOAT3 BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);		//Gets enemy position once bounceback has taken effect
 

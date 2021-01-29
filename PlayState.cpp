@@ -382,17 +382,6 @@ void PlayState::Update(const GameTimer & gt)
 		//Enemy look at players position (only do when in range), only look when not attacking either
 		XMVECTOR playerPosition = XMLoadFloat3(&mPlayer.GetPos());
 
-		if (e.GetType() == GC::ENEMY_TYPE_1) { // ENEMY TYPE EXCLUSIVE LOGIC LOCATED HERE
-			// TODO: (NOTE) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
-			if (mPlayer.GetPos().x >= (e.GetPos().x - GC::ENEMYTYPE1_RANGE) &&
-				mPlayer.GetPos().x <= (e.GetPos().x + GC::ENEMYTYPE1_RANGE)) { // player within - range on x
-				if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE1_RANGE) &&
-					mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
-					e.LookAt(playerPosition);
-				}
-			}
-		}
-
 		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetPos()))
 		{
 			mPlayer.DamagePlayer(e.GetAttack());
@@ -442,17 +431,29 @@ void PlayState::Update(const GameTimer & gt)
 			if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
 				e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 		
+		// TODO: (NOTE) ENEMY FOLLOW PLAYER SET HERE
+		if (e.GetType() == GC::ENEMY_TYPE_1) { // ENEMY TYPE EXCLUSIVE LOGIC LOCATED HERE
+			if (mPlayer.GetPos().x >= (e.GetPos().x - GC::ENEMYTYPE1_RANGE) &&
+				mPlayer.GetPos().x <= (e.GetPos().x + GC::ENEMYTYPE1_RANGE)) { // player within - range on x
+				if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE1_RANGE) &&
+					mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
+					e.LookAt(playerPosition);
+				}
+			}
 
-		if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos())   < 6.0f )
-		{
-			e.mBehaviour = Enemy::Behaviour::CHASE;
-		}
-		else
-		{
-			e.mBehaviour = Enemy::Behaviour::NONE;
-		}
+			if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE &&
+				e.getattacking().isAttacking == false)
+			{
+				e.mBehaviour = Enemy::Behaviour::CHASE;
+			}
+			else
+			{
+				e.mBehaviour = Enemy::Behaviour::NONE;
+			}
 
-		e.SetVelocity(mPlayer.GetPos(),gt);
+			e.SetVelocity(mPlayer.GetPos(), gt);
+
+		}
 
 		e.Update(gt); 
 		i++;
