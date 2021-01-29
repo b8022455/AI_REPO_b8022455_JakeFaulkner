@@ -13,10 +13,25 @@ void GameObject::RemoveRenderItemInstance()
 	// todo May be an issue with pointer mpInstance for moved instances that remain
 }
 
+GameObject::~GameObject()
+{
+	if (mHasInitailized)
+	{
+		GameApp::Get().RemoveRenderItemInstance(mRenderItem,mpInstance);
+
+		mpInstance = nullptr;
+	}
+	else
+	{
+		OutputDebugStringA("Note: GO Has not been initialised\n");
+	}
+}
+
 void GameObject::Initialize(const std::string & renderItemName)
 {
 	if (!mHasInitailized)
 	{
+		mRenderItem = renderItemName;
 		AddRenderItemInstance(renderItemName);
 		mHasInitailized = true;
 	}

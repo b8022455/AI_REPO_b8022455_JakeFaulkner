@@ -13,13 +13,16 @@ class GameTimer;
 class GameObject
 {
 private:
+	std::string mRenderItem = "";
 	bool mHasInitailized = false;
 protected:
 	// Adds and points to an existing render item
 	void AddRenderItemInstance(const std::string& renderItemName);
 	void RemoveRenderItemInstance();
 public:
-	//todo make protected
+
+	virtual ~GameObject();
+
 	InstanceData* mpInstance;
 	// Pass in renderItem string key and Initialize adds and points to an existing render item. Call AddRenderItemInstance() if overriding
 	virtual void Initialize(const std::string& renderItemName);

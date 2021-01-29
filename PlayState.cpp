@@ -12,6 +12,8 @@ using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
 void PlayState::InitializeTraders()
 {
+
+	mTraders.reserve(10);
 	
 	mTraders.push_back(Trader(GC::TRADER_NAME_TEST, GC::TRADER_NAME_TEST, GC::TRADER_NAME_TEST));
 	mTraders.push_back(Trader(GC::TRADER_NAME_1, GC::TRADER_NAME_1, GC::TRADER_NAME_1));
@@ -166,7 +168,7 @@ void PlayState::Initialize()
 							static_cast<float>(rand() % 10 + 2.0f)
 				});
 
-			for(auto t : mTraders)								//Check each trader in the game
+			for(auto& t : mTraders)								//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
@@ -281,7 +283,7 @@ void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN 
 							static_cast<float>(rand() % 10 + 2.0f)
 				});
 
-			for (auto t : mTraders)								//Check each trader in the game
+			for (auto& t : mTraders)								//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
@@ -447,7 +449,6 @@ void PlayState::Update(const GameTimer & gt)
 				}
 
 				e.Delete();
-				mEnemies.erase(mEnemies.begin() + i);
 
 				GameApp::Get().GetAudio().Play("EnemyDie1", nullptr, false, 1.0f, GetRandomVoicePitch());
 			}
@@ -460,6 +461,8 @@ void PlayState::Update(const GameTimer & gt)
 		for (auto& t : mTraders)
 			if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
 				e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+		
+
 		
 
 		if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos())   < 6.0f )
@@ -564,6 +567,14 @@ void PlayState::Update(const GameTimer & gt)
 	{
 		c.UpdateViewMatrix();
 	}
+
+
+	mEnemies.erase(std::remove_if(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
+	{
+		return e.GetHealth() <= 0;
+
+	}), mEnemies.end());
+
 }
 
 void PlayState::Draw(const GameTimer & gt)

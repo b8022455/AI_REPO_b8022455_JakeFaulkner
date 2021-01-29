@@ -35,6 +35,9 @@ public:
 
 	// Access to instance data from states and gameobjects
 	InstanceData* AddRenderItemInstance(const std::string & renderItemName);
+	// When gameobject goes out of scope or removed
+	void RemoveRenderItemInstance(const std::string & renderItemName, InstanceData* id);
+
 	GameApp& GetGameApp() { return *this; }
 	// For access to lights, camera projection, fog
 	PassConstants* GetMainPassCB();
@@ -139,7 +142,6 @@ private:
 
 public:
 	std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GetStaticSamplers();
-
 private:
 
 	std::vector<std::unique_ptr<FrameResource>> mFrameResources;

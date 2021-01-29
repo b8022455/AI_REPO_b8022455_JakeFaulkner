@@ -31,7 +31,7 @@ struct RenderItem
 	D3D12_PRIMITIVE_TOPOLOGY PrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
 	DirectX::BoundingBox Bounds;
-	std::deque<InstanceData> Instances;
+	std::list<InstanceData> Instances;
 
 	// DrawIndexedInstanced parameters.
 	UINT IndexCount = 0;
