@@ -180,7 +180,6 @@ void Player::MoveRight(const GameTimer& gt)
 	SetRotationY(180);						//Positions player model facing right
 }
 
-
 void Player::Move(const GameTimer & gt, const DirectX::SimpleMath::Vector3 & vec)
 {
 	//Changes position of sword depending on where player is facing

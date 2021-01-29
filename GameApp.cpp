@@ -219,15 +219,16 @@ InstanceData* GameApp::AddRenderItemInstance(const std::string & renderItemName)
 
 void GameApp::RemoveRenderItemInstance(const std::string & renderItemName, InstanceData* id)
 {
+
 	if (mAllRitems.count(renderItemName) == 1)
 	{
 		if (id)
 		{
 			std::ostringstream oss;
-			oss << "Comparing instance data\n";
+			oss << "Comparing instance data  \n" << renderItemName << "\n";
 
 			std::list<InstanceData>::iterator it = mAllRitems[renderItemName]->Instances.begin();
-
+			bool found = false;
 			while (it != mAllRitems[renderItemName]->Instances.end())
 			{
 				oss << " &(*it) = " << &(*it) << " InstanceData* id = " << id << "\n";
@@ -244,7 +245,7 @@ void GameApp::RemoveRenderItemInstance(const std::string & renderItemName, Insta
 						<< " instance count: " << mAllRitems[renderItemName]->InstanceCount
 						<< " overal instance count: "  << mInstanceCount << "\n"
 						;
-
+					found = true;
 					it = mAllRitems[renderItemName]->Instances.end();
 				}
 				else
@@ -254,6 +255,12 @@ void GameApp::RemoveRenderItemInstance(const std::string & renderItemName, Insta
 			}
 
 			oss << "post loop...\n";
+
+			if (!found)
+			{
+				oss << "NOT ";
+			}
+			oss << " FOUND AND REMOVED \n";
 
 			 //removes instance data from list
 			/*mAllRitems[renderItemName]->Instances.erase(std::remove_if(
@@ -394,6 +401,15 @@ void GameApp::Update(const GameTimer& gt)
 		CloseHandle(eventHandle);
 	}
 
+
+	mDebugLog
+		<< "\n G) Enemy Instance count: "
+		<< mAllRitems[GC::GO_ENEMY]->InstanceCount
+		<< " Instance Size(): "
+		<< mAllRitems[GC::GO_ENEMY]->Instances.size()
+		<< "\n\n"
+		;
+
 	mStateManager.Update(gt);
 	AnimateMaterials(gt);
 	UpdateInstanceData(gt);
@@ -419,6 +435,9 @@ void GameApp::Update(const GameTimer& gt)
 
 		}
 	}
+
+
+
 
 }
 
