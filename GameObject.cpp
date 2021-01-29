@@ -18,8 +18,8 @@ GameObject::~GameObject()
 {
 	if (mHasInitailized)
 	{
-		GameApp::Get().RemoveRenderItemInstance(mRenderItem,mpInstance);
-
+		// Inconsistent results with render items
+		//GameApp::Get().RemoveRenderItemInstance(mRenderItem,mpInstance);
 		mpInstance = nullptr;
 	}
 	else
@@ -75,22 +75,22 @@ void GameObject::SetScale(const float& scale)
 	mpInstance->World._33 = scale;
 }
 
-void GameObject::SetScaleX(const float scale)
+void GameObject::SetScaleX(const float& scale)
 {
 	mpInstance->World._11 = scale;
 }
 
-void GameObject::SetScaleY(const float scale)
+void GameObject::SetScaleY(const float& scale)
 {
 	mpInstance->World._22 = scale;
 }
 
-void GameObject::SetScaleZ(const float scale)
+void GameObject::SetScaleZ(const float& scale)
 {
 	mpInstance->World._33 = scale;
 }
 
-void GameObject::SetRotationX(const float newRotation)
+void GameObject::SetRotationX(const float& newRotation)
 {
 	float convertToRad = newRotation * 3.14159f / 180.0f;
 	float cosineAngle = cos(convertToRad);
@@ -102,7 +102,7 @@ void GameObject::SetRotationX(const float newRotation)
 	this->mpInstance->World._33 = cosineAngle;
 }
 
-void GameObject::SetRotationY(const float newRotation)
+void GameObject::SetRotationY(const float& newRotation)
 {
 	float convertToRad = newRotation * 3.14159f / 180.0f;
 	float cosineAngle = cos(convertToRad);
@@ -114,7 +114,7 @@ void GameObject::SetRotationY(const float newRotation)
 	this->mpInstance->World._33 = cosineAngle;
 }
 
-void GameObject::SetRotationZ(const float newRotation)
+void GameObject::SetRotationZ(const float& newRotation)
 {
 	float convertToRad = newRotation * 3.14159f / 180.0f;
 	float cosineAngle = cos(convertToRad);
@@ -126,7 +126,7 @@ void GameObject::SetRotationZ(const float newRotation)
 	this->mpInstance->World._22 = cosineAngle;
 }
 
-void GameObject::SetRotation(const float x, const float y, const float z)
+void GameObject::SetRotation(const float& x, const float& y, const float& z)
 {
 	//X
 	float degreesX = x * 3.14159f / 180.0f;
@@ -192,7 +192,7 @@ const float GameObject::GetRotationZ() const
 	return cosAngle;
 }
 
-const void GameObject::RotationAroundPoint(const DirectX::XMFLOAT3 translate1, const float rotation, const DirectX::XMFLOAT3 translate2) const
+const void GameObject::RotationAroundPoint(const DirectX::XMFLOAT3& translate1, const float& rotation, const DirectX::XMFLOAT3& translate2) const
 {
 	float convertToRad = rotation * 3.14159f / 180.0f;
 	DirectX::XMMATRIX transformation;
@@ -204,7 +204,7 @@ const void GameObject::RotationAroundPoint(const DirectX::XMFLOAT3 translate1, c
 	XMStoreFloat4x4(&mpInstance->World, transformation);
 }
 
-const void GameObject::RotationAroundPoint(const DirectX::XMMATRIX translate1, const float rotation, const DirectX::XMFLOAT3 translate2) const
+const void GameObject::RotationAroundPoint(const DirectX::XMMATRIX& translate1, const float& rotation, const DirectX::XMFLOAT3& translate2) const
 {
 	float convertToRad = rotation * 3.14159f / 180.0f;
 	XMMATRIX transformation = translate1;		//First Translation already done and passed via the transformation parameter
@@ -215,13 +215,12 @@ const void GameObject::RotationAroundPoint(const DirectX::XMMATRIX translate1, c
 	XMStoreFloat4x4(&mpInstance->World, transformation);
 }
 
-void GameObject::MOVE(const float dt, const float speed, DirectX::XMFLOAT4X4 direction) { // TODO: WORK ON MOVE HERE 
+void GameObject::Move(const float& dt, const float& speed, DirectX::XMFLOAT4X4& direction) { // TODO: WORK ON MOVE HERE 
 
 	//this->mpInstance->World(std::move(direction));
-
 }
 
-bool GameObject::CheckCollision(XMFLOAT3 Object1, XMFLOAT3 Object2)
+bool GameObject::CheckCollision(const XMFLOAT3& Object1,const XMFLOAT3& Object2)
 {
 	//Could change to have Mathf.Abs() to only check the positive boundary?
 	float distanceInX = Object1.x - Object2.x;
@@ -236,7 +235,7 @@ bool GameObject::CheckCollision(XMFLOAT3 Object1, XMFLOAT3 Object2)
 	return false;
 }
 
-const void GameObject::LookAt(DirectX::XMVECTOR target) const // (NOTE) LOOKS AT A TARGET VECTOR HERE
+const void GameObject::LookAt(const DirectX::XMVECTOR& target) const // (NOTE) LOOKS AT A TARGET VECTOR HERE
 {
 	DirectX::XMVECTOR eyePosition = DirectX::XMLoadFloat3(&this->GetPos());
 

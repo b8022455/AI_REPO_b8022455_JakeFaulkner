@@ -139,5 +139,14 @@ public:
 
 	bool TraderStoryComplete();
 
+	int EnemiesRemaining()
+	{
+		int count = 0;
+		for (auto& e : mEnemies)
+		{
+			if (e.mEnabled) ++count;
+		}
+		return count;
+	}
 };
 
