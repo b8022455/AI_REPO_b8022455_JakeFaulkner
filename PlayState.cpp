@@ -479,17 +479,16 @@ void PlayState::Update(const GameTimer & gt)
 
 		}
 
-			e.Update(gt);
+		e.Update(gt);
 
-			{
-				SimpleMath::Vector3 pos = e.GetPos();
+		{
+			SimpleMath::Vector3 pos = e.GetPos();
 
-				GameApp::Get().mDebugLog << "Enemy i:" << i
-					<< "  Health: " << e.GetHealth()
-					<< "  mpInstance: " << e.mpInstance
-					<< "  X: " << std::setprecision(2) << pos.x
-					<< "  Z:" << std::setprecision(2) << pos.z << "\n";
-			}
+			GameApp::Get().mDebugLog << "Enemy i:" << i
+				<< "  Health: " << e.GetHealth()
+				<< "  mpInstance: " << e.mpInstance
+				<< "  X: " << std::setprecision(2) << pos.x
+				<< "  Z:" << std::setprecision(2) << pos.z << "\n";
 		}
 		
 
