@@ -64,9 +64,19 @@ namespace GC
 		MOVE_SPEED = 5.0f,
 
 		TRADER_RADIUS = 1.75f,
+
 		ENEMYTYPE1_RANGE = 8.0f,
 		ENEMYTYPE1_ATTACK_DURATION = 2.0f,
 		ENEMYTYPE1_ATTACK_DELAY = float(8.0f), // definitely the attack duration - cant actually be less than other
+		ENEMYTYPE1_MAXSPEED = 1.0f,
+		ENEMYTYPE1_DRAG = 1.0f,
+
+		ENEMYTYPE2_RANGE = 6.0f,
+		ENEMYTYPE2_ATTACK_DURATION = 8.0f,
+		ENEMYTYPE2_ATTACK_DELAY = float(4.0f), // definitely the attack duration - cant actually be less than other on normal timer
+		ENEMYTYPE2_MAXSPEED = 3.0f,
+		ENEMYTYPE2_DRAG = 3.0f,
+
 
 		TILE_UV_INC = 1.0f/8.0f // tile is 1/8 of texture atlus
 		;
@@ -104,8 +114,12 @@ namespace GC
 		GO_TRADER = "Trader",
 		GO_POTATO = "Potato",
 
-		ENEMY_TYPE_1 = "EnemyType1", // BASIC BARFING ENEMY (HOBBLES TOWARD PLAYER THEN BARFS, NO DAMAGE FROM CONTACT)?
-		// TODO: IMPLEMENT ENEMY TYPES HERE
+		// TODO: (NOTE) IMPLEMENT ENEMY TYPES HERE
+		// ?? = NOT IMPLEMENTED OR NEEDS REVIEWING
+		ENEMY_TYPE_1 = "EnemyType1", 
+		// BASIC BARFING ENEMY (HOBBLES TOWARD PLAYER THEN BARFS, NO DAMAGE FROM CONTACT??)
+		ENEMY_TYPE_2 = "EnemyType2", 
+		// CHARGER ENEMY (FAST, NO PARTICLE ATTACK)
 
 
 		STATE_PLAY = "PlayState",

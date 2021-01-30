@@ -61,8 +61,8 @@ private:
 	AttackTimeDelay times;
 
 	DirectX::SimpleMath::Vector3 mVelocity;
-	float mSpeed = 1.0f;
-	float mMaxSpeed = 1.0f;
-	float mDrag = 1.0f;
+	float mSpeed = 1.0f; // current speed - LEAVE AS IS, CHANGES & ISN'T STATIC
+	//float mMaxSpeed = 1.0f; // max speed
+	float mDrag = 1.0f; // speed to add (* deltatime in enemy update)
 
 };

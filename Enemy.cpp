@@ -160,6 +160,9 @@ const std::string Enemy::GetDropItem()
 
 void Enemy::Update(const GameTimer & gt) // TODO: IMPLEMENT LOGIC FOR EACH POTENTIAL AI BASED ON ENEMY TYPE
 {
+	if (mSpeed <= 0.0f)
+		mSpeed = 0.0f;
+
 	// BARFING ENEMY - SLOW MOVEMENT TOWARDS PLAYER WHEN NOT ATTACKING
 	if (mEnemyType == GC::ENEMY_TYPE_1) 
 	{ 
@@ -169,14 +172,16 @@ void Enemy::Update(const GameTimer & gt) // TODO: IMPLEMENT LOGIC FOR EACH POTEN
 		case NONE:
 			if (mSpeed > 0.0f)
 			{
-				mSpeed -= mDrag * gt.DeltaTime();
+				mSpeed -= (GC::ENEMYTYPE1_DRAG * gt.DeltaTime());
 			}
 			; break;
 		case CHASE:
-			if (mSpeed < mMaxSpeed)
+			if (mSpeed < GC::ENEMYTYPE1_MAXSPEED)
 			{
-				mSpeed += mDrag * gt.DeltaTime();
+				mSpeed += (GC::ENEMYTYPE1_DRAG * gt.DeltaTime());
 			}
+			if (mSpeed >= GC::ENEMYTYPE1_MAXSPEED)
+				mSpeed = GC::ENEMYTYPE1_MAXSPEED;
 			; break;
 		default:; break;
 		}
@@ -191,6 +196,49 @@ void Enemy::Update(const GameTimer & gt) // TODO: IMPLEMENT LOGIC FOR EACH POTEN
 
 		// send int in instead of using gettype in the void
 		times.EnemyUpdateTime(1, gt.DeltaTime());
+
+		//Update enemy position based on bounceback
+		if (BouncebackPosition.x != 0.0f || BouncebackPosition.z != 0.0f)		//If there was a bounceback
+		{
+			DirectX::XMFLOAT3 currentPos = this->GetPos();		//Get current position of player
+			SetPos(DirectX::XMFLOAT3(currentPos.x + BouncebackPosition.x, currentPos.y, currentPos.z + BouncebackPosition.z));		//Add the bounceback position to it, will be 0 if there is a collision
+			BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+		}
+	}
+
+	if (mEnemyType == GC::ENEMY_TYPE_2) // TODO: CHARGER ENEMY
+	{
+
+		switch (mBehaviour)
+		{
+		case NONE:
+			if (mSpeed > 0.0f) // if speed is still being applied
+			{
+				mSpeed -= (GC::ENEMYTYPE2_DRAG * gt.DeltaTime()); // apply drag * deltatime to reduce
+			}
+			; break;
+		case CHASE:
+			if (mSpeed < GC::ENEMYTYPE2_MAXSPEED) // if speed is below max speed
+			{
+				mSpeed += (GC::ENEMYTYPE2_DRAG * gt.DeltaTime()); // add drag * deltatime to increase speed
+			}
+			if (mSpeed >= GC::ENEMYTYPE2_MAXSPEED)
+				mSpeed = GC::ENEMYTYPE2_MAXSPEED;
+			; break;
+		default:; break;
+		}
+
+		// PROBLEM BELOW WHEN NO PARTICLE ATTACK IMPLEMENTED
+		//if (times.isAttacking) // EXECUTES ATTACK
+		//	UpdateAttack(gt.DeltaTime());
+
+		//else
+		//	if (times.CanAttack())
+		//		times.SetNextTimer();		//Makes attacking bool true and resets timer for next attack
+		//		//times.ResetTimer();
+
+		// send int in instead of using gettype in the void
+		//times.UpdateTime();
 
 		//Update enemy position based on bounceback
 		if (BouncebackPosition.x != 0.0f || BouncebackPosition.z != 0.0f)		//If there was a bounceback

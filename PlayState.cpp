@@ -157,8 +157,8 @@ void PlayState::Initialize()
 	// Setup temp enemies
 	{
 		// inserts n of enemies
-
-		mEnemies.resize(3, Enemy(GC::ENEMY_TYPE_1, 25));
+		// TODO: (NOTE) ENEMIES ADDED HERE
+		mEnemies.resize(3, Enemy(GC::ENEMY_TYPE_2, 25));
 
 		//Init all enemies
 		for (auto& e : mEnemies)
@@ -269,6 +269,8 @@ void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN 
 	// TODO: BELOW COULD CAUSE PROBLEMS & WILL DEFINITELY NEED REVISIONS
 	// Setup temp enemies
 	{
+		// TODO: (NOTE) NEED TO ADD METHOD TO REMOVE CERTAIN ENEMIES & ADD NEW TYPES AT RANDOM RATHER THAN 
+		//		REINITIALIZING THE SAME ENEMIES OVER AND OVER
 
 		//Init all enemies
 		for (auto& e : mEnemies)
@@ -411,6 +413,39 @@ void PlayState::Update(const GameTimer & gt)
 						e.LookAt(playerPosition);
 					}
 				}
+
+				// enemy movement behaviour based on player radius
+				if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE &&
+					e.getattacking().isAttacking == false)
+				{
+					e.mBehaviour = Enemy::Behaviour::CHASE;
+				}
+				else
+				{
+					e.mBehaviour = Enemy::Behaviour::NONE;
+				}
+			}
+
+			if (e.GetType() == GC::ENEMY_TYPE_2) { // ENEMY TYPE EXCLUSIVE LOGIC LOCATED HERE
+				// TODO: (NOTE) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
+				if (mPlayer.GetPos().x >= (e.GetPos().x - GC::ENEMYTYPE2_RANGE) &&
+					mPlayer.GetPos().x <= (e.GetPos().x + GC::ENEMYTYPE2_RANGE)) { // player within - range on x
+					if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE2_RANGE) &&
+						mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE2_RANGE)) { // player within - range on z
+						e.LookAt(playerPosition);
+					}
+				}
+
+				// enemy movement behaviour based on player radius
+				if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE2_RANGE &&
+					e.getattacking().isAttacking == false)
+				{
+					e.mBehaviour = Enemy::Behaviour::CHASE;
+				}
+				else
+				{
+					e.mBehaviour = Enemy::Behaviour::NONE;
+				}
 			}
 
 			// enemy collision with planyer
@@ -463,17 +498,6 @@ void PlayState::Update(const GameTimer & gt)
 			for (auto& t : mTraders)
 				if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
 					e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-
-			// enemy movement behaviour based on player radius
-			if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE &&
-				e.getattacking().isAttacking == false)
-			{
-				e.mBehaviour = Enemy::Behaviour::CHASE;
-			}
-			else
-			{
-				e.mBehaviour = Enemy::Behaviour::NONE;
-			}
 
 			e.SetVelocity(mPlayer.GetPos(), gt);
 
