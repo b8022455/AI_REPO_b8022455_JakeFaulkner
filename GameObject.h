@@ -12,12 +12,17 @@ class GameTimer;
 //Initialize needs to be called for every gameobject with render item name
 class GameObject
 {
+private:
+	std::string mRenderItem = "";
+	bool mHasInitailized = false;
 protected:
 	// Adds and points to an existing render item
 	void AddRenderItemInstance(const std::string& renderItemName);
 	void RemoveRenderItemInstance();
 public:
-	//todo make protected
+
+	virtual ~GameObject();
+
 	InstanceData* mpInstance;
 	// Pass in renderItem string key and Initialize adds and points to an existing render item. Call AddRenderItemInstance() if overriding
 	virtual void Initialize(const std::string& renderItemName);
@@ -28,25 +33,29 @@ public:
 	const DirectX::SimpleMath::Vector3 GetPosV3() const;
 
 	void SetScale(const float& scale);
-	void SetScaleX(const float scaleX);
-	void SetScaleY(const float scaleY);
-	void SetScaleZ(const float scaleZ);
+	void SetScaleX(const float& scaleX);
+	void SetScaleY(const float& scaleY);
+	void SetScaleZ(const float& scaleZ);
 
-	void SetRotationX(const float newRotation);
-	void SetRotationY(const float newRotation);
-	void SetRotationZ(const float newRotation);
-	void SetRotation(const float rotationX, const float rotationY, const float rotationZ);
+	void SetRotationX(const float& newRotation);
+	void SetRotationY(const float& newRotation);
+	void SetRotationZ(const float& newRotation);
+	void SetRotation( const float& rotationX, const float& rotationY, const float& rotationZ);
 
 	const float GetRotationX() const;
 	const float GetRotationY() const;
 	const float GetRotationZ() const;
 
-	const void RotationAroundPoint(const DirectX::XMFLOAT3 translation1, const float rotation, const DirectX::XMFLOAT3 translation2) const;
-	const void RotationAroundPoint(const DirectX::XMMATRIX translation1, const float rotation, const DirectX::XMFLOAT3 translation2) const;
+	const void RotationAroundPoint(const DirectX::XMFLOAT3& translation1, const float& rotation, const DirectX::XMFLOAT3& translation2) const;
+	const void RotationAroundPoint(const DirectX::XMMATRIX& translation1, const float& rotation, const DirectX::XMFLOAT3& translation2) const;
 
-	void MOVE(const float dt, const float speed, DirectX::XMFLOAT4X4 direction); // DELTATIME, SPEED & DIRECTION(MATRIX)
+	void Move(const float& dt, const float& speed, DirectX::XMFLOAT4X4& direction); // DELTATIME, SPEED & DIRECTION(MATRIX)
 
-	bool CheckCollision(const DirectX::XMFLOAT3 Object1, const DirectX::XMFLOAT3 Object2);
+	bool CheckCollision(const DirectX::XMFLOAT3& Object1, const DirectX::XMFLOAT3& Object2);
 
-	const void LookAt(const DirectX::XMVECTOR target) const;
+	const void LookAt(const DirectX::XMVECTOR& target) const;
+
+	bool mEnabled = true;
+
+
 };

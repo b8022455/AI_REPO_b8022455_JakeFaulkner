@@ -7,11 +7,14 @@
 #include "Constants.h"
 #include <unordered_map>
 #include <algorithm>
+#include <iomanip>
 
 using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
 void PlayState::InitializeTraders()
 {
+
+	mTraders.reserve(10);
 	
 	mTraders.push_back(Trader(GC::TRADER_NAME_TEST, GC::TRADER_NAME_TEST, GC::TRADER_NAME_TEST));
 	mTraders.push_back(Trader(GC::TRADER_NAME_1, GC::TRADER_NAME_1, GC::TRADER_NAME_1));
@@ -19,6 +22,7 @@ void PlayState::InitializeTraders()
 	mTraders.push_back(Trader(GC::TRADER_NAME_3, GC::TRADER_NAME_3, GC::TRADER_NAME_3));
 	mTraders.push_back(Trader(GC::TRADER_NAME_1, GC::TRADER_NAME_2, GC::TRADER_NAME_3));
 
+	//sets up a line of traders
 	struct SetupTraders
 	{
 		float x = -10.5f;
@@ -28,11 +32,29 @@ void PlayState::InitializeTraders()
 			t.Initialize(GC::GO_TRADER);
 			t.mpInstance->MaterialIndex = 0/*GameApp::Get().GetMaterialIndex("tileTex")*/;
 			x+= 1.0f + (rand() % biggestGap);
-			t.SetPos({ x, 0.0f, 3.0f });
+			t.SetPos({ x, 0.0f, 4.0f });
 		}
 	};
 
-	std::for_each(mTraders.begin(), mTraders.end(), SetupTraders());
+	std::for_each(mTraders.begin(), mTraders.end(), SetupTraders()); // line of traders
+
+	// Side doors
+	mTraders.push_back(Trader(GC::TRADER_OBJ_1, GC::TRADER_OBJ_1, GC::TRADER_OBJ_1));
+	mTraders.back().Initialize("CarBody");
+	mTraders.back().SetPos({ 0.0f, 0.0f, 1.5f });
+	mTraders.back().SetAsStoryItem();
+
+	//Rear of car
+	mTraders.push_back(Trader(GC::TRADER_OBJ_2, GC::TRADER_OBJ_2, GC::TRADER_OBJ_2));
+	mTraders.back().Initialize("CarTire");
+	mTraders.back().SetPos({ -1.0f, 0.0f, 1.5f });
+	mTraders.back().SetAsStoryItem();
+
+	//Front of car - engine
+	mTraders.push_back(Trader(GC::TRADER_OBJ_3, GC::TRADER_OBJ_3, GC::TRADER_OBJ_3));
+	mTraders.back().Initialize("CarTire");
+	mTraders.back().SetPos({ 1.0f, 0.0f, 1.5f });
+	mTraders.back().SetAsStoryItem();
 
 }
 
@@ -116,6 +138,8 @@ void PlayState::Initialize()
 
 	InitializeTraders();
 	
+
+	// tile clumping
 	int n(0);
 	int clumpSize(5);
 	DirectX::XMFLOAT3 position = mTile.SetRandom();
@@ -133,28 +157,26 @@ void PlayState::Initialize()
 	// Setup temp enemies
 	{
 		// inserts n of enemies
-		mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 25));
-		mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 25));
-		mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 25));
+
+		mEnemies.resize(3, Enemy(GC::ENEMY_TYPE_1, 25));
 
 		//Init all enemies
 		for (auto& e : mEnemies)
 		{
 			e.Initialize("Enemy");
-
 			e.SetPosition({
-							static_cast<float>(rand() % 10 + 2.0f),
-							1.0f,
-							static_cast<float>(rand() % 10 + 2.0f)
-				});
+						static_cast<float>(rand() % 10 + 2.0f),
+						1.0f,
+						static_cast<float>(rand() % 10 + 2.0f)
+			});
 
-			for(auto t : mTraders)								//Check each trader in the game
+			for(auto& t : mTraders)									//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
 						1.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
-						});
+					});
 		}
 
 	}
@@ -247,29 +269,24 @@ void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN 
 	// TODO: BELOW COULD CAUSE PROBLEMS & WILL DEFINITELY NEED REVISIONS
 	// Setup temp enemies
 	{
-		// inserts n of enemies
-		mEnemies.push_back(Enemy("EnemyType1", 25));
-		mEnemies.push_back(Enemy("EnemyType1", 25));
-		mEnemies.push_back(Enemy("EnemyType1", 25));
 
 		//Init all enemies
 		for (auto& e : mEnemies)
 		{
-			e.Initialize("Enemy");
-
+			e.mEnabled = true;
 			e.SetPosition({
-							static_cast<float>(rand() % 10 + 2.0f),
-							1.0f,
-							static_cast<float>(rand() % 10 + 2.0f)
-				});
+				static_cast<float>(rand() % 10 + 2.0f),
+				1.0f,
+				static_cast<float>(rand() % 10 + 2.0f)
+			});
 
-			for (auto t : mTraders)								//Check each trader in the game
+			for (auto& t : mTraders)								//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
 						1.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
-						});
+					});
 		}
 
 	}
@@ -300,6 +317,7 @@ void PlayState::Update(const GameTimer & gt)
 		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), t.GetPos()))	//Prevents weapon from going through trader
 			mPlayerWeapon.ResetWeaponPosition();
 	}
+
 
 	mPlayer.Update(gt);
 
@@ -379,68 +397,74 @@ void PlayState::Update(const GameTimer & gt)
 	int i = 0;
 	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
 	{ 
-		//Enemy look at players position (only do when in range), only look when not attacking either
-		XMVECTOR playerPosition = XMLoadFloat3(&mPlayer.GetPos());
-
-		if (mCombatController.CheckCollision(mPlayer.GetPos(), e.GetPos()))
+		if (e.mEnabled)
 		{
-			mPlayer.DamagePlayer(e.GetAttack());
-			mPlayerHealthBar.SetValue(mPlayer.health);
-			GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f,GetRandomVoicePitch());
-		}
+			//Enemy look at players position (only do when in range), only look when not attacking either
+			XMVECTOR playerPosition = XMLoadFloat3(&mPlayer.GetPos());
 
-		//When checking if enemy is in range, have this be in that section to prevent enemy particles from far from being checked
-		for (auto& p : e.particles)
-		{
-			if (mPlayer.CheckCollision(mPlayer.GetPos(), p.GetPos()))
+			if (e.GetType() == GC::ENEMY_TYPE_1) { // ENEMY TYPE EXCLUSIVE LOGIC LOCATED HERE
+				// TODO: (NOTE) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
+				if (mPlayer.GetPos().x >= (e.GetPos().x - GC::ENEMYTYPE1_RANGE) &&
+					mPlayer.GetPos().x <= (e.GetPos().x + GC::ENEMYTYPE1_RANGE)) { // player within - range on x
+					if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE1_RANGE) &&
+						mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
+						e.LookAt(playerPosition);
+					}
+				}
+			}
+
+			// enemy collision with planyer
+			if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()))
 			{
 				mPlayer.DamagePlayer(e.GetAttack());
 				mPlayerHealthBar.SetValue(mPlayer.health);
 				GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
-				break;
 			}
-		}
 
-		if (mCombatController.CheckCollision(mPlayerWeapon.GetPos(), e.GetPos()))
-		{
-			e.DamageEnemy(mPlayer.attack);		//Takes away health from enemy + blowsback enemy position
-			if (e.GetHealth() <= 0)
+			//When checking if enemy is in range, have this be in that section to prevent enemy particles from far from being checked
+			for (auto& p : e.particles)
 			{
-				// gain exp
-				mExperience.AddExp(GC::EXP_DEFAULT); 
-
-				//Could be put into an exists function in Inventory Class
-				std::string droppedItem = e.GetDropItem();
-				if (droppedItem != "Empty")		//I.e An item was dropped from enemy
+				if (mPlayer.CheckCollision(mPlayer.GetPos(), p.GetPos()))
 				{
-					++mInventory[droppedItem];
+					mPlayer.DamagePlayer(e.GetAttack());
+					mPlayerHealthBar.SetValue(mPlayer.health);
+					GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
+					break;
 				}
-
-				e.Delete();
-				mEnemies.erase(mEnemies.begin() + i);
-
-				GameApp::Get().GetAudio().Play("EnemyDie1", nullptr, false, 1.0f, GetRandomVoicePitch());
 			}
-			else
+
+			if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), e.GetPos()))
 			{
-				GameApp::Get().GetAudio().Play("EnemyHit1", nullptr, false, 1.0f, GetRandomVoicePitch());
-			}
-		}
+				e.DamageEnemy(mPlayer.attack);		//Takes away health from enemy + blowsback enemy position
+				if (e.GetHealth() <= 0)
+				{
+					// gain exp
+					mExperience.AddExp(GC::EXP_DEFAULT);
 
-		for (auto& t : mTraders)
-			if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
-				e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-		
-		// TODO: (NOTE) ENEMY FOLLOW PLAYER SET HERE
-		if (e.GetType() == GC::ENEMY_TYPE_1) { // ENEMY TYPE EXCLUSIVE LOGIC LOCATED HERE
-			if (mPlayer.GetPos().x >= (e.GetPos().x - GC::ENEMYTYPE1_RANGE) &&
-				mPlayer.GetPos().x <= (e.GetPos().x + GC::ENEMYTYPE1_RANGE)) { // player within - range on x
-				if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE1_RANGE) &&
-					mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
-					e.LookAt(playerPosition);
+					//Could be put into an exists function in Inventory Class
+					std::string droppedItem = e.GetDropItem();
+					if (droppedItem != "Empty")		//I.e An item was dropped from enemy
+					{
+						++mInventory[droppedItem];
+					}
+
+					e.MoveOffScreen();
+					e.mEnabled = false;
+
+					GameApp::Get().GetAudio().Play("EnemyDie1", nullptr, false, 1.0f, GetRandomVoicePitch());
+				}
+				else
+				{
+					GameApp::Get().GetAudio().Play("EnemyHit1", nullptr, false, 1.0f, GetRandomVoicePitch());
 				}
 			}
 
+			// enemy collides with traders
+			for (auto& t : mTraders)
+				if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
+					e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+			// enemy movement behaviour based on player radius
 			if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE &&
 				e.getattacking().isAttacking == false)
 			{
@@ -455,10 +479,29 @@ void PlayState::Update(const GameTimer & gt)
 
 		}
 
-		e.Update(gt); 
+			e.Update(gt);
+
+			{
+				SimpleMath::Vector3 pos = e.GetPos();
+
+				GameApp::Get().mDebugLog << "Enemy i:" << i
+					<< "  Health: " << e.GetHealth()
+					<< "  mpInstance: " << e.mpInstance
+					<< "  X: " << std::setprecision(2) << pos.x
+					<< "  Z:" << std::setprecision(2) << pos.z << "\n";
+			}
+		}
+		
+
 		i++;
 
 	});
+
+	if (mPlayer.health <= 0)
+	{
+		ResetState(gt);
+		GameApp::Get().ChangeState("GameOver");
+	}
 
 	PassConstants* pMainPassCB = GameApp::Get().GetMainPassCB();
 
@@ -495,7 +538,6 @@ void PlayState::Update(const GameTimer & gt)
 		//GameApp::Get().ChangeState("PauseMenu");
 	}
 
-
 	// show/hide item menu
 	if (itemMenuOpen)
 	{
@@ -525,19 +567,11 @@ void PlayState::Update(const GameTimer & gt)
 		});
 	}
 
-	//If players health is below 0, change state to Game Over state
-	if (mPlayer.health <= 0)
-	{
-		mPlayer.health = 100;		//Just to check that restart changes state, will load most recent save instead
-		mPlayerHealthBar.SetValue(mPlayer.health);
-		GameApp::Get().ChangeState("GameOver");
-	}
-
 	// IMPLEMENT CHECK FOR ENEMIES HERE
-	if (mEnemies.empty() && mPlayer.AreaClear == false)
+	if (EnemiesRemaining() == 0 && !mPlayer.AreaClear)
 		mPlayer.AreaClear = true;
 
-	if (mPlayer.AreaClear == true && mPlayer.genArea == true) { // TODO: IMPLEMENT CHANGE STATE FOR NEW AREA HERE
+	if (mPlayer.AreaClear && mPlayer.genArea) { // TODO: IMPLEMENT CHANGE STATE FOR NEW AREA HERE
 		// change state, trigger regen
 		reInitialize(); // MAY CAUSE ERROR IF USED HERE
 		GameApp::Get().ChangeState("NewArea1");
@@ -548,6 +582,17 @@ void PlayState::Update(const GameTimer & gt)
 	{
 		c.UpdateViewMatrix();
 	}
+
+
+
+
+
+	/*mEnemies.erase(std::remove_if(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
+	{
+		return e.GetHealth() <= 0;
+
+	}), mEnemies.end());*/
+
 }
 
 void PlayState::Draw(const GameTimer & gt)
@@ -871,8 +916,6 @@ void PlayState::Keyboard(const GameTimer & gt)
 		mCombatController.PlayerAttack();
 	}
 
-	
-
 	//Switch to debug cam
 	if (Input::Get().KeyReleased(GC::KEY_CAM))
 	{
@@ -951,6 +994,17 @@ void PlayState::Keyboard(const GameTimer & gt)
 	{
 		ReGen();
 	}
+
+	if (Input::Get().KeyReleased('M'))
+	{
+		//mEnemies.clear();
+
+		for (auto& e : mEnemies)
+		{
+			e.mEnabled = false;
+			e.MoveOffScreen();
+		}
+	}
 }
 
 void PlayState::KeyboardDebug(const GameTimer & gt)
@@ -1000,11 +1054,9 @@ void PlayState::KeyboardDebug(const GameTimer & gt)
 	// Debug random enemy pos
 	if (Input::Get().KeyReleased(GC::KEY_DEBUG_ENEMY_POS))
 	{
-		mEnemies.push_back(Enemy("EnemyType1", 25));
-		mEnemies.back().Initialize("Enemy");
-
 		std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
 		{
+			e.mEnabled = true;
 			e.SetRandomPosition();
 		});
 	}
@@ -1047,4 +1099,76 @@ void PlayState::Gamepad(const GameTimer & gt)
 		ItemAction();
 	}
 
+}
+
+bool PlayState::TraderStoryComplete()
+{
+	int count = 0;
+
+	for (auto& t : mTraders)
+	{
+		if (t.CompletedStoryItem()) 
+		{
+			++count;
+		}
+	}
+
+	return count >= 3; // todo constant to header
+}
+
+void PlayState::ResetState(const GameTimer& gt)
+{
+	//Reset Camera
+	for (auto& c : mCameras)
+	{
+		c.SetPosition(0.0f, 25.0f, 0.0f);
+		c.UpdateViewMatrix();
+	}
+
+	mPlayer.Reset(gt);
+	mCombatController.Reset();
+	mPlayerWeapon.Reset(gt);
+	mPlayerHealthBar.SetValue(100);
+
+	//Reset Inventory
+	mInventory.clear();
+	++mInventory["Radio"];
+	++mInventory["Potion"];
+	inventoryPosition = mInventory.begin();
+
+	//Reset Traders
+	float x = -10.5f;
+	const int biggestGap = 3;
+	for (auto& t : mTraders)
+	{
+		x += 1.0f + (rand() % biggestGap);
+		t.SetPos({ x, 0.0f, 3.0f });
+	}
+
+	//Reset Plants
+	mPlants.clear();		//Doesn't reset when a plant has already been placed, need to fix
+	mPlants.reserve(20);
+
+	//Reset Tiles
+	ReGen();
+
+	//Reset Enemies
+	for (auto& e : mEnemies)
+	{
+		e.mEnabled = true;
+		e.Reset();
+		e.SetPos({
+		static_cast<float>(rand() % 10 + 2.0f),
+			1.0f,
+		static_cast<float>(rand() % 10 + 2.0f)
+			});
+
+		for (auto t : mTraders)
+			while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+				e.SetPos({
+					static_cast<float>(rand() % 10 + 2.0f),
+					1.0f,
+					static_cast<float>(rand() % 10 + 2.0f)
+					});
+	}
 }

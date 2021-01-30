@@ -37,7 +37,7 @@ struct AttackTimeDelay		//All variables used in the timing stuff, kept in struct
 		this->timeAtNow = time(0);
 		this->storeLocaltime = localtime_s(&this->currentTime, &this->timeAtNow);
 		if (this->currentTime.tm_sec < 2)	this->nextAtkTime = 0;
-		if (this->nextAtkTime >= 60)	this->nextAtkTime = 4;
+		if (this->nextAtkTime >= 60)	this->nextAtkTime = 2;
 	};
 
 	// TODO: MAY NEED SPECIFIC ENEMY EQUIVALENT OF THE ABOVE IF MULTIPLE ENEMY TYPES IMPLEMENTED

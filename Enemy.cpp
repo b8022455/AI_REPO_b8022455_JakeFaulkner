@@ -10,7 +10,7 @@ void Enemy::InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int matI
 	mpInstance->World._43 = position.z;
 }
 
-void Enemy::Delete()
+void Enemy::MoveOffScreen()
 {
 	//Removes enemy
 	this->mpInstance->World._42 = -200.f;
@@ -18,6 +18,18 @@ void Enemy::Delete()
 	//Removes particles
 	for (auto& p : particles)
 		p.mpInstance->World._42 = -200.0f;
+}
+
+void Enemy::Reset()
+{
+	mHealth = 100;
+	BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
+	times.isAttacking = false;
+	for (auto& p : particles)
+		p.RemoveEffect();
+	times.UpdateTime();
+	if (times.CanAttack())
+		times.SetNextTimer();
 }
 
 void Enemy::SetPosition(const DirectX::XMFLOAT3& newPosition)
@@ -35,8 +47,7 @@ void Enemy::SetPosition(const DirectX::XMFLOAT3& newPosition)
 		times.StartTime(GC::ENEMYTYPE1_ATTACK_DURATION, GC::ENEMYTYPE1_ATTACK_DELAY);
 
 	//Setup the enemy particles
-	for (int i = 1; i != 20; i++)
-		particles.push_back(EnemyParticle());		//Add 20 particles to vector
+	particles.resize(20);
 
 }
 

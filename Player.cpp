@@ -116,6 +116,26 @@ void Player::Update(const GameTimer & gt)
 
 }
 
+void Player::Reset(const GameTimer& gt)
+{
+	SetPos(DirectX::XMFLOAT3(0.f, 0.f, 0.f));		//Resets back to starting position
+	SetRotationY(0);
+	health = 100;
+	SetVelocity(0);
+	BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);		//Not sure if needs to be reset
+
+	//Resetting attack delay
+	times.UpdateTime();
+	times.SetNextTimer();
+	times.SetInvincibleStatus(false);
+
+	playerDir = PlayerFacingDirection::Left;		//Find way to replace instead of resetting
+
+	//Reset player bobbing animation
+	scaleYValue = 1.f;
+	SetScaleY(scaleYValue);
+}
+
 void Player::MoveUp(const GameTimer& gt)
 {
 	const float dt = gt.DeltaTime();
@@ -159,7 +179,6 @@ void Player::MoveRight(const GameTimer& gt)
 	playerDir = PlayerFacingDirection::Right;
 	SetRotationY(180);						//Positions player model facing right
 }
-
 
 void Player::Move(const GameTimer & gt, const DirectX::SimpleMath::Vector3 & vec)
 {
@@ -214,6 +233,7 @@ void Player::DamagePlayer(int damage)			//When enemy hits with player
 	if (!times.IsInvincible)
 	{
 		health -= damage;
+		if (health < 0)	health = 0;		//Prevents assert error in health bar (line 59 of bar.h)
 		times.SetInvincibleStatus(true);
 		times.nextInvincibleDelay = times.currentTime.tm_sec + times.InvincibleDelay;
 		if (times.nextInvincibleDelay >= 60)	times.nextInvincibleDelay -= 60;

@@ -29,7 +29,7 @@ class PlayState : public State
 	// Trader player is focused on
 	Trader* mpActiveTrader = nullptr;
 	Inventory::iterator inventoryPosition = mInventory.begin();			//Used to select items from the Inventory (Increments using down key, decrements using up key, loops back around when over inventory size)
-	bool itemMenuOpen = false;			//Debug: only allow item selection when on a menu(either pause or an item menu)
+	bool itemMenuOpen = false;				//Debug: only allow item selection when on a menu(either pause or an item menu)
 
 	TileManager mTileManager;
 	Tile mTile;
@@ -122,6 +122,7 @@ public:
 
 	// todo Sam/Jake description here please
 	void ReGen();
+	void ResetState(const GameTimer& gt);
 
 	void UiUpdate(const GameTimer& gt);
 	// Returns if planted successful
@@ -136,6 +137,16 @@ public:
 	void KeyboardDebug(const GameTimer& gt);
 	void Gamepad(const GameTimer& gt);
 
+	bool TraderStoryComplete();
 
+	int EnemiesRemaining()
+	{
+		int count = 0;
+		for (auto& e : mEnemies)
+		{
+			if (e.mEnabled) ++count;
+		}
+		return count;
+	}
 };
 

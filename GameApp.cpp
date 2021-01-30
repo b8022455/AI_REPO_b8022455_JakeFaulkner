@@ -8,6 +8,7 @@
 #include "SimpleMath.h"
 #include "OBJ_Loader.h"
 #include <cassert>
+#include <sstream>
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
@@ -20,7 +21,7 @@ const int gNumFrameResources = 3; //todo move to GC namespace in its own header
 
 bool GameApp::DEBUG = false;
 
-
+// todo remove
 std::string PrintMatrix(XMMATRIX& xmm)
 {
 	XMFLOAT4X4 m;
@@ -153,13 +154,18 @@ bool GameApp::Initialize()
 	BuildDescriptorHeaps();
 	BuildShadersAndInputLayout();
 	BuildBoxGeometry();
+	// For each geo object
+	//	add to mAllRitems in BuildRenderItems()
+	// Change differentRenderObjectsNum in frame resource to reflect this. 
 	BuildObjGeometry("Data/Models/tempSword.obj", "tempSwordGeo", "tempSword");// loads obj
 	BuildObjGeometry("Data/Models/tempPlayer.obj", "tempPlayerGeo", "tempPlayer");//tempPlayer.obj
 	BuildObjGeometry("Data/Models/tempEnemy.obj", "tempEnemyGeo", "tempEnemy");
 	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" ); //quad rather than cube
 	BuildObjGeometry("Data/Models/building04.obj","traderGeo", "trader" ); //quad rather than cube
 	BuildObjGeometry("Data/Models/particle.obj", "particle", "particle");		//Particle used for enemy attack
-	BuildObjGeometry("Data/Models/plantPotato.obj","potatoGeo", "potato" ); 
+	BuildObjGeometry("Data/Models/plantPotato.obj","potatoGeo", "potato" ); // plant
+	BuildObjGeometry("Data/Models/carBody.obj","carBodyGeo", "carBody" );  // 'trader' main objective. requires 1x1x1 bounding box
+	BuildObjGeometry("Data/Models/carWheel.obj","carTireGeo", "carTire" ); // two instances 'trader' main objective  either side of car body. requires 1x1x1 bounding box
 	BuildSwordGeometry();
 	BuildPlayerGeometry();
 	BuildMaterials();
@@ -208,6 +214,81 @@ InstanceData* GameApp::AddRenderItemInstance(const std::string & renderItemName)
 		OutputDebugStringA("renderItemName doesnt exist");
 		assert(false);
 		return nullptr;
+	}
+}
+
+void GameApp::RemoveRenderItemInstance(const std::string & renderItemName, InstanceData* id)
+{
+
+	if (mAllRitems.count(renderItemName) == 1)
+	{
+		if (id)
+		{
+			std::ostringstream oss;
+			oss << "Comparing instance data  \n" << renderItemName << "\n";
+
+			std::list<InstanceData>::iterator it = mAllRitems[renderItemName]->Instances.begin();
+			bool found = false;
+			while (it != mAllRitems[renderItemName]->Instances.end())
+			{
+				oss << " &(*it) = " << &(*it) << " InstanceData* id = " << id << "\n";
+
+				if (id == &(*it)    )
+				{
+					mAllRitems[renderItemName]->Instances.erase(it);
+
+					// update instance count
+					--mAllRitems[renderItemName]->InstanceCount;
+					--mInstanceCount;
+
+					oss << "match and erased. " << renderItemName
+						<< " instance count: " << mAllRitems[renderItemName]->InstanceCount
+						<< " overal instance count: "  << mInstanceCount << "\n"
+						;
+					found = true;
+					it = mAllRitems[renderItemName]->Instances.end();
+				}
+				else
+				{
+					++it;
+				}
+			}
+
+			oss << "post loop...\n";
+
+			if (!found)
+			{
+				oss << "NOT ";
+			}
+			oss << " FOUND AND REMOVED \n";
+
+			 //removes instance data from list
+			/*mAllRitems[renderItemName]->Instances.erase(std::remove_if(
+				mAllRitems[renderItemName]->Instances.begin(),
+				mAllRitems[renderItemName]->Instances.end(), [&](InstanceData& i)
+			{
+				OutputDebugStringA("comparing InstanceData  ");
+				if (id == &i)
+				{
+					return id == &i;
+				}
+				else
+				{
+					return false;
+				}
+			}), mAllRitems[renderItemName]->Instances.end());
+
+			 decrement count
+*/
+
+			OutputDebugStringA(oss.str().c_str());
+
+		}
+	}
+	else
+	{
+		OutputDebugStringA("renderItemName doesnt exist");
+		assert(false);
 	}
 }
 
@@ -300,6 +381,9 @@ void GameApp::Update(const GameTimer& gt)
 {
 	assert(mpActiveCamera);
 
+	mDebugLog << "Instance count: " << mInstanceCount << "\n\n";
+
+
 	OnKeyboardInput(gt);
 	Input::Get().Update();
 
@@ -316,6 +400,15 @@ void GameApp::Update(const GameTimer& gt)
 		WaitForSingleObject(eventHandle, INFINITE);
 		CloseHandle(eventHandle);
 	}
+
+
+	mDebugLog
+		<< "\n G) Enemy Instance count: "
+		<< mAllRitems[GC::GO_ENEMY]->InstanceCount
+		<< " Instance Size(): "
+		<< mAllRitems[GC::GO_ENEMY]->Instances.size()
+		<< "\n\n"
+		;
 
 	mStateManager.Update(gt);
 	AnimateMaterials(gt);
@@ -342,6 +435,9 @@ void GameApp::Update(const GameTimer& gt)
 
 		}
 	}
+
+
+
 
 }
 
@@ -493,6 +589,37 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 		i++;		//Increments the instance buffer for the next geo to be rendered
 		int visibleInstanceCount = 0;
 
+
+
+		for (auto& instance : instanceData)
+		{
+			XMMATRIX world = XMLoadFloat4x4(&instance.World);
+			XMMATRIX texTransform = XMLoadFloat4x4(&instance.TexTransform);
+
+			XMMATRIX invWorld = XMMatrixInverse(&XMMatrixDeterminant(world), world);
+
+			// View space to the object's local space.
+			XMMATRIX viewToLocal = XMMatrixMultiply(invView, invWorld);
+
+			// Transform the camera frustum from view space to the object's local space.
+			BoundingFrustum localSpaceFrustum;
+			mCamFrustum.Transform(localSpaceFrustum, viewToLocal);
+
+			// Perform the box/frustum intersection test in local space.
+			if ((localSpaceFrustum.Contains(e.second->Bounds) != DirectX::DISJOINT) || (mFrustumCullingEnabled == false))
+			{
+				InstanceData data;
+				XMStoreFloat4x4(&data.World, XMMatrixTranspose(world));
+				XMStoreFloat4x4(&data.TexTransform, XMMatrixTranspose(texTransform));
+				data.MaterialIndex = instance.MaterialIndex;
+
+				// Write the instance data to structured buffer for the visible objects.
+				currInstanceBuffer->CopyData(visibleInstanceCount++, data);
+			}
+		}
+
+		/*
+
 		for (UINT i = 0; i < (UINT)instanceData.size(); ++i)
 		{
 			XMMATRIX world = XMLoadFloat4x4(&instanceData[i].World);
@@ -519,6 +646,7 @@ void GameApp::UpdateInstanceData(const GameTimer& gt)
 				currInstanceBuffer->CopyData(visibleInstanceCount++, data);
 			}
 		}
+		*/
 
 		e.second->InstanceCount = visibleInstanceCount;
 
@@ -1129,6 +1257,8 @@ void GameApp::BuildRenderItems()
 	mAllRitems["Trader"] = BuildRenderItem(objCbIndex, "traderGeo", "trader");
 	mAllRitems["Potato"] = BuildRenderItem(objCbIndex, "potatoGeo", "potato");
 	mAllRitems["particle"] = BuildRenderItem(objCbIndex, "particle", "particle");
+	mAllRitems["CarBody"] = BuildRenderItem(objCbIndex, "carBodyGeo", "carBody");
+	mAllRitems["CarTire"] = BuildRenderItem(objCbIndex, "carTireGeo", "carTire");
 
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)
