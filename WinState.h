@@ -4,7 +4,7 @@
 class WinState : public State
 {
 public:
-	WinState(const Text& t1);
+	WinState(const Text& t1, const Text& t2, const Button& btn1);
 
 	virtual void Initialize() override;
 	virtual void Update(const GameTimer& gt) override;
@@ -18,4 +18,6 @@ public:
 
 private:
 	Text mTitle;
+	Text mDescription;
+	Button mBtn;
 };

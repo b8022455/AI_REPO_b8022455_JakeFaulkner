@@ -13,16 +13,16 @@ struct AttackTimeDelay		//All variables used in the timing stuff, kept in struct
 	bool isAttacking = false;
 	int InvincibleDelay = 2;
 	int nextInvincibleDelay;
-	bool IsInvincible = false;
+	bool IsInvincible = false; 
 
 	float timer; // 
 
 	void SetInvincibleStatus(bool foo)
 	{
-		this->IsInvincible = foo;
+		this->IsInvincible = foo; 
 	}
 
-	void StartTime(int attDuration, int attDelay)
+	void StartTime(float attDuration, float attDelay)
 	{
 		this->timeAtNow = time(0);
 		this->nextAtkTime = 0;
