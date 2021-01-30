@@ -113,5 +113,16 @@ public:
 	{
 		return mIsStoryItem && !CanTrade();
 	}
+
+	bool GetIfStoryItem()
+	{
+		return mIsStoryItem;
+	}
+
+	void ResetTrader()
+	{
+		if (traded)	traded = !traded;		//Allows trader to be traded with again after reset
+		mDialog.first.swap(mDialog.second);
+	}
 };
 

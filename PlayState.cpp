@@ -198,6 +198,16 @@ void PlayState::Initialize()
 		spriteSample.Initialise("stoneTex");
 		mSprites["testSpriteSecond"] = spriteSample;
 
+		mScoreText.color = DirectX::Colors::White;
+		mScoreText.fontIndex = 1;
+		mScoreText.string = "Score: " + std::to_string(score);
+		mScoreText.position = DirectX::SimpleMath::Vector2(650.f, 20.f);
+
+		mScoreTextShadow.color = DirectX::Colors::Black;
+		mScoreTextShadow.fontIndex = 1;
+		mScoreTextShadow.string = "Score: " + std::to_string(score);
+		mScoreTextShadow.position = DirectX::SimpleMath::Vector2(651.f, 21.f);
+
 
 		// panel soruce
 		const RECT src{ GC::PANEL_SRC[0],	GC::PANEL_SRC[1],	GC::PANEL_SRC[2],	GC::PANEL_SRC[3], };
@@ -304,6 +314,13 @@ void PlayState::Update(const GameTimer & gt)
 {
 	//mTileManager.Update(gt);
 	mCombatController.Update();
+
+	//Transition to win state when collecting all items needed for the car
+	if (TraderStoryComplete())
+	{
+		ResetState(gt);		//Resets in case you play again
+		GameApp::Get().ChangeState("WinState");
+	}
 
 	for (auto& t : mTraders)		//Checks all traders in the game
 	{
@@ -419,6 +436,12 @@ void PlayState::Update(const GameTimer & gt)
 				mPlayer.DamagePlayer(e.GetAttack());
 				mPlayerHealthBar.SetValue(mPlayer.health);
 				GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
+				//Transition to game over state
+				if (mPlayer.health <= 0)
+				{
+					ResetState(gt);
+					GameApp::Get().ChangeState("GameOver");
+				}
 			}
 
 			//When checking if enemy is in range, have this be in that section to prevent enemy particles from far from being checked
@@ -429,6 +452,12 @@ void PlayState::Update(const GameTimer & gt)
 					mPlayer.DamagePlayer(e.GetAttack());
 					mPlayerHealthBar.SetValue(mPlayer.health);
 					GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
+					//Transition to game over state
+					if (mPlayer.health <= 0)
+					{
+						ResetState(gt);
+						GameApp::Get().ChangeState("GameOver");
+					}
 					break;
 				}
 			}
@@ -440,6 +469,7 @@ void PlayState::Update(const GameTimer & gt)
 				{
 					// gain exp
 					mExperience.AddExp(GC::EXP_DEFAULT);
+					score += GC::SCORE_ENEMY;
 
 					//Could be put into an exists function in Inventory Class
 					std::string droppedItem = e.GetDropItem();
@@ -496,12 +526,6 @@ void PlayState::Update(const GameTimer & gt)
 
 	});
 
-	if (mPlayer.health <= 0)
-	{
-		ResetState(gt);
-		GameApp::Get().ChangeState("GameOver");
-	}
-
 	PassConstants* pMainPassCB = GameApp::Get().GetMainPassCB();
 
 	//flashing red for low health
@@ -534,6 +558,7 @@ void PlayState::Update(const GameTimer & gt)
 	if (mExperience.HasLeveledUp())
 	{
 		mMessage.Activate("LEVEL UP", 5.0f);
+		score += GC::SCORE_LVLUP;
 		//GameApp::Get().ChangeState("PauseMenu");
 	}
 
@@ -612,6 +637,9 @@ void PlayState::Draw(const GameTimer & gt)
 	mHelpText.Draw();
 
 	mMessage.Draw();
+
+	mScoreTextShadow.Draw();
+	mScoreText.Draw();
 
 }
 
@@ -729,6 +757,7 @@ void PlayState::ItemAction()
 		{
 			--inventoryPosition->second; //removes a potion
 			mPlayer.health += GC::HEAL_SMALL;
+			if (mPlayer.health > 100)	mPlayer.health = 100;	//Replace 100 with a constant max player variable
 			mPlayerHealthBar.SetValue(mPlayer.health);
 		}
 		break;
@@ -797,6 +826,8 @@ void PlayState::UiUpdate(const GameTimer & gt)
 	move += SimpleMath::Vector2{ 32.0f, 32.0f };//todo luc move to constants.h
 	mHelpText.position = move;
 
+	mScoreText.string = "Score: " + std::to_string(score);
+	mScoreTextShadow.string = mScoreText.string;
 
 	mMessage.Update(gt);
 }
@@ -880,6 +911,8 @@ void PlayState::HarvestByRadius()
 				{
 					mInventory[m.first] += m.second;
 				}
+
+				score += GC::SCORE_PLANT;
 			}
 		}
 	}
@@ -1117,6 +1150,8 @@ bool PlayState::TraderStoryComplete()
 
 void PlayState::ResetState(const GameTimer& gt)
 {
+	score = 0;		//Reset Score
+
 	//Reset Camera
 	for (auto& c : mCameras)
 	{
@@ -1140,13 +1175,21 @@ void PlayState::ResetState(const GameTimer& gt)
 	const int biggestGap = 3;
 	for (auto& t : mTraders)
 	{
-		x += 1.0f + (rand() % biggestGap);
-		t.SetPos({ x, 0.0f, 3.0f });
+		if (!t.GetIfStoryItem())		//Keeps position of car the same
+		{
+			x += 1.0f + (rand() % biggestGap);
+			t.SetPos({ x, 0.0f, 3.0f });
+		}
+
+		t.ResetTrader();		//Resets quests/trades for each trader
 	}
 
 	//Reset Plants
-	mPlants.clear();		//Doesn't reset when a plant has already been placed, need to fix
-	mPlants.reserve(20);
+	for (auto& p : mPlants)
+	{
+		p.SetPos(DirectX::XMFLOAT3(0.0f, -200.f, 0.0f));
+	}
+	mPlants.clear();
 
 	//Reset Tiles
 	ReGen();
@@ -1155,6 +1198,7 @@ void PlayState::ResetState(const GameTimer& gt)
 	for (auto& e : mEnemies)
 	{
 		e.mEnabled = true;
+		e.mpInstance->MaterialIndex = 0;
 		e.Reset();
 		e.SetPos({
 		static_cast<float>(rand() % 10 + 2.0f),

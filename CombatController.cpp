@@ -74,8 +74,8 @@ void PlayerWeapon::Initialize(const std::string& renderItemName)
 	// Setup a render item
 	AddRenderItemInstance("Weapon");
 
-	int attackDuration = 1;
-	int attackDelay = 1;
+	float attackDuration = 1.f;
+	float attackDelay = 1.f;
 
 	times.StartTime(attackDuration, attackDelay);
 

@@ -102,8 +102,8 @@ void StateManager::Init() // initialised in gameapp
 
 	//Game Over State
 	Text GOTitle;
-	GOTitle.scale = 1.5f;
-	GOTitle.position = GC::MENU_TITLE_POSITION;
+	GOTitle.scale = 2.f;
+	GOTitle.position = DirectX::SimpleMath::Vector2(300.f, 200.f);
 	GOTitle.string = "Game Over";
 
 	Button btnRestart(buttonBg, "W Back to Main Menu", Button::Action::GOTO_MAIN_MENU);
@@ -111,11 +111,17 @@ void StateManager::Init() // initialised in gameapp
 
 	//Win State
 	Text WinMenuTitle;
-	WinMenuTitle.scale = 1.5f;
-	WinMenuTitle.position = GC::MENU_TITLE_POSITION;
-	WinMenuTitle.string = "You Escaped!!!";
+	WinMenuTitle.scale = 2.f;
+	WinMenuTitle.position = DirectX::SimpleMath::Vector2(280.f, 200.f);
+	WinMenuTitle.string = "You Escaped";
 
-	AddState(GC::STATE_WIN, std::make_unique<WinState>(WinMenuTitle));
+	Text WinMenuTxt2;
+	WinMenuTxt2.scale = 1.f;
+	WinMenuTxt2.position = DirectX::SimpleMath::Vector2(300.f, 300.f);
+	WinMenuTxt2.string = "Press W to Play Again";
+
+	Button btnRestartfromWin(buttonBg, "", Button::Action::GOTO_MAIN_MENU);
+	AddState(GC::STATE_WIN, std::make_unique<WinState>(WinMenuTitle, WinMenuTxt2, btnRestartfromWin));
 
 	// Init all states
 	std::for_each(mStates.begin(), mStates.end(), [](auto& s) { s.second->Initialize(); });

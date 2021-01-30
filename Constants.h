@@ -52,6 +52,9 @@ namespace GC
 		EXP_OFFSET = 5,
 		EXP_DEFAULT = 5, // test value for increasing exp
 
+		SCORE_PLANT = 150,
+		SCORE_ENEMY = 250,
+		SCORE_LVLUP = 100,
 
 		HEAL_SMALL = 10,
 		HEAL_MED = 50,

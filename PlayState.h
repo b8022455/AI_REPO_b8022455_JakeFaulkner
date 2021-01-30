@@ -25,7 +25,6 @@ class PlayState : public State
 	std::vector<Plant> mPlants;
 	Inventory mInventory;
 
-
 	// Trader player is focused on
 	Trader* mpActiveTrader = nullptr;
 	Inventory::iterator inventoryPosition = mInventory.begin();			//Used to select items from the Inventory (Increments using down key, decrements using up key, loops back around when over inventory size)
@@ -53,6 +52,9 @@ class PlayState : public State
 	std::pair<SimpleMath::Vector2, SimpleMath::Vector2> mInventoryLocation;
 	Text mInventoryText;
 
+	Text mScoreText;
+	Text mScoreTextShadow;
+
 	std::pair<SimpleMath::Vector2, SimpleMath::Vector2> mHelpLocation;
 	Panel mHelpPanel;
 	Text mHelpText;
@@ -61,6 +63,9 @@ class PlayState : public State
 
 	void InitializeTraders();
 	bool FindNearestTraderInRadius();
+
+	int score = 0;
+
 public:
 	PlayState();
 
