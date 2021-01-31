@@ -13,6 +13,8 @@ typedef std::pair<std::string, std::string> DialogPair;
 
 typedef std::pair<std::string, float> PlantData;
 
+typedef std::pair<std::string, std::string> BuildingData;
+
 namespace GC
 {
 	//Keyboard keys
@@ -152,6 +154,12 @@ namespace GC
 		PLANT_1 = { PLANT_NAME_1 , 0.05f },
 		PLANT_2 = { PLANT_NAME_2 , 0.01f }
 	;
+
+	const BuildingData
+		BUILDING_0 = {"Abandoned","Medium"},
+		BUILDING_1 = {"Damaged","High"},
+		BUILDING_2 = {"Pristine","Low"}
+		;
 
 	//audio
 	const std::string TRADER_TALK[6]
