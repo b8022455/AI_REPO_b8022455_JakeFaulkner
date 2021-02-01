@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Audio.h"
+#include "DirectXTK12\Inc\Audio.h"
 #include <string>
 
 #include <unordered_map>

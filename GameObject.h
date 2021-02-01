@@ -4,8 +4,7 @@
 #include "FrameResource.h"
 #include <memory>
 #include <DirectXMath.h>
-#include "SimpleMath.h"
-
+#include "DirectXTK12\Inc\SimpleMath.h"
 
 class GameTimer;
 

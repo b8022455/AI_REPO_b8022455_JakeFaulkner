@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include "RenderTargetState.h"
-#include "ResourceUploadBatch.h"
-#include "SpriteBatch.h"
-#include "SpriteFont.h"
+#include "DirectXTK12\Inc\RenderTargetState.h"
+#include "DirectXTK12\Inc\ResourceUploadBatch.h"
+#include "DirectXTK12\Inc\SpriteBatch.h"
+#include "DirectXTK12\Inc\SpriteFont.h"
 
 #include <mutex>
 #include <vector>

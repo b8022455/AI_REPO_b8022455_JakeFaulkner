@@ -1,19 +1,19 @@
 #pragma once
-#include <SpriteFont.h>
+#include "DirectXTK12\Inc\SpriteFont.h"
 #include <array>
 
 #ifndef FONT_SIZE
 #define FONT_SIZE 2
 #endif // !FONT_SIZE
-#include "DescriptorHeap.h"
+#include "DirectXTK12\Inc\DescriptorHeap.h"
 
 #include <wrl.h>
 #include "TextConsole.h"
 #include "Common/d3dx12.h"
-#include <GraphicsMemory.h>
+#include "DirectXTK12\Inc\GraphicsMemory.h"
 #include <d3d12.h>
-#include <CommonStates.h>
-#include "SimpleMath.h"
+#include "DirectXTK12\Inc\CommonStates.h"
+#include "DirectXTK12\Inc\SimpleMath.h"
 
 struct Text
 {
