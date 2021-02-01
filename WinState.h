@@ -17,7 +17,10 @@ public:
 	virtual void OnKeyboardInput(const GameTimer& gt) override {};
 
 private:
+	void DrawLeaderboard();
+
 	Text mTitle;
 	Text mDescription;
+	Text mLeaderboard;
 	Button mBtn;
 };

@@ -321,6 +321,7 @@ void PlayState::Update(const GameTimer & gt)
 	//Transition to win state when collecting all items needed for the car
 	if (TraderStoryComplete())
 	{
+		StoreScore();
 		ResetState(gt);		//Resets in case you play again
 		GameApp::Get().ChangeState("WinState");
 	}
@@ -1238,5 +1239,55 @@ void PlayState::ResetState(const GameTimer& gt)
 					1.0f,
 					static_cast<float>(rand() % 10 + 2.0f)
 					});
+	}
+}
+
+void PlayState::StoreScore()
+{
+	//Stores score to txt file
+	std::vector<int> scores(5);
+
+	ifstream fin;
+	fin.open("Data/Leaderboard.txt", ios::out);
+
+	if (fin.fail())		//Cannot find the txt file / It doesn't exist
+	{
+		ofstream fout("Data/Leaderboard.txt");		//Create the file
+		if (fout.fail())
+			assert(fout.fail());
+		else
+		{
+			fout << score;		//Only add a single score into the new txt file
+			fout.close();
+		}
+	}
+	else
+	{
+		int previousScore;
+		//Gets scores from the leaderboard
+		for (size_t i = 0; i < scores.size(); i++)
+			fin >> scores.at(i);
+
+		ofstream fout("Data/Leaderboard.txt", ios::out);
+		if (fout.fail())
+			assert(fout.fail());
+		else
+		{
+			for (size_t i = scores.size() - 1; i < -1; i--)		//Reorders score table if positions change
+			{
+				if (score >= scores.at(i))
+				{
+					previousScore = scores.at(i);
+					scores.at(i) = score;
+					if (i < 4)
+						scores.at(i + 1) = previousScore;
+				}
+			}
+
+			for (size_t i = 0; i < scores.size(); i++)		//Outputs back into the txt file
+				fout << scores.at(i) << "\n";
+
+			fout.close();
+		}
 	}
 }

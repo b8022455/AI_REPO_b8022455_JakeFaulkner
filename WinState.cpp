@@ -40,9 +40,38 @@ void WinState::Draw(const GameTimer& gt)
 {
 	mTitle.Draw();
 	mDescription.Draw();
+	DrawLeaderboard();
 }
 
 void WinState::OnResume()
 {
 
+}
+
+void WinState::DrawLeaderboard()
+{
+	std::vector<int> scores(5);
+	mLeaderboard.scale = 1.5f;
+	mLeaderboard.position = DirectX::SimpleMath::Vector2(320.f, 140.f);
+	std::stringstream txt;
+
+	//Get leaderboard from txt file
+	std::ifstream fin;
+	fin.open("Data/Leaderboard.txt", std::ios::out);
+	if (fin.fail())
+		assert(fin.fail());
+	else
+		for (int i = 0; i < scores.size(); i++)		//gets scores from txt file
+			fin >> scores.at(i);
+
+	fin.close();
+
+	txt << "1.    " << scores.at(0) << "\n\n"
+		<< "2.    " << scores.at(1) << "\n\n"
+		<< "3.    " << scores.at(2) << "\n\n"
+		<< "4.    " << scores.at(3) << "\n\n"
+		<< "5.    " << scores.at(4) << "\n\n";
+
+	mLeaderboard.string = txt.str().c_str();
+	mLeaderboard.Draw();
 }

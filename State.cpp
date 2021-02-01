@@ -112,12 +112,12 @@ void StateManager::Init() // initialised in gameapp
 	//Win State
 	Text WinMenuTitle;
 	WinMenuTitle.scale = 2.f;
-	WinMenuTitle.position = DirectX::SimpleMath::Vector2(280.f, 200.f);
+	WinMenuTitle.position = DirectX::SimpleMath::Vector2(280.f, 60.f);
 	WinMenuTitle.string = "You Escaped";
 
 	Text WinMenuTxt2;
 	WinMenuTxt2.scale = 1.f;
-	WinMenuTxt2.position = DirectX::SimpleMath::Vector2(300.f, 300.f);
+	WinMenuTxt2.position = DirectX::SimpleMath::Vector2(300.f, 480.f);
 	WinMenuTxt2.string = "Press W to Play Again";
 
 	Button btnRestartfromWin(buttonBg, "", Button::Action::GOTO_MAIN_MENU);

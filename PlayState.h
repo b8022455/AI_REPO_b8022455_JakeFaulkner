@@ -63,6 +63,7 @@ class PlayState : public State
 
 	void InitializeTraders();
 	bool FindNearestTraderInRadius();
+	void StoreScore();
 
 	int score = 0;
 
