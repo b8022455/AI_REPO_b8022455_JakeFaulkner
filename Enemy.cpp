@@ -158,7 +158,7 @@ const std::string Enemy::GetDropItem()
 
 }
 
-void Enemy::Update(const GameTimer & gt) // TODO: IMPLEMENT LOGIC FOR EACH POTENTIAL AI BASED ON ENEMY TYPE
+void Enemy::Update(const GameTimer & gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR EACH POTENTIAL AI BASED ON ENEMY TYPE
 {
 	if (mSpeed <= 0.0f)
 		mSpeed = 0.0f;
@@ -206,7 +206,7 @@ void Enemy::Update(const GameTimer & gt) // TODO: IMPLEMENT LOGIC FOR EACH POTEN
 		}
 	}
 
-	if (mEnemyType == GC::ENEMY_TYPE_2) // TODO: CHARGER ENEMY
+	if (mEnemyType == GC::ENEMY_TYPE_2) // CHARGER ENEMY
 	{
 
 		switch (mBehaviour)
@@ -250,7 +250,7 @@ void Enemy::Update(const GameTimer & gt) // TODO: IMPLEMENT LOGIC FOR EACH POTEN
 	}
 }
 
-void Enemy::UpdateAttack(float dt) // TODO: NEED TO IMPLEMENT TIMER WORK HERE TOO
+void Enemy::UpdateAttack(float dt)
 {
 	// IF DURATION IS LESS THAN 0 SHOULD BE HERE
 	times.attackDuration -= dt;

@@ -158,7 +158,8 @@ void PlayState::Initialize()
 	{
 		// inserts n of enemies
 		// TODO: (NOTE) ENEMIES ADDED HERE
-		mEnemies.resize(3, Enemy(GC::ENEMY_TYPE_2, 25));
+		mEnemies.resize(3, Enemy(GC::ENEMY_TYPE_2, 25)); // number of enemies, Enemy(GC::enemytype, attack)
+		mEnemies.resize(1, Enemy(GC::ENEMY_TYPE_1, 15));
 
 		//Init all enemies
 		for (auto& e : mEnemies)
@@ -619,7 +620,7 @@ void PlayState::Update(const GameTimer & gt)
 	if (EnemiesRemaining() == 0 && !mPlayer.AreaClear)
 		mPlayer.AreaClear = true;
 
-	if (mPlayer.AreaClear && mPlayer.genArea) { // TODO: IMPLEMENT CHANGE STATE FOR NEW AREA HERE
+	if (mPlayer.AreaClear && mPlayer.genArea) { // TODO: (REMEMBER) IMPLEMENT CHANGE STATE FOR NEW AREA HERE
 		// change state, trigger regen
 		reInitialize(); // MAY CAUSE ERROR IF USED HERE
 		GameApp::Get().ChangeState("NewArea1");
