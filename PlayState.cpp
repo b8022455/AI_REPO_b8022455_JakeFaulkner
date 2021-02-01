@@ -158,8 +158,8 @@ void PlayState::Initialize()
 	{
 		// inserts n of enemies
 		// TODO: (NOTE) ENEMIES ADDED HERE
-		mEnemies.resize(3, Enemy(GC::ENEMY_TYPE_2, 25)); // number of enemies, Enemy(GC::enemytype, attack)
-		mEnemies.resize(1, Enemy(GC::ENEMY_TYPE_1, 15));
+		mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 25)); // number of enemies, Enemy(GC::enemytype, attack)
+		mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
 
 		//Init all enemies
 		for (auto& e : mEnemies)
