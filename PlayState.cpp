@@ -2,7 +2,7 @@
 #include "PlayState.h"
 #include "GameApp.h"
 #include "XmfloatOverload.h"
-#include "SimpleMath.h"
+#include "DirectXTK12\Inc\SimpleMath.h"
 //#include "Input.h"
 #include "Constants.h"
 #include <unordered_map>

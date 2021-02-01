@@ -1,6 +1,6 @@
 #include "SpriteManager.h"
-#include "ResourceUploadBatch.h"
-#include "DescriptorHeap.h"
+#include "DirectXTK12\Inc\ResourceUploadBatch.h"
+#include "DirectXTK12\Inc\DescriptorHeap.h"
 
 #include "Common/d3dUtil.h"
 #include "Common/d3dx12.h"

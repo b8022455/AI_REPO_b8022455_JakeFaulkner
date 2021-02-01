@@ -4,9 +4,9 @@
 
 #include "d3dApp.h"
 #include <WindowsX.h>
-#include <Keyboard.h>
-#include <GamePad.h>
-#include "../Input.h"
+#include "..\DirectXTK12\Inc\Keyboard.h"
+#include "..\DirectXTK12\Inc\GamePad.h"
+#include "..\Input.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace std;

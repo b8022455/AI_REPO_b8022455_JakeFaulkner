@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <iterator>
 
+// TODO: MASSIVE LINKER ERRORS IN AUDIOSIMPLE, D3DAPP, GAMEOBJECT, INPUT, PLAYSTATE, WINMAIN, SPRITEMANAGER, TEXTCONSOLE OBJ FILES
+
 AudioSimple::~AudioSimple()
 {
 	if (mAudioEngine)

@@ -5,7 +5,7 @@
 #include <xaudio2.h>
 #include <functional>
 #include "GameApp.h"
-#include "SimpleMath.h"
+#include "DirectXTK12\Inc\SimpleMath.h"
 #include "OBJ_Loader.h"
 #include <cassert>
 #include <sstream>

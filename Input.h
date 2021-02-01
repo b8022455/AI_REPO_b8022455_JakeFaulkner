@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Singleton.h"
-#include <Keyboard.h>
-#include <GamePad.h>
-#include "SimpleMath.h"
+#include "DirectXTK12\Inc\Keyboard.h"
+#include "DirectXTK12\Inc\GamePad.h"
+#include "DirectXTK12\Inc\SimpleMath.h"
 
 
 class Input : public Singleton<Input>
