@@ -228,6 +228,9 @@ void Button::Activate()
 	case Button::GOTO_MAIN_MENU:
 		GameApp::Get().ChangeState(GC::STATE_MAINMENU);
 		break;
+	case Button::GOTO_ENTER_NAME_MENU:
+		GameApp::Get().ChangeState("EnterName");
+		break;
 	case Button::GOTO_GAME:
 		GameApp::Get().ChangeState(GC::STATE_PLAY);
 		break;

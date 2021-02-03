@@ -115,6 +115,7 @@ public:
 	enum Action {
 		NO_ACTION,
 		GOTO_MAIN_MENU,
+		GOTO_ENTER_NAME_MENU,
 		GOTO_GAME,
 		GOTO_VOLUME,
 		VOLUME_UP,
