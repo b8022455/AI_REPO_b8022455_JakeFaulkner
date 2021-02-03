@@ -287,6 +287,7 @@ void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN 
 		for (auto& e : mEnemies)
 		{
 			e.mEnabled = true;
+			e.Reset();
 			e.SetPosition({
 				static_cast<float>(rand() % 10 + 2.0f),
 				1.0f,
@@ -1059,6 +1060,7 @@ void PlayState::Keyboard(const GameTimer & gt)
 
 		for (auto& e : mEnemies)
 		{
+			e.Reset();
 			e.mEnabled = false;
 			e.MoveOffScreen();
 		}
@@ -1115,6 +1117,7 @@ void PlayState::KeyboardDebug(const GameTimer & gt)
 		std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
 		{
 			e.mEnabled = true;
+			e.Reset();
 			e.SetRandomPosition();
 		});
 	}

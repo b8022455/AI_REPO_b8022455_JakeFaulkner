@@ -293,7 +293,7 @@ namespace GC
 	{
 		{ TRADER_NAME_TEST,	{"Got some rare things to trade, stranger","heh heh heh Thank you"	}},
 		{ TRADER_NAME_1,	{"Trade with me","Now on your way"	}},
-		{ TRADER_NAME_2,	{"I need some things   you need some things","Now I need some peace and quiet and you need to leave"	}}, //
+		{ TRADER_NAME_2,	{"I need some things you need some things","Now I need some peace and quiet and you need to leave"	}}, //
 		{ TRADER_NAME_3,	{"Trade with me","Now on your way"	}}, //todo change 
 		{ TRADER_NAME_4, 	{"Trade with me","Now on your way"	}}, // no reward, charity
 		{ TRADER_OBJ_3, 	{"There's lots of space to store weapons here.","Locked and loaded"	}},			// rear of car
