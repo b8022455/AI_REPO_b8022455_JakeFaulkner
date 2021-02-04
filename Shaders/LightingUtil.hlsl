@@ -140,12 +140,19 @@ float4 ComputeLighting(Light gLights[MaxLights], Material mat,
                        float3 shadowFactor)
 {
     float3 result = 0.0f;
-
+    
+    
+    
     int i = 0;
 
+    
+    
+    
 #if (NUM_DIR_LIGHTS > 0)
     for(i = 0; i < NUM_DIR_LIGHTS; ++i)
     {
+        gLights[i].Direction = normalize(gLights[i].Direction);
+
         result += shadowFactor[i] * ComputeDirectionalLight(gLights[i], mat, normal, toEye);
     }
 #endif
@@ -160,6 +167,8 @@ float4 ComputeLighting(Light gLights[MaxLights], Material mat,
 #if (NUM_SPOT_LIGHTS > 0)
     for(i = NUM_DIR_LIGHTS + NUM_POINT_LIGHTS; i < NUM_DIR_LIGHTS + NUM_POINT_LIGHTS + NUM_SPOT_LIGHTS; ++i)
     {
+        gLights[i].Direction = normalize(gLights[i].Direction);
+    
         result += ComputeSpotLight(gLights[i], mat, pos, normal, toEye);
     }
 #endif 

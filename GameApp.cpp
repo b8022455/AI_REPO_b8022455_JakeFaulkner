@@ -714,16 +714,11 @@ void GameApp::UpdateMainPassCB(const GameTimer& gt)
 	mMainPassCB.TotalTime = gt.TotalTime();
 	mMainPassCB.DeltaTime = gt.DeltaTime();
 	//mMainPassCB.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
-	mMainPassCB.AmbientLight = { 0.06f, 0.126f, 0.06f, 1.0f };
+	mMainPassCB.AmbientLight = { 0.12f, 0.226f, 0.12f, 1.0f };
 	
-	mMainPassCB.Lights[0].Direction = { 0.57735f, -0.57735f, 0.57735f };
+	//mMainPassCB.Lights[0].Direction = { 0.57735f, -0.57735f, 0.57735f };
+	mMainPassCB.Lights[0].Direction = { 0.5f, -1.0f, 1.0f }; //normalised in shader
 	mMainPassCB.Lights[0].Strength = { 1.0f, 0.9f, 0.6f };
-
-	//mMainPassCB.Lights[1].Direction = { -0.57735f, -0.57735f, 0.57735f };
-	//mMainPassCB.Lights[1].Strength = { 0.4f, 0.4f, 0.4f };
-	//mMainPassCB.Lights[1].Strength = { 1.0f, 0.9f, 0.6f };
-	//mMainPassCB.Lights[2].Direction = { 0.0f, -0.707f, -0.707f };
-	//mMainPassCB.Lights[2].Strength = { 0.0f, 0.0f, 0.0f };
 
 	auto currPassCB = mCurrFrameResource->PassCB.get();
 	currPassCB->CopyData(0, mMainPassCB);
