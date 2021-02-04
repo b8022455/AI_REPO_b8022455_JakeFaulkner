@@ -555,7 +555,9 @@ void TileManager::Initialize()
 			mMapData.back().push_back(mapData());
 
 			if (coords[k][j] <= 0)
+			{
 				mMapData.back().back().texIndex = (rand() % 2) + 1; // random plain tile
+			}
 			else
 				mMapData.back().back().texIndex = coords[k][j]; // set as hazard
 
@@ -590,8 +592,11 @@ void TileManager::Initialize()
 			
 			// TODO: (NOTE) A SLIGHT ERROR HERE, J & K SHOULD BE SWAPPED, BUT I THINK IT HELPS A LITTLE LIKE THIS
 			//Selects random index from array of textures WIP - will be using auto generated clumping 2d array
-			tl.at(j).mpInstance->MaterialIndex = mMapData[j][k].texIndex; // set tile texture to struct data
-			//tl.back().mpInstance->MaterialIndex = 0; // USED IN TESTING
+
+
+
+			SetUV(tl.at(j).mpInstance, j, k);
+			//tl.at(j).mpInstance->MaterialIndex = mMapData[j][k].texIndex; // set tile texture to struct data
 		}
 
 		mTileGrid.at(k) = tl;
@@ -1175,7 +1180,10 @@ void TileManager::REGEN() {
 			else
 				mMapData[k][j].texIndex = coords[k][j]; // set as hazard
 
-			mTileGrid.at(j).at(k).mpInstance->MaterialIndex = mMapData[k][j].texIndex;
+
+
+			SetUV(mTileGrid.at(j).at(k).mpInstance, j, k);
+			//mTileGrid.at(j).at(k).mpInstance->MaterialIndex = mMapData[k][j].texIndex;
 
 		}
 	}
@@ -1188,6 +1196,18 @@ void TileManager::Update(const GameTimer & gt)
 
 int TileManager::GetIndex(int x, int y) {
 	return mMapData[x][y].texIndex;
+}
+
+void TileManager::SetUV( InstanceData* id,  int x, int y)
+{
+
+	// gets uv from map data index with random
+	DirectX::SimpleMath::Vector2 uv = GC::TILE_UV[mMapData[x][y].texIndex];//  +GC::TILE_UV_RANDOM[rand() % GC::NUM_TILE_UV_RAND];
+	uv += GC::TILE_UV_RANDOM[rand() % GC::NUM_TILE_UV_RAND];
+	// adds uv to existing texture uv
+	id->TexTransform._41 = uv.x;
+	id->TexTransform._42 = uv.y;
+
 }
 
 Tile & TileManager::GetTile(int x, int y)

@@ -97,6 +97,8 @@ public:
 	Tile& GetTile(int x, int y);
 	void SetTile(int x, int y, const Tile& tile);
 	int GetIndex(int x, int y); // maybe remove 
+	// Allpies mMapData to mTileGrid
+	void SetUV( InstanceData* id, int x, int y);
 
 	void REGEN();
 
@@ -106,3 +108,17 @@ public:
 	const int Haz3Tex = 5; // ICE / SLIP
 
 };
+
+
+/*
+
+	normal	= 1
+			= 2
+	mud		= 3
+	ice		= 5
+	poison	= 6
+
+
+
+
+*/

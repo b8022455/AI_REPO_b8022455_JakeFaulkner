@@ -184,6 +184,20 @@ namespace GC
 		TILE_UV_BLANK{ 0.375f , 0.5f }
 
 	;
+	
+	const DirectX::XMFLOAT2 TILE_UV[8] =
+	{
+		{ 0.0f , 0.0f },
+		{ 0.0f , 0.5f },
+		{ 0.125f , 0.0f },
+		{ 0.125f , 0.5f },
+		{ 0.25f , 0.0f },
+		{ 0.25f , 0.5f },
+		{ 0.375f , 0.0f },
+		{ 0.375f , 0.5f }
+	};
+
+
 	const size_t NUM_TILE_UV_RAND = 4;
 
 	// Add a random element to tile uvcoords for texture on atlus
