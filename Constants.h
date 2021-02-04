@@ -187,14 +187,14 @@ namespace GC
 	
 	const DirectX::XMFLOAT2 TILE_UV[8] =
 	{
-		{ 0.0f , 0.0f },
-		{ 0.0f , 0.5f },
-		{ 0.125f , 0.0f },
-		{ 0.125f , 0.5f },
-		{ 0.25f , 0.0f },
-		{ 0.25f , 0.5f },
-		{ 0.375f , 0.0f },
-		{ 0.375f , 0.5f }
+		{ 0.0f , 0.0f }, // gravel
+		{ 0.125f , 0.5f }, // grass
+		{ 0.125f , 0.0f }, // danger
+		{ 0.0f , 0.5f }, // junk
+		{ 0.25f , 0.0f }, // spikes
+		{ 0.25f , 0.5f }, // nothing
+		{ 0.375f , 0.0f }, // nothing
+		{ 0.375f , 0.5f } // nothing
 	};
 
 
