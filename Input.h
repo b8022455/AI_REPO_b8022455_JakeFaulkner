@@ -42,6 +42,24 @@ public:
 		return mKeyState.IsKeyDown((DirectX::Keyboard::Keys)  c);
 	}
 
+	char GetKey()
+	{
+		char c;
+		for (c = 0x41; c <= 0x5a; c++)		//Searches through A to Z
+		{
+			if (mKeyTracker.IsKeyPressed((DirectX::Keyboard::Keys) c))
+				return c;
+		}
+
+		if (mKeyTracker.IsKeyPressed((DirectX::Keyboard::Keys) 0x20))		//Checks for space bar
+			return 0x20;
+
+		if (mKeyTracker.IsKeyPressed((DirectX::Keyboard::Keys) 0x8))		//Checks for backspace
+			return 0x8;
+
+		return 0;
+	}
+
 	// Use to retrieve trigger and stick floats
 	DirectX::GamePad::State GamePadState()
 	{

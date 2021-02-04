@@ -59,7 +59,7 @@ void StateManager::Init() // initialised in gameapp
 
 	//Enter Name Screen
 	menuTitle.string = "Enter Name (8 Characters Max)";
-	Button btnEnter(buttonBg, "Enter Name", Button::GOTO_ENTER_NAME_MENU);
+	Button btnEnter(buttonBg, "Enter - Play", Button::GOTO_GAME);
 	AddState("EnterName", std::make_unique<MenuState>(menuTitle, btnEnter, "EnterNameMenu"));
 
 	// PASSING LEVEL SCREEN?

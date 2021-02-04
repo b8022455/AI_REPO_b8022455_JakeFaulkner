@@ -113,6 +113,26 @@ void MenuState::Update(const GameTimer & gt)
 			mButtons.at(3).Activate();
 		}
 	}
+	else
+	{
+		if (Input::Get().KeyReleased(GC::KEY_PAUSE) && mEnteredName.string.size() > 0)	// Enter, used to enter name and continue to next screen
+		{
+			GameApp::Get().PlayClickUpAudio(true);
+			mButtons.at(0).Activate();
+		}
+
+		//Gets inputted key from the keyboard
+		const char key = Input::Get().GetKey();
+
+		if (key == 0x8)		//Backspace
+		{
+			if (mEnteredName.string.size() > 0)
+				mEnteredName.string.pop_back();
+		}
+		else if(key != '\0' && mEnteredName.string.size() < 8)		//Keeps size of name to 8 max
+			mEnteredName.string += key;
+	}
+	
 }
 
 void MenuState::Draw(const GameTimer & gt)
@@ -120,6 +140,7 @@ void MenuState::Draw(const GameTimer & gt)
 	mTitle.Draw();
 	mBody.Draw();
 	//mTempPanel.Draw();
+	mEnteredName.Draw();
 
 	for (auto& b : mButtons)
 	{
