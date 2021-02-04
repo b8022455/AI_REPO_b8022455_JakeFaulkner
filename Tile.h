@@ -5,7 +5,7 @@
 #include <time.h>
 
 struct mapData { // STRUCT FOR MAP TEXTURE AND TILE DATA
-	int texIndex; //texture index from texture buffer for tile 
+	int uvIndex; //texture index from texture buffer for tile 
 	//int x; // horizontal component - WIP FOR 3D
 	//int y; // vertical component - WIP FOR 3D
 };
@@ -97,12 +97,28 @@ public:
 	Tile& GetTile(int x, int y);
 	void SetTile(int x, int y, const Tile& tile);
 	int GetIndex(int x, int y); // maybe remove 
+	// Allpies mMapData to mTileGrid
+	void SetUV( InstanceData* id, int x, int y);
 
 	void REGEN();
 
 	// TODO: (NOTE) UPDATE TEXTURES FOR HAZARDS & OTHER TILES HERE WHEN THE LOAD ORDER IS CHANGED
-	const int Haz1Tex = 6; // POISON
-	const int Haz2Tex = 3; // MUD / SLOW
-	const int Haz3Tex = 5; // ICE / SLIP
+	const int Haz1Tex = 4; // POISON
+	const int Haz2Tex = 2; // MUD / SLOW
+	const int Haz3Tex = 3; // ICE / SLIP
 
 };
+
+
+/*
+
+	normal	= 1
+			= 2
+	mud		= 3
+	ice		= 5
+	poison	= 6
+
+
+
+
+*/
