@@ -51,15 +51,24 @@ MenuState::MenuState(const Button & b0, const Button & b1, const Button & b2, co
 	mButtons.at(3).SetPos({ centre.x			,	centre.y + offset.y		});
 }
 
-MenuState::MenuState(const Text& t1, const Button& b0, const std::string& menu)
+MenuState::MenuState(const Text& t1, const Text& t2, const Button& b0, const Panel& p0, const std::string& menu)
 {
 	mTitle = t1;
+	mTitle.position = DirectX::SimpleMath::Vector2{260.f, 180.f};
+
+	mBody = t2;
+	mBody.position = DirectX::SimpleMath::Vector2{330.f, 350.f};
 	menuName = menu;
 
 	mButtons.reserve(1);
 	mButtons.push_back(b0);
 	mButtons.at(0).SetPos({ 200.f, 150.f });
 
+	mEnteredName.position = DirectX::SimpleMath::Vector2{320.f, 250.f};
+	mEnteredName.color = DirectX::Colors::White;
+	mEnteredName.scale = 1.5f;
+
+	mEnterNamePanel = p0;
 }
 
 void MenuState::Initialize()
@@ -140,11 +149,16 @@ void MenuState::Draw(const GameTimer & gt)
 	mTitle.Draw();
 	mBody.Draw();
 	//mTempPanel.Draw();
-	mEnteredName.Draw();
+	
+	if (menuName == "EnterNameMenu")
+	{
+		mEnterNamePanel.Draw();
+		mEnteredName.Draw();
+	}
 
 	for (auto& b : mButtons)
 	{
-		if (menuName != "Story1") // story screen code
+		if (menuName != "Story1" && menuName != "EnterNameMenu") // story screen code
 			b.Draw();
 	}
 }

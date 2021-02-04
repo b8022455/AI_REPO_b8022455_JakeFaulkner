@@ -57,10 +57,16 @@ void StateManager::Init() // initialised in gameapp
 	Button btnS(buttonBg, "S - Play", Button::Action::NO_ACTION);
 	AddState("Story1", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "Story1"));
 
+
 	//Enter Name Screen
+	Panel textbox;
+	const RECT src{ 192, 128, 256, 192 };
+	const RECT dst{300,	220, 520, 310};
+	textbox.Initialize("uiTex", src, dst);
 	menuTitle.string = "Enter Name (8 Characters Max)";
-	Button btnEnter(buttonBg, "Enter - Play", Button::GOTO_GAME);
-	AddState("EnterName", std::make_unique<MenuState>(menuTitle, btnEnter, "EnterNameMenu"));
+	menuBody.string = "Press Enter to Start";
+	Button btnEnter(buttonBg, "Enter Play", Button::GOTO_GAME);
+	AddState("EnterName", std::make_unique<MenuState>(menuTitle, menuBody, btnEnter, textbox, "EnterNameMenu"));
 
 	// PASSING LEVEL SCREEN?
 	menuTitle.string = "";
