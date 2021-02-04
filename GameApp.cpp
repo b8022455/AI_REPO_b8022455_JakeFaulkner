@@ -158,14 +158,16 @@ bool GameApp::Initialize()
 	//	add to mAllRitems in BuildRenderItems()
 	// Change differentRenderObjectsNum in frame resource to reflect this. 
 	BuildObjGeometry("Data/Models/tempSword.obj", "tempSwordGeo", "tempSword");// loads obj
-	BuildObjGeometry("Data/Models/tempPlayer.obj", "tempPlayerGeo", "tempPlayer");//tempPlayer.obj
-	BuildObjGeometry("Data/Models/tempEnemy.obj", "tempEnemyGeo", "tempEnemy");
+	BuildObjGeometry("Data/Models/charCloak.obj", "tempPlayerGeo", "tempPlayer");//tempPlayer.obj
+	BuildObjGeometry("Data/Models/charBlob.obj", "tempEnemyGeo", "tempEnemy");
 	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" ); //quad rather than cube
 	BuildObjGeometry("Data/Models/building04.obj","traderGeo", "trader" ); //quad rather than cube
 	BuildObjGeometry("Data/Models/particle.obj", "particle", "particle");		//Particle used for enemy attack
 	BuildObjGeometry("Data/Models/plantPotato.obj","potatoGeo", "potato" ); // plant
 	BuildObjGeometry("Data/Models/carBody.obj","carBodyGeo", "carBody" );  // 'trader' main objective. requires 1x1x1 bounding box
 	BuildObjGeometry("Data/Models/carWheel.obj","carTireGeo", "carTire" ); // two instances 'trader' main objective  either side of car body. requires 1x1x1 bounding box
+	BuildObjGeometry("Data/Models/charGhoul.obj","enemyGhoulGeo", "enemyGhoul" ); // two instances 'trader' main objective  either side of car body. requires 1x1x1 bounding box
+
 	BuildSwordGeometry();
 	BuildPlayerGeometry();
 	BuildMaterials();
@@ -1259,6 +1261,7 @@ void GameApp::BuildRenderItems()
 	mAllRitems["particle"] = BuildRenderItem(objCbIndex, "particle", "particle");
 	mAllRitems["CarBody"] = BuildRenderItem(objCbIndex, "carBodyGeo", "carBody");
 	mAllRitems["CarTire"] = BuildRenderItem(objCbIndex, "carTireGeo", "carTire");
+	mAllRitems["EnemyGhoul"] = BuildRenderItem(objCbIndex, "enemyGhoulGeo", "enemyGhoul");
 
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)

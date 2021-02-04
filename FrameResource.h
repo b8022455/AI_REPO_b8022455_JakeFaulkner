@@ -4,7 +4,7 @@
 #include "Common/MathHelper.h"
 #include "Common/UploadBuffer.h"
 #include "Constants.h"
-const int differentRenderObjectsNum = 9;		//If adding another object with diff geo, increment this
+const int differentRenderObjectsNum = 10;		//If adding another object with diff geo, increment this
 
 struct InstanceData
 {

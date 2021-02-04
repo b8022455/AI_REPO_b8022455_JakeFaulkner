@@ -164,7 +164,18 @@ void PlayState::Initialize()
 		//Init all enemies
 		for (auto& e : mEnemies)
 		{
-			e.Initialize("Enemy");
+
+
+			if (e.GetType() == GC::ENEMY_TYPE_2)
+			{
+				e.Initialize(GC::GO_ENEMY);
+			}
+			else if (e.GetType() == GC::ENEMY_TYPE_1)
+			{
+				e.Initialize("EnemyGhoul");
+			}
+
+			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			e.SetPosition({
 						static_cast<float>(rand() % 10 + 2.0f),
 						1.0f,

@@ -33,7 +33,7 @@ public:
 	const std::string GetDropItem();
 	int GetHealth() { return mHealth; }
 	int GetAttack() { return mAttack; }
-	std::string GetType() { return mEnemyType; }
+	std::string& GetType() { return mEnemyType; }
 	AttackTimeDelay getattacking() { return times; }
 
 	void Update(const GameTimer& gt);
