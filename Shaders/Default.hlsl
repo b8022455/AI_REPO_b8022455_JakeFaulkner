@@ -135,6 +135,8 @@ VertexOut VS(VertexIn vin, uint instanceID : SV_InstanceID)
 
 float4 PS(VertexOut pin) : SV_Target
 {
+    
+    
 	// Fetch the material data.
 	MaterialData matData = gMaterialData[pin.MatIndex];
 	float4 diffuseAlbedo = matData.DiffuseAlbedo;

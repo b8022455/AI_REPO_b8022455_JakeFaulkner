@@ -1108,6 +1108,19 @@ std::unique_ptr<RenderItem> GameApp::BuildRenderItem(UINT& objCBindex, const std
 	rItem->StartIndexLocation = rItem->Geo->DrawArgs[subGeoName].StartIndexLocation;
 	rItem->BaseVertexLocation = rItem->Geo->DrawArgs[subGeoName].BaseVertexLocation;
 
+	rItem->Mat = mMaterials["uiTex"].get();
+
+	/*
+	"bricksTex", L"
+	"stoneTex", L"D
+	"mudTex", L"Dat
+	"iceTex", L"Dat
+	"crateTex", L"D
+	"grassTex", L"D
+	"tileTex", L"Da
+	"defaultTex", L
+	"uiTex", L"Data
+	*/
 	++objCBindex;
 
 	return std::move(rItem);
@@ -1145,6 +1158,7 @@ void GameApp::BuildRenderItems()
 
 void GameApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vector<RenderItem*>& ritems)
 {
+	UINT matCBByteSize = d3dUtil::CalcConstantBufferByteSize(sizeof(MaterialConstants));
 
 	// For each render item...
 	for (size_t i = 0; i < ritems.size(); ++i)
@@ -1158,7 +1172,7 @@ void GameApp::DrawRenderItems(ID3D12GraphicsCommandList* cmdList, const std::vec
 		// Set the instance buffer to use for this render-item.  For structured buffers, we can bypass 
 		// the heap and set as a root descriptor.
 		auto instanceBuffer = mCurrFrameResource->InstanceBuffer[i]->Resource();
-		mCommandList->SetGraphicsRootShaderResourceView(0, instanceBuffer->GetGPUVirtualAddress());
+		mCommandList->SetGraphicsRootShaderResourceView(0, instanceBuffer->GetGPUVirtualAddress() + ri->Mat->MatCBIndex * matCBByteSize);
 
 		cmdList->DrawIndexedInstanced(ri->IndexCount, ri->InstanceCount, ri->StartIndexLocation, ri->BaseVertexLocation, 0);
 	}
