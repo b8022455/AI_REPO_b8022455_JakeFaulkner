@@ -55,7 +55,17 @@ void StateManager::Init() // initialised in gameapp
 	Button btnA(buttonBg, "A - Play", Button::Action::NO_ACTION);
 	Button btnD(buttonBg, "D - Play", Button::Action::NO_ACTION);
 	Button btnS(buttonBg, "S - Play", Button::Action::NO_ACTION);
-	AddState("Story1", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS));
+	AddState("Story1", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "Story1"));
+
+	//Enter Name Screen
+	Panel textbox;
+	const RECT src{ 192, 128, 256, 192 };
+	const RECT dst{ 300,	220, 520, 310 };
+	textbox.Initialize("uiTex", src, dst);
+	menuTitle.string = "Enter Name (8 Characters Max)";
+	menuBody.string = "Press Enter to Start";
+	Button btnEnter(buttonBg, "Enter Play", Button::GOTO_GAME);
+	AddState("EnterName", std::make_unique<MenuState>(menuTitle, menuBody, btnEnter, textbox, "EnterNameMenu"));
 
 	// PASSING LEVEL SCREEN?
 	menuTitle.string = "";
@@ -64,16 +74,16 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A - Play", Button::Action::NO_ACTION);
 	btnD = Button(buttonBg, "D - Play", Button::Action::NO_ACTION);
 	btnS = Button(buttonBg, "S - Play", Button::Action::NO_ACTION);
-	AddState("NewArea1", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS));
+	AddState("NewArea1", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "NewArea1"));
 
 	// Main menu
 	menuTitle.string = "Game Name";
 	menuBody.string = "PlaceHolder text";
-	btnW = Button(buttonBg, "W Play", Button::Action::GOTO_GAME);
+	btnW = Button(buttonBg, "W Play", Button::Action::GOTO_ENTER_NAME_MENU);
 	btnA = Button(buttonBg, "A Set Volume", Button::Action::GOTO_VOLUME);
 	btnD = Button(buttonBg, "D Set Volume", Button::Action::GOTO_VOLUME);
 	btnS = Button(buttonBg, "S Play", Button::Action::GOTO_GAME);
-	AddState("MainMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS));
+	AddState("MainMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS, "MainMenu"));
 
 	menuTitle.string = "Volume";
 	menuBody.string = "";
@@ -82,7 +92,7 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A - Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnD = Button(buttonBg, "D - Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnS = Button(buttonBg, "S - Volume Down", Button::Action::VOLUME_DOWN);
-	AddState("Volume", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS));
+	AddState("Volume", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "Volume"));
 
 	//mMenuBackground.Initialise("iceTex"); // overrides previous set
 	//PauseMenu
@@ -92,7 +102,7 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A Resume", Button::Action::GOTO_GAME);
 	btnD = Button(buttonBg, "D Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnS = Button(buttonBg, "S Resume", Button::Action::GOTO_GAME);
-	AddState("PauseMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS));
+	AddState("PauseMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS, "PauseMenu"));
 
 	// GameState
 	AddState(GC::STATE_PLAY, std::make_unique<PlayState>());

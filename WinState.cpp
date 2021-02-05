@@ -1,5 +1,6 @@
 #include "WinState.h"
 #include "GameApp.h"
+#include <iomanip>
 
 WinState::WinState(const Text& t1, const Text& t2, const Button& btn)
 {
@@ -50,10 +51,15 @@ void WinState::OnResume()
 
 void WinState::DrawLeaderboard()
 {
+	std::vector<std::string> lines(5);
+	std::vector<std::string> names(5);
 	std::vector<int> scores(5);
 	mLeaderboard.scale = 1.5f;
-	mLeaderboard.position = DirectX::SimpleMath::Vector2(320.f, 140.f);
+	mLeaderboard.position = DirectX::SimpleMath::Vector2(220.f, 140.f);
 	std::stringstream txt;
+	Text leaderboardScores;
+	leaderboardScores.scale = 1.5f;
+	leaderboardScores.position = DirectX::SimpleMath::Vector2(500.f, 140.f);
 
 	//Get leaderboard from txt file
 	std::ifstream fin;
@@ -61,17 +67,30 @@ void WinState::DrawLeaderboard()
 	if (fin.fail())
 		assert(fin.fail());
 	else
-		for (int i = 0; i < scores.size(); i++)		//gets scores from txt file
-			fin >> scores.at(i);
+	{
+		for (int i = 0; i < lines.size(); i++)		//gets lines from txt file
+			fin >> lines.at(i);
 
-	fin.close();
+		//Separate scores from names for each line
+		for (size_t i = 0; i < lines.size(); i++)
+		{
+			names.at(i) = lines.at(i).substr(0, lines.at(i).find("."));
+			scores.at(i) = std::stoi(lines.at(i).substr(lines.at(i).find(".") + 1));
+		}
 
-	txt << "1.    " << scores.at(0) << "\n\n"
-		<< "2.    " << scores.at(1) << "\n\n"
-		<< "3.    " << scores.at(2) << "\n\n"
-		<< "4.    " << scores.at(3) << "\n\n"
-		<< "5.    " << scores.at(4) << "\n\n";
+		fin.close();
+	}
+
+	txt << "1.    " << names.at(0) << std::setw(8) << "\n\n"
+		<< "2.    " << names.at(1) << std::setw(8) << "\n\n"
+		<< "3.    " << names.at(2) << std::setw(8) << "\n\n"
+		<< "4.    " << names.at(3) << std::setw(8) << "\n\n"
+		<< "5.    " << names.at(4) << std::setw(8) << "\n\n";
+
+	leaderboardScores.string = std::to_string(scores.at(0)) + "\n\n" + std::to_string(scores.at(1)) + "\n\n" + std::to_string(scores.at(2)) +
+		"\n\n" + std::to_string(scores.at(3)) + "\n\n" + std::to_string(scores.at(4));
 
 	mLeaderboard.string = txt.str().c_str();
 	mLeaderboard.Draw();
+	leaderboardScores.Draw();
 }
