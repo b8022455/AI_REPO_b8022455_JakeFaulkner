@@ -133,7 +133,9 @@ namespace GC
 		STATE_PAUSE = "PauseMenu",
 		STATE_MAINMENU = "MainMenu",
 		STATE_GAMEOVER = "GameOver",
+		STATE_VOLUME = "Volume",
 		STATE_WIN = "WinState",
+		STATE_NEW_AREA = "NewArea1",
 
 		TRADER_NAME_TEST = "TravellerTest",
 		TRADER_NAME_1 = "Traveller1",

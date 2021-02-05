@@ -64,7 +64,7 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A - Play", Button::Action::NO_ACTION);
 	btnD = Button(buttonBg, "D - Play", Button::Action::NO_ACTION);
 	btnS = Button(buttonBg, "S - Play", Button::Action::NO_ACTION);
-	AddState("NewArea1", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS));
+	AddState(GC::STATE_NEW_AREA, std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS));
 
 	// Main menu
 	menuTitle.string = "Game Name";
@@ -73,7 +73,7 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A Set Volume", Button::Action::GOTO_VOLUME);
 	btnD = Button(buttonBg, "D Set Volume", Button::Action::GOTO_VOLUME);
 	btnS = Button(buttonBg, "S Play", Button::Action::GOTO_GAME);
-	AddState("MainMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS));
+	AddState(GC::STATE_MAINMENU, std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS));
 
 	menuTitle.string = "Volume";
 	menuBody.string = "";
@@ -82,7 +82,7 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A - Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnD = Button(buttonBg, "D - Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnS = Button(buttonBg, "S - Volume Down", Button::Action::VOLUME_DOWN);
-	AddState("Volume", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS));
+	AddState(GC::STATE_VOLUME, std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS));
 
 	//mMenuBackground.Initialise("iceTex"); // overrides previous set
 	//PauseMenu
@@ -92,7 +92,7 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A Resume", Button::Action::GOTO_GAME);
 	btnD = Button(buttonBg, "D Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnS = Button(buttonBg, "S Resume", Button::Action::GOTO_GAME);
-	AddState("PauseMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS));
+	AddState(GC::STATE_PAUSE, std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS));
 
 	// GameState
 	AddState(GC::STATE_PLAY, std::make_unique<PlayState>());

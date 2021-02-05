@@ -637,8 +637,14 @@ void PlayState::Update(const GameTimer & gt)
 
 	if (mPlayer.AreaClear && mPlayer.genArea) { // TODO: (REMEMBER) IMPLEMENT CHANGE STATE FOR NEW AREA HERE
 		// change state, trigger regen
-		reInitialize(); // MAY CAUSE ERROR IF USED HERE
-		GameApp::Get().ChangeState("NewArea1");
+		areas += 1;
+		if (areas < 3) {
+			reInitialize(); // MAY CAUSE ERROR IF USED HERE
+			GameApp::Get().ChangeState("NewArea1");
+		}
+		if (areas == 3) { // TODO: IMPLEMENT A BASIC WIN STATE HERE BY PASSING THROUGH 3 AREAS (START, NEXT, NEXT, *WIN*)
+			GameApp::Get().ChangeState(GC::STATE_WIN);
+		}
 	}
 
 	// for dirty frame

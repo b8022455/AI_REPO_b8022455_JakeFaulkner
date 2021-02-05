@@ -66,6 +66,7 @@ class PlayState : public State
 	void StoreScore();
 
 	int score = 0;
+	int areas = 0;
 
 public:
 	PlayState();
