@@ -1,6 +1,7 @@
 #include "MenuState.h"
 #include "GameApp.h"
 #include "Constants.h"
+#include <fstream>
 
 using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
@@ -127,6 +128,34 @@ void MenuState::Update(const GameTimer & gt)
 		if (Input::Get().KeyReleased(GC::KEY_PAUSE) && mEnteredName.string.size() > 0)	// Enter, used to enter name and continue to next screen
 		{
 			GameApp::Get().PlayClickUpAudio(true);
+
+			assert(mEnteredName.string.size() != 0);
+			std::ifstream fin;
+			fin.open("Data/Leaderboard.txt", std::ios::out);
+
+			if (fin.fail())		//Cannot find the txt file / It doesn't exist
+			{
+				std::ofstream fout("Data/Leaderboard.txt");		//Create the file
+				if (fout.fail())
+					assert(fout.fail());
+				else
+				{
+					fout << mEnteredName.string;		//Only add a single score into the new txt file
+					fout.close();
+				}
+			}
+			else
+			{
+				std::ofstream fout("Data/Leaderboard.txt", std::ios::app);
+				if (fout.fail())
+					assert(fout.fail());
+				else
+				{
+					fout << "\n" << mEnteredName.string;
+					fout.close();
+				}
+			}
+
 			mButtons.at(0).Activate();
 		}
 

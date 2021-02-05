@@ -64,8 +64,10 @@ class PlayState : public State
 	void InitializeTraders();
 	bool FindNearestTraderInRadius();
 	void StoreScore();
+	void GetName();
 
 	int score = 0;
+	std::string playerName = "";
 
 public:
 	PlayState();
@@ -107,7 +109,6 @@ public:
 	void InventoryUp();
 	void InventoryDown();
 	void ItemAction();
-
 
 	// Only use after changes have been made of inventory. Removes items with 0 quantity.
 	void CleanInventory(Inventory& inv);

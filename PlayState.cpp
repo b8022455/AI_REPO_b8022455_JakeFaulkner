@@ -319,6 +319,9 @@ void PlayState::Update(const GameTimer & gt)
 	//mTileManager.Update(gt);
 	mCombatController.Update();
 
+	if (playerName == "")
+		GetName();
+
 	//Transition to win state when collecting all items needed for the car
 	if (TraderStoryComplete())
 	{
@@ -1180,6 +1183,7 @@ bool PlayState::TraderStoryComplete()
 void PlayState::ResetState(const GameTimer& gt)
 {
 	score = 0;		//Reset Score
+	playerName = "";
 
 	//Reset Camera
 	for (auto& c : mCameras)
@@ -1245,10 +1249,42 @@ void PlayState::ResetState(const GameTimer& gt)
 	}
 }
 
+void PlayState::GetName()
+{
+	ifstream fin("Data/Leaderboard.txt", ios::out);
+	if (fin.fail())
+		assert(fin.fail());
+	else
+	{
+		std::vector<std::string> lines(6);
+		//Get first 6 lines from the txt file
+		for (size_t i = 0; i < lines.size(); i++)
+			std::getline(fin, lines.at(i));
+
+		playerName = lines.at(5);
+		lines.pop_back();
+
+		ofstream fout("Data/Leaderboard.txt", ios::out);
+		if (fout.fail())
+			assert(fout.fail());
+		else
+		{
+			for (size_t i = 0; i < lines.size(); i++)		//Outputs back into the txt file
+				if (i >= 4)
+					fout << lines.at(i);
+				else
+					fout << lines.at(i) << endl;
+
+			fout.close();
+		}
+	}
+}
+
 void PlayState::StoreScore()
 {
 	//Stores score to txt file
 	std::vector<int> scores(5);
+	std::vector<std::string> lines(5);
 
 	ifstream fin;
 	fin.open("Data/Leaderboard.txt", ios::out);
@@ -1258,18 +1294,21 @@ void PlayState::StoreScore()
 		ofstream fout("Data/Leaderboard.txt");		//Create the file
 		if (fout.fail())
 			assert(fout.fail());
-		else
-		{
-			fout << score;		//Only add a single score into the new txt file
-			fout.close();
-		}
 	}
 	else
 	{
-		int previousScore;
-		//Gets scores from the leaderboard
-		for (size_t i = 0; i < scores.size(); i++)
-			fin >> scores.at(i);
+		//Get first 6 lines from the txt file
+		for (size_t i = 0; i < lines.size(); i++)
+			std::getline(fin, lines.at(i));
+
+		//Assign player name which is stored on the final line
+		lines.push_back(playerName + "." + std::to_string(score));
+
+		//Separate scores from names for each line
+		for (size_t i = 0; i < lines.size() - 1; i++)
+			scores.at(i) = std::stoi(lines.at(i).substr(lines.at(i).find(".") + 1));
+
+		std::string previousLine;
 
 		ofstream fout("Data/Leaderboard.txt", ios::out);
 		if (fout.fail())
@@ -1280,15 +1319,18 @@ void PlayState::StoreScore()
 			{
 				if (score >= scores.at(i))
 				{
-					previousScore = scores.at(i);
-					scores.at(i) = score;
+					previousLine = lines.at(i);
+					lines.at(i) = lines.at(5);
 					if (i < 4)
-						scores.at(i + 1) = previousScore;
+						lines.at(i + 1) = previousLine;
 				}
 			}
 
 			for (size_t i = 0; i < scores.size(); i++)		//Outputs back into the txt file
-				fout << scores.at(i) << "\n";
+				if (i >= 4)
+					fout << lines.at(i);
+				else
+					fout << lines.at(i) << endl;
 
 			fout.close();
 		}

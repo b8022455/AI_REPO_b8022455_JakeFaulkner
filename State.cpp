@@ -51,7 +51,7 @@ void StateManager::Init() // initialised in gameapp
 	// INTRO SCREEN	
 	menuTitle.string = ""; // TODO: (NOTE) STORY BLURB 1 LOCATED HERE
 	menuBody.string = "It began in the 20th year of the 2nd millenium, on a tuesday, when the plague was \nreleased. The world quickly fell to ruin as it quickly spread & mutated moving between\nhosts, human, animal & plant alike. A few wars & civil uprisings later. And this is the\nworld as we now know it.\nTerrifying I know.\n\n\n                                                                            Press W to play";
-	Button btnW(buttonBg, "W - Play", Button::Action::GOTO_ENTER_NAME_MENU);
+	Button btnW(buttonBg, "W - Play", Button::Action::GOTO_MAIN_MENU);
 	Button btnA(buttonBg, "A - Play", Button::Action::NO_ACTION);
 	Button btnD(buttonBg, "D - Play", Button::Action::NO_ACTION);
 	Button btnS(buttonBg, "S - Play", Button::Action::NO_ACTION);
@@ -80,7 +80,7 @@ void StateManager::Init() // initialised in gameapp
 	// Main menu
 	menuTitle.string = "Game Name";
 	menuBody.string = "PlaceHolder text";
-	btnW = Button(buttonBg, "W Play", Button::Action::GOTO_GAME);
+	btnW = Button(buttonBg, "W Play", Button::Action::GOTO_ENTER_NAME_MENU);
 	btnA = Button(buttonBg, "A Set Volume", Button::Action::GOTO_VOLUME);
 	btnD = Button(buttonBg, "D Set Volume", Button::Action::GOTO_VOLUME);
 	btnS = Button(buttonBg, "S Play", Button::Action::GOTO_GAME);
