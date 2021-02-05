@@ -46,6 +46,7 @@ public:
 	std::vector<EnemyParticle> particles;
 
 	void SetVelocity(const DirectX::SimpleMath::Vector3 target, const GameTimer& gt);
+	void SetHealth(int health); // ONLY USED WHEN ENEMY IS FIRST INITIALISED 
 
 	Behaviour mBehaviour = Behaviour::NONE;
 private:

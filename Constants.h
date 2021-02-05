@@ -48,6 +48,9 @@ namespace GC
 	const int
 		PLAYER_LOW_HEALTH = 50,
 
+		ENEMYTYPE1_HEALTH = 30, // BARFER
+		ENEMYTYPE2_HEALTH = 20, // RUNNER
+
 		EXP_EXPONENT = 3,
 		EXP_OFFSET = 5,
 		EXP_DEFAULT = 5, // test value for increasing exp

@@ -169,10 +169,12 @@ void PlayState::Initialize()
 			if (e.GetType() == GC::ENEMY_TYPE_2)
 			{
 				e.Initialize(GC::GO_ENEMY);
+				e.SetHealth(GC::ENEMYTYPE1_HEALTH);
 			}
 			else if (e.GetType() == GC::ENEMY_TYPE_1)
 			{
 				e.Initialize("EnemyGhoul");
+				e.SetHealth(GC::ENEMYTYPE2_HEALTH);
 			}
 
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
