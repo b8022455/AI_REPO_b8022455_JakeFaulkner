@@ -48,6 +48,9 @@ namespace GC
 	const int
 		PLAYER_LOW_HEALTH = 50,
 
+		ENEMYTYPE1_HEALTH = 30, // BARFER
+		ENEMYTYPE2_HEALTH = 20, // RUNNER
+
 		EXP_EXPONENT = 3,
 		EXP_OFFSET = 5,
 		EXP_DEFAULT = 5, // test value for increasing exp
@@ -184,6 +187,20 @@ namespace GC
 		TILE_UV_BLANK{ 0.375f , 0.5f }
 
 	;
+	
+	const DirectX::XMFLOAT2 TILE_UV[8] =
+	{
+		{ 0.0f , 0.0f }, // gravel
+		{ 0.125f , 0.5f }, // grass
+		{ 0.125f , 0.0f }, // danger
+		{ 0.0f , 0.5f }, // junk
+		{ 0.25f , 0.0f }, // spikes
+		{ 0.25f , 0.5f }, // nothing
+		{ 0.375f , 0.0f }, // nothing
+		{ 0.375f , 0.5f } // nothing
+	};
+
+
 	const size_t NUM_TILE_UV_RAND = 4;
 
 	// Add a random element to tile uvcoords for texture on atlus

@@ -33,7 +33,7 @@ public:
 	const std::string GetDropItem();
 	int GetHealth() { return mHealth; }
 	int GetAttack() { return mAttack; }
-	std::string GetType() { return mEnemyType; }
+	std::string& GetType() { return mEnemyType; }
 	AttackTimeDelay getattacking() { return times; }
 
 	void Update(const GameTimer& gt);
@@ -46,6 +46,7 @@ public:
 	std::vector<EnemyParticle> particles;
 
 	void SetVelocity(const DirectX::SimpleMath::Vector3 target, const GameTimer& gt);
+	void SetHealth(int health); // ONLY USED WHEN ENEMY IS FIRST INITIALISED 
 
 	Behaviour mBehaviour = Behaviour::NONE;
 private:

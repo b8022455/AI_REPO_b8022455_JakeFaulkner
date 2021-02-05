@@ -2,6 +2,10 @@
 #include "GameApp.h"
 // (NOTE) ENEMY LOOKS AT PLAYER IS IN GAMEOBJECT CLASS RATHER THAN HERE
 
+void Enemy::SetHealth(int health) {
+	mHealth = health;
+}
+
 void Enemy::InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int matIndex)
 {
 	mpInstance->MaterialIndex = matIndex;
@@ -22,7 +26,14 @@ void Enemy::MoveOffScreen()
 
 void Enemy::Reset()
 {
-	mHealth = 100;
+	// TODO: IMPLEMENT SPECIFIC HEALTH FOR EACH ENEMY
+
+	if (GetType() == GC::ENEMY_TYPE_1) {
+		mHealth = GC::ENEMYTYPE1_HEALTH;
+	}
+	if (GetType() == GC::ENEMY_TYPE_2) {
+		mHealth = GC::ENEMYTYPE2_HEALTH;
+	}
 	BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
 	times.isAttacking = false;
 	for (auto& p : particles)

@@ -4,7 +4,7 @@
 
 // Defaults for number of lights.
 #ifndef NUM_DIR_LIGHTS
-    #define NUM_DIR_LIGHTS 3
+    #define NUM_DIR_LIGHTS 2
 #endif
 
 #ifndef NUM_POINT_LIGHTS
@@ -115,7 +115,7 @@ VertexOut VS(VertexIn vin, uint instanceID : SV_InstanceID)
 	
 	// Fetch the material data.
 	MaterialData matData = gMaterialData[matIndex];
-	
+    
     // Transform to world space.
     float4 posW = mul(float4(vin.PosL, 1.0f), world);
     vout.PosW = posW.xyz;
@@ -154,14 +154,14 @@ float4 PS(VertexOut pin) : SV_Target
     // Light terms.
     float4 ambient = gAmbientLight*diffuseAlbedo;
 
-    const float shininess = 1.0f - roughness;
+    
+    const float shininess = 0.0001f; //1.0f - roughness;
     Material mat = { diffuseAlbedo, fresnelR0, shininess };
     float3 shadowFactor = 1.0f;
-    float4 directLight = ComputeLighting(gLights, mat, pin.PosW,
-        pin.NormalW, toEyeW, shadowFactor);
+    float4 directLight = ComputeLighting(gLights, mat, pin.PosW,pin.NormalW, toEyeW, shadowFactor);
 
-    float4 litColor = ambient + directLight;
-
+    float4 litColor = lerp(diffuseAlbedo, ambient + directLight, diffuseAlbedo.a); // shadeless to shaded based on a channel
+    
     // Common convention to take alpha from diffuse albedo.
     litColor.a = diffuseAlbedo.a;
 
