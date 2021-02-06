@@ -64,9 +64,11 @@ class PlayState : public State
 	void InitializeTraders();
 	bool FindNearestTraderInRadius();
 	void StoreScore();
+	void GetName();
 
 	int score = 0;
 	int areas = 0;
+	std::string playerName = "";
 
 public:
 	PlayState();
