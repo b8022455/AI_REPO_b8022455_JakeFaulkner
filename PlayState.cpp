@@ -322,8 +322,10 @@ void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN 
 
 	mPlayer.AreaClear = false;
 	mPlayer.genArea = false;
-	mPlayer.SetPos({ 0.0f,0.0f,0.0f }); // could expand upon this to be fancy, load player at opposite side of grid
-
+	if (mPlayer.GetPos().x >= GC::PLAYER_RIGHTBOUND - 0.9375f) { mPlayer.SetPos({ -14.0f,0.0f,0.0f }); }
+	if (mPlayer.GetPos().x >= GC::PLAYER_LEFTBOUND + 0.9375f) { mPlayer.SetPos({ 14.0f,0.0f,0.0f }); }
+	if (mPlayer.GetPos().z >= GC::PLAYER_UPBOUND - 0.9375f) { mPlayer.SetPos({ 0.0f,0.0f,-14.0f }); }
+	if (mPlayer.GetPos().z >= GC::PLAYER_DOWNBOUND + 0.9375f) { mPlayer.SetPos({ 0.0f,0.0f,14.0f }); }
 }
 
 
@@ -484,7 +486,7 @@ void PlayState::Update(const GameTimer & gt)
 				}
 			}
 
-			// enemy collision with planyer
+			// enemy collision with player
 			if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()))
 			{
 				mPlayer.DamagePlayer(e.GetAttack());
@@ -518,6 +520,8 @@ void PlayState::Update(const GameTimer & gt)
 
 			if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), e.GetPos()))
 			{
+				// TODO: FIX ENEMY MODEL LEFT ON SCREEN
+
 				e.DamageEnemy(mPlayer.attack);		//Takes away health from enemy + blowsback enemy position
 				if (e.GetHealth() <= 0)
 				{
@@ -640,14 +644,20 @@ void PlayState::Update(const GameTimer & gt)
 	if (EnemiesRemaining() == 0 && !mPlayer.AreaClear)
 		mPlayer.AreaClear = true;
 
+	// TODO: (URGENT) IMPLEMENT BETTER WIN CONDITION
+	// final goal is to reach a safe house, need to harvest a certain number of plants as payment to get in?
+
+
 	if (mPlayer.AreaClear && mPlayer.genArea) { // TODO: (REMEMBER) IMPLEMENT CHANGE STATE FOR NEW AREA HERE
 		// change state, trigger regen
 		areas += 1;
 		if (areas < 3) {
 			reInitialize(); // MAY CAUSE ERROR IF USED HERE
-			GameApp::Get().ChangeState("NewArea1");
+			GameApp::Get().ChangeState(GC::STATE_NEW_AREA);
 		}
-		if (areas == 3) { // TODO: IMPLEMENT A BASIC WIN STATE HERE BY PASSING THROUGH 3 AREAS (START, NEXT, NEXT, *WIN*)
+		if (areas == 3) { // TODO: (REMEMBER) CURRENTLY WIN CONDITION IS HERE 		
+			reInitialize();
+			areas = 0;
 			GameApp::Get().ChangeState(GC::STATE_WIN);
 		}
 	}

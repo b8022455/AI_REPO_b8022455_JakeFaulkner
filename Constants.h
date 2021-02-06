@@ -72,6 +72,12 @@ namespace GC
 
 		TRADER_RADIUS = 1.75f,
 
+		PLAYER_RIGHTBOUND = 15.0f,
+		PLAYER_LEFTBOUND = -15.0f,
+
+		PLAYER_UPBOUND = 15.0f,
+		PLAYER_DOWNBOUND = -15.0f,
+
 		ENEMYTYPE1_RANGE = 8.0f,
 		ENEMYTYPE1_ATTACK_DURATION = 2.0f,
 		ENEMYTYPE1_ATTACK_DELAY = float(8.0f), // definitely the attack duration - cant actually be less than other

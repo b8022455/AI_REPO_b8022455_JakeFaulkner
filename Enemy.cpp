@@ -218,7 +218,6 @@ void Enemy::Update(const GameTimer & gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR
 
 	if (mEnemyType == GC::ENEMY_TYPE_2) // CHARGER ENEMY
 	{
-		// TODO: REVIEW CHARGER BEHAVIOUR BECAUSE THEY DON'T ACT WHEN RELOADED
 		switch (mBehaviour)
 		{
 		case NONE:
@@ -226,16 +225,12 @@ void Enemy::Update(const GameTimer & gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR
 			{
 				mSpeed -= (GC::ENEMYTYPE2_DRAG * gt.DeltaTime()); // apply drag * deltatime to reduce
 			}
-			if (mSpeed <= 0.0f)
-				mSpeed = 0.0f;
 			; break;
 		case CHASE:
 			if (mSpeed < GC::ENEMYTYPE2_MAXSPEED) // if speed is below max speed
 			{
 				mSpeed += (GC::ENEMYTYPE2_DRAG * gt.DeltaTime()); // add drag * deltatime to increase speed
 			}
-			if (mSpeed <= 0.0f)
-				mSpeed = 0.0f;
 			if (mSpeed >= GC::ENEMYTYPE2_MAXSPEED)
 				mSpeed = GC::ENEMYTYPE2_MAXSPEED;
 			; break;

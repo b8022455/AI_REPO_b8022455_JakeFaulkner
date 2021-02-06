@@ -67,7 +67,7 @@ class PlayState : public State
 	void GetName();
 
 	int score = 0;
-	int areas = 0;
+	int areas = 0; // 0 = dawn, noon, evening, pitch, dawn, noon, evening, pitch
 	std::string playerName = "";
 
 public:
