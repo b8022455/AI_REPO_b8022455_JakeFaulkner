@@ -38,7 +38,7 @@ public:
 	void Move(const GameTimer& gt, const DirectX::SimpleMath::Vector3& vec);
 	void DamagePlayer(int damage);
 
-	int health = 100;
+	int health = GC::PLAYER_MAX_HEALTH;
 
 	float hazardTimer = 0; // needs to be set as needed, used to apply hazard effects (not every frame)
 	bool Slowed = false;

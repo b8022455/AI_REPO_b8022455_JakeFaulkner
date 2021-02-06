@@ -602,6 +602,8 @@ void PlayState::Update(const GameTimer & gt)
 	{
 		mMessage.Activate("LEVEL UP", 5.0f);
 		score += GC::SCORE_LVLUP;
+		mPlayer.health = GC::PLAYER_MAX_HEALTH;
+		mPlayerHealthBar.SetValue(mPlayer.health);
 		//GameApp::Get().ChangeState("PauseMenu");
 	}
 
@@ -1208,7 +1210,7 @@ void PlayState::ResetState(const GameTimer& gt)
 	mPlayer.Reset(gt);
 	mCombatController.Reset();
 	mPlayerWeapon.Reset(gt);
-	mPlayerHealthBar.SetValue(100);
+	mPlayerHealthBar.SetValue(GC::PLAYER_MAX_HEALTH);
 
 	//Reset Inventory
 	mInventory.clear();
