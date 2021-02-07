@@ -541,35 +541,9 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN LEAVING AN AREA
 
 	ReGen();
-	// TODO: BELOW COULD CAUSE PROBLEMS & WILL DEFINITELY NEED REVISIONS
-	// Setup temp enemies
 	eGen(false);
 
-	//{
-	//	// TODO: (NOTE) NEED TO ADD METHOD TO REMOVE CERTAIN ENEMIES & ADD NEW TYPES AT RANDOM RATHER THAN 
-	//	//		REINITIALIZING THE SAME ENEMIES OVER AND OVER
-
-	//	//Init all enemies
-	//	for (auto& e : mEnemies)
-	//	{
-	//		e.mEnabled = true;
-	//		e.Reset();
-	//		e.SetPosition({
-	//			static_cast<float>(rand() % 10 + 2.0f),
-	//			1.0f,
-	//			static_cast<float>(rand() % 10 + 2.0f)
-	//		});
-
-	//		for (auto& t : mTraders)								//Check each trader in the game
-	//			while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
-	//				e.SetPos({
-	//					static_cast<float>(rand() % 10 + 2.0f),
-	//					1.0f,
-	//					static_cast<float>(rand() % 10 + 2.0f)
-	//				});
-	//	}
-
-	//}
+	timeChange = 0.0f;
 
 	mCombatController.Initialize(&mPlayer, &mPlayerWeapon, &mEnemies);
 
@@ -586,7 +560,6 @@ void PlayState::Update(const GameTimer & gt)
 {
 	//mTileManager.Update(gt);
 	mCombatController.Update();
-
 
 	if (playerName == "")		//Only does this once
 		GetName();
@@ -620,7 +593,6 @@ void PlayState::Update(const GameTimer & gt)
 		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), t.GetPos()))	//Prevents weapon from going through trader
 			mPlayerWeapon.ResetWeaponPosition();
 	}
-
 
 	mPlayer.Update(gt);
 
@@ -823,12 +795,6 @@ void PlayState::Update(const GameTimer & gt)
 
 					GameApp::Get().GetAudio().Play("EnemyDie1", nullptr, false, 1.0f, GetRandomVoicePitch());
 					
-					// BELOW CAUSES MASSIVE PROBLEM AND NEEDS THE WHOLE SYSTEM REWORKING
-					//mEnemies.erase(mEnemies.begin()+i); // deletes the enemy from the list
-					// TODO: USE OLD REMOVE ENEMY METHOD & CLEAR THE MENEMIES VECTOR ON EACH RESET
-
-					if (timeCycle == 4)
-						eGen(true);
 				}
 				else
 				{
@@ -841,6 +807,10 @@ void PlayState::Update(const GameTimer & gt)
 		i++;
 
 	});
+
+	// TODO: (VERY URGENT) IMPLEMENT METHOD OF 
+	//if (timeCycle == 4)
+	//	eGen(true);
 
 	PassConstants* pMainPassCB = GameApp::Get().GetMainPassCB();
 
@@ -910,7 +880,7 @@ void PlayState::Update(const GameTimer & gt)
 	}
 
 	// IMPLEMENT CHECK FOR ENEMIES HERE
-	if (mEnemies.empty() && !mPlayer.AreaClear)
+	if (EnemiesRemaining() == 0 && !mPlayer.AreaClear)
 		mPlayer.AreaClear = true;
 
 	// TODO: (URGENT) IMPLEMENT BETTER WIN CONDITION
@@ -922,11 +892,11 @@ void PlayState::Update(const GameTimer & gt)
 		areas += 1;
 		timeCycle += 1;
 		timeChange = 0.0f;
-		if (areas < 3) {
-			reInitialize(); // MAY CAUSE ERROR IF USED HERE
+		if (areas < 4) {
+			reInitialize();
 			GameApp::Get().ChangeState(GC::STATE_NEW_AREA);
 		}
-		if (areas == 3) { // TODO: (REMEMBER) CURRENTLY WIN CONDITION IS HERE 		
+		if (areas == 4) { // TODO: (REMEMBER) CURRENTLY WIN CONDITION IS HERE
 			reInitialize();
 			areas = 0;
 			timeCycle = 1;
