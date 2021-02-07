@@ -61,6 +61,11 @@ class PlayState : public State
 	// "Level Up", "You can't go there"
 	FadeText mMessage;
 
+	FadeText mHelpMessage;
+	FadeText mTradeHelpMessage;
+	DeltaTimer revolvingHintTimer;
+	int revolvingHintPosition = 3;
+
 	void InitializeTraders();
 	bool FindNearestTraderInRadius();
 	void StoreScore();

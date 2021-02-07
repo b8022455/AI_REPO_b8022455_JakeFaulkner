@@ -277,6 +277,18 @@ void PlayState::Initialize()
 			mMessage.mText.position = v / 2.0f;
 			mMessage.mText.color = DirectX::Colors::Red;
 		}
+
+		//Help text
+		{
+			mHelpMessage.mText.center = true;
+			mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{40.f, 550.f};
+			mHelpMessage.mText.color = DirectX::Colors::Red;
+			mHelpMessage.Activate(GC::HELP_MESSAGES[3], 6.0f);
+
+			mTradeHelpMessage.mText.center = true;
+			mTradeHelpMessage.mText.position = DirectX::SimpleMath::Vector2{250.f, 150.f};
+			mTradeHelpMessage.mText.color = DirectX::Colors::Red;
+		}
 	}
 
 	// needed in init for dirty frame
@@ -331,6 +343,20 @@ void PlayState::Update(const GameTimer & gt)
 {
 	//mTileManager.Update(gt);
 	mCombatController.Update();
+
+	if (FindNearestTraderInRadius())
+		mTradeHelpMessage.Activate(GC::HELP_MESSAGES[2], 1.0f);
+
+	if (revolvingHintTimer.HasTimeElapsed(gt.DeltaTime(), 8.f))
+	{
+		mHelpMessage.mText.center = false;
+		mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 250.f, 550.f };
+		mHelpMessage.mText.color = DirectX::Colors::Red;
+		mHelpMessage.Activate(GC::HELP_MESSAGES[revolvingHintPosition], 7.0f);
+		revolvingHintPosition++;
+		if (revolvingHintPosition > 9)
+			revolvingHintPosition = 3;
+	}
 
 	if (playerName == "")		//Only does this once
 		GetName();
@@ -484,11 +510,18 @@ void PlayState::Update(const GameTimer & gt)
 				}
 			}
 
-			// enemy collision with planyer
+			// enemy collision with player
 			if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()))
 			{
 				mPlayer.DamagePlayer(e.GetAttack());
 				mPlayerHealthBar.SetValue(mPlayer.health);
+				if (mPlayer.health < GC::PLAYER_LOW_HEALTH)
+				{
+					mHelpMessage.mText.center = true;
+					mHelpMessage.mText.color = DirectX::Colors::Red;
+					mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{300.f, 150.f};
+					mHelpMessage.Activate(GC::HELP_MESSAGES[0] , 2.f);
+				}
 				GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
 				//Transition to game over state
 				if (mPlayer.health <= 0)
@@ -505,6 +538,13 @@ void PlayState::Update(const GameTimer & gt)
 				{
 					mPlayer.DamagePlayer(e.GetAttack());
 					mPlayerHealthBar.SetValue(mPlayer.health);
+					if (mPlayer.health < GC::PLAYER_LOW_HEALTH)
+					{
+						mHelpMessage.mText.center = true;
+						mHelpMessage.mText.color = DirectX::Colors::Red;
+						mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 300.f, 150.f };
+						mHelpMessage.Activate(GC::HELP_MESSAGES[0], 2.f);
+					}
 					GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
 					//Transition to game over state
 					if (mPlayer.health <= 0)
@@ -577,7 +617,6 @@ void PlayState::Update(const GameTimer & gt)
 		float strength = sin(gt.TotalTime()*5.0f) * 0.5f + 0.5f;
 
 		pMainPassCB->Lights[1].Strength = { strength ,0.1f,0.1f };
-
 		// Less intense vibration
 		strength *= 0.1f;
 
@@ -594,9 +633,10 @@ void PlayState::Update(const GameTimer & gt)
 
 	UiUpdate(gt);
 
-	// Sprite update
-	
+	if (mHelpLocation.first.y < 500.f)
+		mHelpMessage.Activate("", 1.0f);		//Deactivates other hints from showing while help menu is open
 
+	// Sprite update
 
 	if (mExperience.HasLeveledUp())
 	{
@@ -634,6 +674,12 @@ void PlayState::Update(const GameTimer & gt)
 			mInventoryText.string += " " + inv.first + " (" + std::to_string(inv.second) + ")\n";
 
 		});
+
+		//Help instructions for inventory
+		mHelpMessage.mText.center = true;
+		mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 480.f, 450.f };
+		mHelpMessage.mText.color = DirectX::Colors::White;
+		mHelpMessage.Activate(GC::HELP_MESSAGES[1], 0.1f);
 	}
 
 	// IMPLEMENT CHECK FOR ENEMIES HERE
@@ -682,6 +728,8 @@ void PlayState::Draw(const GameTimer & gt)
 	mHelpText.Draw();
 
 	mMessage.Draw();
+	mHelpMessage.Draw();
+	mTradeHelpMessage.Draw();
 
 	mScoreTextShadow.Draw();
 	mScoreText.Draw();
@@ -802,7 +850,7 @@ void PlayState::ItemAction()
 		{
 			--inventoryPosition->second; //removes a potion
 			mPlayer.health += GC::HEAL_SMALL;
-			if (mPlayer.health > 100)	mPlayer.health = 100;	//Replace 100 with a constant max player variable
+			if (mPlayer.health > GC::PLAYER_MAX_HEALTH)	mPlayer.health = GC::PLAYER_MAX_HEALTH;
 			mPlayerHealthBar.SetValue(mPlayer.health);
 		}
 		break;
@@ -875,6 +923,8 @@ void PlayState::UiUpdate(const GameTimer & gt)
 	mScoreTextShadow.string = mScoreText.string;
 
 	mMessage.Update(gt);
+	mHelpMessage.Update(gt);
+	mTradeHelpMessage.Update(gt);
 }
 
 bool PlayState::CreatePlant()
@@ -1049,6 +1099,7 @@ void PlayState::Keyboard(const GameTimer & gt)
 	if (Input::Get().KeyReleased('H'))
 	{
 		std::swap(mHelpLocation.first, mHelpLocation.second);
+		mHelpMessage.Activate("", 0.f);
 	}
 
 	// Trade

@@ -88,6 +88,19 @@ namespace GC
 		TILE_UV_INC = 1.0f/8.0f // tile is 1/8 of texture atlus
 		;
 
+	const std::string HELP_MESSAGES[10]
+	{
+		"You are wounded.\nPress I to open inventory",
+		"Arrow Keys to scroll \n U Key to use an item",
+		"Press 9 to Trade",
+		"Use the Arrow keys to move and Space to attack",
+		"Help is available using the H key",
+		"Plant crops using the 7 Key",
+		"You can harvest crops when fully grown using the 8 Key",
+		"Try talking to a trader when near using the 9 key",
+		"Attack your enemies using the Spacebar",
+		"Pause the game using the Enter key"
+	};
 
 
 	const float FOOTSTEP_PITCH[7]
