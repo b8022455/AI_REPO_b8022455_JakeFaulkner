@@ -66,8 +66,15 @@ class PlayState : public State
 	void StoreScore();
 	void GetName();
 
+	float timeChange = 0.0f; // used to change time
+	int timeCycle = 1; // dawn, noon, evening, pitch | changes with area & set number of minutes passed (2?)
+	// pitch has constant enemy spawns up to a number(3? increases with each full cycle or every 2 cycles), 
+	// evening has 1 large set of enemies (3)
+	// noon has 1 small set of enemies (2)
+	// dawn has 1 small set of enemies (2)
+
 	int score = 0;
-	int areas = 0; // 0 = dawn, noon, evening, pitch, dawn, noon, evening, pitch
+	int areas = 0; 
 	std::string playerName = "";
 
 public:
@@ -84,6 +91,7 @@ public:
 	virtual void OnResume()									override;
 
 	void reInitialize();
+	void eGen(bool fill); // bool is only needed for pitch
 
 	void Controls(const GameTimer& gt);
 

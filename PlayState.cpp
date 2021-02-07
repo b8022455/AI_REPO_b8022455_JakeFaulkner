@@ -287,36 +287,307 @@ void PlayState::Initialize()
 	
 }
 
-void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN LEAVING AN AREA
+void PlayState::eGen(bool fill) { 
+	// TODO: (URGENT) RANDOMLY SELECT ENEMIES TO ADD TO mEnemies
+	// use time cycle to determine number of enemies to add, enemy types are selected at random
+	if (timeCycle == 1) { // dawn (small / 2)
+		//	// inserts n of enemies
+		//	// TODO: (NOTE) ENEMIES ADDED HERE
+		int e1 = (rand() % 2) + 1; // random 1-2
+		int e2 = (rand() % 2) + 1; // random 1-2
+		if (e1 == 1) {
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+		} else if (e1 == 2) {
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+		}
 
-	ReGen();
-	// TODO: BELOW COULD CAUSE PROBLEMS & WILL DEFINITELY NEED REVISIONS
-	// Setup temp enemies
-	{
-		// TODO: (NOTE) NEED TO ADD METHOD TO REMOVE CERTAIN ENEMIES & ADD NEW TYPES AT RANDOM RATHER THAN 
-		//		REINITIALIZING THE SAME ENEMIES OVER AND OVER
+		if (e2 == 1) {
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+		} else if (e2 == 2){
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+		}
 
 		//Init all enemies
 		for (auto& e : mEnemies)
 		{
-			e.mEnabled = true;
-			e.Reset();
+			if (e.GetType() == GC::ENEMY_TYPE_2)
+			{
+				e.Initialize(GC::GO_ENEMY);
+				e.SetHealth(GC::ENEMYTYPE1_HEALTH);
+			}
+			else if (e.GetType() == GC::ENEMY_TYPE_1)
+			{
+				e.Initialize("EnemyGhoul");
+				e.SetHealth(GC::ENEMYTYPE2_HEALTH);
+			}
+			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			e.SetPosition({
-				static_cast<float>(rand() % 10 + 2.0f),
-				1.0f,
-				static_cast<float>(rand() % 10 + 2.0f)
-			});
-
-			for (auto& t : mTraders)								//Check each trader in the game
+						static_cast<float>(rand() % 10 + 2.0f),
+						1.0f,
+						static_cast<float>(rand() % 10 + 2.0f)
+				});
+			for (auto& t : mTraders)									//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
 						1.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
-					});
+						});
+		}
+	} 
+	if (timeCycle == 2) { // noon (small / 2)
+		//	// inserts n of enemies
+		//	// TODO: (NOTE) ENEMIES ADDED HERE
+		int e1 = (rand() % 2) + 1; // random 1-2
+		int e2 = (rand() % 2) + 1; // random 1-2
+		if (e1 == 1) {
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+		}
+		else if (e1 == 2) {
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
 		}
 
+		if (e2 == 1) {
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+		}
+		else if (e2 == 2) {
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+		}
+
+		//Init all enemies
+		for (auto& e : mEnemies)
+		{
+			if (e.GetType() == GC::ENEMY_TYPE_2)
+			{
+				e.Initialize(GC::GO_ENEMY);
+				e.SetHealth(GC::ENEMYTYPE1_HEALTH);
+			}
+			else if (e.GetType() == GC::ENEMY_TYPE_1)
+			{
+				e.Initialize("EnemyGhoul");
+				e.SetHealth(GC::ENEMYTYPE2_HEALTH);
+			}
+			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
+			e.SetPosition({
+						static_cast<float>(rand() % 10 + 2.0f),
+						1.0f,
+						static_cast<float>(rand() % 10 + 2.0f)
+				});
+			for (auto& t : mTraders)									//Check each trader in the game
+				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+					e.SetPos({
+						static_cast<float>(rand() % 10 + 2.0f),
+						1.0f,
+						static_cast<float>(rand() % 10 + 2.0f)
+						});
+		}
 	}
+	if (timeCycle == 3) { // evening (large / 3)
+		//	// inserts n of enemies
+		//	// TODO: (NOTE) ENEMIES ADDED HERE
+		int e1 = (rand() % 2) + 1; // random 1-2
+		int e2 = (rand() % 2) + 1; // random 1-2
+		int e3 = (rand() % 2) + 1; // random 1-2
+		if (e1 == 1) {
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+		}
+		else if (e1 == 2) {
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+		}
+
+		if (e2 == 1) {
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+		}
+		else if (e2 == 2) {
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+		}
+
+		if (e3 == 1) {
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+		}
+		else if (e3 == 2) {
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+		}
+
+		//Init all enemies
+		for (auto& e : mEnemies)
+		{
+			if (e.GetType() == GC::ENEMY_TYPE_2)
+			{
+				e.Initialize(GC::GO_ENEMY);
+				e.SetHealth(GC::ENEMYTYPE1_HEALTH);
+			}
+			else if (e.GetType() == GC::ENEMY_TYPE_1)
+			{
+				e.Initialize("EnemyGhoul");
+				e.SetHealth(GC::ENEMYTYPE2_HEALTH);
+			}
+			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
+			e.SetPosition({
+						static_cast<float>(rand() % 10 + 2.0f),
+						1.0f,
+						static_cast<float>(rand() % 10 + 2.0f)
+				});
+			for (auto& t : mTraders)									//Check each trader in the game
+				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+					e.SetPos({
+						static_cast<float>(rand() % 10 + 2.0f),
+						1.0f,
+						static_cast<float>(rand() % 10 + 2.0f)
+						});
+		}
+	}
+	if (timeCycle == 4) { // pitch (large / constant)
+		// TODO: (URGENT) WILL NEED EXTRA WORK DEPENDING ON HOW MANY ENEMIES ARE LEFT
+		int count = 0;
+		// fill on basic
+		if (fill == false) {
+			int e1 = (rand() % 2) + 1; // random 1-2
+			int e2 = (rand() % 2) + 1; // random 1-2
+			int e3 = (rand() % 2) + 1; // random 1-2
+			if (e1 == 1) {
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+			}
+			else if (e1 == 2) {
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+			}
+
+			if (e2 == 1) {
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+			}
+			else if (e2 == 2) {
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+			}
+
+			if (e3 == 1) {
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+			}
+			else if (e3 == 2) {
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+			}
+
+			//Init all enemies
+			for (auto& e : mEnemies)
+			{
+				if (e.GetType() == GC::ENEMY_TYPE_2)
+				{
+					e.Initialize(GC::GO_ENEMY);
+					e.SetHealth(GC::ENEMYTYPE1_HEALTH);
+				}
+				else if (e.GetType() == GC::ENEMY_TYPE_1)
+				{
+					e.Initialize("EnemyGhoul");
+					e.SetHealth(GC::ENEMYTYPE2_HEALTH);
+				}
+				//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
+				e.SetPosition({
+							static_cast<float>(rand() % 10 + 2.0f),
+							1.0f,
+							static_cast<float>(rand() % 10 + 2.0f)
+					});
+				for (auto& t : mTraders)									//Check each trader in the game
+					while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+						e.SetPos({
+							static_cast<float>(rand() % 10 + 2.0f),
+							1.0f,
+							static_cast<float>(rand() % 10 + 2.0f)
+							});
+			}
+		}
+
+		// fill until full again
+		if (fill == true) {
+			for (auto& e : mEnemies) { // 
+				count += 1;
+			}
+			
+			int e1 = (rand() % 2) + 1; // random 1-2
+			int e2 = (rand() % 2) + 1; // random 1-2
+			int e3 = (rand() % 2) + 1; // random 1-2
+			if (e1 == 1 && count > 0) {
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+			}
+			else if (e1 == 2 && count > 0) {
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+			}
+
+			if (e2 == 1 && count > 1) {
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+			}
+			else if (e2 == 2 && count > 1) {
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+			}
+
+			if (e3 == 1 && count > 2) {
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+			}
+			else if (e3 == 2 && count > 2) {
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+			}
+
+			//Init all enemies
+			for (auto& e : mEnemies)
+			{
+				if (e.GetType() == GC::ENEMY_TYPE_2)
+				{
+					e.Initialize(GC::GO_ENEMY);
+					e.SetHealth(GC::ENEMYTYPE1_HEALTH);
+				}
+				else if (e.GetType() == GC::ENEMY_TYPE_1)
+				{
+					e.Initialize("EnemyGhoul");
+					e.SetHealth(GC::ENEMYTYPE2_HEALTH);
+				}
+				//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
+				e.SetPosition({
+							static_cast<float>(rand() % 10 + 2.0f),
+							1.0f,
+							static_cast<float>(rand() % 10 + 2.0f)
+					});
+				for (auto& t : mTraders)									//Check each trader in the game
+					while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+						e.SetPos({
+							static_cast<float>(rand() % 10 + 2.0f),
+							1.0f,
+							static_cast<float>(rand() % 10 + 2.0f)
+							});
+			}
+		}
+	}
+}
+
+void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN LEAVING AN AREA
+
+	ReGen();
+	// TODO: BELOW COULD CAUSE PROBLEMS & WILL DEFINITELY NEED REVISIONS
+	// Setup temp enemies
+	eGen(false);
+
+	//{
+	//	// TODO: (NOTE) NEED TO ADD METHOD TO REMOVE CERTAIN ENEMIES & ADD NEW TYPES AT RANDOM RATHER THAN 
+	//	//		REINITIALIZING THE SAME ENEMIES OVER AND OVER
+
+	//	//Init all enemies
+	//	for (auto& e : mEnemies)
+	//	{
+	//		e.mEnabled = true;
+	//		e.Reset();
+	//		e.SetPosition({
+	//			static_cast<float>(rand() % 10 + 2.0f),
+	//			1.0f,
+	//			static_cast<float>(rand() % 10 + 2.0f)
+	//		});
+
+	//		for (auto& t : mTraders)								//Check each trader in the game
+	//			while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+	//				e.SetPos({
+	//					static_cast<float>(rand() % 10 + 2.0f),
+	//					1.0f,
+	//					static_cast<float>(rand() % 10 + 2.0f)
+	//				});
+	//	}
+
+	//}
 
 	mCombatController.Initialize(&mPlayer, &mPlayerWeapon, &mEnemies);
 
@@ -334,8 +605,18 @@ void PlayState::Update(const GameTimer & gt)
 	//mTileManager.Update(gt);
 	mCombatController.Update();
 
+
 	if (playerName == "")		//Only does this once
 		GetName();
+
+	timeChange += gt.DeltaTime();
+
+	// TODO: (URGENT) IMPLEMENT FLOAT FOR TIMECHANGE & FOR RANDOM TIMED ENEMY SPAWNS, RESET ON AREA MOVE
+	if (timeChange >= 120.0f) {
+		timeChange = 0.0f;
+		timeCycle += 1;
+		eGen(false);
+	}
 
 	//Transition to win state when collecting all items needed for the car
 	if (TraderStoryComplete())
@@ -437,6 +718,18 @@ void PlayState::Update(const GameTimer & gt)
 	int i = 0;
 	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
 	{ 
+		e.Update(gt);
+
+		{ // THE ERASE ERROR OCCURS IN THE NEXT LOOP
+			SimpleMath::Vector3 pos = e.GetPos();
+
+			GameApp::Get().mDebugLog << "Enemy i:" << i
+				<< "  Health: " << e.GetHealth()
+				<< "  mpInstance: " << e.mpInstance
+				<< "  X: " << std::setprecision(2) << pos.x
+				<< "  Z:" << std::setprecision(2) << pos.z << "\n";
+		}
+
 		if (e.mEnabled)
 		{
 			//Enemy look at players position (only do when in range), only look when not attacking either
@@ -485,6 +778,13 @@ void PlayState::Update(const GameTimer & gt)
 					e.mBehaviour = Enemy::Behaviour::NONE;
 				}
 			}
+
+			// enemy collides with traders
+			for (auto& t : mTraders)
+				if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
+					e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+			e.SetVelocity(mPlayer.GetPos(), gt);
 
 			// enemy collision with player
 			if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()))
@@ -535,11 +835,18 @@ void PlayState::Update(const GameTimer & gt)
 					{
 						++mInventory[droppedItem];
 					}
-
-					e.MoveOffScreen();
-					e.mEnabled = false;
+					
+					//e.MoveOffScreen();
+					//e.mEnabled = false;
 
 					GameApp::Get().GetAudio().Play("EnemyDie1", nullptr, false, 1.0f, GetRandomVoicePitch());
+					
+					// BELOW CAUSES MASSIVE PROBLEM AND NEEDS THE WHOLE SYSTEM REWORKING
+					//mEnemies.erase(mEnemies.begin()+i); // deletes the enemy from the list
+					// TODO: USE OLD REMOVE ENEMY METHOD & CLEAR THE MENEMIES VECTOR ON EACH RESET
+
+					if (timeCycle == 4)
+						eGen(true);
 				}
 				else
 				{
@@ -547,28 +854,8 @@ void PlayState::Update(const GameTimer & gt)
 				}
 			}
 
-			// enemy collides with traders
-			for (auto& t : mTraders)
-				if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
-					e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-
-			e.SetVelocity(mPlayer.GetPos(), gt);
-
-		}
-
-		e.Update(gt);
-
-		{
-			SimpleMath::Vector3 pos = e.GetPos();
-
-			GameApp::Get().mDebugLog << "Enemy i:" << i
-				<< "  Health: " << e.GetHealth()
-				<< "  mpInstance: " << e.mpInstance
-				<< "  X: " << std::setprecision(2) << pos.x
-				<< "  Z:" << std::setprecision(2) << pos.z << "\n";
 		}
 		
-
 		i++;
 
 	});
@@ -641,7 +928,7 @@ void PlayState::Update(const GameTimer & gt)
 	}
 
 	// IMPLEMENT CHECK FOR ENEMIES HERE
-	if (EnemiesRemaining() == 0 && !mPlayer.AreaClear)
+	if (mEnemies.empty() && !mPlayer.AreaClear)
 		mPlayer.AreaClear = true;
 
 	// TODO: (URGENT) IMPLEMENT BETTER WIN CONDITION
@@ -651,6 +938,8 @@ void PlayState::Update(const GameTimer & gt)
 	if (mPlayer.AreaClear && mPlayer.genArea) { // TODO: (REMEMBER) IMPLEMENT CHANGE STATE FOR NEW AREA HERE
 		// change state, trigger regen
 		areas += 1;
+		timeCycle += 1;
+		timeChange = 0.0f;
 		if (areas < 3) {
 			reInitialize(); // MAY CAUSE ERROR IF USED HERE
 			GameApp::Get().ChangeState(GC::STATE_NEW_AREA);
@@ -658,6 +947,7 @@ void PlayState::Update(const GameTimer & gt)
 		if (areas == 3) { // TODO: (REMEMBER) CURRENTLY WIN CONDITION IS HERE 		
 			reInitialize();
 			areas = 0;
+			timeCycle = 1;
 			GameApp::Get().ChangeState(GC::STATE_WIN);
 		}
 	}
