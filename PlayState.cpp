@@ -158,8 +158,8 @@ void PlayState::Initialize()
 	{
 		// inserts n of enemies
 		// TODO: (NOTE) ENEMIES ADDED HERE
-		mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 25)); // number of enemies, Enemy(GC::enemytype, attack)
-		mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+		mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK)); // number of enemies, Enemy(GC::enemytype, attack)
+		mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
 
 		//Init all enemies
 		for (auto& e : mEnemies)
@@ -287,24 +287,28 @@ void PlayState::Initialize()
 	
 }
 
-void PlayState::eGen(bool fill) { 
-	// TODO: (URGENT) RANDOMLY SELECT ENEMIES TO ADD TO mEnemies
+void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
+	// TODO: (URGENT) CLEAR mEnemies HERE & IMMEDIATELY APPLY NEW ENEMIES
 	// use time cycle to determine number of enemies to add, enemy types are selected at random
+	
+	if (fill == false) {
+		mEnemies.clear();
+	}
+
 	if (timeCycle == 1) { // dawn (small / 2)
 		//	// inserts n of enemies
-		//	// TODO: (NOTE) ENEMIES ADDED HERE
 		int e1 = (rand() % 2) + 1; // random 1-2
 		int e2 = (rand() % 2) + 1; // random 1-2
 		if (e1 == 1) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
 		} else if (e1 == 2) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
 		}
 
 		if (e2 == 1) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
 		} else if (e2 == 2){
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
 		}
 
 		//Init all enemies
@@ -341,17 +345,17 @@ void PlayState::eGen(bool fill) {
 		int e1 = (rand() % 2) + 1; // random 1-2
 		int e2 = (rand() % 2) + 1; // random 1-2
 		if (e1 == 1) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
 		}
 		else if (e1 == 2) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
 		}
 
 		if (e2 == 1) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
 		}
 		else if (e2 == 2) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
 		}
 
 		//Init all enemies
@@ -389,24 +393,24 @@ void PlayState::eGen(bool fill) {
 		int e2 = (rand() % 2) + 1; // random 1-2
 		int e3 = (rand() % 2) + 1; // random 1-2
 		if (e1 == 1) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
 		}
 		else if (e1 == 2) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
 		}
 
 		if (e2 == 1) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
 		}
 		else if (e2 == 2) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
 		}
 
 		if (e3 == 1) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
 		}
 		else if (e3 == 2) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
 		}
 
 		//Init all enemies
@@ -439,31 +443,30 @@ void PlayState::eGen(bool fill) {
 	}
 	if (timeCycle == 4) { // pitch (large / constant)
 		// TODO: (URGENT) WILL NEED EXTRA WORK DEPENDING ON HOW MANY ENEMIES ARE LEFT
-		int count = 0;
 		// fill on basic
 		if (fill == false) {
 			int e1 = (rand() % 2) + 1; // random 1-2
 			int e2 = (rand() % 2) + 1; // random 1-2
 			int e3 = (rand() % 2) + 1; // random 1-2
 			if (e1 == 1) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
 			}
 			else if (e1 == 2) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
 			}
 
 			if (e2 == 1) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
 			}
 			else if (e2 == 2) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
 			}
 
 			if (e3 == 1) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
 			}
 			else if (e3 == 2) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
 			}
 
 			//Init all enemies
@@ -496,62 +499,41 @@ void PlayState::eGen(bool fill) {
 		}
 
 		// fill until full again
-		if (fill == true) {
-			for (auto& e : mEnemies) { // 
-				count += 1;
-			}
+		if (fill == true) { // TODO: THIS NEEDS REWORKING, CAN'T DELETE ENEMIES FROM VECTOR WHILE GAME IS RUNNING
+			// NEED TO IMPLEMENT A METHOD OF RANDOMLY CREATING NEW ENEMIES, ADD 1 ENEMY AFTER EVERY DEATH 
 			
 			int e1 = (rand() % 2) + 1; // random 1-2
-			int e2 = (rand() % 2) + 1; // random 1-2
-			int e3 = (rand() % 2) + 1; // random 1-2
-			if (e1 == 1 && count > 0) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+			if (e1 == 1) {
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
 			}
-			else if (e1 == 2 && count > 0) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
+			else if (e1 == 2) {
+				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
 			}
 
-			if (e2 == 1 && count > 1) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
-			}
-			else if (e2 == 2 && count > 1) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
-			}
-
-			if (e3 == 1 && count > 2) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
-			}
-			else if (e3 == 2 && count > 2) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 15));
-			}
-
-			//Init all enemies
-			for (auto& e : mEnemies)
+			//Init last enemies
+			if (mEnemies.back().GetType() == GC::ENEMY_TYPE_2)
 			{
-				if (e.GetType() == GC::ENEMY_TYPE_2)
-				{
-					e.Initialize(GC::GO_ENEMY);
-					e.SetHealth(GC::ENEMYTYPE1_HEALTH);
-				}
-				else if (e.GetType() == GC::ENEMY_TYPE_1)
-				{
-					e.Initialize("EnemyGhoul");
-					e.SetHealth(GC::ENEMYTYPE2_HEALTH);
-				}
-				//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
-				e.SetPosition({
-							static_cast<float>(rand() % 10 + 2.0f),
-							1.0f,
-							static_cast<float>(rand() % 10 + 2.0f)
-					});
-				for (auto& t : mTraders)									//Check each trader in the game
-					while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
-						e.SetPos({
-							static_cast<float>(rand() % 10 + 2.0f),
-							1.0f,
-							static_cast<float>(rand() % 10 + 2.0f)
-							});
+				mEnemies.back().Initialize(GC::GO_ENEMY);
+				mEnemies.back().SetHealth(GC::ENEMYTYPE1_HEALTH);
 			}
+			else if (mEnemies.back().GetType() == GC::ENEMY_TYPE_1)
+			{
+				mEnemies.back().Initialize("EnemyGhoul");
+				mEnemies.back().SetHealth(GC::ENEMYTYPE2_HEALTH);
+			}
+			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
+			mEnemies.back().SetPosition({
+				static_cast<float>(rand() % 10 + 2.0f),
+				1.0f,
+				static_cast<float>(rand() % 10 + 2.0f)
+			});
+			for (auto& t : mTraders)									//Check each trader in the game
+				while (mEnemies.back().CheckCollision(mEnemies.back().GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+					mEnemies.back().SetPos({
+						static_cast<float>(rand() % 10 + 2.0f),
+						1.0f,
+						static_cast<float>(rand() % 10 + 2.0f)
+						});
 		}
 	}
 }
@@ -836,8 +818,8 @@ void PlayState::Update(const GameTimer & gt)
 						++mInventory[droppedItem];
 					}
 					
-					//e.MoveOffScreen();
-					//e.mEnabled = false;
+					e.MoveOffScreen();
+					e.mEnabled = false;
 
 					GameApp::Get().GetAudio().Play("EnemyDie1", nullptr, false, 1.0f, GetRandomVoicePitch());
 					
