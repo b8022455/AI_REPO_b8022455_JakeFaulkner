@@ -72,6 +72,7 @@ class PlayState : public State
 	// evening has 1 large set of enemies (3)
 	// noon has 1 small set of enemies (2)
 	// dawn has 1 small set of enemies (2)
+	bool newEnemy; // create a new enemy to replace the one that has been destroyed.
 
 	int score = 0;
 	int areas = 0; 
@@ -92,6 +93,7 @@ public:
 
 	void reInitialize();
 	void eGen(bool fill); // bool is only needed for pitch
+	void timeSet();
 
 	void Controls(const GameTimer& gt);
 

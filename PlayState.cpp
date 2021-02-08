@@ -111,6 +111,8 @@ void PlayState::Initialize()
 	//mTile.Initialize("Tiles");
 	mTileManager.Initialize();
 
+	timeSet();
+
 	++mInventory["Radio"];
 	++mInventory["Potion"];
 	inventoryPosition = mInventory.begin();
@@ -542,6 +544,7 @@ void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN 
 
 	ReGen();
 	eGen(false);
+	timeSet();
 
 	timeChange = 0.0f;
 
@@ -555,8 +558,28 @@ void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN 
 	if (mPlayer.GetPos().z >= GC::PLAYER_DOWNBOUND + 0.9375f) { mPlayer.SetPos({ 0.0f,0.0f,14.0f }); }
 }
 
+void PlayState::timeSet() {
+	PassConstants* pMainPassCB = GameApp::Get().GetMainPassCB();
+	//GameApp::Get().setPhase(timeCycle);
+	if (timeCycle == 1) {
+		pMainPassCB->AmbientLight = GC::DAWN_COLOUR; // dawn
+		pMainPassCB->Lights[1].Strength = GC::DAWN_STRENGTH;
+	}
+	if (timeCycle == 2) {
+		pMainPassCB->AmbientLight = GC::NOON_COLOUR; // noon
+		pMainPassCB->Lights[1].Strength = GC::NOON_STRENGTH;
+	}
+	if (timeCycle == 3) {
+		pMainPassCB->AmbientLight = GC::EVENING_COLOUR; // evening
+		pMainPassCB->Lights[1].Strength = GC::EVENING_STRENGTH;
+	}
+	if (timeCycle == 4) {
+		pMainPassCB->AmbientLight = GC::PITCH_COLOUR; // pitch
+		pMainPassCB->Lights[1].Strength = GC::PITCH_STRENGTH;
+	}
+}
 
-void PlayState::Update(const GameTimer & gt)
+void PlayState::Update(const GameTimer& gt)
 {
 	//mTileManager.Update(gt);
 	mCombatController.Update();
@@ -566,11 +589,14 @@ void PlayState::Update(const GameTimer & gt)
 
 	timeChange += gt.DeltaTime();
 
-	// TODO: (URGENT) IMPLEMENT FLOAT FOR TIMECHANGE & FOR RANDOM TIMED ENEMY SPAWNS, RESET ON AREA MOVE
+	// AFTER 2 MINUTES CHANGE TIME PHASE IN GAME (ONLY PARTICULARLY USEFUL DURING PITCH )
 	if (timeChange >= 120.0f) {
 		timeChange = 0.0f;
 		timeCycle += 1;
+		if (timeCycle > 4)
+			timeCycle = 1;
 		eGen(false);
+		timeSet();
 	}
 
 	//Transition to win state when collecting all items needed for the car
@@ -618,7 +644,7 @@ void PlayState::Update(const GameTimer & gt)
 	int underX = (int)round(mPlayer.GetPos().x); // worldspace position does not correspond to tilemap coordinate
 	int underZ = (int)round(mPlayer.GetPos().z);
 	float tileX = (underX + (0.5f * (mTileManager.MaxGen))/* * diff*/); // greater
-	float tileZ = (underZ + (0.5f *(mTileManager.MaxGen)))/* * diff*/; // greater
+	float tileZ = (underZ + (0.5f * (mTileManager.MaxGen)))/* * diff*/; // greater
 	float tileX2 = (underX + (0.5f * (mTileManager.MaxGen)) * diff2); //lesser
 	float tileZ2 = (underZ + (0.5f * (mTileManager.MaxGen)) * diff2); // lesser
 
@@ -630,13 +656,13 @@ void PlayState::Update(const GameTimer & gt)
 	//}
 
 	// if player over the grid execute the grid check 
-	if ((tileX > 0 && tileZ > 0 && tileX < mTileManager.MaxGen && tileZ < mTileManager.MaxGen) && 
+	if ((tileX > 0 && tileZ > 0 && tileX < mTileManager.MaxGen && tileZ < mTileManager.MaxGen) &&
 		(tileX2 >= 0 && tileZ2 >= 0 && tileX2 <= mTileManager.MaxGen && tileZ2 <= mTileManager.MaxGen)) {
-		
+
 		// POSSIBLE GLITCH HERE (TILE ACTIVE WHEN PLAYER NOT OVER IT, TILE RIGHT / RIGHT&UP) - FIXED ITSELF??
 		// 
 		// if the player is over a poison/damage tile
-		if (mTileManager.GetIndex(static_cast<int>(tileX), static_cast<int>(tileZ)) == mTileManager.Haz1Tex || 
+		if (mTileManager.GetIndex(static_cast<int>(tileX), static_cast<int>(tileZ)) == mTileManager.Haz1Tex ||
 			mTileManager.GetIndex(static_cast<int>(tileX2), static_cast<int>(tileZ2)) == mTileManager.Haz1Tex) {
 			if (mPlayer.hazardTimer <= 0) { // if hazard should be active
 				mPlayer.health -= 5;
@@ -656,7 +682,7 @@ void PlayState::Update(const GameTimer & gt)
 			mTileManager.GetIndex(static_cast<int>(tileX2), static_cast<int>(tileZ2)) != mTileManager.Haz2Tex) {
 			mPlayer.Slowed = false;
 		}
-	
+
 		if (mTileManager.GetIndex(static_cast<int>(tileX), static_cast<int>(tileZ)) == mTileManager.Haz3Tex ||
 			mTileManager.GetIndex(static_cast<int>(tileX2), static_cast<int>(tileZ2)) == mTileManager.Haz3Tex) {
 			mPlayer.Slippy = true;
@@ -667,97 +693,81 @@ void PlayState::Update(const GameTimer & gt)
 			mPlayer.Slippy = false;
 		}
 	}
-	
+
 
 	int i = 0;
 	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
-	{ 
-		e.Update(gt);
-
-		{ // THE ERASE ERROR OCCURS IN THE NEXT LOOP
-			SimpleMath::Vector3 pos = e.GetPos();
-
-			GameApp::Get().mDebugLog << "Enemy i:" << i
-				<< "  Health: " << e.GetHealth()
-				<< "  mpInstance: " << e.mpInstance
-				<< "  X: " << std::setprecision(2) << pos.x
-				<< "  Z:" << std::setprecision(2) << pos.z << "\n";
-		}
-
-		if (e.mEnabled)
 		{
-			//Enemy look at players position (only do when in range), only look when not attacking either
-			XMVECTOR playerPosition = XMLoadFloat3(&mPlayer.GetPos());
+			e.Update(gt);
 
-			if (e.GetType() == GC::ENEMY_TYPE_1) { // ENEMY TYPE EXCLUSIVE LOGIC LOCATED HERE
-				// TODO: (NOTE) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
-				if (mPlayer.GetPos().x >= (e.GetPos().x - GC::ENEMYTYPE1_RANGE) &&
-					mPlayer.GetPos().x <= (e.GetPos().x + GC::ENEMYTYPE1_RANGE)) { // player within - range on x
-					if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE1_RANGE) &&
-						mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
-						e.LookAt(playerPosition);
+			{ // THE ERASE ERROR OCCURS IN THE NEXT LOOP
+				SimpleMath::Vector3 pos = e.GetPos();
+
+				GameApp::Get().mDebugLog << "Enemy i:" << i
+					<< "  Health: " << e.GetHealth()
+					<< "  mpInstance: " << e.mpInstance
+					<< "  X: " << std::setprecision(2) << pos.x
+					<< "  Z:" << std::setprecision(2) << pos.z << "\n";
+			}
+
+			if (e.mEnabled)
+			{
+				//Enemy look at players position (only do when in range), only look when not attacking either
+				XMVECTOR playerPosition = XMLoadFloat3(&mPlayer.GetPos());
+
+				if (e.GetType() == GC::ENEMY_TYPE_1) { // ENEMY TYPE EXCLUSIVE LOGIC LOCATED HERE
+					// TODO: (NOTE) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
+					if (mPlayer.GetPos().x >= (e.GetPos().x - GC::ENEMYTYPE1_RANGE) &&
+						mPlayer.GetPos().x <= (e.GetPos().x + GC::ENEMYTYPE1_RANGE)) { // player within - range on x
+						if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE1_RANGE) &&
+							mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
+							e.LookAt(playerPosition);
+						}
+					}
+
+					// enemy movement behaviour based on player radius
+					if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE &&
+						e.getattacking().isAttacking == false)
+					{
+						e.mBehaviour = Enemy::Behaviour::CHASE;
+					}
+					else
+					{
+						e.mBehaviour = Enemy::Behaviour::NONE;
 					}
 				}
 
-				// enemy movement behaviour based on player radius
-				if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE &&
-					e.getattacking().isAttacking == false)
-				{
-					e.mBehaviour = Enemy::Behaviour::CHASE;
-				}
-				else
-				{
-					e.mBehaviour = Enemy::Behaviour::NONE;
-				}
-			}
+				if (e.GetType() == GC::ENEMY_TYPE_2) { // ENEMY TYPE EXCLUSIVE LOGIC LOCATED HERE
+					// TODO: (NOTE) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
+					if (mPlayer.GetPos().x >= (e.GetPos().x - GC::ENEMYTYPE2_RANGE) &&
+						mPlayer.GetPos().x <= (e.GetPos().x + GC::ENEMYTYPE2_RANGE)) { // player within - range on x
+						if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE2_RANGE) &&
+							mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE2_RANGE)) { // player within - range on z
+							e.LookAt(playerPosition);
+						}
+					}
 
-			if (e.GetType() == GC::ENEMY_TYPE_2) { // ENEMY TYPE EXCLUSIVE LOGIC LOCATED HERE
-				// TODO: (NOTE) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
-				if (mPlayer.GetPos().x >= (e.GetPos().x - GC::ENEMYTYPE2_RANGE) &&
-					mPlayer.GetPos().x <= (e.GetPos().x + GC::ENEMYTYPE2_RANGE)) { // player within - range on x
-					if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE2_RANGE) &&
-						mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE2_RANGE)) { // player within - range on z
-						e.LookAt(playerPosition);
+					// enemy movement behaviour based on player radius
+					if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE2_RANGE &&
+						e.getattacking().isAttacking == false)
+					{
+						e.mBehaviour = Enemy::Behaviour::CHASE;
+					}
+					else
+					{
+						e.mBehaviour = Enemy::Behaviour::NONE;
 					}
 				}
 
-				// enemy movement behaviour based on player radius
-				if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE2_RANGE &&
-					e.getattacking().isAttacking == false)
-				{
-					e.mBehaviour = Enemy::Behaviour::CHASE;
-				}
-				else
-				{
-					e.mBehaviour = Enemy::Behaviour::NONE;
-				}
-			}
+				// enemy collides with traders
+				for (auto& t : mTraders)
+					if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
+						e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-			// enemy collides with traders
-			for (auto& t : mTraders)
-				if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
-					e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+				e.SetVelocity(mPlayer.GetPos(), gt);
 
-			e.SetVelocity(mPlayer.GetPos(), gt);
-
-			// enemy collision with player
-			if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()))
-			{
-				mPlayer.DamagePlayer(e.GetAttack());
-				mPlayerHealthBar.SetValue(mPlayer.health);
-				GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
-				//Transition to game over state
-				if (mPlayer.health <= 0)
-				{
-					ResetState(gt);
-					GameApp::Get().ChangeState("GameOver");
-				}
-			}
-
-			//When checking if enemy is in range, have this be in that section to prevent enemy particles from far from being checked
-			for (auto& p : e.particles)
-			{
-				if (mPlayer.CheckCollision(mPlayer.GetPos(), p.GetPos()))
+				// enemy collision with player
+				if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()))
 				{
 					mPlayer.DamagePlayer(e.GetAttack());
 					mPlayerHealthBar.SetValue(mPlayer.health);
@@ -768,50 +778,69 @@ void PlayState::Update(const GameTimer & gt)
 						ResetState(gt);
 						GameApp::Get().ChangeState("GameOver");
 					}
-					break;
 				}
-			}
 
-			if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), e.GetPos()))
-			{
-				// TODO: FIX ENEMY MODEL LEFT ON SCREEN
-
-				e.DamageEnemy(mPlayer.attack);		//Takes away health from enemy + blowsback enemy position
-				if (e.GetHealth() <= 0)
+				//When checking if enemy is in range, have this be in that section to prevent enemy particles from far from being checked
+				for (auto& p : e.particles)
 				{
-					// gain exp
-					mExperience.AddExp(GC::EXP_DEFAULT);
-					score += GC::SCORE_ENEMY;
-
-					//Could be put into an exists function in Inventory Class
-					std::string droppedItem = e.GetDropItem();
-					if (droppedItem != "Empty")		//I.e An item was dropped from enemy
+					if (mPlayer.CheckCollision(mPlayer.GetPos(), p.GetPos()))
 					{
-						++mInventory[droppedItem];
+						mPlayer.DamagePlayer(e.GetAttack());
+						mPlayerHealthBar.SetValue(mPlayer.health);
+						GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
+						//Transition to game over state
+						if (mPlayer.health <= 0)
+						{
+							ResetState(gt);
+							GameApp::Get().ChangeState("GameOver");
+						}
+						break;
 					}
-					
-					e.MoveOffScreen();
-					e.mEnabled = false;
+				}
 
-					GameApp::Get().GetAudio().Play("EnemyDie1", nullptr, false, 1.0f, GetRandomVoicePitch());
-					
-				}
-				else
+				if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), e.GetPos()))
 				{
-					GameApp::Get().GetAudio().Play("EnemyHit1", nullptr, false, 1.0f, GetRandomVoicePitch());
+					// TODO: FIX ENEMY MODEL LEFT ON SCREEN
+
+					e.DamageEnemy(mPlayer.attack);		//Takes away health from enemy + blowsback enemy position
+					if (e.GetHealth() <= 0)
+					{
+						// gain exp
+						mExperience.AddExp(GC::EXP_DEFAULT);
+						score += GC::SCORE_ENEMY;
+
+						//Could be put into an exists function in Inventory Class
+						std::string droppedItem = e.GetDropItem();
+						if (droppedItem != "Empty")		//I.e An item was dropped from enemy
+						{
+							++mInventory[droppedItem];
+						}
+
+						e.MoveOffScreen();
+						e.mEnabled = false;
+						if (timeCycle == 4)
+							newEnemy = true;
+
+						GameApp::Get().GetAudio().Play("EnemyDie1", nullptr, false, 1.0f, GetRandomVoicePitch());
+
+					}
+					else
+					{
+						GameApp::Get().GetAudio().Play("EnemyHit1", nullptr, false, 1.0f, GetRandomVoicePitch());
+					}
 				}
+
 			}
 
-		}
-		
-		i++;
+			i++;
 
-	});
+		});
 
-	// TODO: (VERY URGENT) IMPLEMENT METHOD OF 
-	//if (timeCycle == 4)
-	//	eGen(true);
-
+	// TODO: (VERY URGENT) IMPLEMENT METHOD OF REGENNING ENEMIES AFTER THEIR DEATH HERE
+	if (newEnemy == true) {
+		newEnemy = false;
+		eGen(true);
+	}
 	PassConstants* pMainPassCB = GameApp::Get().GetMainPassCB();
 
 	//flashing red for low health
@@ -891,6 +920,8 @@ void PlayState::Update(const GameTimer & gt)
 		// change state, trigger regen
 		areas += 1;
 		timeCycle += 1;
+		if (timeCycle > 4)
+			timeCycle = 1;
 		timeChange = 0.0f;
 		if (areas < 4) {
 			reInitialize();

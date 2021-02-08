@@ -256,9 +256,20 @@ namespace GC
 		BAR_SIZE{ BAR_MAX - BAR_MIN } //max - min.
 	;
 
+	const DirectX::XMFLOAT4
+		DAWN_COLOUR({ 0.12f, 0.226f, 0.12f, 1.0f }),
+		NOON_COLOUR({ 0.12f, 0.226f, 0.12f, 1.0f }),
+		EVENING_COLOUR({ 0.12f, 0.226f, 0.44f, 1.0f }),
+		PITCH_COLOUR({ 0.12f, 0.226f, 0.8f, 1.0f })
+	;
 	
-
-
+	
+	const DirectX::XMFLOAT3
+		DAWN_STRENGTH({ 0.8f, 0.75f, 0.55f }),
+		NOON_STRENGTH({ 1.0f, 0.9f, 0.6f }),
+		EVENING_STRENGTH({ 0.7f, 0.55f, 0.4f }),
+		PITCH_STRENGTH({ 0.1f, 0.1f, 0.1f })
+	;
 
 	const ItemMap ITEM_LIST = {
 		{"Empty",			{ItemCategory::None,	0}}, // 
