@@ -98,6 +98,33 @@ bool PlayState::FindNearestTraderInRadius()
 
 }
 
+Enemy PlayState::Spawn(std::string enemyType)
+{
+	if (enemyType == GC::ENEMY_TYPE_1)
+	{
+		Enemy e(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_HEALTH);
+		e.Initialize("EnemyGhoul");
+		e.SetHealth(GC::ENEMYTYPE1_HEALTH);
+		e.SetRandomPosition();
+		e.times.StartTime(GC::ENEMYTYPE1_ATTACK_DURATION, GC::ENEMYTYPE1_ATTACK_DELAY);
+		e.particles.resize(20);
+		return e;
+	}
+	else if (enemyType == GC::ENEMY_TYPE_2)
+	{
+		Enemy e(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_HEALTH);
+		e.Initialize(GC::GO_ENEMY);
+		e.SetHealth(GC::ENEMYTYPE2_HEALTH);
+		e.SetRandomPosition();
+		return e;
+	}
+	else
+		assert(enemyType != GC::ENEMY_TYPE_1 &&
+			enemyType != GC::ENEMY_TYPE_2);
+
+	return Enemy(GC::ENEMY_TYPE_1, 15);		//Default return parameter
+}
+
 PlayState::PlayState()
 	:
 	mExperience(0, GC::EXP_EXPONENT, GC::EXP_OFFSET, 0)
@@ -158,41 +185,14 @@ void PlayState::Initialize()
 	{
 		// inserts n of enemies
 		// TODO: (NOTE) ENEMIES ADDED HERE
-		mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, 25)); // number of enemies, Enemy(GC::enemytype, attack)
-		mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, 15));
+		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
+		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
 
 		//Init all enemies
 		for (auto& e : mEnemies)
-		{
-
-
-			if (e.GetType() == GC::ENEMY_TYPE_2)
-			{
-				e.Initialize(GC::GO_ENEMY);
-				e.SetHealth(GC::ENEMYTYPE1_HEALTH);
-			}
-			else if (e.GetType() == GC::ENEMY_TYPE_1)
-			{
-				e.Initialize("EnemyGhoul");
-				e.SetHealth(GC::ENEMYTYPE2_HEALTH);
-			}
-
-			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
-			e.SetPosition({
-						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
-						static_cast<float>(rand() % 10 + 2.0f)
-			});
-
-			for(auto& t : mTraders)									//Check each trader in the game
+			for (auto& t : mTraders)									//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
-					e.SetPos({
-						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
-						static_cast<float>(rand() % 10 + 2.0f)
-					});
-		}
-
+					e.SetRandomPosition();
 	}
 
 	mCombatController.Initialize(&mPlayer,&mPlayerWeapon,&mEnemies);
@@ -313,19 +313,10 @@ void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN 
 		{
 			e.mEnabled = true;
 			e.Reset();
-			e.SetPosition({
-				static_cast<float>(rand() % 10 + 2.0f),
-				1.0f,
-				static_cast<float>(rand() % 10 + 2.0f)
-			});
 
 			for (auto& t : mTraders)								//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
-					e.SetPos({
-						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
-						static_cast<float>(rand() % 10 + 2.0f)
-					});
+					e.SetRandomPosition();
 		}
 
 	}
@@ -697,17 +688,6 @@ void PlayState::Update(const GameTimer & gt)
 	{
 		c.UpdateViewMatrix();
 	}
-
-
-
-
-
-	/*mEnemies.erase(std::remove_if(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
-	{
-		return e.GetHealth() <= 0;
-
-	}), mEnemies.end());*/
-
 }
 
 void PlayState::Draw(const GameTimer & gt)
@@ -1297,21 +1277,11 @@ void PlayState::ResetState(const GameTimer& gt)
 	for (auto& e : mEnemies)
 	{
 		e.mEnabled = true;
-		e.mpInstance->MaterialIndex = 0;
 		e.Reset();
-		e.SetPos({
-		static_cast<float>(rand() % 10 + 2.0f),
-			1.0f,
-		static_cast<float>(rand() % 10 + 2.0f)
-			});
 
 		for (auto t : mTraders)
 			while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
-				e.SetPos({
-					static_cast<float>(rand() % 10 + 2.0f),
-					1.0f,
-					static_cast<float>(rand() % 10 + 2.0f)
-					});
+				e.SetRandomPosition();
 	}
 }
 

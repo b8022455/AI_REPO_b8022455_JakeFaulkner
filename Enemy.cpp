@@ -27,6 +27,7 @@ void Enemy::MoveOffScreen()
 void Enemy::Reset()
 {
 	// TODO: IMPLEMENT SPECIFIC HEALTH FOR EACH ENEMY
+	SetRandomPosition();
 
 	if (GetType() == GC::ENEMY_TYPE_1) {
 		mHealth = GC::ENEMYTYPE1_HEALTH;
@@ -43,48 +44,19 @@ void Enemy::Reset()
 		times.SetNextTimer();
 }
 
-void Enemy::SetPosition(const DirectX::XMFLOAT3& newPosition)
-{
-	//Updates position on the object
-	mpInstance->World._41 = newPosition.x;
-	mpInstance->World._42 = newPosition.y;
-	mpInstance->World._43 = newPosition.z;
-
-	//int attackDuration = 2;		//How long the attack plays for, not final time yet
-	//int attackDelay = 4;		//How long between each attack
-	
-	// ATTACK DELAY & DURATION HELD IN CONSTANTS
-	if (this->GetType() == GC::ENEMY_TYPE_1)
-		times.StartTime(GC::ENEMYTYPE1_ATTACK_DURATION, GC::ENEMYTYPE1_ATTACK_DELAY);
-
-	//Setup the enemy particles
-	particles.resize(20);
-
-}
-
 void Enemy::SetRandomPosition()
 {
-	float random_integer = (float)GetRandomValue(-15, 15);
-	float random_integer2 = (float)GetRandomValue(-15, 15);
+	float random_integer = (float)GetRandomValue(0, 10) + 2.f;
+	float random_integer2 = (float)GetRandomValue(0, 10) + 2.f;
 
 	mpInstance->World._41 = random_integer;
-	mpInstance->World._42 = 0;
+	mpInstance->World._42 = 1.f;
 	mpInstance->World._43 = random_integer2;
-}
-
-DirectX::XMFLOAT3 Enemy::GetPosition()
-{
-	return {
-		mpInstance->World._41,
-		mpInstance->World._42,
-		mpInstance->World._43
-	};
 }
 
 void Enemy::DamageEnemy(int dmg)
 {
 	mHealth -= dmg;
-	mpInstance->MaterialIndex = 5;		//Visual check, remove eventually
 	
 	float x = 0.0f;
 	float z = 0.0f;
@@ -116,8 +88,8 @@ void Enemy::DamageEnemy(int dmg)
 void Enemy::SetVelocity(const DirectX::SimpleMath::Vector3 target, const GameTimer& gt)
 {
 
-	DirectX::SimpleMath::Vector3 currentPos = GetPosition();
-	DirectX::SimpleMath::Vector3 direction = target - GetPosition(); // AB = B-A
+	DirectX::SimpleMath::Vector3 currentPos = GetPos();
+	DirectX::SimpleMath::Vector3 direction = target - GetPos(); // AB = B-A
 	direction.Normalize(); // 
 	direction.y = 0; // xz plane
 	direction *= mSpeed * gt.DeltaTime(); // apply speed

@@ -71,6 +71,8 @@ class PlayState : public State
 	void StoreScore();
 	void GetName();
 
+	Enemy Spawn(std::string enemyType);
+
 	int score = 0;
 	std::string playerName = "";
 
