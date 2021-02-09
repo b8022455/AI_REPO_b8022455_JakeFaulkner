@@ -146,6 +146,7 @@ namespace GC
 		STATE_TRADE = "TradeState",
 		STATE_PAUSE = "PauseMenu",
 		STATE_MAINMENU = "MainMenu",
+	    STATE_HELP = "HelpMenu",
 		STATE_GAMEOVER = "GameOver",
 		STATE_WIN = "WinState",
 

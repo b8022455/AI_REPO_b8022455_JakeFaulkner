@@ -82,7 +82,7 @@ void StateManager::Init() // initialised in gameapp
 	btnW = Button(buttonBg, "W Play", Button::Action::GOTO_ENTER_NAME_MENU);
 	btnA = Button(buttonBg, "A Set Volume", Button::Action::GOTO_VOLUME);
 	btnD = Button(buttonBg, "D Set Volume", Button::Action::GOTO_VOLUME);
-	btnS = Button(buttonBg, "S Play", Button::Action::GOTO_GAME);
+	btnS = Button(buttonBg, "S Help", Button::Action::GOTO_HELP);
 	AddState("MainMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS, "MainMenu"));
 
 	menuTitle.string = "Volume";
@@ -103,6 +103,14 @@ void StateManager::Init() // initialised in gameapp
 	btnD = Button(buttonBg, "D Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnS = Button(buttonBg, "S Resume", Button::Action::GOTO_GAME);
 	AddState("PauseMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS, "PauseMenu"));
+
+	menuTitle.string = "Help";
+	menuBody.string = "Kill things for loot, trade loot for key items, use items to fix the car";
+	btnW = Button(buttonBg, "W Play", Button::Action::GOTO_ENTER_NAME_MENU);
+	btnA = Button(buttonBg, "A Set Volume", Button::Action::GOTO_VOLUME);
+	btnD = Button(buttonBg, "D Set Volume", Button::Action::GOTO_VOLUME);
+	btnS = Button(buttonBg, "S Main Menu", Button::Action::GOTO_MAIN_MENU);
+	AddState("HelpMenu", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "HelpMenu"));
 
 	// GameState
 	AddState(GC::STATE_PLAY, std::make_unique<PlayState>());
