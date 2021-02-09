@@ -44,7 +44,7 @@ namespace GC
 		;
 
 	const size_t
-		NUM_DIFF_RENDER_OBJS = 6 // for frame resource
+		NUM_DIFF_RENDER_OBJS = 7 // for frame resource
 		;
 
 	const int

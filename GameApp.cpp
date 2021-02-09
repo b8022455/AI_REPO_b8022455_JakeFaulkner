@@ -162,6 +162,7 @@ bool GameApp::Initialize()
 	BuildObjGeometry("Data/Models/tempEnemy.obj", "tempEnemyGeo", "tempEnemy");
 	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" ); //quad rather than cube
 	BuildObjGeometry("Data/Models/building04.obj","traderGeo", "trader" ); //quad rather than cube
+	BuildObjGeometry("Data/Models/building03.obj", "buildingGeo", "building"); 
 	BuildObjGeometry("Data/Models/particle.obj", "particle", "particle");		//Particle used for enemy attack
 	BuildObjGeometry("Data/Models/plantPotato.obj","potatoGeo", "potato" ); // plant
 	BuildObjGeometry("Data/Models/carBody.obj","carBodyGeo", "carBody" );  // 'trader' main objective. requires 1x1x1 bounding box
@@ -1104,6 +1105,56 @@ void GameApp::BuildSwordGeometry()
 	mGeometries[geo->Name] = std::move(geo);
 }
 
+//void GameApp::BuildBuildingGeometry()
+//{
+//	GeometryGenerator geoGen;
+//	GeometryGenerator::MeshData building = geoGen.CreateBuilding(1.0f, 1.0f, 1.0f, 1.0f);
+//
+//	std::vector<Vertex> vertices(building.Vertices.size());
+//	for (size_t i = 0; i < building.Vertices.size(); ++i)
+//	{
+//		auto& p = building.Vertices[i].Position;
+//		vertices[i].Pos = p;
+//		vertices[i].Normal = building.Vertices[i].Normal;
+//		vertices[i].TexC = building.Vertices[i].TexC;
+//	}
+//
+//	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
+//
+//	std::vector<std::uint16_t> indices = building.GetIndices16();
+//	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
+//
+//	auto geo = std::make_unique<MeshGeometry>();
+//	geo->Name = "buildingGeo";
+//
+//	ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
+//	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
+//
+//	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
+//	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
+//
+//	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+//		mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
+//
+//	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
+//		mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
+//
+//	geo->VertexByteStride = sizeof(Vertex);
+//	geo->VertexBufferByteSize = vbByteSize;
+//	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
+//	geo->IndexBufferByteSize = ibByteSize;
+//
+//	SubmeshGeometry submesh;
+//	submesh.IndexCount = (UINT)indices.size();
+//	submesh.StartIndexLocation = 0;
+//	submesh.BaseVertexLocation = 0;
+//
+//	geo->DrawArgs["building"] = submesh;
+//
+//	mGeometries[geo->Name] = std::move(geo);
+//}
+
+
 void GameApp::BuildPlayerGeometry()
 {
 	GeometryGenerator geoGen;
@@ -1259,6 +1310,7 @@ void GameApp::BuildRenderItems()
 	mAllRitems["particle"] = BuildRenderItem(objCbIndex, "particle", "particle");
 	mAllRitems["CarBody"] = BuildRenderItem(objCbIndex, "carBodyGeo", "carBody");
 	mAllRitems["CarTire"] = BuildRenderItem(objCbIndex, "carTireGeo", "carTire");
+	mAllRitems["Building"] = BuildRenderItem(objCbIndex, "buildingGeo", "building");
 
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)

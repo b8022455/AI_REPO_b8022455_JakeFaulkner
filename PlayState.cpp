@@ -202,21 +202,6 @@ void PlayState::Initialize()
 	InitializeBuildings();
 	
 
-	//// tile clumping  HORIZONTAL FLOATING TILES CODE DEBUG REMOVE IF NEEDED
-	//int n(0);
-	//int clumpSize(5);
-	//DirectX::XMFLOAT3 position = mTile.SetRandom();
-
-	//while (n <= clumpSize)
-	//{
-	//	mTile.Initialize("Tiles");
-	//	{
-	//		mTile.mpInstance->MaterialIndex = 4;
-	//		mTile.CreateTileWallHorizontal(clumpSize, position, n);
-	//	}
-	//	n++;
-	//}
-
 	// Setup temp enemies
 	{
 		// inserts n of enemies
