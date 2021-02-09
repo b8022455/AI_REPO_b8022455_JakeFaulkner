@@ -11,6 +11,68 @@
 
 using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
+void PlayState::InitializeBuildings()
+{
+	mBuildings.reserve(3);
+
+	mBuildings.push_back(Building(GC::BUILDING_0));
+	mBuildings.push_back(Building(GC::BUILDING_1));
+	mBuildings.push_back(Building(GC::BUILDING_2));
+	
+	struct SetupBuildings
+	{
+		float x = 10.5f;
+		const int biggestGap = 5;
+		void operator()(Building& b)
+		{
+			b.Initialize(GC::GO_BUILDING);
+			b.mpInstance->MaterialIndex = 0/*GameApp::Get().GetMaterialIndex("tileTex")*/;
+			x += 1.0f + (rand() % biggestGap);
+			b.SetPos({ x, 0.0f, 4.0f });
+		}
+	};
+
+	std::for_each(mBuildings.begin(), mBuildings.end(), SetupBuildings());
+}
+
+bool PlayState::FindNearestBuildingInRadius()
+{
+	struct SortByDistance
+	{
+		SimpleMath::Vector3 from;
+
+		bool operator()(const Building& a, const Building& b)
+		{
+			distanceA = SimpleMath::Vector3::Distance(from, a.GetPosV3());
+			distanceB = SimpleMath::Vector3::Distance(from, b.GetPosV3());
+
+			return distanceA < distanceB;
+		}
+	private:
+		float distanceA, distanceB;
+	};
+
+	SortByDistance s;
+	// distance from player location
+	s.from = mPlayer.GetPosV3();
+
+	std::sort(mBuildings.begin(), mBuildings.end(), std::ref(s));
+
+	float distance = SimpleMath::Vector3::Distance(mPlayer.GetPosV3(), mBuildings.front().GetPosV3());
+
+	if (distance < GC::BUILDING_RADIUS)
+	{
+		mpActiveBuilding = &mBuildings.front();
+		return true;
+	}
+	else
+	{
+		// if none in range clear any active building
+		mpActiveBuilding = nullptr;
+		return false;
+	}
+}
+
 void PlayState::InitializeTraders()
 {
 
@@ -137,22 +199,23 @@ void PlayState::Initialize()
 	mPlayerHealthBar.SetPosition({ 200.0f, 20.0f }); // todo add values to constants.h
 
 	InitializeTraders();
+	InitializeBuildings();
 	
 
-	// tile clumping
-	int n(0);
-	int clumpSize(5);
-	DirectX::XMFLOAT3 position = mTile.SetRandom();
+	//// tile clumping  HORIZONTAL FLOATING TILES CODE DEBUG REMOVE IF NEEDED
+	//int n(0);
+	//int clumpSize(5);
+	//DirectX::XMFLOAT3 position = mTile.SetRandom();
 
-	while (n <= clumpSize)
-	{
-		mTile.Initialize("Tiles");
-		{
-			mTile.mpInstance->MaterialIndex = 4;
-			mTile.CreateTileWallHorizontal(clumpSize, position, n);
-		}
-		n++;
-	}
+	//while (n <= clumpSize)
+	//{
+	//	mTile.Initialize("Tiles");
+	//	{
+	//		mTile.mpInstance->MaterialIndex = 4;
+	//		mTile.CreateTileWallHorizontal(clumpSize, position, n);
+	//	}
+	//	n++;
+	//}
 
 	// Setup temp enemies
 	{
@@ -177,6 +240,7 @@ void PlayState::Initialize()
 						1.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
 					});
+
 		}
 
 	}

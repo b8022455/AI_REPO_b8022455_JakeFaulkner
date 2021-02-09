@@ -12,6 +12,7 @@
 #include "Constants.h"
 #include "Trader.h"
 #include "Plant.h"
+#include "Building.h"
 #include <math.h>
 #include "Bar.h"
 using namespace std;
@@ -23,6 +24,7 @@ class PlayState : public State
 	std::vector<Trader> mTraders;
 	std::vector<Enemy> mEnemies;
 	std::vector<Plant> mPlants;
+	std::vector<Building> mBuildings;
 	Inventory mInventory;
 
 	// Trader player is focused on
@@ -65,6 +67,12 @@ class PlayState : public State
 	bool FindNearestTraderInRadius();
 
 	int score = 0;
+
+	// Building player is focused on
+	Building* mpActiveBuilding = nullptr;
+	
+	void InitializeBuildings();
+	bool FindNearestBuildingInRadius();
 
 public:
 	PlayState();

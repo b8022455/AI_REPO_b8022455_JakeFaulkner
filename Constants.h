@@ -69,6 +69,7 @@ namespace GC
 		MOVE_SPEED = 5.0f,
 
 		TRADER_RADIUS = 1.75f,
+		BUILDING_RADIUS = 1.75f,
 
 		ENEMYTYPE1_RANGE = 8.0f,
 		ENEMYTYPE1_ATTACK_DURATION = 2.0f,
@@ -118,6 +119,7 @@ namespace GC
 		GO_TILE = "Tiles",
 		GO_TRADER = "Trader",
 		GO_POTATO = "Potato",
+		GO_BUILDING = "Building",
 
 		// TODO: (NOTE) IMPLEMENT ENEMY TYPES HERE
 		// ?? = NOT IMPLEMENTED OR NEEDS REVIEWING
@@ -155,11 +157,10 @@ namespace GC
 		PLANT_2 = { PLANT_NAME_2 , 0.01f }
 	;
 
-	const BuildingData
-		BUILDING_0 = {"Abandoned","Medium"},
-		BUILDING_1 = {"Damaged","High"},
-		BUILDING_2 = {"Pristine","Low"}
-		;
+	const BuildingData // building type - risk 
+		BUILDING_0 = { "Abandoned","Medium" },
+		BUILDING_1 = { "Damaged","High" },
+		BUILDING_2 = { "Pristine","Low" };
 
 	//audio
 	const std::string TRADER_TALK[6]
