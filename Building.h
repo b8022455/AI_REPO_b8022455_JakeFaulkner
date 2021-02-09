@@ -17,7 +17,7 @@ class Building : public GameObject
 
 public:
 	Building(const BuildingData& bd); // abandoned-infested-occupied etc, risk:low,medium,high (chances to spawn enemys or environmental dmg)
-	bool LootBuilding(Inventory& inventory);
+	bool LootBuilding(Inventory& inventory); // WIP
 	//std::string GetBuildingType();
 	//std::string GetBuildingRiskLevel();
 };

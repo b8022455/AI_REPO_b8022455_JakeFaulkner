@@ -111,6 +111,11 @@ public:
 		return &inventoryPosition;
 	}
 
+	Building* GetBuilding()
+	{
+		return mpActiveBuilding;
+	}
+
 	void InventoryUp();
 	void InventoryDown();
 	void ItemAction();

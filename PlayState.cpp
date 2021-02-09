@@ -21,12 +21,12 @@ void PlayState::InitializeBuildings()
 	
 	struct SetupBuildings
 	{
-		float x = 10.5f;
+		float x = -5.5f;
 		const int biggestGap = 5;
 		void operator()(Building& b)
 		{
-			b.Initialize(GC::GO_BUILDING);
-			b.mpInstance->MaterialIndex = 0/*GameApp::Get().GetMaterialIndex("tileTex")*/;
+			b.Initialize(GC::GO_BUILDING); // no model linked yet
+			b.mpInstance->MaterialIndex = 0;
 			x += 1.0f + (rand() % biggestGap);
 			b.SetPos({ x, 0.0f, 4.0f });
 		}

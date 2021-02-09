@@ -84,7 +84,7 @@ namespace GC
 		ENEMYTYPE2_DRAG = 3.0f,
 
 
-		TILE_UV_INC = 1.0f/8.0f // tile is 1/8 of texture atlus
+		TILE_UV_INC = 1.0f / 8.0f // tile is 1/8 of texture atlus
 		;
 
 
@@ -119,15 +119,14 @@ namespace GC
 		GO_TILE = "Tiles",
 		GO_TRADER = "Trader",
 		GO_POTATO = "Potato",
-		GO_BUILDING = "Building",
+		GO_BUILDING = "Building", // maybe try switching to trader
 
 		// TODO: (NOTE) IMPLEMENT ENEMY TYPES HERE
 		// ?? = NOT IMPLEMENTED OR NEEDS REVIEWING
-		ENEMY_TYPE_1 = "EnemyType1", 
+		ENEMY_TYPE_1 = "EnemyType1",
 		// BASIC BARFING ENEMY (HOBBLES TOWARD PLAYER THEN BARFS, NO DAMAGE FROM CONTACT??)
-		ENEMY_TYPE_2 = "EnemyType2", 
+		ENEMY_TYPE_2 = "EnemyType2",
 		// CHARGER ENEMY (FAST, NO PARTICLE ATTACK)
-
 
 		STATE_PLAY = "PlayState",
 		STATE_TRADE = "TradeState",
@@ -148,7 +147,15 @@ namespace GC
 
 		PLANT_NAME_0 = "Sour Potato",
 		PLANT_NAME_1 = "Worm Herb",
-		PLANT_NAME_2 = "Skull Rose"
+		PLANT_NAME_2 = "Skull Rose",
+
+		BUILDING_TYPE_0 = "Abandoned",
+		BUILDING_TYPE_1 = "Damaged",
+		BUILDING_TYPE_2 = "Pristine",
+
+		BUILDING_RISK_0 = "High",
+		BUILDING_RISK_1 = "Medium",
+		BUILDING_RISK_2 = "Low"
 		;
 
 	const PlantData
@@ -157,10 +164,13 @@ namespace GC
 		PLANT_2 = { PLANT_NAME_2 , 0.01f }
 	;
 
-	const BuildingData // building type - risk 
-		BUILDING_0 = { "Abandoned","Medium" },
-		BUILDING_1 = { "Damaged","High" },
-		BUILDING_2 = { "Pristine","Low" };
+	const BuildingData
+		BUILDING_0 = { BUILDING_TYPE_0 , BUILDING_RISK_0 },
+		BUILDING_1 = { BUILDING_TYPE_1 , BUILDING_RISK_1 },
+		BUILDING_2 = { BUILDING_TYPE_2 , BUILDING_RISK_2 }
+	;
+
+	
 
 	//audio
 	const std::string TRADER_TALK[6]
@@ -176,10 +186,10 @@ namespace GC
 	const size_t TRADER_TALK_COUNT = sizeof(TRADER_TALK) / sizeof(TRADER_TALK[0]);
 
 	const DirectX::XMFLOAT2
-		MENU_BUTTON_PIVOT{0.5f,0.6f},
-		MENU_BUTTON_DISTANCE{200.0f,100.0f}, // distance from pivot
-		MENU_TITLE_POSITION{20.0f,20.0f},
-		MENU_BODY_POSITION{20.0f,50.0f},
+		MENU_BUTTON_PIVOT{ 0.5f,0.6f },
+		MENU_BUTTON_DISTANCE{ 200.0f,100.0f }, // distance from pivot
+		MENU_TITLE_POSITION{ 20.0f,20.0f },
+		MENU_BODY_POSITION{ 20.0f,50.0f },
 
 
 		// Add this to uv coords for texture on atlus
@@ -196,11 +206,11 @@ namespace GC
 	const size_t NUM_TILE_UV_RAND = 4;
 
 	// Add a random element to tile uvcoords for texture on atlus
-	const DirectX::XMFLOAT2 TILE_UV_RANDOM[ NUM_TILE_UV_RAND ]{
+	const DirectX::XMFLOAT2 TILE_UV_RANDOM[NUM_TILE_UV_RAND]{
 		{	0.000f , 	0.000f },
 		{	0.000f , 	0.125f },
 		{	0.000f , 	0.250f },
-		{	0.000f , 	0.375f } 
+		{	0.000f , 	0.375f }
 	};
 
 	// eg stoneTileUV +=  GC::TILE_UV_STONE  + GC::TILE_UV_RANDOM[rand() % GC::NUM_TILE_UV_RAND]
@@ -216,28 +226,28 @@ namespace GC
 		DIRECTION_LOWER({ 0.0f,	-1.0f,	0.0f })
 		;
 	const DirectX::XMFLOAT4
-		BUTTON_DOWN_COLOR({ 0.7f, 0.7f, 0.7f, 1.0f}),
+		BUTTON_DOWN_COLOR({ 0.7f, 0.7f, 0.7f, 1.0f }),
 		BUTTON_UP_COLOR{ 1.0f, 1.0f, 1.0f, 1.0f },
 
-		TEXT_DARK_COLOR{ 0.2f, 0.2f, 0.2f, 1.0f},
+		TEXT_DARK_COLOR{ 0.2f, 0.2f, 0.2f, 1.0f },
 		TEXT_LIGHT_COLOR{ 1.0f, 1.0f, 1.0f, 1.0f }
-		;
+	;
 
-	
+
 	const long
 		// RECT
 		PANEL_SRC[4]{ 192, 128,256,192 },
 
-		BAR_MIN {32}, // for source rect limits 0% - 100%
-		BAR_MAX { 160}, // for source rect limits 0% - 100%
-		BAR_BG[4]	{ BAR_MIN,128,BAR_MAX,160 }, // Bar background
-		BAR_GRN[4]	{ BAR_MIN,160,BAR_MAX,192 },
-		BAR_YLW[4]	{ BAR_MIN,192,BAR_MAX,224 },
-		BAR_RED[4]	{ BAR_MIN,224,BAR_MAX,256 },
+		BAR_MIN{ 32 }, // for source rect limits 0% - 100%
+		BAR_MAX{ 160 }, // for source rect limits 0% - 100%
+		BAR_BG[4]{ BAR_MIN,128,BAR_MAX,160 }, // Bar background
+		BAR_GRN[4]{ BAR_MIN,160,BAR_MAX,192 },
+		BAR_YLW[4]{ BAR_MIN,192,BAR_MAX,224 },
+		BAR_RED[4]{ BAR_MIN,224,BAR_MAX,256 },
 		BAR_SIZE{ BAR_MAX - BAR_MIN } //max - min.
 	;
 
-	
+
 
 
 
@@ -309,4 +319,27 @@ namespace GC
 		{ TRADER_OBJ_2, 	{"I have to load up on supplies for the journey","That should do it"}},			// middle of car
 		{ TRADER_OBJ_1, 	{"I need to install these parts to get this moving","Purrs like a kitten"	}}	// front of car
 	};
+
+	//Buildings 
+
+	//const ItemLookup BUILDING_LOOKUP_ITEGRITY // BUILDING QUALITY
+	//{
+	//	{BUILDING_0,{{"Key To Valhalla",1 }}},
+	//	{BUILDING_1,{{"Key To Valhalla",1 }}},
+	//	{BUILDING_2,{{"Key To Valhalla",1 }}},
+	//};
+
+	//const ItemLookup BUILDING_LOOKUP_RISK // BUILDING RISK TO LOOT
+	//{
+	//	{BUILDING_0,{{"Key To Valhalla",1 }}},
+	//	{BUILDING_1,{{"Key To Valhalla",1 }}},
+	//	{BUILDING_2,{{"Key To Valhalla",1 }}},
+	//};
+
+	//const std::map<std::string, BuildingData> BUILDING_DATA
+	//{
+	//	{ BUILDING_0,	{"Abandonded","High"}},
+	//	{ BUILDING_1,	{"Damaged","Medium"}},
+	//	{ BUILDING_2,	{"Pristine","Low"}}
+	//};
 }
