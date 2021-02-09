@@ -33,6 +33,7 @@ namespace GC
 
 		KET_TALK = 'T',
 
+		KEY_LOOT = 'L',
 
 		KEY_ATTACK = 0x20,  //space
 		KEY_PAUSE = 0xD, //enter

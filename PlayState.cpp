@@ -21,14 +21,14 @@ void PlayState::InitializeBuildings()
 	
 	struct SetupBuildings
 	{
-		float x = -5.5f;
-		const int biggestGap = 5;
+		float x,z = -5.5f;
+		const int biggestGap = -5.5f;
 		void operator()(Building& b)
 		{
-			b.Initialize(GC::GO_BUILDING); // no model linked yet
+			b.Initialize(GC::GO_BUILDING);
 			b.mpInstance->MaterialIndex = 0;
-			x += 1.0f + (rand() % biggestGap);
-			b.SetPos({ x, 0.0f, 4.0f });
+			x,z += 3.0f + (rand() % biggestGap);
+			b.SetPos({ x, 0.0f, z });
 		}
 	};
 
@@ -386,6 +386,19 @@ void PlayState::Update(const GameTimer & gt)
 			mPlayerWeapon.ResetWeaponPosition();
 	}
 
+	for (auto& b : mBuildings)	
+	{
+		if (mPlayer.CheckCollision(mPlayer.GetPositionWithVelocity(gt), b.GetPos()) ||
+			mPlayer.CheckCollision(mPlayer.GetPos() + mPlayer.BouncebackPosition, b.GetPos()))
+		{
+			mPlayer.SetVelocity(0.0f);
+			mPlayer.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);	
+		}
+
+		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), b.GetPos()))
+			mPlayerWeapon.ResetWeaponPosition();
+	}
+
 
 	mPlayer.Update(gt);
 
@@ -579,6 +592,10 @@ void PlayState::Update(const GameTimer & gt)
 					e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 			e.SetVelocity(mPlayer.GetPos(), gt);
+
+			for (auto& b : mBuildings)
+				if (e.CheckCollision(e.GetPos(), b.GetPos()))	
+					e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 		}
 
@@ -1086,6 +1103,21 @@ void PlayState::Keyboard(const GameTimer & gt)
 		{
 			//todo play sound
 			assert(mpActiveTrader);
+			GameApp::Get().ChangeState(GC::STATE_TRADE);
+		}
+		else
+		{
+			//todo sound fail sound
+		}
+	}
+
+	// Loot
+	if (Input::Get().KeyReleased('L'))
+	{
+		if (FindNearestTraderInRadius())
+		{
+			//todo play sound
+			assert(mpActiveBuilding);
 			GameApp::Get().ChangeState(GC::STATE_TRADE);
 		}
 		else

@@ -1105,55 +1105,6 @@ void GameApp::BuildSwordGeometry()
 	mGeometries[geo->Name] = std::move(geo);
 }
 
-//void GameApp::BuildBuildingGeometry()
-//{
-//	GeometryGenerator geoGen;
-//	GeometryGenerator::MeshData building = geoGen.CreateBuilding(1.0f, 1.0f, 1.0f, 1.0f);
-//
-//	std::vector<Vertex> vertices(building.Vertices.size());
-//	for (size_t i = 0; i < building.Vertices.size(); ++i)
-//	{
-//		auto& p = building.Vertices[i].Position;
-//		vertices[i].Pos = p;
-//		vertices[i].Normal = building.Vertices[i].Normal;
-//		vertices[i].TexC = building.Vertices[i].TexC;
-//	}
-//
-//	const UINT vbByteSize = (UINT)vertices.size() * sizeof(Vertex);
-//
-//	std::vector<std::uint16_t> indices = building.GetIndices16();
-//	const UINT ibByteSize = (UINT)indices.size() * sizeof(std::uint16_t);
-//
-//	auto geo = std::make_unique<MeshGeometry>();
-//	geo->Name = "buildingGeo";
-//
-//	ThrowIfFailed(D3DCreateBlob(vbByteSize, &geo->VertexBufferCPU));
-//	CopyMemory(geo->VertexBufferCPU->GetBufferPointer(), vertices.data(), vbByteSize);
-//
-//	ThrowIfFailed(D3DCreateBlob(ibByteSize, &geo->IndexBufferCPU));
-//	CopyMemory(geo->IndexBufferCPU->GetBufferPointer(), indices.data(), ibByteSize);
-//
-//	geo->VertexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-//		mCommandList.Get(), vertices.data(), vbByteSize, geo->VertexBufferUploader);
-//
-//	geo->IndexBufferGPU = d3dUtil::CreateDefaultBuffer(md3dDevice.Get(),
-//		mCommandList.Get(), indices.data(), ibByteSize, geo->IndexBufferUploader);
-//
-//	geo->VertexByteStride = sizeof(Vertex);
-//	geo->VertexBufferByteSize = vbByteSize;
-//	geo->IndexFormat = DXGI_FORMAT_R16_UINT;
-//	geo->IndexBufferByteSize = ibByteSize;
-//
-//	SubmeshGeometry submesh;
-//	submesh.IndexCount = (UINT)indices.size();
-//	submesh.StartIndexLocation = 0;
-//	submesh.BaseVertexLocation = 0;
-//
-//	geo->DrawArgs["building"] = submesh;
-//
-//	mGeometries[geo->Name] = std::move(geo);
-//}
-
 
 void GameApp::BuildPlayerGeometry()
 {
