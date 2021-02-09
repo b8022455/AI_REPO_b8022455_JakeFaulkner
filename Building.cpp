@@ -1,5 +1,6 @@
 #include "Building.h"
 #include "Constants.h"
+#include <random>
 
 Building::Building(const BuildingData& bd)
 {
@@ -40,3 +41,6 @@ bool Looted()
 //{
 //
 //}
+
+
+

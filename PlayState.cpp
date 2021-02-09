@@ -250,7 +250,7 @@ void PlayState::Initialize()
 			e.Initialize("Enemy");
 			e.SetPosition({
 						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
+						0.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
 			});
 
@@ -258,12 +258,11 @@ void PlayState::Initialize()
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
+						0.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
 					});
 
 		}
-
 	}
 
 	mCombatController.Initialize(&mPlayer,&mPlayerWeapon,&mEnemies);
@@ -1149,11 +1148,14 @@ void PlayState::Keyboard(const GameTimer & gt)
 	// Loot
 	if (Input::Get().KeyReleased('L'))
 	{
-		if (FindNearestTraderInRadius())
+		if (FindNearestBuildingInRadius())
 		{
 			//todo play sound
 			assert(mpActiveBuilding);
-			GameApp::Get().ChangeState(GC::STATE_TRADE);
+
+			++mInventory["Ham"];
+			++mInventory["Cheese"];
+			inventoryPosition = mInventory.begin();
 		}
 		else
 		{
@@ -1353,7 +1355,7 @@ void PlayState::ResetState(const GameTimer& gt)
 			while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 				e.SetPos({
 					static_cast<float>(rand() % 10 + 2.0f),
-					1.0f,
+					0.0f,
 					static_cast<float>(rand() % 10 + 2.0f)
 					});
 	}

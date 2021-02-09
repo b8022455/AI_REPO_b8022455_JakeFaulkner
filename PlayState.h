@@ -25,7 +25,10 @@ class PlayState : public State
 	std::vector<Enemy> mEnemies;
 	std::vector<Plant> mPlants;
 	std::vector<Building> mBuildings;
+
 	Inventory mInventory;
+	const InventoryUnordered* mpDropItems;
+	
 
 	// Trader player is focused on
 	Trader* mpActiveTrader = nullptr;
@@ -75,6 +78,7 @@ class PlayState : public State
 	bool FindNearestBuildingInRadius();
 
 public:
+	
 	PlayState();
 
 	virtual void Initialize() override;
@@ -90,6 +94,8 @@ public:
 	void reInitialize();
 
 	void Controls(const GameTimer& gt);
+
+	const std::string Loot(const InventoryUnordered* mpDropItems);
 
 	Player* GetPlayer()
 	{
