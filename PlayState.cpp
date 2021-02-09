@@ -11,6 +11,16 @@
 
 using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
+//for (auto t : mTraders)
+//while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+//e.SetPos({
+//	static_cast<float>(rand() % 10 + 2.0f),
+//	1.0f,
+//	static_cast<float>(rand() % 10 + 2.0f)
+//	});
+//	}
+
+
 void PlayState::InitializeBuildings()
 {
 	mBuildings.reserve(3);
@@ -31,8 +41,34 @@ void PlayState::InitializeBuildings()
 			b.SetPos({ x, 0.0f, z });
 		}
 	};
-
+	
 	std::for_each(mBuildings.begin(), mBuildings.end(), SetupBuildings());
+
+	for (auto& b : mBuildings) // Prevents buildings spawning on top of traders
+	{
+		for (auto t : mTraders)
+		{
+			while (b.CheckCollision(t.GetPos(), b.GetPos()))
+				b.SetPos({
+					static_cast<float>(rand() % 10 + 2.0f),
+					0.0f,
+					static_cast<float>(rand() % 10 + 2.0f)
+					});
+		};
+	};
+
+	for (auto& b : mBuildings) // Prevents buildings from spawning on top of enemies
+	{
+		for (auto e : mEnemies)
+		{
+			while (b.CheckCollision(e.GetPos(), b.GetPos()))
+				b.SetPos({
+					static_cast<float>(rand() % 10 + 2.0f),
+					0.0f,
+					static_cast<float>(rand() % 10 + 2.0f)
+					});
+		};
+	};
 }
 
 bool PlayState::FindNearestBuildingInRadius()
@@ -610,7 +646,6 @@ void PlayState::Update(const GameTimer & gt)
 				<< "  X: " << std::setprecision(2) << pos.x
 				<< "  Z:" << std::setprecision(2) << pos.z << "\n";
 		}
-		
 
 		i++;
 
@@ -1298,6 +1333,9 @@ void PlayState::ResetState(const GameTimer& gt)
 
 	//Reset Tiles
 	ReGen();
+
+	//Reset Buildings
+	mBuildings.clear();
 
 	//Reset Enemies
 	for (auto& e : mEnemies)
