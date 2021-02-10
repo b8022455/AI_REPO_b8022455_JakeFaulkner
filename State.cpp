@@ -91,9 +91,13 @@ void StateManager::Init() // initialised in gameapp
 	mFadeForeground.Initialise("uiTex");
 
 	DirectX::XMINT2 s = GameApp::Get().GetClientSizeU2(); //todo on resize
-	mMenuBackground.sourceRectangle = { 0,0,s.x,s.y }; // whole viewport
-	mFadeForeground.sourceRectangle = { 0,0,s.x,s.y }; // whole viewport
-	//mFadeForeground.destinationRectangle = { s.x ,s.y,s.x ,s.y };
+	mMenuBackground.sourceRectangle = { 0,0,s.x,s.y }; // whole viewport tiled
+
+	RECT fgBlack  = { 1,511,1,511 };
+	//RECT fgWhite = { 65,511,65,511 };
+
+	mFadeForeground.sourceRectangle = fgBlack; // texture rect
+	mFadeForeground.destinationRectangle = { 0 ,0,s.x ,s.y };// whole viewport 
 
 	//set position of text elements of menus
 	Text menuTitle, menuBody;

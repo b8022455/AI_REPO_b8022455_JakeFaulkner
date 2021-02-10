@@ -42,7 +42,7 @@ class StateManager
 	Sprite mMenuBackground;
 	Sprite mFadeForeground;
 	float mFadeAlpha = 1.0f; 
-	const float mFadeRate = 2.0f;
+	const float mFadeRate = 4.0f;
 	//DeltaTimer mFadeTime;
 
 	// For enabling rendering in GameApp
