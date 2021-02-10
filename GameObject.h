@@ -50,6 +50,7 @@ public:
 	const void RotationAroundPoint(const DirectX::XMMATRIX& translation1, const float& rotation, const DirectX::XMFLOAT3& translation2) const;
 
 	bool CheckCollision(const DirectX::XMFLOAT3& Object1, const DirectX::XMFLOAT3& Object2);
+	bool WithinBounds(const DirectX::XMFLOAT3 Object1);
 
 	const void LookAt(const DirectX::XMVECTOR& target) const;
 

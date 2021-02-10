@@ -44,12 +44,6 @@ public:
 	bool Slowed = false;
 	bool Slippy = false;
 
-	// used to apply boundaries to player
-	const float PLAYER_RIGHTBOUND = 15.0f;
-	const float PLAYER_LEFTBOUND = -15.0f;
-
-	const float PLAYER_UPBOUND = 15.0f;
-	const float PLAYER_DOWNBOUND = -15.0f;
 
 	PlayerFacingDirection playerDir = PlayerFacingDirection::Left;
 	int attack = 10;		//Base attack stat (base amount + weapon amount), need to make private but public for debugging purposes

@@ -39,24 +39,24 @@ void Player::Update(const GameTimer & gt)
 		VELOCITY.bottom = 0;
 
 	// LOAD NEXT AREA BY WALKING TO BORDER HERE - currently within 1 tile of border
-	if (mpInstance->World._41 >= PLAYER_RIGHTBOUND - 0.9375f) { // 32 tiles = 30f world space, 1 tile = 0.9375f world space
+	if (mpInstance->World._41 >= GC::WORLD_RIGHT_BOUNDARY - 0.9375f) { // 32 tiles = 30f world space, 1 tile = 0.9375f world space
 		genArea = true;
 
 	}
-	if (mpInstance->World._41 <= PLAYER_LEFTBOUND + 0.9375f) { // 32 tiles = 30f world space, 1 tile = 0.9375f world space
+	if (mpInstance->World._41 <= GC::WORLD_LEFT_BOUNDARY + 0.9375f) { // 32 tiles = 30f world space, 1 tile = 0.9375f world space
 		genArea = true;
 
 	}
-	if (mpInstance->World._43 >= PLAYER_UPBOUND - 0.9375f) { // 32 tiles = 30f world space, 1 tile = 0.9375f world space
+	if (mpInstance->World._43 >= GC::WORLD_TOP_BOUNDARY - 0.9375f) { // 32 tiles = 30f world space, 1 tile = 0.9375f world space
 		genArea = true;
 
 	}
-	if (mpInstance->World._43 <= PLAYER_DOWNBOUND + 0.9375f) { // 32 tiles = 30f world space, 1 tile = 0.9375f world space
+	if (mpInstance->World._43 <= GC::WORLD_BOTTOM_BOUNDARY + 0.9375f) { // 32 tiles = 30f world space, 1 tile = 0.9375f world space
 		genArea = true;
 
 	}
 
-	if (mpInstance->World._41 <= PLAYER_RIGHTBOUND) {
+	if (mpInstance->World._41 <= GC::WORLD_RIGHT_BOUNDARY) {
 		if (Slowed == true)
 			mpInstance->World._41 += (0.5f * VELOCITY.right) * dt;
 		if (Slippy == true)
@@ -64,7 +64,7 @@ void Player::Update(const GameTimer & gt)
 		if (Slowed != true && Slippy != true)
 			mpInstance->World._41 += VELOCITY.right * dt;
 	}
-	if (mpInstance->World._41 >= PLAYER_LEFTBOUND)
+	if (mpInstance->World._41 >= GC::WORLD_LEFT_BOUNDARY)
 	{
 		if (Slowed == true)
 			mpInstance->World._41 -= (0.5f * VELOCITY.left) * dt;
@@ -73,7 +73,7 @@ void Player::Update(const GameTimer & gt)
 		if (Slowed == false && Slippy == false)
 			mpInstance->World._41 -= VELOCITY.left * dt;
 	}
-	if (mpInstance->World._43 <= PLAYER_UPBOUND)
+	if (mpInstance->World._43 <= GC::WORLD_TOP_BOUNDARY)
 	{
 		if (Slowed == true)
 			mpInstance->World._43 += (0.5f * VELOCITY.top) * dt;
@@ -82,7 +82,7 @@ void Player::Update(const GameTimer & gt)
 		if (Slowed == false && Slippy == false)
 			mpInstance->World._43 += VELOCITY.top * dt;
 	}
-	if (mpInstance->World._43 >= PLAYER_DOWNBOUND)
+	if (mpInstance->World._43 >= GC::WORLD_BOTTOM_BOUNDARY)
 	{
 		if (Slowed == true)
 			mpInstance->World._43 -= (0.5f * VELOCITY.bottom) * dt;

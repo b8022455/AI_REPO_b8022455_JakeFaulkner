@@ -84,6 +84,11 @@ namespace GC
 		ENEMYTYPE2_MAXSPEED = 3.0f,
 		ENEMYTYPE2_DRAG = 3.0f,
 
+		WORLD_LEFT_BOUNDARY = -15.0f,
+		WORLD_RIGHT_BOUNDARY = 15.0f,
+		WORLD_TOP_BOUNDARY = 15.0f,
+		WORLD_BOTTOM_BOUNDARY = -15.0f,
+
 
 		TILE_UV_INC = 1.0f/8.0f // tile is 1/8 of texture atlus
 		;

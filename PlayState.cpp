@@ -375,6 +375,9 @@ void PlayState::Update(const GameTimer & gt)
 			mPlayerWeapon.ResetWeaponPosition();
 	}
 
+	//Checking player remains in bounds when being attacked
+	if (!mPlayer.WithinBounds(mPlayer.GetPos() + mPlayer.BouncebackPosition))
+		mPlayer.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	mPlayer.Update(gt);
 
@@ -459,40 +462,23 @@ void PlayState::Update(const GameTimer & gt)
 			//Enemy look at players position (only do when in range), only look when not attacking either
 			XMVECTOR playerPosition = XMLoadFloat3(&mPlayer.GetPos());
 
-			if (e.GetType() == GC::ENEMY_TYPE_1) { // ENEMY TYPE EXCLUSIVE LOGIC LOCATED HERE
-				// TODO: (NOTE) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
-				if (mPlayer.GetPos().x >= (e.GetPos().x - GC::ENEMYTYPE1_RANGE) &&
-					mPlayer.GetPos().x <= (e.GetPos().x + GC::ENEMYTYPE1_RANGE)) { // player within - range on x
-					if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE1_RANGE) &&
-						mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
-						e.LookAt(playerPosition);
-					}
+			//Generically gets the enemy range without duplicating code
+			float enemyRange;
+			if (e.GetType() == GC::ENEMY_TYPE_1)
+				enemyRange = GC::ENEMYTYPE1_RANGE;	// ENEMY TYPE EXCLUSIVE LOGIC LOCATED HERE
+			else
+				enemyRange = GC::ENEMYTYPE2_RANGE;
+
+			// TODO: (NOTE) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
+			if (mPlayer.GetPos().x >= (e.GetPos().x - GC::ENEMYTYPE1_RANGE) &&
+				mPlayer.GetPos().x <= (e.GetPos().x + GC::ENEMYTYPE1_RANGE)) { // player within - range on x
+				if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE1_RANGE) &&
+					mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
+					e.LookAt(playerPosition);
 				}
 
 				// enemy movement behaviour based on player radius
 				if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE &&
-					e.getattacking().isAttacking == false)
-				{
-					e.mBehaviour = Enemy::Behaviour::CHASE;
-				}
-				else
-				{
-					e.mBehaviour = Enemy::Behaviour::NONE;
-				}
-			}
-
-			if (e.GetType() == GC::ENEMY_TYPE_2) { // ENEMY TYPE EXCLUSIVE LOGIC LOCATED HERE
-				// TODO: (NOTE) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
-				if (mPlayer.GetPos().x >= (e.GetPos().x - GC::ENEMYTYPE2_RANGE) &&
-					mPlayer.GetPos().x <= (e.GetPos().x + GC::ENEMYTYPE2_RANGE)) { // player within - range on x
-					if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE2_RANGE) &&
-						mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE2_RANGE)) { // player within - range on z
-						e.LookAt(playerPosition);
-					}
-				}
-
-				// enemy movement behaviour based on player radius
-				if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE2_RANGE &&
 					e.getattacking().isAttacking == false)
 				{
 					e.mBehaviour = Enemy::Behaviour::CHASE;
@@ -575,6 +561,10 @@ void PlayState::Update(const GameTimer & gt)
 					GameApp::Get().GetAudio().Play("EnemyHit1", nullptr, false, 1.0f, GetRandomVoicePitch());
 				}
 			}
+
+			//Checking enemy remains in bounds
+			if(!e.WithinBounds(e.GetPos() + e.BouncebackPosition))
+				e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 			// enemy collides with traders
 			for (auto& t : mTraders)

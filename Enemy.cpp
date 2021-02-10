@@ -96,7 +96,8 @@ void Enemy::SetVelocity(const DirectX::SimpleMath::Vector3 target, const GameTim
 
 	mVelocity = direction;
 
-	this->SetPos(currentPos + mVelocity);
+	if(WithinBounds(currentPos + mVelocity))
+		this->SetPos(currentPos + mVelocity);
 }
 
 int Enemy::GetRandomValue(int min, int max)

@@ -230,6 +230,17 @@ bool GameObject::CheckCollision(const XMFLOAT3& Object1,const XMFLOAT3& Object2)
 	return false;
 }
 
+bool GameObject::WithinBounds(const XMFLOAT3 Object1)
+{
+	if (Object1.x < GC::WORLD_RIGHT_BOUNDARY)
+		if (Object1.x > GC::WORLD_LEFT_BOUNDARY)
+			if (Object1.z < GC::WORLD_TOP_BOUNDARY)
+				if (Object1.z > GC::WORLD_BOTTOM_BOUNDARY)
+					return true;
+
+	return false;
+}
+
 const void GameObject::LookAt(const DirectX::XMVECTOR& target) const // (NOTE) LOOKS AT A TARGET VECTOR HERE
 {
 	DirectX::XMVECTOR eyePosition = DirectX::XMLoadFloat3(&this->GetPos());
