@@ -402,7 +402,7 @@ bool D3DApp::InitMainWindow()
 	wc.hInstance     = mhAppInst;
 	wc.hIcon         = LoadIcon(0, IDI_APPLICATION);
 	wc.hCursor       = LoadCursor(0, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);
+	wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_PEN);
 	wc.lpszMenuName  = 0;
 	wc.lpszClassName = L"MainWnd";
 
