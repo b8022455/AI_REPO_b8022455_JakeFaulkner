@@ -191,8 +191,10 @@ void PlayState::Initialize()
 		//Init all enemies
 		for (auto& e : mEnemies)
 			for (auto& t : mTraders)									//Check each trader in the game
-				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+				while (e.CheckCollision(e.GetPos(), t.GetPos()) ||	//Prevents enemy spawning inside a trader
+						DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE)	//Prevents enemy spawning to close to player
 					e.SetRandomPosition();
+
 	}
 
 	mCombatController.Initialize(&mPlayer,&mPlayerWeapon,&mEnemies);

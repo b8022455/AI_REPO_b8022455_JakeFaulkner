@@ -93,7 +93,7 @@ namespace GC
 		"You are wounded.\nPress I to open inventory",
 		"Arrow Keys to scroll \n U Key to use an item",
 		"Press 9 to Trade",
-		"Use the Arrow keys to move and Space to attack",
+		"Use the WASD keys to move and Space to attack",
 		"Help is available using the H key",
 		"Plant crops using the 7 Key",
 		"You can harvest crops when fully grown using the 8 Key",
