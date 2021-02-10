@@ -30,12 +30,20 @@ public:
 
 class StateManager
 {
+	enum class Fade { NONE, FADE_IN, FADE_OUT, READY };	//IN to mode, OUT from mode
+	Fade mFade = Fade::FADE_IN;
+	//Fade mFade;
 	// Holds states
 	std::unordered_map<std::string, std::unique_ptr<State> > mStates;
 	// Key to the state that will update and render
 	std::string mCurrentState;
+	std::string mQueuedState;
 
 	Sprite mMenuBackground;
+	Sprite mFadeForeground;
+	float mFadeAlpha = 1.0f; 
+	const float mFadeRate = 2.0f;
+	//DeltaTimer mFadeTime;
 
 	// For enabling rendering in GameApp
 	bool mIsMenu;
@@ -45,6 +53,8 @@ class StateManager
 
 	// Validate state exists
 	bool IsValidState(const std::string stateName);
+
+	void FadeUpdate(const GameTimer& gt);
 
 public:
 	// Adds the game states

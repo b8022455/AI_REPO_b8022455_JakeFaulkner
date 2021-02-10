@@ -26,14 +26,74 @@ bool StateManager::IsValidState(const std::string stateName)
 	return mStates.count(stateName) == 1;
 }
 
+void StateManager::FadeUpdate(const GameTimer & gt)
+{
+	float dt = gt.DeltaTime();
+	switch (mFade)
+	{
+	case Fade::FADE_IN:
+		
+		mFadeAlpha -= mFadeRate * dt;
+		if ((mFadeAlpha <= 0.0f))
+		{
+			mFade = Fade::NONE;
+		}
+		; break;
+	case Fade::FADE_OUT:
+		mFadeAlpha += mFadeRate * dt;
+		if ((mFadeAlpha > 1.0f))
+		{
+			mFade = Fade::READY;
+		}; break;
+	case Fade::READY:
+		
+		if (IsValidState(mQueuedState))
+		{
+			if (mQueuedState != mCurrentState)
+			{
+				mCurrentState = mQueuedState;
+				mQueuedState = "";
+				EvaluateState();
+				mStates[mCurrentState]->OnResume();
+
+				if (mCurrentState != "Story1") {// changes background if state isn't Story1
+					mMenuBackground.Initialise("iceTex");
+					Story = false;
+				}
+				else {
+					mMenuBackground.Initialise("tileTex");
+					Story = true;
+				} // all implemented for story screens & changing the background for menus (NOT TESTED FOR PERFORMANCE ISSUES,
+				// E.G. MULTIPLE TEXTURES BEING LOADED INTO BACKGROUND VARIABLE)
+			}
+			
+
+		}
+		else
+		{
+			assert(false);
+		}
+
+		mFade = Fade::FADE_IN;
+
+		
+		; break;
+	case Fade::NONE:; break;
+	default:;
+	}
+}
+
 void StateManager::Init() // initialised in gameapp
 {
 	//mMenuBackground.Initialise("iceTex"); // initialize background for ALL menus
 
 	mMenuBackground.Initialise("tileTex"); 
+	mFadeForeground.Initialise("uiTex");
 
 	DirectX::XMINT2 s = GameApp::Get().GetClientSizeU2(); //todo on resize
-	mMenuBackground.sourceRectangle = { 0,0,s.x,s.y };
+	mMenuBackground.sourceRectangle = { 0,0,s.x,s.y }; // whole viewport
+	mFadeForeground.sourceRectangle = { 0,0,s.x,s.y }; // whole viewport
+	//mFadeForeground.destinationRectangle = { s.x ,s.y,s.x ,s.y };
 
 	//set position of text elements of menus
 	Text menuTitle, menuBody;
@@ -156,6 +216,13 @@ void StateManager::Update(const GameTimer & gt)
 
 	GameApp::Get().mDebugLog << "State: \"" << mCurrentState << "\"\n";
 
+
+	mFadeForeground.color.w = mFadeAlpha;
+
+	FadeUpdate(gt);
+
+
+
 	if (IsValidState(mCurrentState))
 	{
 		mStates[mCurrentState]->Update(gt);
@@ -176,6 +243,10 @@ void StateManager::Draw(const GameTimer & gt)
 		}
 
 		mStates[mCurrentState]->Draw(gt);
+
+		mFadeForeground.Draw();
+
+		GameApp::Get().mDebugLog << "\n" << mFadeAlpha;
 	}
 	else
 	{
@@ -213,22 +284,42 @@ void StateManager::RemoveState(const std::string & name)
 }
 void StateManager::ChangeState(const std::string & name)
 {
+	//if (IsValidState(name))
+	//{
+	//	// if queued state != 
+	//}
+
+
+	
+	// if name is valid state
+	// no queued state
+	// name isnt current state
+
 	if (IsValidState(name))
 	{
+		if (mQueuedState.length() == 0 && mCurrentState != name && mFade == Fade::NONE)
+		{
+			mQueuedState = name;
+			mFade = Fade::FADE_OUT; //fade to black
 
-		if (name != "Story1") {// changes background if state isn't Story1
-			mMenuBackground.Initialise("iceTex");
-			Story = false;
 		}
-		else {
-			mMenuBackground.Initialise("tileTex");
-			Story = true;
-		} // all implemented for story screens & changing the background for menus (NOT TESTED FOR PERFORMANCE ISSUES,
-		// E.G. MULTIPLE TEXTURES BEING LOADED INTO BACKGROUND VARIABLE)
 
-		mCurrentState = name;
-		EvaluateState();
-		mStates[name]->OnResume();
+
+		//if (name != "Story1") {// changes background if state isn't Story1
+		//	mMenuBackground.Initialise("iceTex");
+		//	Story = false;
+		//}
+		//else {
+		//	mMenuBackground.Initialise("tileTex");
+		//	Story = true;
+		//} // all implemented for story screens & changing the background for menus (NOT TESTED FOR PERFORMANCE ISSUES,
+		//// E.G. MULTIPLE TEXTURES BEING LOADED INTO BACKGROUND VARIABLE)
+
+
+
+		//mCurrentState = name;
+		//EvaluateState();
+		//mStates[name]->OnResume();
 	}
 	else
 	{
