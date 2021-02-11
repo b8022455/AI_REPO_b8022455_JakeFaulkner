@@ -191,3 +191,8 @@ void MenuState::Draw(const GameTimer & gt)
 			b.Draw();
 	}
 }
+
+void MenuState::OnResume()
+{
+	GameApp::Get().GetAudio().Play("menuMusic", nullptr, true);
+}

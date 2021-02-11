@@ -627,7 +627,6 @@ void PlayState::Update(const GameTimer & gt)
 		score += GC::SCORE_LVLUP;
 		mPlayer.health = GC::PLAYER_MAX_HEALTH;
 		mPlayerHealthBar.SetValue(mPlayer.health);
-		//GameApp::Get().ChangeState("PauseMenu");
 	}
 
 	// show/hide item menu
@@ -743,6 +742,26 @@ void PlayState::OnResume()
 {
 	// remove focus from trader
 	mpActiveTrader = nullptr;
+
+	GameAudio& ga = GameApp::Get().GetAudio();
+
+	ga.Play("actionMusic", nullptr, true);
+
+	// Random ambient track
+	if (rand() % 2) // non zero
+	{
+		ga.Play("ambientWind", nullptr, true);
+	}
+	else // zero
+	{
+		ga.Play("ambientCrows", nullptr, true);
+
+	}
+}
+
+void PlayState::OnPause()
+{
+	GameApp::Get().GetAudio().Pause("ambient");
 }
 
 /*
@@ -1088,7 +1107,12 @@ void PlayState::Keyboard(const GameTimer & gt)
 			//todo sound fail sound
 		}
 	}
-	
+	// Pause
+	if (Input::Get().KeyReleased(0xd))
+	{
+		GameApp::Get().ChangeState("PauseMenu");
+	}
+
 	// Debug generate
 	if (Input::Get().KeyReleased(GC::KEY_DEBUG_GENERATE)) //todo VOID NEEDS FIXING FIRST
 	{

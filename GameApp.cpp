@@ -127,21 +127,20 @@ bool GameApp::Initialize()
 		//Music 'engine'
 		mGameAudio.CreateEngine("music", AUDIO_ENGINE_TYPE::MUSIC);
 		// Loads sounds the same way
-		mGameAudio.LoadSound("music", "ring5", L"Data/Sounds/Ring05.wav");
-		mGameAudio.LoadSound("music", "ring9", L"Data/Sounds/Ring09.wav");
+		mGameAudio.LoadSound("music", "actionMusic", L"Data/Sounds/Ring05.wav");
+		mGameAudio.LoadSound("music", "menuMusic", L"Data/Sounds/Spooky_Title_screen_Loop.wav");
 		// Time it takes to fade between tracks when Play() is called
-		mGameAudio.SetFade("music", 3.0f);
+		mGameAudio.SetFade("music", 1.0f);
 		// Plays audio from 'music' engine. No need to specify engine
-		mGameAudio.Play("ring9", nullptr, true);
+		mGameAudio.Play("menuMusic", nullptr, true);
 
 		mGameAudio.CreateEngine("ambient", AUDIO_ENGINE_TYPE::MUSIC);
 		mGameAudio.LoadSound("ambient", "ambientCrows", L"Data/Sounds/ambientCrows.wav");
 		mGameAudio.LoadSound("ambient", "ambientWind", L"Data/Sounds/ambientWind.wav");
-		mGameAudio.SetFade("ambient", 10.0f);
-		mGameAudio.Play("ambientWind", nullptr, true);
+		mGameAudio.SetFade("ambient", 5.0f);
 
 		float volume = 0.2f;
-		mGameAudio.SetEngineVolume("music", volume);
+		mGameAudio.SetEngineVolume("music", volume * 0.5f);
 		mGameAudio.SetEngineVolume("sfx", volume);
 		mGameAudio.SetEngineVolume("trader", volume);
 		mGameAudio.SetEngineVolume("ui", volume);
@@ -420,26 +419,6 @@ void GameApp::Update(const GameTimer& gt)
 
 
 	mGameAudio.Update(gt, mpActiveCamera->GetPosition3f(), mpActiveCamera->GetLook3f(), mpActiveCamera->GetUp3f());
-	//Music fades every 6 seconds
-	if (mAudioTimer.HasTimeElapsed(gt.DeltaTime(), 6.0f))
-	{
-		bool r = rand() % 2;
-		if (r)
-		{
-			mGameAudio.Play("ring5", nullptr, true);
-			mGameAudio.Play("ambientWind", nullptr, true);
-
-		}
-		else
-		{
-			mGameAudio.Play("ring9", nullptr, true);
-			mGameAudio.Play("ambientCrows", nullptr, true);
-
-		}
-	}
-
-
-
 
 }
 

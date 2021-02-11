@@ -20,6 +20,7 @@ public:
 	virtual void Draw(const GameTimer& gt) = 0; 
 	// Called on state change
 	virtual void OnResume() = 0;
+	virtual void OnPause() = 0;
 
 
 	virtual void OnMouseDown(WPARAM btnState, int x, int y) = 0;
@@ -54,6 +55,7 @@ class StateManager
 	// Validate state exists
 	bool IsValidState(const std::string stateName);
 
+	// Manages fading and switching of states
 	void FadeUpdate(const GameTimer& gt);
 
 public:
@@ -66,7 +68,7 @@ public:
 	void AddState(const std::string& name, std::unique_ptr<State> newState);
 	// Cannot remove active state
 	void RemoveState(const std::string& name);
-	// Switch between states
+	// Queues the next state and begins fade out/in process
 	void ChangeState(const std::string& name);
 	// Access data between states
 	State* GetState(const std::string& name);

@@ -139,7 +139,12 @@ void TradeState::OnResume()
 
 	}
 
+	GameApp::Get().GetAudio().Play("menuMusic", nullptr, true);
 
+}
+
+void TradeState::OnPause()
+{
 }
 
 void TradeState::CleanInventory(Inventory& inv)

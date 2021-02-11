@@ -278,31 +278,36 @@ void MusicEngine::Update(const GameTimer & gt)
 
 void MusicEngine::Play(const std::string & soundName, DirectX::AudioEmitter * emitter, bool loop, float volume, float pitch, float pan)
 {
-
-
 	assert(mSounds[soundName]);
 
-	SwapCache(); //Current front audio swapped with last
-
-
-	DirectX::SOUND_EFFECT_INSTANCE_FLAGS iflags = GetInstanceFlags(emitter);
-
-	//New instance to first cache element
-	mCache.front() = std::move(mSounds[soundName]->CreateInstance(iflags));
-
-	mCache.front()->Play(loop);
-
-	//Set properties
-	if (emitter && pListener)
+	// Doesn't fade into the same track
+	if (soundName != mFrontAudio)
 	{
-		mCache.front()->Apply3D(*pListener,*emitter);
+		mFrontAudio = soundName;
+
+		SwapCache(); //Current front audio swapped with last
+
+		DirectX::SOUND_EFFECT_INSTANCE_FLAGS iflags = GetInstanceFlags(emitter);
+
+		//New instance to first cache element
+		mCache.front() = std::move(mSounds[soundName]->CreateInstance(iflags));
+
+		mCache.front()->Play(loop);
+
+		//Set properties
+		if (emitter && pListener)
+		{
+			mCache.front()->Apply3D(*pListener, *emitter);
+		}
+		else
+		{
+			mCache.front()->SetVolume(mNormalisedVolume);
+			mCache.front()->SetPitch(pitch);
+			mCache.front()->SetPan(pan);
+		}
 	}
-	else
-	{
-		mCache.front()->SetVolume(mNormalisedVolume);
-		mCache.front()->SetPitch(pitch);
-		mCache.front()->SetPan(pan);
-	}
+
+	
 
 }
 
