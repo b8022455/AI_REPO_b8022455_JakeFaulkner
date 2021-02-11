@@ -66,6 +66,9 @@ void StateManager::FadeUpdate(const GameTimer & gt)
 				if (mCurrentState != "Story1") {// changes background if state isn't Story1
 					mMenuBackground.Initialise("iceTex");
 					Story = false;
+
+					if (mCurrentState == GC::STATE_GAMEOVER || mCurrentState == GC::STATE_WIN)
+						GameApp::Get().GetState("PlayState")->Reset();			//Resets playstate after fade has ended so you cant see stuff being reset in the world
 				}
 				else {
 					mMenuBackground.Initialise("tileTex");

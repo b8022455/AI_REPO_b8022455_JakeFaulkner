@@ -138,19 +138,8 @@ void PlayState::Initialize()
 	//mTile.Initialize("Tiles");
 	mTileManager.Initialize();
 
-	++mInventory["Radio"];
-	++mInventory["Glowing Seeds"];
-	inventoryPosition = mInventory.begin();
-
 	// todo change to closest trader in radius on button hit
 	//mpActiveTrader = &mTempTrader;
-
-
-	for (auto& c : mCameras)
-	{
-		c.SetPosition(0.0f, 25.0f, 0.0f);
-		c.Pitch(XMConvertToRadians(CAM_ANGLE)); // SETS CAMERA TO FACE DOWN
-	}
 
 	mPlayer.Initialize("Player");
 	mPlayerWeapon.Initialize("Weapon");
@@ -159,9 +148,6 @@ void PlayState::Initialize()
 	
 	// ui bar
 	mPlayerHealthBar.Initialise(GC::BAR_GRN, GC::BAR_RED);
-	mPlayerHealthBar.SetMinMax(0, mPlayer.health); // todo change to max health
-	mPlayerHealthBar.SetValue(mPlayer.health);
-	mPlayerHealthBar.SetPosition({ 200.0f, 20.0f }); // todo add values to constants.h
 
 	InitializeTraders();
 	
@@ -187,17 +173,10 @@ void PlayState::Initialize()
 		// TODO: (NOTE) ENEMIES ADDED HERE
 		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
-
-		//Init all enemies
-		for (auto& e : mEnemies)
-			for (auto& t : mTraders)									//Check each trader in the game
-				while (e.CheckCollision(e.GetPos(), t.GetPos()) ||	//Prevents enemy spawning inside a trader
-						DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE)	//Prevents enemy spawning to close to player
-					e.SetRandomPosition();
-
 	}
 
 	mCombatController.Initialize(&mPlayer,&mPlayerWeapon,&mEnemies);
+
 
 	// Sprites
 	{
@@ -238,17 +217,8 @@ void PlayState::Initialize()
 			};
 
 			mInventoryPanel.Initialize("uiTex", src, dst);
-
-			mInventoryLocation.second.x = v.x - (v.x / 3);
-			mInventoryLocation.second.y = 10;
-
-			mInventoryLocation.first.x = v.x + 64;
-			mInventoryLocation.first.y = 10;
-
 			mInventoryText.color = DirectX::Colors::White;
 			mInventoryText.fontIndex = 1;
-			
-
 		}
 
 		//Help panel
@@ -261,23 +231,9 @@ void PlayState::Initialize()
 				s.y + (s.y / 3) + 128			//  third of viewport plus offset
 			};
 			mHelpPanel.Initialize("uiTex", src, dst);
-
-
-			mHelpLocation.second.y = v.y - (v.y / 3);
-			mHelpLocation.second.x = 10;
-			mHelpLocation.first.y = v.y + 64;
-			mHelpLocation.first.x = 10;
 			mHelpText.color = DirectX::Colors::White;
 			mHelpText.fontIndex = 1;
 			mHelpText.string = "Something helpful should go here"; //todo help text
-		}
-
-		// message text
-		{
-			mMessage.mText.center = true;
-			mMessage.mText.string = "Start!";
-			mMessage.mText.position = v / 2.0f;
-			mMessage.mText.color = DirectX::Colors::Red;
 		}
 
 		//Help text
@@ -293,9 +249,14 @@ void PlayState::Initialize()
 		}
 	}
 
+	//Instantiates enemies, inventory, trader positions
+	Reset();
+
 	// needed in init for dirty frame
 	for (auto& c : mCameras)
 	{
+		c.SetPosition(0.0f, 25.0f, 0.0f);
+		c.Pitch(XMConvertToRadians(CAM_ANGLE)); // SETS CAMERA TO FACE DOWN
 		c.UpdateViewMatrix();
 	}
 	
@@ -358,7 +319,6 @@ void PlayState::Update(const GameTimer & gt)
 	if (TraderStoryComplete())
 	{
 		StoreScore();
-		ResetState(gt);		//Resets in case you play again
 		GameApp::Get().ChangeState("WinState");
 	}
 
@@ -505,7 +465,6 @@ void PlayState::Update(const GameTimer & gt)
 				//Transition to game over state
 				if (mPlayer.health <= 0)
 				{
-					ResetState(gt);
 					GameApp::Get().ChangeState("GameOver");
 				}
 			}
@@ -528,7 +487,6 @@ void PlayState::Update(const GameTimer & gt)
 					//Transition to game over state
 					if (mPlayer.health <= 0)
 					{
-						ResetState(gt);
 						GameApp::Get().ChangeState("GameOver");
 					}
 					break;
@@ -1251,28 +1209,52 @@ bool PlayState::TraderStoryComplete()
 	return count >= 3; // todo constant to header
 }
 
-void PlayState::ResetState(const GameTimer& gt)
+void PlayState::Reset()
 {
 	score = 0;		//Reset Score
 	playerName = "";
 
-	//Reset Camera
-	for (auto& c : mCameras)
-	{
-		c.SetPosition(0.0f, 25.0f, 0.0f);
-		c.UpdateViewMatrix();
-	}
-
-	mPlayer.Reset(gt);
+	mPlayer.Reset();
 	mCombatController.Reset();
-	mPlayerWeapon.Reset(gt);
+	mPlayerWeapon.Reset();
+
+	mPlayerHealthBar.SetMinMax(0, GC::PLAYER_MAX_HEALTH); // todo change to max health
+	mPlayerHealthBar.SetValue(mPlayer.health);
+	mPlayerHealthBar.SetPosition({ 200.0f, 20.0f }); // todo add values to constants.h
 	mPlayerHealthBar.SetValue(GC::PLAYER_MAX_HEALTH);
+
+	//Reset Help & Inventory menus
+	const DirectX::XMINT2 s = GameApp::Get().GetClientSizeU2(); //todo on resize
+	SimpleMath::Vector2 v = GameApp::Get().GetClientSize();
+
+	//Help Menu
+	mHelpLocation.second.y = v.y - (v.y / 3);
+	mHelpLocation.second.x = 10;
+	mHelpLocation.first.y = v.y + 64;
+	mHelpLocation.first.x = 10;
+
+	//Inventory Menu
+	mInventoryLocation.second.x = v.x - (v.x / 3);
+	mInventoryLocation.second.y = 10;
+
+	mInventoryLocation.first.x = v.x + 64;
+	mInventoryLocation.first.y = 10;
+
+	//Start Message
+	mMessage.mText.center = true;
+	mMessage.mText.position = v / 2.0f;
+	mMessage.mText.color = DirectX::Colors::Red;
+	mMessage.Activate("Start", 1.f);
 
 	//Reset Inventory
 	mInventory.clear();
 	++mInventory["Radio"];
 	++mInventory["Glowing Seeds"];
 	inventoryPosition = mInventory.begin();
+
+	//Reset help text
+	mHelpMessage.mText.string = "";
+	mTradeHelpMessage.mText.string = "";
 
 	//Reset Traders
 	float x = -10.5f;
@@ -1305,9 +1287,11 @@ void PlayState::ResetState(const GameTimer& gt)
 		e.Reset();
 
 		for (auto t : mTraders)
-			while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+			while (e.CheckCollision(e.GetPos(), t.GetPos()) ||
+				DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < (GC::ENEMYTYPE1_RANGE + 2.f))	//Prevents enemies from spawning inside a trader
 				e.SetRandomPosition();
 	}
+
 }
 
 void PlayState::GetName()

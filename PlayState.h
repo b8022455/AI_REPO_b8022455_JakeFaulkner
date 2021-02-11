@@ -82,6 +82,7 @@ public:
 	virtual void Initialize() override;
 	virtual void Update(const GameTimer& gt)				override;
 	virtual void Draw(const GameTimer& gt)					override;
+	virtual void Reset()									override;
 
 	virtual void OnMouseDown(WPARAM btnState, int x, int y) override;
 	virtual void OnMouseUp(WPARAM btnState, int x, int y)	override;
@@ -139,7 +140,6 @@ public:
 
 	// todo Sam/Jake description here please
 	void ReGen();
-	void ResetState(const GameTimer& gt);
 
 	void UiUpdate(const GameTimer& gt);
 	// Returns if planted successful

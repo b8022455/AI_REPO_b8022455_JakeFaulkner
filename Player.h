@@ -21,7 +21,7 @@ class Player : public GameObject
 public:
 
 	void Update(const GameTimer& gt);
-	void Reset(const GameTimer& gt);
+	void Reset();
 	void MoveUp(const GameTimer& gt);
 	void MoveDown(const GameTimer& gt);
 	void MoveLeft(const GameTimer& gt);

@@ -11,7 +11,7 @@ public:
 	virtual void Draw(const GameTimer& gt)					override;
 	virtual void OnResume()									override;
 	virtual void OnPause()									override;
-
+	virtual void Reset()									override {};
 
 	virtual void OnMouseDown(WPARAM btnState, int x, int y) override {};
 	virtual void OnMouseUp(WPARAM btnState, int x, int y)	override {};

@@ -19,7 +19,7 @@ public:
 
 	void Initialize(const std::string& renderItemName) override;	//Sets up the TimeDelay struct values
 	void Attack();
-	void Reset(const GameTimer& gt);
+	void Reset();
 	void SwingWeapon();				//Swings the weapon based on the rotation var
 	void ResetWeaponPosition();
 	bool GetAttackStatus();			//Lets the Combat Controller class know when the attack has ended

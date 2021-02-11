@@ -40,8 +40,6 @@ void Enemy::Reset()
 	for (auto& p : particles)
 		p.RemoveEffect();
 	times.UpdateTime();
-	if (times.CanAttack())
-		times.SetNextTimer();
 }
 
 void Enemy::SetRandomPosition()

@@ -82,7 +82,7 @@ void PlayerWeapon::Initialize(const std::string& renderItemName)
 	times.isAttacking = false;
 }
 
-void PlayerWeapon::Reset(const GameTimer& gt)
+void PlayerWeapon::Reset()
 {
 	weaponRotation = weaponEndRotation;
 	times.isAttacking = false;

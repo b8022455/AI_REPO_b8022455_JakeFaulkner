@@ -21,6 +21,7 @@ public:
 	// Called on state change
 	virtual void OnResume() = 0;
 	virtual void OnPause() = 0;
+	virtual void Reset() = 0;
 
 
 	virtual void OnMouseDown(WPARAM btnState, int x, int y) = 0;
