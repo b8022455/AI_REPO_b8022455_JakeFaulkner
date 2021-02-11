@@ -170,6 +170,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayState.cpp" />
     <ClCompile Include="State.cpp" />
+    <ClCompile Include="StoryState.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="Trader.cpp" />
     <ClCompile Include="TradeState.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="SpriteManager.h" />
+    <ClInclude Include="StoryState.h" />
     <ClInclude Include="TextConsole.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="Trader.h" />

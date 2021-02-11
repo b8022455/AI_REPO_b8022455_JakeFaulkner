@@ -187,7 +187,18 @@ namespace GC
 		"trader06",
 	};
 
+
 	const size_t TRADER_TALK_COUNT = sizeof(TRADER_TALK) / sizeof(TRADER_TALK[0]);
+
+	const std::string STORY_TEXT[4]
+	{
+		"",
+		"Story or help text one",
+		"Story or help text two",
+		"Story or help text three"
+	};
+
+	const size_t STORY_TEXT_SIZE = sizeof(STORY_TEXT) / sizeof(STORY_TEXT[0]);
 
 	const DirectX::XMFLOAT2
 		MENU_BUTTON_PIVOT{0.5f,0.6f},

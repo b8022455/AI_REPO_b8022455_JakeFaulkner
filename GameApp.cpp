@@ -1339,6 +1339,24 @@ std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GameApp::GetStaticSamplers()
 		anisotropicWrap, anisotropicClamp };
 }
 
+const std::string& GameApp::GetStoryText()const 
+{
+	//todo return as &
+	return GC::STORY_TEXT[mStoryIndex];
+}
+
+void GameApp::SetStoryString(size_t i)
+{
+	if (i < GC::STORY_TEXT_SIZE)
+	{
+		mStoryIndex = i;
+	}
+	else
+	{
+		assert(false);
+	}
+}
+
 PassConstants * GameApp::GetMainPassCB()
 {
 	return &mMainPassCB;
