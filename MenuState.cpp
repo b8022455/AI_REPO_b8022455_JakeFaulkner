@@ -10,7 +10,6 @@ MenuState::MenuState(const Text & t, const Text & b, const Button & b0, const Bu
 {
 	menuName = menu;
 	DirectX::SimpleMath::Vector2 clientSize = GameApp::Get().GetClientSize();
-
 	mTitle = t;
 	mBody = b;
 

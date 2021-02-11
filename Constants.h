@@ -171,9 +171,9 @@ namespace GC
 		;
 
 	const PlantData
-		PLANT_0 = { PLANT_NAME_0 , 0.1f },
-		PLANT_1 = { PLANT_NAME_1 , 0.05f },
-		PLANT_2 = { PLANT_NAME_2 , 0.01f }
+		PLANT_0 = { PLANT_NAME_0 , 0.25f }, // 4 secs
+		PLANT_1 = { PLANT_NAME_1 , 0.125f }, // 8 secs
+		PLANT_2 = { PLANT_NAME_2 , 0.0625f } //16 secs
 	;
 
 	//audio
@@ -270,48 +270,45 @@ namespace GC
 
 
 	const ItemMap ITEM_LIST = {
-		{"Empty",			{ItemCategory::None,	0}}, // 
-		{"Radio",			{ItemCategory::KeyItems,  20}},
-		{"Potion",			{ItemCategory::Healing,  20}},
-		{"Leadpipe",		{ItemCategory::Weapons,  30}},
-		{"Super Potion",	{ItemCategory::Healing,  50}},
-		{"Nail Bat",		{ItemCategory::Weapons, 100}},
-		{"Plastic Spork",	{ItemCategory::Weapons,  00}},
-		{"Holy Water",		{ItemCategory::Farming, 120}},
-		{"Magical Seeds",	{ItemCategory::Farming, 200}},
-		{"Key To Valhalla",	{ItemCategory::KeyItems,  0}},
-		{PLANT_NAME_0,		{ItemCategory::Farming, 100}},
-		{PLANT_NAME_1,		{ItemCategory::Farming, 200}},
-		{PLANT_NAME_2,		{ItemCategory::Farming, 350}},
+		{"Empty",			{ItemCategory::NONE,	0}}, // 
+		{"Radio",			{ItemCategory::KEY_ITEM,  20}},
+		{"Leadpipe",		{ItemCategory::WEAPON,  30}},
+		{"Nail Bat",		{ItemCategory::WEAPON, 100}},
+		{"Plastic Spork",	{ItemCategory::WEAPON,  00}},
+		{"Glowing Seeds",	{ItemCategory::SEED,	200}},
+		{"Key To Valhalla",	{ItemCategory::KEY_ITEM,  0}},
+		{PLANT_NAME_0,		{ItemCategory::HARVESTED_PLANT, 100}},
+		{PLANT_NAME_1,		{ItemCategory::HARVESTED_PLANT, 200}},
+		{PLANT_NAME_2,		{ItemCategory::HARVESTED_PLANT, 350}},
 
 	};
 
 	const ItemLookup ITEM_LOOKUP_ENEMIES =
 	{
 		{ "EnemyType1",			{ {"Empty",1},	{"Leadpipe",2},{"Nail Bat",2}, {"Magical Seeds",2}	}   },
-		{ "EnemyType2",			{ {"Empty",1},	{"Holy Water",2},{"Potion",2}, {"Plastic Spork",2}	}   },
+		{ "EnemyType2",			{ {"Empty",1}, {"Plastic Spork",2}						}   },
 		{ "EnemyTypeBoss",		{ {"Key To Valhalla",1}												}   },
 	};
 
 	//Trader requests. upto 3
 	const ItemLookup ITEM_LOOKUP_REQUEST
 	{
-		{ TRADER_NAME_TEST,			{{"Potion",1 }												}	},
+		{ TRADER_NAME_TEST,			{{"Leadpipe",1 }												}	},
 		{ TRADER_NAME_1,			{{"Leadpipe",2 }											}	},
-		{ TRADER_NAME_2,			{{"Potion",2}, {"Plastic Spork",2},{ "Holy Water",2}		}   },
-		{ TRADER_NAME_3,			{{"Potion",2}, {"Nail Bat",2},{ "Leadpipe",2}				}   }, //todo change 
-		{ TRADER_NAME_4,			{{"Potion",2}, {"Leadpipe",2},{ "Holy Water",2}				}   }, //todo change
-		{ TRADER_OBJ_1,				{{"Potion",2}												}   }, // front of car  //todo change
-		{ TRADER_OBJ_2,				{{"Potion",2}												}   }, // mid car       //todo change
-		{ TRADER_OBJ_3,				{{"Potion",2}												}   }, // rear of car   //todo change
+		{ TRADER_NAME_2,			{{"Leadpipe",2}, {"Plastic Spork",2}							}   },
+		{ TRADER_NAME_3,			{{"Leadpipe",2}, {"Nail Bat",2},{ "Leadpipe",2}				}   }, //todo change 
+		{ TRADER_NAME_4,			{{"Leadpipe",2}, 								}   }, //todo change
+		{ TRADER_OBJ_1,				{{"Leadpipe",2}												}   }, // front of car  //todo change
+		{ TRADER_OBJ_2,				{{"Leadpipe",2}												}   }, // mid car       //todo change
+		{ TRADER_OBJ_3,				{{"Leadpipe",2}												}   }, // rear of car   //todo change
 	};
 
 	const ItemLookup ITEM_LOOKUP_REWARD
 	{
 		{ TRADER_NAME_TEST,		{{"Key To Valhalla",1 }											}	},
-		{ TRADER_NAME_1,		{{"Leadpipe",2}													}	},
-		{ TRADER_NAME_2,		{{"Potion",2}, {"Leadpipe",2},{ "Holy Water",2}					}	}, //
-		{ TRADER_NAME_3,		{{"Potion",2}, {"Holy Water",2},{ "Holy Water",2}				}	}, //todo change 
+		{ TRADER_NAME_1,		{{"Leadpipe",2}	,{"Nail Bat",2}												}	},
+		{ TRADER_NAME_2,		{{"Leadpipe",2}, {"Leadpipe",2}				}	}, //
+		{ TRADER_NAME_3,		{{"Leadpipe",2}				}	}, //todo change 
 		{ TRADER_NAME_4,		{																}	}, // no reward, charity
 		{ TRADER_OBJ_1,			{																}   }, // front of car
 		{ TRADER_OBJ_2,			{																}   }, // mid car

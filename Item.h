@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-enum ItemCategory { None, Healing, Weapons, Farming, KeyItems };		//Could be used with a string instead
+enum ItemCategory { NONE, WEAPON, HARVESTED_PLANT, KEY_ITEM, SEED };
 
 class Item
 {

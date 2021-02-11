@@ -139,7 +139,7 @@ void PlayState::Initialize()
 	mTileManager.Initialize();
 
 	++mInventory["Radio"];
-	++mInventory["Potion"];
+	++mInventory["Glowing Seeds"];
 	inventoryPosition = mInventory.begin();
 
 	// todo change to closest trader in radius on button hit
@@ -836,22 +836,43 @@ void PlayState::ItemAction()
 
 	switch (GC::ITEM_LIST.at((*inventoryPosition).first).category)
 	{
-	case  ItemCategory::Healing:
+	case  ItemCategory::HARVESTED_PLANT:
 		if (inventoryPosition->second > 0)
 		{
+			if (inventoryPosition->first == GC::PLANT_NAME_0)
+			{
+				mPlayer.health += GC::HEAL_SMALL;
+			}
+			else if (inventoryPosition->first == GC::PLANT_NAME_1)
+			{
+				mPlayer.health += GC::HEAL_MED;
+			}
+			else if (inventoryPosition->first == GC::PLANT_NAME_2)
+			{
+				mPlayer.health += GC::HEAL_LARGE;
+			}
+			else
+			{
+				assert(false); // check ItemCategory for item
+			}
 			--inventoryPosition->second; //removes a potion
-			mPlayer.health += GC::HEAL_SMALL;
-			if (mPlayer.health > GC::PLAYER_MAX_HEALTH)	mPlayer.health = GC::PLAYER_MAX_HEALTH;
+
+			// Apply health limit
+			if (mPlayer.health > GC::PLAYER_MAX_HEALTH) 
+			{ 
+				mPlayer.health = GC::PLAYER_MAX_HEALTH; 
+			}
+
 			mPlayerHealthBar.SetValue(mPlayer.health);
 		}
 		break;
-	case ItemCategory::Weapons:
+	case ItemCategory::WEAPON:
 		if (mCombatController.GetCurrentWeapon() != (*inventoryPosition).first)
 		{
 			mCombatController.EquipWeapon((*inventoryPosition).first);
 		}
 		break;
-	case ItemCategory::Farming:
+	case ItemCategory::SEED:
 		// if there isnt a plant in a radius then instance 
 		if (CreatePlant())
 		{
@@ -859,7 +880,7 @@ void PlayState::ItemAction()
 		}
 
 		break;
-	case ItemCategory::KeyItems:
+	case ItemCategory::KEY_ITEM:
 
 
 		break;
@@ -1028,10 +1049,11 @@ void PlayState::Keyboard(const GameTimer & gt)
 		mPlayer.MoveLeft(gt);
 	}
 
-	//Player attack
+	//Player attack and harvest
 	if (Input::Get().KeyReleased(GC::KEY_ATTACK))
 	{
 		mCombatController.PlayerAttack();
+		HarvestByRadius();
 	}
 
 	//Switch to debug cam
@@ -1052,12 +1074,6 @@ void PlayState::Keyboard(const GameTimer & gt)
 	if (Input::Get().KeyReleased('7'))
 	{
 		CreatePlant();
-	}
-
-	//Harvest
-	if (Input::Get().KeyReleased('8'))
-	{
-		HarvestByRadius();
 	}
 
 	// Inventory
@@ -1262,7 +1278,7 @@ void PlayState::ResetState(const GameTimer& gt)
 	//Reset Inventory
 	mInventory.clear();
 	++mInventory["Radio"];
-	++mInventory["Potion"];
+	++mInventory["Glowing Seeds"];
 	inventoryPosition = mInventory.begin();
 
 	//Reset Traders
