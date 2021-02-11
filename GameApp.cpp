@@ -725,7 +725,7 @@ void GameApp::LoadTextures()
 	//LoadTexture("bricksTex", L"Data/Textures/bricks.dds"); //1
 	LoadTexture("stoneTex", L"Data/Textures/stone.dds"); // 2
 	LoadTexture("mudTex", L"Data/Textures/LostMeadow_dirt.dds"); // 3
-	LoadTexture("iceTex", L"Data/Textures/ice.dds"); // 4
+	LoadTexture("iceTex", L"Data/Textures/asphalt.dds"); // 4     ice.dds
 	LoadTexture("crateTex", L"Data/Textures/WoodCrate01.dds"); // 5
 	LoadTexture("grassTex", L"Data/Textures/grass.dds"); // 6
 	LoadTexture("tileTex", L"Data/Textures/tile.dds"); // 7 // POSSIBLE ERROR WITH TEXTURE LOADED INTO POSITION 7
