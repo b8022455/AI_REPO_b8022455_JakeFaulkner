@@ -45,7 +45,7 @@ void GameOverState::Draw(const GameTimer& gt)
 
 void GameOverState::OnResume()
 {
-
+	GameApp::Get().GetAudio().Play("menuMusic", nullptr, true);
 }
 
 void GameOverState::OnPause()

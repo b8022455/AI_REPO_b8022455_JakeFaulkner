@@ -139,6 +139,7 @@ void TradeState::OnResume()
 
 	}
 
+	GameApp::Get().GetAudio().Play("menuMusic", nullptr, true);
 
 }
 
