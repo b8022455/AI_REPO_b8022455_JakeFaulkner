@@ -1068,13 +1068,6 @@ void PlayState::Keyboard(const GameTimer & gt)
 		GameApp::Get().SetActiveCamera(&mCameras.at(CAMERA_TYPE::DEBUG));
 	}
 
-	// Plant
-
-	// Debug Planting
-	if (Input::Get().KeyReleased('7'))
-	{
-		CreatePlant();
-	}
 
 	// Inventory
 
