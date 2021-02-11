@@ -142,6 +142,10 @@ void TradeState::OnResume()
 
 }
 
+void TradeState::OnPause()
+{
+}
+
 void TradeState::CleanInventory(Inventory& inv)
 {
 	for (Inventory::iterator it = inv.begin(); it != inv.end();)

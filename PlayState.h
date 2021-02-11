@@ -88,6 +88,7 @@ public:
 	virtual void OnMouseMove(WPARAM btnState, int x, int y) override;
 	virtual void OnKeyboardInput(const GameTimer& gt)		override;
 	virtual void OnResume()									override;
+	virtual void OnPause()									override;
 
 	void reInitialize();
 

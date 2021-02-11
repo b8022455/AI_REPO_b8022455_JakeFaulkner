@@ -743,6 +743,16 @@ void PlayState::OnResume()
 {
 	// remove focus from trader
 	mpActiveTrader = nullptr;
+
+	GameAudio& ga = GameApp::Get().GetAudio();
+
+	ga.Play("ring9", nullptr, true);
+	ga.Play("ambientWind", nullptr, true);
+
+}
+
+void PlayState::OnPause()
+{
 }
 
 /*

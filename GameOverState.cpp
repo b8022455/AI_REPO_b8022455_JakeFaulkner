@@ -47,3 +47,7 @@ void GameOverState::OnResume()
 {
 
 }
+
+void GameOverState::OnPause()
+{
+}

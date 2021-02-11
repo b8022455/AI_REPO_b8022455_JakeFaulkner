@@ -138,7 +138,6 @@ bool GameApp::Initialize()
 		mGameAudio.LoadSound("ambient", "ambientCrows", L"Data/Sounds/ambientCrows.wav");
 		mGameAudio.LoadSound("ambient", "ambientWind", L"Data/Sounds/ambientWind.wav");
 		mGameAudio.SetFade("ambient", 10.0f);
-		mGameAudio.Play("ambientWind", nullptr, true);
 
 		float volume = 0.2f;
 		mGameAudio.SetEngineVolume("music", volume);
