@@ -192,10 +192,10 @@ namespace GC
 
 	const std::string STORY_TEXT[4]
 	{
-		"",
-		"Story or help text one",
-		"Story or help text two",
-		"Story or help text three"
+		"It began in the 20th year of the 2nd millenium, on a tuesday, when the plague was \nreleased. The world quickly fell to ruin as it quickly spread & mutated moving between\nhosts, human, animal & plant alike. A few wars & civil uprisings later. And this is the\nworld as we now know it.\nTerrifying I know.",
+		"Dawn turns to day...\n\n\n Make use of items you carry.\n Press 'I' to open the menu\n Up/Down Arrows to navigate items\n'U' to use item",
+		"The sun hangs low in the sky...\n\n\n Plant seeds from the inventory 'U'.\n They will take a little time to grow.\n Harvest them when they have fully grown 'Space'",
+		"And finally the darkness falls...\n\n\n"
 	};
 
 	const size_t STORY_TEXT_SIZE = sizeof(STORY_TEXT) / sizeof(STORY_TEXT[0]);

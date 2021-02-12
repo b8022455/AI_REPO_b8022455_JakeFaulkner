@@ -106,7 +106,8 @@ public:
 	UINT mInstanceCount = 0;
 	UINT GetMaterialIndex(const std::string& materialName);
 	
-	const std::string& GetStoryText() const;
+	const std::string& GetStoryText();
+	size_t mStoryIndex = 0;
 
 
 private:
@@ -193,7 +194,5 @@ private:
 	SpriteManager mSpriteManager;
 
 
-	void SetStoryString(size_t i);
 
-	size_t mStoryIndex = 0;
 };

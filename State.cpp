@@ -6,6 +6,7 @@
 #include "TradeState.h"
 #include "GameOverState.h"
 #include "WinState.h"
+#include "StoryState.h"
 
 bool StateManager::Story = true;
 
@@ -62,16 +63,6 @@ void StateManager::FadeUpdate(const GameTimer & gt)
 
 				// First call promoted queued state
 				mStates[mCurrentState]->OnResume();
-
-				if (mCurrentState != "Story1") {// changes background if state isn't Story1
-					mMenuBackground.Initialise("iceTex");
-					Story = false;
-				}
-				else {
-					mMenuBackground.Initialise("tileTex");
-					Story = true;
-				} // all implemented for story screens & changing the background for menus (NOT TESTED FOR PERFORMANCE ISSUES,
-				// E.G. MULTIPLE TEXTURES BEING LOADED INTO BACKGROUND VARIABLE)
 			}
 			
 
@@ -121,7 +112,7 @@ void StateManager::Init() // initialised in gameapp
 	
 
 	// Intro and Game story
-	AddState("Story", std::make_unique<MenuState>());
+	AddState("Story", std::make_unique<StoryState>());
 
 	// INTRO SCREEN	
 	menuTitle.string = ""; // TODO: (NOTE) STORY BLURB 1 LOCATED HERE

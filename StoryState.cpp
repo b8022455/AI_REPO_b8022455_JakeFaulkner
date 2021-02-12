@@ -23,16 +23,17 @@ void StoryState::Initialize()
 	src = { 65,511,65,511 }; // white
 	mForeground.sourceRectangle = src;
 	const LONG padding = s.y >> 2;
-	mBackground.destinationRectangle = { 0 ,0 + padding,s.x ,s.y - padding }; // wide screen 
+	mForeground.destinationRectangle = { 0 ,0 + padding,s.x ,s.y - padding }; // wide screen 
 
 	// origin in middle of viewport
 	mBody.center = true;
 	mBody.position = v * 0.5f; 
-	mBody.color = DirectX::Colors::Pink;
-	mBody.fontIndex = 1;
+	mBody.color = DirectX::Colors::Black;
+	mBody.fontIndex = 0;
+	mBody.string = GameApp::Get().GetStoryText();
 
 	mPrompt.position = {12.0f, v.y - 64.0f};
-	mPrompt.color = DirectX::Colors::Pink;
+	mPrompt.color = DirectX::Colors::White;
 	mPrompt.fontIndex = 1;
 	mPrompt.string = "Press W/A/S/D to continue";
 }
