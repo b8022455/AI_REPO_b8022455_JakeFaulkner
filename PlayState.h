@@ -73,7 +73,16 @@ class PlayState : public State
 
 	Enemy Spawn(std::string enemyType);
 
+	float timeChange = 0.0f; // used to change time
+	int timeCycle = 1; // dawn, noon, evening, pitch | changes with area & set number of minutes passed (2?)
+	// pitch has constant enemy spawns up to a number(3? increases with each full cycle or every 2 cycles), 
+	// evening has 1 large set of enemies (3)
+	// noon has 1 small set of enemies (2)
+	// dawn has 1 small set of enemies (2)
+	bool newEnemy; // create a new enemy to replace the one that has been destroyed.
+
 	int score = 0;
+	int areas = 0; 
 	std::string playerName = "";
 
 public:
@@ -93,6 +102,8 @@ public:
 	virtual void OnPause()									override;
 
 	void reInitialize();
+	void eGen(bool fill); // bool is only needed for pitch
+	void timeSet();
 
 	void Controls(const GameTimer& gt);
 

@@ -44,7 +44,6 @@ public:
 	bool Slowed = false;
 	bool Slippy = false;
 
-
 	PlayerFacingDirection playerDir = PlayerFacingDirection::Left;
 	int attack = 10;		//Base attack stat (base amount + weapon amount), need to make private but public for debugging purposes
 

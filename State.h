@@ -79,7 +79,7 @@ public:
 		return mIsMenu;
 	}
 
-	static bool Story; // no use at current
+	static bool Story; // USED FOR STORY STATE
 
 	void OnMouseDown(WPARAM btnState, int x, int y);
 	void OnMouseUp(WPARAM btnState, int x, int y);

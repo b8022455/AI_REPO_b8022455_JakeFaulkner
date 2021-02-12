@@ -31,15 +31,37 @@ void Enemy::Reset()
 
 	if (GetType() == GC::ENEMY_TYPE_1) {
 		mHealth = GC::ENEMYTYPE1_HEALTH;
+		BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
+		times.isAttacking = false;
+		for (auto& p : particles)
+			p.RemoveEffect();
+		times.UpdateTime();
+		if (times.CanAttack())
+			times.SetNextTimer();
 	}
 	if (GetType() == GC::ENEMY_TYPE_2) {
 		mHealth = GC::ENEMYTYPE2_HEALTH;
+		BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
 	}
-	BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
-	times.isAttacking = false;
-	for (auto& p : particles)
-		p.RemoveEffect();
-	times.UpdateTime();
+}
+
+void Enemy::SetPosition(const DirectX::XMFLOAT3& newPosition)
+{
+	//Updates position on the object
+	mpInstance->World._41 = newPosition.x;
+	mpInstance->World._42 = newPosition.y;
+	mpInstance->World._43 = newPosition.z;
+
+	//int attackDuration = 2;		//How long the attack plays for, not final time yet
+	//int attackDelay = 4;		//How long between each attack
+	
+	// ATTACK DELAY & DURATION HELD IN CONSTANTS
+	if (this->GetType() == GC::ENEMY_TYPE_1)
+		times.StartTime(GC::ENEMYTYPE1_ATTACK_DURATION, GC::ENEMYTYPE1_ATTACK_DELAY);
+
+	//Setup the enemy particles
+	particles.resize(20);
+
 }
 
 void Enemy::SetRandomPosition()
@@ -190,7 +212,6 @@ void Enemy::Update(const GameTimer & gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR
 
 	if (mEnemyType == GC::ENEMY_TYPE_2) // CHARGER ENEMY
 	{
-
 		switch (mBehaviour)
 		{
 		case NONE:

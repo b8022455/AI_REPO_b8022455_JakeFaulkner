@@ -50,7 +50,9 @@ namespace GC
 		PLAYER_MAX_HEALTH = 100,
 
 		ENEMYTYPE1_HEALTH = 30, // BARFER
+		ENEMYTYPE1_ATTACK = 15,
 		ENEMYTYPE2_HEALTH = 20, // RUNNER
+		ENEMYTYPE2_ATTACK = 25,
 
 		EXP_EXPONENT = 3,
 		EXP_OFFSET = 5,
@@ -71,6 +73,12 @@ namespace GC
 		MOVE_SPEED = 5.0f,
 
 		TRADER_RADIUS = 1.75f,
+
+		PLAYER_RIGHTBOUND = 15.0f,
+		PLAYER_LEFTBOUND = -15.0f,
+
+		PLAYER_UPBOUND = 15.0f,
+		PLAYER_DOWNBOUND = -15.0f,
 
 		ENEMYTYPE1_RANGE = 8.0f,
 		ENEMYTYPE1_ATTACK_DURATION = 2.0f,
@@ -153,7 +161,9 @@ namespace GC
 		STATE_MAINMENU = "MainMenu",
 	    STATE_HELP = "HelpMenu",
 		STATE_GAMEOVER = "GameOver",
+		STATE_VOLUME = "Volume",
 		STATE_WIN = "WinState",
+		STATE_NEW_AREA = "NewArea1",
 
 		TRADER_NAME_TEST = "TravellerTest",
 		TRADER_NAME_1 = "Traveller1",
@@ -265,9 +275,20 @@ namespace GC
 		BAR_SIZE{ BAR_MAX - BAR_MIN } //max - min.
 	;
 
+	const DirectX::XMFLOAT4
+		DAWN_COLOUR({ 0.12f, 0.226f, 0.12f, 1.0f }),
+		NOON_COLOUR({ 0.12f, 0.226f, 0.12f, 1.0f }),
+		EVENING_COLOUR({ 0.12f, 0.226f, 0.44f, 1.0f }),
+		PITCH_COLOUR({ 0.12f, 0.226f, 0.8f, 1.0f })
+	;
 	
-
-
+	
+	const DirectX::XMFLOAT3
+		DAWN_STRENGTH({ 0.8f, 0.75f, 0.55f }),
+		NOON_STRENGTH({ 1.0f, 0.9f, 0.6f }),
+		EVENING_STRENGTH({ 0.7f, 0.55f, 0.4f }),
+		PITCH_STRENGTH({ 0.1f, 0.1f, 0.1f })
+	;
 
 	const ItemMap ITEM_LIST = {
 		{"Empty",			{ItemCategory::NONE,	0}}, // 
