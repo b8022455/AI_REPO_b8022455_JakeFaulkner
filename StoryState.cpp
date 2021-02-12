@@ -72,3 +72,7 @@ void StoryState::OnResume()
 void StoryState::OnPause()
 {
 }
+
+void StoryState::Reset()
+{
+}

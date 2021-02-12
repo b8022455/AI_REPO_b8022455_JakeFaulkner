@@ -20,6 +20,7 @@ public:
 	// Called on state change
 	virtual void OnResume() override;
 	virtual void OnPause() override;
+	virtual void Reset() override;
 
 
 	virtual void OnMouseDown(WPARAM btnState, int x, int y) override {};
