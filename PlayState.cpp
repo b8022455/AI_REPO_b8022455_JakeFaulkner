@@ -195,9 +195,10 @@ void PlayState::Initialize()
 				e.Initialize("EnemyGhoul");
 				e.SetHealth(GC::ENEMYTYPE2_HEALTH);
 			}
-
+		}
+	}
+	
 	mCombatController.Initialize(&mPlayer,&mPlayerWeapon,&mEnemies);
-
 
 	// Sprites
 	{
@@ -321,11 +322,7 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 				e.SetHealth(GC::ENEMYTYPE2_HEALTH);
 			}
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
-			e.SetPosition({
-						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
-						static_cast<float>(rand() % 10 + 2.0f)
-				});
+			e.SetRandomPosition();
 			for (auto& t : mTraders)									//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
@@ -368,11 +365,7 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 				e.SetHealth(GC::ENEMYTYPE2_HEALTH);
 			}
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
-			e.SetPosition({
-						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
-						static_cast<float>(rand() % 10 + 2.0f)
-				});
+			e.SetRandomPosition();
 			for (auto& t : mTraders)									//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
@@ -423,11 +416,7 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 				e.SetHealth(GC::ENEMYTYPE2_HEALTH);
 			}
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
-			e.SetPosition({
-						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
-						static_cast<float>(rand() % 10 + 2.0f)
-				});
+			e.SetRandomPosition();
 			for (auto& t : mTraders)									//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
@@ -479,11 +468,7 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 					e.SetHealth(GC::ENEMYTYPE2_HEALTH);
 				}
 				//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
-				e.SetPosition({
-							static_cast<float>(rand() % 10 + 2.0f),
-							1.0f,
-							static_cast<float>(rand() % 10 + 2.0f)
-					});
+				e.SetRandomPosition();
 				for (auto& t : mTraders)									//Check each trader in the game
 					while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 						e.SetPos({
@@ -518,11 +503,7 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 				mEnemies.back().SetHealth(GC::ENEMYTYPE2_HEALTH);
 			}
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
-			mEnemies.back().SetPosition({
-				static_cast<float>(rand() % 10 + 2.0f),
-				1.0f,
-				static_cast<float>(rand() % 10 + 2.0f)
-			});
+			mEnemies.back().SetRandomPosition();
 			for (auto& t : mTraders)									//Check each trader in the game
 				while (mEnemies.back().CheckCollision(mEnemies.back().GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					mEnemies.back().SetPos({

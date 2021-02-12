@@ -45,24 +45,24 @@ void Enemy::Reset()
 	}
 }
 
-void Enemy::SetPosition(const DirectX::XMFLOAT3& newPosition)
-{
+//void Enemy::SetPosition(const DirectX::XMFLOAT3& newPosition)
+//{
 	//Updates position on the object
-	mpInstance->World._41 = newPosition.x;
-	mpInstance->World._42 = newPosition.y;
-	mpInstance->World._43 = newPosition.z;
-
-	//int attackDuration = 2;		//How long the attack plays for, not final time yet
-	//int attackDelay = 4;		//How long between each attack
-	
-	// ATTACK DELAY & DURATION HELD IN CONSTANTS
-	if (this->GetType() == GC::ENEMY_TYPE_1)
-		times.StartTime(GC::ENEMYTYPE1_ATTACK_DURATION, GC::ENEMYTYPE1_ATTACK_DELAY);
-
-	//Setup the enemy particles
-	particles.resize(20);
-
-}
+//	mpInstance->World._41 = newPosition.x;
+//	mpInstance->World._42 = newPosition.y;
+//	mpInstance->World._43 = newPosition.z;
+//
+//	//int attackDuration = 2;		//How long the attack plays for, not final time yet
+//	//int attackDelay = 4;		//How long between each attack
+//	
+//	// ATTACK DELAY & DURATION HELD IN CONSTANTS
+//	if (this->GetType() == GC::ENEMY_TYPE_1)
+//		times.StartTime(GC::ENEMYTYPE1_ATTACK_DURATION, GC::ENEMYTYPE1_ATTACK_DELAY);
+//
+//	//Setup the enemy particles
+//	particles.resize(20);
+//
+//}
 
 void Enemy::SetRandomPosition()
 {
