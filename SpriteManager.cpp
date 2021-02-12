@@ -160,7 +160,7 @@ void SpriteManager::DrawString(const Text & t)
 		const char* string = t.string.c_str();
 
 		const DirectX::SimpleMath::Vector2 origin = (t.center) ?
-			mSpriteFont.at(t.fontIndex)->MeasureString(string, true) *-0.5f : //center 
+			mSpriteFont.at(t.fontIndex)->MeasureString(string, true) *0.5f : //center 
 			t.origin;															// predefined origin
 
 		mSpriteFont.at(t.fontIndex)->DrawString(mSpriteBatch.get(), string, t.position, t.color, t.rotation, origin, t.scale);

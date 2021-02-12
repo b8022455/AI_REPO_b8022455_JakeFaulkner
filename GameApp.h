@@ -106,6 +106,9 @@ public:
 	UINT mInstanceCount = 0;
 	UINT GetMaterialIndex(const std::string& materialName);
 	
+	const std::string& GetStoryText();
+	size_t mStoryIndex = 0;
+
 
 private:
 	virtual void Update(const GameTimer& gt)override;
@@ -189,4 +192,7 @@ private:
 
 	//Viewport Sprites
 	SpriteManager mSpriteManager;
+
+
+
 };

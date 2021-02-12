@@ -725,7 +725,7 @@ void GameApp::LoadTextures()
 	//LoadTexture("bricksTex", L"Data/Textures/bricks.dds"); //1
 	LoadTexture("stoneTex", L"Data/Textures/stone.dds"); // 2
 	LoadTexture("mudTex", L"Data/Textures/LostMeadow_dirt.dds"); // 3
-	LoadTexture("iceTex", L"Data/Textures/ice.dds"); // 4
+	LoadTexture("iceTex", L"Data/Textures/asphalt.dds"); // 4     ice.dds
 	LoadTexture("crateTex", L"Data/Textures/WoodCrate01.dds"); // 5
 	LoadTexture("grassTex", L"Data/Textures/grass.dds"); // 6
 	LoadTexture("tileTex", L"Data/Textures/tile.dds"); // 7 // POSSIBLE ERROR WITH TEXTURE LOADED INTO POSITION 7
@@ -1338,6 +1338,18 @@ std::array<const CD3DX12_STATIC_SAMPLER_DESC, 6> GameApp::GetStaticSamplers()
 		linearWrap, linearClamp,
 		anisotropicWrap, anisotropicClamp };
 }
+
+const std::string& GameApp::GetStoryText() 
+{
+	// defaults if out of range
+	if (mStoryIndex >= GC::STORY_TEXT_SIZE)
+	{
+		mStoryIndex = 0;
+	}
+
+	return GC::STORY_TEXT[mStoryIndex];
+}
+
 
 PassConstants * GameApp::GetMainPassCB()
 {
