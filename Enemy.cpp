@@ -77,30 +77,30 @@ void Enemy::SetRandomPosition()
 void Enemy::DamageEnemy(int dmg)
 {
 	mHealth -= dmg;
-	
+
 	float x = 0.0f;
 	float z = 0.0f;
-	
+
 	//Blows back enemy based on what position the enemy was hit from
 	switch (playerDirection)
 	{
 	case 0:										//Left
 		x = -2.0f;
 		break;
-	
+
 	case 1:										//Right
 		x = 2.0f;
 		break;
-	
+
 	case 2:										//Up
 		z = 2.0f;
 		break;
-	
+
 	case 3:										//Down
 		z = -2.0f;
 		break;
 	}
-	
+
 	BouncebackPosition.x = x;
 	BouncebackPosition.z = z;
 }
@@ -116,7 +116,7 @@ void Enemy::SetVelocity(const DirectX::SimpleMath::Vector3 target, const GameTim
 
 	mVelocity = direction;
 
-	if(WithinBounds(currentPos + mVelocity))
+	if (WithinBounds(currentPos + mVelocity))
 		this->SetPos(currentPos + mVelocity);
 }
 
@@ -162,14 +162,14 @@ const std::string Enemy::GetDropItem()
 
 }
 
-void Enemy::Update(const GameTimer & gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR EACH POTENTIAL AI BASED ON ENEMY TYPE
+void Enemy::Update(const GameTimer& gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR EACH POTENTIAL AI BASED ON ENEMY TYPE
 {
 	if (mSpeed <= 0.0f)
 		mSpeed = 0.0f;
 
 	// BARFING ENEMY - SLOW MOVEMENT TOWARDS PLAYER WHEN NOT ATTACKING
-	if (mEnemyType == GC::ENEMY_TYPE_1) 
-	{ 
+	if (mEnemyType == GC::ENEMY_TYPE_1)
+	{
 
 		switch (mBehaviour)
 		{

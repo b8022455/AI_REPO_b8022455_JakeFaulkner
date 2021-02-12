@@ -15,7 +15,7 @@ void PlayState::InitializeTraders()
 {
 
 	mTraders.reserve(10);
-	
+
 	mTraders.push_back(Trader(GC::TRADER_NAME_TEST, GC::TRADER_NAME_TEST, GC::TRADER_NAME_TEST));
 	mTraders.push_back(Trader(GC::TRADER_NAME_1, GC::TRADER_NAME_1, GC::TRADER_NAME_1));
 	mTraders.push_back(Trader(GC::TRADER_NAME_2, GC::TRADER_NAME_2, GC::TRADER_NAME_2));
@@ -31,7 +31,7 @@ void PlayState::InitializeTraders()
 		{
 			t.Initialize(GC::GO_TRADER);
 			t.mpInstance->MaterialIndex = 0/*GameApp::Get().GetMaterialIndex("tileTex")*/;
-			x+= 1.0f + (rand() % biggestGap);
+			x += 1.0f + (rand() % biggestGap);
 			t.SetPos({ x, 0.0f, 4.0f });
 		}
 	};
@@ -66,8 +66,8 @@ bool PlayState::FindNearestTraderInRadius()
 
 		bool operator()(const Trader& a, const Trader& b)
 		{
-			distanceA = SimpleMath::Vector3::Distance( from , a.GetPosV3() );
-			distanceB = SimpleMath::Vector3::Distance( from , b.GetPosV3() );
+			distanceA = SimpleMath::Vector3::Distance(from, a.GetPosV3());
+			distanceB = SimpleMath::Vector3::Distance(from, b.GetPosV3());
 
 			return distanceA < distanceB;
 		}
@@ -79,9 +79,9 @@ bool PlayState::FindNearestTraderInRadius()
 	// distance from player location
 	s.from = mPlayer.GetPosV3();
 
-	std::sort(mTraders.begin(), mTraders.end(),std::ref(s));
+	std::sort(mTraders.begin(), mTraders.end(), std::ref(s));
 
-	float distance = SimpleMath::Vector3::Distance( mPlayer.GetPosV3() , mTraders.front().GetPosV3());
+	float distance = SimpleMath::Vector3::Distance(mPlayer.GetPosV3(), mTraders.front().GetPosV3());
 
 	if (distance < GC::TRADER_RADIUS)
 	{
@@ -151,12 +151,12 @@ void PlayState::Initialize()
 	mPlayerWeapon.Initialize("Weapon");
 
 	mPlants.reserve(20);
-	
+
 	// ui bar
 	mPlayerHealthBar.Initialise(GC::BAR_GRN, GC::BAR_RED);
 
 	InitializeTraders();
-	
+
 
 	// tile clumping
 	int n(0);
@@ -197,8 +197,9 @@ void PlayState::Initialize()
 			}
 		}
 	}
-	
-	mCombatController.Initialize(&mPlayer,&mPlayerWeapon,&mEnemies);
+
+	mCombatController.Initialize(&mPlayer, &mPlayerWeapon, &mEnemies);
+
 
 	// Sprites
 	{
@@ -234,7 +235,7 @@ void PlayState::Initialize()
 			{
 				s.x,							//  starts off viewport to the right
 				10,								// padding
-				s.x + (s.x / 3)+ 128,			//  third of viewport plus offset
+				s.x + (s.x / 3) + 128,			//  third of viewport plus offset
 				s.y - 10						// padding
 			};
 
@@ -261,12 +262,12 @@ void PlayState::Initialize()
 		//Help text
 		{
 			mHelpMessage.mText.center = true;
-			mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{40.f, 550.f};
+			mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 40.f, 550.f };
 			mHelpMessage.mText.color = DirectX::Colors::Red;
 			mHelpMessage.Activate(GC::HELP_MESSAGES[3], 6.0f);
 
 			mTradeHelpMessage.mText.center = true;
-			mTradeHelpMessage.mText.position = DirectX::SimpleMath::Vector2{250.f, 150.f};
+			mTradeHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 250.f, 150.f };
 			mTradeHelpMessage.mText.color = DirectX::Colors::Red;
 		}
 	}
@@ -281,13 +282,13 @@ void PlayState::Initialize()
 		c.Pitch(XMConvertToRadians(CAM_ANGLE)); // SETS CAMERA TO FACE DOWN
 		c.UpdateViewMatrix();
 	}
-	
+
 }
 
 void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 	// TODO: (URGENT) CLEAR mEnemies HERE & IMMEDIATELY APPLY NEW ENEMIES
 	// use time cycle to determine number of enemies to add, enemy types are selected at random
-	
+
 	if (fill == false) {
 		mEnemies.clear();
 	}
@@ -298,13 +299,15 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 		int e2 = (rand() % 2) + 1; // random 1-2
 		if (e1 == 1) {
 			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
-		} else if (e1 == 2) {
+		}
+		else if (e1 == 2) {
 			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
 		}
 
 		if (e2 == 1) {
 			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
-		} else if (e2 == 2){
+		}
+		else if (e2 == 2) {
 			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
 		}
 
@@ -322,7 +325,11 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 				e.SetHealth(GC::ENEMYTYPE2_HEALTH);
 			}
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
-			e.SetRandomPosition();
+			e.SetPos({
+						static_cast<float>(rand() % 10 + 2.0f),
+						1.0f,
+						static_cast<float>(rand() % 10 + 2.0f)
+				});
 			for (auto& t : mTraders)									//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
@@ -331,7 +338,7 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 						static_cast<float>(rand() % 10 + 2.0f)
 						});
 		}
-	} 
+	}
 	if (timeCycle == 2) { // noon (small / 2)
 		//	// inserts n of enemies
 		//	// TODO: (NOTE) ENEMIES ADDED HERE
@@ -365,7 +372,11 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 				e.SetHealth(GC::ENEMYTYPE2_HEALTH);
 			}
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
-			e.SetRandomPosition();
+			e.SetPos({
+						static_cast<float>(rand() % 10 + 2.0f),
+						1.0f,
+						static_cast<float>(rand() % 10 + 2.0f)
+				});
 			for (auto& t : mTraders)									//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
@@ -416,7 +427,11 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 				e.SetHealth(GC::ENEMYTYPE2_HEALTH);
 			}
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
-			e.SetRandomPosition();
+			e.SetPos({
+						static_cast<float>(rand() % 10 + 2.0f),
+						1.0f,
+						static_cast<float>(rand() % 10 + 2.0f)
+				});
 			for (auto& t : mTraders)									//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
@@ -468,7 +483,11 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 					e.SetHealth(GC::ENEMYTYPE2_HEALTH);
 				}
 				//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
-				e.SetRandomPosition();
+				e.SetPos({
+							static_cast<float>(rand() % 10 + 2.0f),
+							1.0f,
+							static_cast<float>(rand() % 10 + 2.0f)
+					});
 				for (auto& t : mTraders)									//Check each trader in the game
 					while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 						e.SetPos({
@@ -482,7 +501,7 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 		// fill until full again
 		if (fill == true) { // TODO: THIS NEEDS REWORKING, CAN'T DELETE ENEMIES FROM VECTOR WHILE GAME IS RUNNING
 			// NEED TO IMPLEMENT A METHOD OF RANDOMLY CREATING NEW ENEMIES, ADD 1 ENEMY AFTER EVERY DEATH 
-			
+
 			int e1 = (rand() % 2) + 1; // random 1-2
 			if (e1 == 1) {
 				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
@@ -503,7 +522,11 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 				mEnemies.back().SetHealth(GC::ENEMYTYPE2_HEALTH);
 			}
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
-			mEnemies.back().SetRandomPosition();
+			mEnemies.back().SetPos({
+				static_cast<float>(rand() % 10 + 2.0f),
+				1.0f,
+				static_cast<float>(rand() % 10 + 2.0f)
+				});
 			for (auto& t : mTraders)									//Check each trader in the game
 				while (mEnemies.back().CheckCollision(mEnemies.back().GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					mEnemies.back().SetPos({
@@ -689,23 +712,23 @@ void PlayState::Update(const GameTimer& gt)
 
 	int i = 0;
 	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
+	{
+		e.Update(gt);
+
+		{ // THE ERASE ERROR OCCURS IN THE NEXT LOOP
+			SimpleMath::Vector3 pos = e.GetPos();
+
+			GameApp::Get().mDebugLog << "Enemy i:" << i
+				<< "  Health: " << e.GetHealth()
+				<< "  mpInstance: " << e.mpInstance
+				<< "  X: " << std::setprecision(2) << pos.x
+				<< "  Z:" << std::setprecision(2) << pos.z << "\n";
+		}
+
+		if (e.mEnabled)
 		{
-			e.Update(gt);
-
-			{ // THE ERASE ERROR OCCURS IN THE NEXT LOOP
-				SimpleMath::Vector3 pos = e.GetPos();
-
-				GameApp::Get().mDebugLog << "Enemy i:" << i
-					<< "  Health: " << e.GetHealth()
-					<< "  mpInstance: " << e.mpInstance
-					<< "  X: " << std::setprecision(2) << pos.x
-					<< "  Z:" << std::setprecision(2) << pos.z << "\n";
-			}
-
-			if (e.mEnabled)
-			{
-				//Enemy look at players position (only do when in range), only look when not attacking either
-				XMVECTOR playerPosition = XMLoadFloat3(&mPlayer.GetPos());
+			//Enemy look at players position (only do when in range), only look when not attacking either
+			XMVECTOR playerPosition = XMLoadFloat3(&mPlayer.GetPos());
 
 			//Generically gets the enemy range without duplicating code
 			float enemyRange;
@@ -721,21 +744,44 @@ void PlayState::Update(const GameTimer& gt)
 					mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
 					e.LookAt(playerPosition);
 				}
+			}
 
-					// enemy movement behaviour based on player radius
-					if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE &&
-						e.getattacking().isAttacking == false)
-					{
-						e.mBehaviour = Enemy::Behaviour::CHASE;
-					}
-					else
-					{
-						e.mBehaviour = Enemy::Behaviour::NONE;
-					}
-				}
+			// enemy movement behaviour based on player radius
+			if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE &&
+				e.getattacking().isAttacking == false)
+			{
+				e.mBehaviour = Enemy::Behaviour::CHASE;
+			}
+			else
+			{
+				e.mBehaviour = Enemy::Behaviour::NONE;
+			}
+		}
 
-			// enemy collision with player
-			if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()))
+		// enemy collision with player
+		if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()))
+		{
+			mPlayer.DamagePlayer(e.GetAttack());
+			mPlayerHealthBar.SetValue(mPlayer.health);
+			if (mPlayer.health < GC::PLAYER_LOW_HEALTH)
+			{
+				mHelpMessage.mText.center = true;
+				mHelpMessage.mText.color = DirectX::Colors::Red;
+				mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 300.f, 150.f };
+				mHelpMessage.Activate(GC::HELP_MESSAGES[0], 2.f);
+			}
+			GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
+			//Transition to game over state
+			if (mPlayer.health <= 0)
+			{
+				GameApp::Get().ChangeState("GameOver");
+			}
+		}
+
+		//When checking if enemy is in range, have this be in that section to prevent enemy particles from far from being checked
+		for (auto& p : e.particles)
+		{
+			if (mPlayer.CheckCollision(mPlayer.GetPos(), p.GetPos()))
 			{
 				mPlayer.DamagePlayer(e.GetAttack());
 				mPlayerHealthBar.SetValue(mPlayer.health);
@@ -743,8 +789,8 @@ void PlayState::Update(const GameTimer& gt)
 				{
 					mHelpMessage.mText.center = true;
 					mHelpMessage.mText.color = DirectX::Colors::Red;
-					mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{300.f, 150.f};
-					mHelpMessage.Activate(GC::HELP_MESSAGES[0] , 2.f);
+					mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 300.f, 150.f };
+					mHelpMessage.Activate(GC::HELP_MESSAGES[0], 2.f);
 				}
 				GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
 				//Transition to game over state
@@ -752,82 +798,60 @@ void PlayState::Update(const GameTimer& gt)
 				{
 					GameApp::Get().ChangeState("GameOver");
 				}
+				break;
 			}
-
-			//When checking if enemy is in range, have this be in that section to prevent enemy particles from far from being checked
-			for (auto& p : e.particles)
-			{
-				if (mPlayer.CheckCollision(mPlayer.GetPos(), p.GetPos()))
-				{
-					mPlayer.DamagePlayer(e.GetAttack());
-					mPlayerHealthBar.SetValue(mPlayer.health);
-					if (mPlayer.health < GC::PLAYER_LOW_HEALTH)
-					{
-						mHelpMessage.mText.center = true;
-						mHelpMessage.mText.color = DirectX::Colors::Red;
-						mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 300.f, 150.f };
-						mHelpMessage.Activate(GC::HELP_MESSAGES[0], 2.f);
-					}
-					GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
-					//Transition to game over state
-					if (mPlayer.health <= 0)
-					{
-						GameApp::Get().ChangeState("GameOver");
-					}
-					break;
-				}
-			}
-
-				if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), e.GetPos()))
-				{
-					// TODO: FIX ENEMY MODEL LEFT ON SCREEN
-
-					e.DamageEnemy(mPlayer.attack);		//Takes away health from enemy + blowsback enemy position
-					if (e.GetHealth() <= 0)
-					{
-						// gain exp
-						mExperience.AddExp(GC::EXP_DEFAULT);
-						score += GC::SCORE_ENEMY;
-
-						//Could be put into an exists function in Inventory Class
-						std::string droppedItem = e.GetDropItem();
-						if (droppedItem != "Empty")		//I.e An item was dropped from enemy
-						{
-							++mInventory[droppedItem];
-						}
-
-						e.MoveOffScreen();
-						e.mEnabled = false;
-						if (timeCycle == 4)
-							newEnemy = true;
-
-						GameApp::Get().GetAudio().Play("EnemyDie1", nullptr, false, 1.0f, GetRandomVoicePitch());
-
-					}
-					else
-					{
-						GameApp::Get().GetAudio().Play("EnemyHit1", nullptr, false, 1.0f, GetRandomVoicePitch());
-					}
-				}
-
-			//Checking enemy remains in bounds
-			if(!e.WithinBounds(e.GetPos() + e.BouncebackPosition))
-				e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-
-			// enemy collides with traders
-			for (auto& t : mTraders)
-				if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
-					e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-
-			e.SetVelocity(mPlayer.GetPos(), gt);
-
 		}
 
-			i++;
+		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), e.GetPos()))
+		{
+			// TODO: FIX ENEMY MODEL LEFT ON SCREEN
 
-		});
+			e.DamageEnemy(mPlayer.attack);		//Takes away health from enemy + blowsback enemy position
+			if (e.GetHealth() <= 0)
+			{
+				// gain exp
+				mExperience.AddExp(GC::EXP_DEFAULT);
+				score += GC::SCORE_ENEMY;
 
-	// TODO: (VERY URGENT) IMPLEMENT METHOD OF REGENNING ENEMIES AFTER THEIR DEATH HERE
+				//Could be put into an exists function in Inventory Class
+				std::string droppedItem = e.GetDropItem();
+				if (droppedItem != "Empty")		//I.e An item was dropped from enemy
+				{
+					++mInventory[droppedItem];
+				}
+
+				e.MoveOffScreen();
+				e.mEnabled = false;
+				if (timeCycle == 4)
+					newEnemy = true;
+
+				GameApp::Get().GetAudio().Play("EnemyDie1", nullptr, false, 1.0f, GetRandomVoicePitch());
+
+			}
+			else
+			{
+				GameApp::Get().GetAudio().Play("EnemyHit1", nullptr, false, 1.0f, GetRandomVoicePitch());
+			}
+		}
+
+		//Checking enemy remains in bounds
+		if (!e.WithinBounds(e.GetPos() + e.BouncebackPosition))
+			e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+		// enemy collides with traders
+		for (auto& t : mTraders)
+			if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
+				e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+		e.SetVelocity(mPlayer.GetPos(), gt);
+
+		
+
+		i++;
+
+	});
+
+	// TODO: (NOTE) METHOD OF REGENNING ENEMIES AFTER THEIR DEATH HERE
 	if (newEnemy == true) {
 		newEnemy = false;
 		eGen(true);
@@ -837,7 +861,7 @@ void PlayState::Update(const GameTimer& gt)
 	//flashing red for low health
 	if (mPlayer.health <= GC::PLAYER_LOW_HEALTH)
 	{
-		float strength = sin(gt.TotalTime()*5.0f) * 0.5f + 0.5f;
+		float strength = sin(gt.TotalTime() * 5.0f) * 0.5f + 0.5f;
 
 		pMainPassCB->Lights[1].Strength = { strength ,0.1f,0.1f };
 		// Less intense vibration
@@ -872,30 +896,30 @@ void PlayState::Update(const GameTimer& gt)
 	// show/hide item menu
 	if (itemMenuOpen)
 	{
-		mInventoryText.string = "Inventory:  (size " + std::to_string( mInventory.size()) + ")\n";
+		mInventoryText.string = "Inventory:  (size " + std::to_string(mInventory.size()) + ")\n";
 		//GameApp::Get().mDebugLog << "Inventory:  (size " << mInventory.size() << ")\n";
 
-		
+
 		std::for_each(mInventory.begin(), mInventory.end(), [&](auto& inv)
-		{
-			if (inventoryPosition != mInventory.end())
 			{
-				//Debug purposes: shows the currently selected item based on inventoryPosition value
-				GameApp::Get().mDebugLog << "Current Selected Item: " << (*inventoryPosition).first << " x" << (*inventoryPosition).second << "\n";
-
-				if((*inventoryPosition).first == inv.first)
+				if (inventoryPosition != mInventory.end())
 				{
-					mInventoryText.string += ">";
-				}
-				else
-				{
-					mInventoryText.string += " ";
-				}
+					//Debug purposes: shows the currently selected item based on inventoryPosition value
+					GameApp::Get().mDebugLog << "Current Selected Item: " << (*inventoryPosition).first << " x" << (*inventoryPosition).second << "\n";
 
-			}
-			mInventoryText.string += " " + inv.first + " (" + std::to_string(inv.second) + ")\n";
+					if ((*inventoryPosition).first == inv.first)
+					{
+						mInventoryText.string += ">";
+					}
+					else
+					{
+						mInventoryText.string += " ";
+					}
 
-		});
+				}
+				mInventoryText.string += " " + inv.first + " (" + std::to_string(inv.second) + ")\n";
+
+			});
 
 		//Help instructions for inventory
 		mHelpMessage.mText.center = true;
@@ -938,14 +962,14 @@ void PlayState::Update(const GameTimer& gt)
 	}
 }
 
-void PlayState::Draw(const GameTimer & gt)
+void PlayState::Draw(const GameTimer& gt)
 {
 	// UI
 
 	std::for_each(mSprites.begin(), mSprites.end(), [](auto& sp)
-	{
-		sp.second.Draw();
-	});
+		{
+			sp.second.Draw();
+		});
 
 	mPlayerHealthBar.Draw();
 
@@ -988,10 +1012,10 @@ void PlayState::OnMouseMove(WPARAM btnState, int x, int y)
 {
 }
 
-void PlayState::OnKeyboardInput(const GameTimer & gt)
+void PlayState::OnKeyboardInput(const GameTimer& gt)
 {
 
-	Controls(gt); 
+	Controls(gt);
 
 }
 
@@ -1028,11 +1052,11 @@ If gamepad
 else keyboard
 	keyboard
 	switch cam
-		play then keyboard player move 
+		play then keyboard player move
 		debug then keyboard debug cam move
 */
 
-void PlayState::Controls(const GameTimer & gt)
+void PlayState::Controls(const GameTimer& gt)
 {
 
 
@@ -1061,10 +1085,10 @@ void PlayState::Controls(const GameTimer & gt)
 		break;
 		}
 
-		
+
 	}
 
-	
+
 }
 
 void PlayState::InventoryUp()
@@ -1115,9 +1139,9 @@ void PlayState::ItemAction()
 			--inventoryPosition->second; //removes a potion
 
 			// Apply health limit
-			if (mPlayer.health > GC::PLAYER_MAX_HEALTH) 
-			{ 
-				mPlayer.health = GC::PLAYER_MAX_HEALTH; 
+			if (mPlayer.health > GC::PLAYER_MAX_HEALTH)
+			{
+				mPlayer.health = GC::PLAYER_MAX_HEALTH;
 			}
 
 			mPlayerHealthBar.SetValue(mPlayer.health);
@@ -1151,7 +1175,7 @@ void PlayState::CleanInventory(Inventory& inv)
 {
 	for (Inventory::iterator it = inv.begin(); it != inv.end();)
 	{
-		if ((*it).second <= 0) 
+		if ((*it).second <= 0)
 		{
 			it = inv.erase(it);
 			inventoryPosition = inv.begin();
@@ -1163,11 +1187,11 @@ void PlayState::CleanInventory(Inventory& inv)
 }
 
 void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED TO REMOVE TEXTURES FROM OBJECTS
-	
+
 	mTileManager.REGEN();
 }
 
-void PlayState::UiUpdate(const GameTimer & gt)
+void PlayState::UiUpdate(const GameTimer& gt)
 {
 	mSprites["testSpriteFirst"].rotation = cosf(gt.TotalTime()) * 0.1f;
 	mSprites["testSpriteSecond"].rotation = sinf(gt.TotalTime());
@@ -1175,10 +1199,10 @@ void PlayState::UiUpdate(const GameTimer & gt)
 	mPlayerHealthBar.Update(gt);
 
 	// animate inventory toggle
-	SimpleMath::Vector2 move = SimpleMath::Vector2::Lerp(mInventoryPanel.GetPos(), mInventoryLocation.first,gt.DeltaTime() * 2.0f); // todo Luc move to constant.h
+	SimpleMath::Vector2 move = SimpleMath::Vector2::Lerp(mInventoryPanel.GetPos(), mInventoryLocation.first, gt.DeltaTime() * 2.0f); // todo Luc move to constant.h
 	mInventoryPanel.Move(move, false);
 	// padding for text
-	move += SimpleMath::Vector2{32.0f, 32.0f}; //todo luc move to constants.h
+	move += SimpleMath::Vector2{ 32.0f, 32.0f }; //todo luc move to constants.h
 	mInventoryText.position = move;
 
 	//animate help toggle
@@ -1198,7 +1222,7 @@ void PlayState::UiUpdate(const GameTimer & gt)
 
 bool PlayState::CreatePlant()
 {
-	
+
 	// to tile nearest to player
 	SimpleMath::Vector3 pos(mPlayer.GetPosV3());
 	pos.x = round(pos.x);
@@ -1211,7 +1235,7 @@ bool PlayState::CreatePlant()
 
 	while (i < mPlants.size() && !found)
 	{
-		if (SimpleMath::Vector3::Distance(pos, mPlants.at(i).GetPosV3()) < 0.1f) 
+		if (SimpleMath::Vector3::Distance(pos, mPlants.at(i).GetPosV3()) < 0.1f)
 		{
 			// There is already a plant at this location
 			found = true;
@@ -1238,14 +1262,14 @@ bool PlayState::CreatePlant()
 	}
 
 	return !found;
-	
+
 }
 
-void PlayState::UpdatePlayer(const GameTimer & gt)
+void PlayState::UpdatePlayer(const GameTimer& gt)
 {
 }
 
-void PlayState::UpdatePlants(const GameTimer & gt)
+void PlayState::UpdatePlants(const GameTimer& gt)
 {
 	for (auto& p : mPlants)
 	{
@@ -1253,11 +1277,11 @@ void PlayState::UpdatePlants(const GameTimer & gt)
 	}
 }
 
-void PlayState::UpdateTiles(const GameTimer & gt)
+void PlayState::UpdateTiles(const GameTimer& gt)
 {
 }
 
-void PlayState::UpdateEnemies(const GameTimer & gt)
+void PlayState::UpdateEnemies(const GameTimer& gt)
 {
 }
 
@@ -1268,10 +1292,10 @@ void PlayState::HarvestByRadius()
 		// player within range
 		if (SimpleMath::Vector3::Distance(mPlayer.GetPosV3(), p.GetPosV3()) < 1.5f) // todo Luc move to constant.h
 		{
-			if (p.Harvest() ) // applies changes to instance state
+			if (p.Harvest()) // applies changes to instance state
 			{
 				// add all items from lookup to inventory
-				for (auto& m : GC::PLANT_LOOKUP_HARVEST.at( p.GetName() ) )
+				for (auto& m : GC::PLANT_LOOKUP_HARVEST.at(p.GetName()))
 				{
 					mInventory[m.first] += m.second;
 				}
@@ -1282,7 +1306,7 @@ void PlayState::HarvestByRadius()
 	}
 }
 
-void PlayState::Keyboard(const GameTimer & gt)
+void PlayState::Keyboard(const GameTimer& gt)
 {
 
 	//Player keyboard movement
@@ -1398,7 +1422,7 @@ void PlayState::Keyboard(const GameTimer & gt)
 	}
 }
 
-void PlayState::KeyboardDebug(const GameTimer & gt)
+void PlayState::KeyboardDebug(const GameTimer& gt)
 {
 
 	const float dt = gt.DeltaTime();
@@ -1446,19 +1470,19 @@ void PlayState::KeyboardDebug(const GameTimer & gt)
 	if (Input::Get().KeyReleased(GC::KEY_DEBUG_ENEMY_POS))
 	{
 		std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
-		{
-			e.mEnabled = true;
-			e.Reset();
-			e.SetRandomPosition();
-		});
+			{
+				e.mEnabled = true;
+				e.Reset();
+				e.SetRandomPosition();
+			});
 	}
 }
 
-void PlayState::Gamepad(const GameTimer & gt)
+void PlayState::Gamepad(const GameTimer& gt)
 {
 
 	// Left stick
-	mPlayer.Move(gt, Input::Get().LeftStickXZ()* GC::MOVE_SPEED);
+	mPlayer.Move(gt, Input::Get().LeftStickXZ() * GC::MOVE_SPEED);
 
 	// Attack
 	if (Input::Get().GamePad().rightTrigger == ButtonState::HELD)
@@ -1499,7 +1523,7 @@ bool PlayState::TraderStoryComplete()
 
 	for (auto& t : mTraders)
 	{
-		if (t.CompletedStoryItem()) 
+		if (t.CompletedStoryItem())
 		{
 			++count;
 		}
