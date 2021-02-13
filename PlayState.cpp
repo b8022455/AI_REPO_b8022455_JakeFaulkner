@@ -893,7 +893,9 @@ void PlayState::Update(const GameTimer& gt)
 		timeChange = 0.0f;
 		if (areas < 4) {
 			reInitialize();
-			GameApp::Get().ChangeState(GC::STATE_NEW_AREA);
+			++GameApp::Get().mStoryIndex;
+			GameApp::Get().ChangeState("Story"); //"NewArea1"
+			//GameApp::Get().ChangeState(GC::STATE_NEW_AREA);
 		}
 		if (areas == 4) { // TODO: (REMEMBER) CURRENTLY WIN CONDITION IS HERE
 			reInitialize();

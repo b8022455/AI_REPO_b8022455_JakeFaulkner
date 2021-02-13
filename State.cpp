@@ -6,6 +6,7 @@
 #include "TradeState.h"
 #include "GameOverState.h"
 #include "WinState.h"
+#include "StoryState.h"
 
 bool StateManager::Story = true;
 
@@ -62,19 +63,6 @@ void StateManager::FadeUpdate(const GameTimer & gt)
 
 				// First call promoted queued state
 				mStates[mCurrentState]->OnResume();
-
-				if (mCurrentState != "Story1") {// changes background if state isn't Story1
-					mMenuBackground.Initialise("iceTex");
-					Story = false;
-
-					if (mCurrentState == GC::STATE_GAMEOVER || mCurrentState == GC::STATE_WIN)
-						GameApp::Get().GetState("PlayState")->Reset();			//Resets playstate after fade has ended so you cant see stuff being reset in the world
-				}
-				else {
-					mMenuBackground.Initialise("tileTex");
-					Story = true;
-				} // all implemented for story screens & changing the background for menus (NOT TESTED FOR PERFORMANCE ISSUES,
-				// E.G. MULTIPLE TEXTURES BEING LOADED INTO BACKGROUND VARIABLE)
 			}
 			
 
@@ -122,6 +110,10 @@ void StateManager::Init() // initialised in gameapp
 	buttonBg.destinationRectangle = { -1,-1,-1,-1 };
 	buttonBg.Initialise("uiTex",true); // initialise button texture for ALL menus
 	
+
+	// Intro and Game story
+	AddState("Story", std::make_unique<StoryState>());
+
 	// INTRO SCREEN	
 	menuTitle.string = ""; // TODO: (NOTE) STORY BLURB 1 LOCATED HERE
 	menuBody.string = "It began in the 20th year of the 2nd millenium, on a tuesday, when the plague was \nreleased. The world quickly fell to ruin as it quickly spread & mutated moving between\nhosts, human, animal & plant alike. A few wars & civil uprisings later. And this is the\nworld as we now know it.\nTerrifying I know.\n\n\n                                                                            Press W to play";
