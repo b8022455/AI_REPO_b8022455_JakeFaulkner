@@ -98,11 +98,13 @@ bool PlayState::FindNearestTraderInRadius()
 
 }
 
-Enemy PlayState::Spawn(std::string enemyType)
+// TODO: (URGENT) BARFER ENEMY ERROR HERE, SPAWN NEEDS TO BE USED WHEN ADDING THE ENEMIES
+Enemy PlayState::Spawn(std::string enemyType) // USED TO INITIALISE ENEMIES
 {
+	//Enemy e(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK);
 	if (enemyType == GC::ENEMY_TYPE_1)
 	{
-		Enemy e(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_HEALTH);
+		Enemy e(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK);
 		e.Initialize("EnemyGhoul");
 		e.SetHealth(GC::ENEMYTYPE1_HEALTH);
 		e.SetRandomPosition();
@@ -112,17 +114,16 @@ Enemy PlayState::Spawn(std::string enemyType)
 	}
 	else if (enemyType == GC::ENEMY_TYPE_2)
 	{
-		Enemy e(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_HEALTH);
+		Enemy e(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK);
 		e.Initialize(GC::GO_ENEMY);
 		e.SetHealth(GC::ENEMYTYPE2_HEALTH);
 		e.SetRandomPosition();
 		return e;
 	}
-	else
-		assert(enemyType != GC::ENEMY_TYPE_1 &&
-			enemyType != GC::ENEMY_TYPE_2);
-
-	return Enemy(GC::ENEMY_TYPE_1, 15);		//Default return parameter
+	else {
+		assert(enemyType != GC::ENEMY_TYPE_1 && enemyType != GC::ENEMY_TYPE_2);
+		return Enemy(GC::ENEMY_TYPE_1, 15);		//Default return parameter
+	}
 }
 
 PlayState::PlayState()
@@ -177,25 +178,24 @@ void PlayState::Initialize()
 	{
 		// inserts n of enemies
 		// TODO: (NOTE) ENEMIES ADDED HERE
-		mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK)); // number of enemies, Enemy(GC::enemytype, attack)
-		mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
+
+		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2)); // number of enemies, Enemy(GC::enemytype, attack)
+		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 
 		//Init all enemies
-		for (auto& e : mEnemies)
-		{
-
-
-			if (e.GetType() == GC::ENEMY_TYPE_2)
-			{
-				e.Initialize(GC::GO_ENEMY);
-				e.SetHealth(GC::ENEMYTYPE1_HEALTH);
-			}
-			else if (e.GetType() == GC::ENEMY_TYPE_1)
-			{
-				e.Initialize("EnemyGhoul");
-				e.SetHealth(GC::ENEMYTYPE2_HEALTH);
-			}
-		}
+		//for (auto& e : mEnemies)
+		//{
+		//	/*if (e.GetType() == GC::ENEMY_TYPE_2)
+		//	{
+		//		e.Initialize(GC::GO_ENEMY);
+		//		e.SetHealth(GC::ENEMYTYPE1_HEALTH);
+		//	}
+		//	else if (e.GetType() == GC::ENEMY_TYPE_1)
+		//	{
+		//		e.Initialize("EnemyGhoul");
+		//		e.SetHealth(GC::ENEMYTYPE2_HEALTH);
+		//	}*/
+		//}
 	}
 
 	mCombatController.Initialize(&mPlayer, &mPlayerWeapon, &mEnemies);
@@ -298,32 +298,22 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 		int e1 = (rand() % 2) + 1; // random 1-2
 		int e2 = (rand() % 2) + 1; // random 1-2
 		if (e1 == 1) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 		else if (e1 == 2) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
 		}
 
 		if (e2 == 1) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 		else if (e2 == 2) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
 		}
 
 		//Init all enemies
 		for (auto& e : mEnemies)
 		{
-			if (e.GetType() == GC::ENEMY_TYPE_2)
-			{
-				e.Initialize(GC::GO_ENEMY);
-				e.SetHealth(GC::ENEMYTYPE1_HEALTH);
-			}
-			else if (e.GetType() == GC::ENEMY_TYPE_1)
-			{
-				e.Initialize("EnemyGhoul");
-				e.SetHealth(GC::ENEMYTYPE2_HEALTH);
-			}
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
@@ -345,32 +335,22 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 		int e1 = (rand() % 2) + 1; // random 1-2
 		int e2 = (rand() % 2) + 1; // random 1-2
 		if (e1 == 1) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 		else if (e1 == 2) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
 		}
 
 		if (e2 == 1) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 		else if (e2 == 2) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
 		}
 
 		//Init all enemies
 		for (auto& e : mEnemies)
 		{
-			if (e.GetType() == GC::ENEMY_TYPE_2)
-			{
-				e.Initialize(GC::GO_ENEMY);
-				e.SetHealth(GC::ENEMYTYPE1_HEALTH);
-			}
-			else if (e.GetType() == GC::ENEMY_TYPE_1)
-			{
-				e.Initialize("EnemyGhoul");
-				e.SetHealth(GC::ENEMYTYPE2_HEALTH);
-			}
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
@@ -393,39 +373,29 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 		int e2 = (rand() % 2) + 1; // random 1-2
 		int e3 = (rand() % 2) + 1; // random 1-2
 		if (e1 == 1) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 		else if (e1 == 2) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
 		}
 
 		if (e2 == 1) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 		else if (e2 == 2) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
 		}
 
 		if (e3 == 1) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 		else if (e3 == 2) {
-			mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
 		}
 
 		//Init all enemies
 		for (auto& e : mEnemies)
 		{
-			if (e.GetType() == GC::ENEMY_TYPE_2)
-			{
-				e.Initialize(GC::GO_ENEMY);
-				e.SetHealth(GC::ENEMYTYPE1_HEALTH);
-			}
-			else if (e.GetType() == GC::ENEMY_TYPE_1)
-			{
-				e.Initialize("EnemyGhoul");
-				e.SetHealth(GC::ENEMYTYPE2_HEALTH);
-			}
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
@@ -449,39 +419,29 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 			int e2 = (rand() % 2) + 1; // random 1-2
 			int e3 = (rand() % 2) + 1; // random 1-2
 			if (e1 == 1) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
+				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 			}
 			else if (e1 == 2) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
+				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
 			}
 
 			if (e2 == 1) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
+				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 			}
 			else if (e2 == 2) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
+				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
 			}
 
 			if (e3 == 1) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
+				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 			}
 			else if (e3 == 2) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
+				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
 			}
 
 			//Init all enemies
 			for (auto& e : mEnemies)
 			{
-				if (e.GetType() == GC::ENEMY_TYPE_2)
-				{
-					e.Initialize(GC::GO_ENEMY);
-					e.SetHealth(GC::ENEMYTYPE1_HEALTH);
-				}
-				else if (e.GetType() == GC::ENEMY_TYPE_1)
-				{
-					e.Initialize("EnemyGhoul");
-					e.SetHealth(GC::ENEMYTYPE2_HEALTH);
-				}
 				//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 				e.SetPos({
 							static_cast<float>(rand() % 10 + 2.0f),
@@ -504,22 +464,10 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 
 			int e1 = (rand() % 2) + 1; // random 1-2
 			if (e1 == 1) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK));
+				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 			}
 			else if (e1 == 2) {
-				mEnemies.push_back(Enemy(GC::ENEMY_TYPE_2, GC::ENEMYTYPE2_ATTACK));
-			}
-
-			//Init last enemies
-			if (mEnemies.back().GetType() == GC::ENEMY_TYPE_2)
-			{
-				mEnemies.back().Initialize(GC::GO_ENEMY);
-				mEnemies.back().SetHealth(GC::ENEMYTYPE1_HEALTH);
-			}
-			else if (mEnemies.back().GetType() == GC::ENEMY_TYPE_1)
-			{
-				mEnemies.back().Initialize("EnemyGhoul");
-				mEnemies.back().SetHealth(GC::ENEMYTYPE2_HEALTH);
+				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
 			}
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			mEnemies.back().SetPos({
