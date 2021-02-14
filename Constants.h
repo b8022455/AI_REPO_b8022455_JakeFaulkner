@@ -108,7 +108,7 @@ namespace GC
 		"Press 9 to Trade",
 		"Use the WASD keys to move and Space to attack",
 		"Help is available using the H key",
-		"Plant crops using the 7 Key",
+		"Plant crops by selecting seeds from the inventory",
 		"You can harvest crops when fully grown using the 8 Key",
 		"Try talking to a trader when near using the 9 key",
 		"Attack your enemies using the Spacebar",

@@ -901,6 +901,7 @@ void PlayState::Update(const GameTimer& gt)
 			reInitialize();
 			areas = 0;
 			timeCycle = 1;
+			StoreScore();
 			GameApp::Get().ChangeState(GC::STATE_WIN);
 		}
 	}
@@ -1553,7 +1554,19 @@ void PlayState::Reset()
 	//Reset Tiles
 	ReGen();
 
+	//Reset Lighting
+	GameApp::Get().GetMainPassCB()->AmbientLight = GC::DAWN_COLOUR; // dawn
+	GameApp::Get().GetMainPassCB()->Lights[1].Strength = GC::DAWN_STRENGTH;
+
 	//Reset Enemies
+	size_t enemyAmount = mEnemies.size() - 1;
+	while (enemyAmount > 1)
+	{
+		mEnemies.at(enemyAmount - 1).MoveOffScreen();
+		mEnemies.erase(mEnemies.begin() + (enemyAmount - 1));
+		enemyAmount--;
+	}
+
 	for (auto& e : mEnemies)
 	{
 		e.mEnabled = true;

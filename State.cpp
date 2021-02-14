@@ -63,6 +63,9 @@ void StateManager::FadeUpdate(const GameTimer & gt)
 
 				// First call promoted queued state
 				mStates[mCurrentState]->OnResume();
+
+				if (mCurrentState == GC::STATE_GAMEOVER || mCurrentState == GC::STATE_WIN)
+					GameApp::Get().GetState("PlayState")->Reset();			//Resets playstate after fade has ended so you cant see stuff being reset in the world
 			}
 			
 
