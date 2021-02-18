@@ -33,7 +33,6 @@ class PlayState : public State
 	TileManager mTileManager;
 	Tile mTile;
 	CombatController mCombatController;
-	std::unordered_map<std::string, Sprite> mSprites;
 
 	enum CAMERA_TYPE
 	{

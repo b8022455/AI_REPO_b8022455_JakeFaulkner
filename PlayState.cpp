@@ -135,14 +135,10 @@ PlayState::PlayState()
 void PlayState::Initialize()
 {
 	GameApp::Get().SetActiveCamera(&mCameras.at(CAMERA_TYPE::GAME));
-	//GameApp::Get().SetActiveCamera(&mCamera);
-	//mTile.Initialize("Tiles");
+
 	mTileManager.Initialize();
 
 	timeSet();
-
-	// todo change to closest trader in radius on button hit
-	//mpActiveTrader = &mTempTrader;
 
 	mPlayer.Initialize("Player");
 	mPlayerWeapon.Initialize("Weapon");
@@ -172,9 +168,6 @@ void PlayState::Initialize()
 
 	// Setup temp enemies
 	{
-		// inserts n of enemies
-		// TODO: (NOTE) ENEMIES ADDED HERE
-
 		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2)); // number of enemies, Enemy(GC::enemytype, attack)
 		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 
@@ -188,16 +181,6 @@ void PlayState::Initialize()
 		const DirectX::XMINT2 s = GameApp::Get().GetClientSizeU2(); //todo on resize
 		SimpleMath::Vector2 v = GameApp::Get().GetClientSize();
 
-
-		Sprite spriteSample;
-		spriteSample.scale = 0.1f;
-
-		spriteSample.Initialise("tileTex");
-		mSprites["testSpriteFirst"] = spriteSample;
-
-		spriteSample.Initialise("stoneTex");
-		mSprites["testSpriteSecond"] = spriteSample;
-
 		mScoreText.color = DirectX::Colors::White;
 		mScoreText.fontIndex = 1;
 		mScoreText.string = "Score: " + std::to_string(score);
@@ -207,7 +190,6 @@ void PlayState::Initialize()
 		mScoreTextShadow.fontIndex = 1;
 		mScoreTextShadow.string = "Score: " + std::to_string(score);
 		mScoreTextShadow.position = DirectX::SimpleMath::Vector2(651.f, 21.f);
-
 
 		// panel soruce
 		const RECT src{ GC::PANEL_SRC[0],	GC::PANEL_SRC[1],	GC::PANEL_SRC[2],	GC::PANEL_SRC[3], };
@@ -904,11 +886,6 @@ void PlayState::Draw(const GameTimer& gt)
 {
 	// UI
 
-	std::for_each(mSprites.begin(), mSprites.end(), [](auto& sp)
-		{
-			sp.second.Draw();
-		});
-
 	mPlayerHealthBar.Draw();
 
 	mInventoryPanel.Draw();
@@ -1131,8 +1108,6 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 
 void PlayState::UiUpdate(const GameTimer& gt)
 {
-	mSprites["testSpriteFirst"].rotation = cosf(gt.TotalTime()) * 0.1f;
-	mSprites["testSpriteSecond"].rotation = sinf(gt.TotalTime());
 
 	mPlayerHealthBar.Update(gt);
 

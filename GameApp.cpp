@@ -127,7 +127,7 @@ bool GameApp::Initialize()
 		//Music 'engine'
 		mGameAudio.CreateEngine("music", AUDIO_ENGINE_TYPE::MUSIC);
 		// Loads sounds the same way
-		mGameAudio.LoadSound("music", "actionMusic", L"Data/Sounds/Ring05.wav");
+		mGameAudio.LoadSound("music", "actionMusic", L"Data/Sounds/Main game theme bugaloo.wav");
 		mGameAudio.LoadSound("music", "menuMusic", L"Data/Sounds/Spooky_Title_screen_Loop.wav");
 		// Time it takes to fade between tracks when Play() is called
 		mGameAudio.SetFade("music", 1.0f);
