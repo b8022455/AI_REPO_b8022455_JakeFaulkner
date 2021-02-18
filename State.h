@@ -66,7 +66,7 @@ public:
 	// Draw sprites and fonts onto spritebatch
 	void Draw(const GameTimer& gt);
 	// Add unique_ptr of derived State class.
-	void AddState(const std::string& name, std::unique_ptr<State> newState);
+	void AddState(const std::string& name, std::unique_ptr<State>& newState);
 	// Cannot remove active state
 	void RemoveState(const std::string& name);
 	// Queues the next state and begins fade out/in process
@@ -77,6 +77,11 @@ public:
 	bool IsMenu()
 	{
 		return mIsMenu;
+	}
+
+	~StateManager()
+	{
+		OutputDebugString(L"StateManager Closed");
 	}
 
 	static bool Story; // USED FOR STORY STATE

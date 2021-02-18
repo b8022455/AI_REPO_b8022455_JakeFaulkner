@@ -115,7 +115,8 @@ void StateManager::Init() // initialised in gameapp
 	
 
 	// Intro and Game story
-	AddState("Story", std::make_unique<StoryState>());
+	std::unique_ptr<State> storyState = std::make_unique<StoryState>();
+	AddState("Story", std::move(storyState));
 
 	// INTRO SCREEN	
 	menuTitle.string = ""; // TODO: (NOTE) STORY BLURB 1 LOCATED HERE
@@ -124,7 +125,9 @@ void StateManager::Init() // initialised in gameapp
 	Button btnA(buttonBg, "A - Play", Button::Action::NO_ACTION);
 	Button btnD(buttonBg, "D - Play", Button::Action::NO_ACTION);
 	Button btnS(buttonBg, "S - Play", Button::Action::NO_ACTION);
-	AddState("Story1", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "Story1"));
+
+	std::unique_ptr<State> menuState = std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "Story1");
+	AddState("Story1", std::move(menuState));
 
 	//Enter Name Screen
 	Panel textbox;
@@ -134,7 +137,8 @@ void StateManager::Init() // initialised in gameapp
 	menuTitle.string = "Enter Name (8 Characters Max)";
 	menuBody.string = "Press Enter to Start";
 	Button btnEnter(buttonBg, "Enter Play", Button::GOTO_GAME);
-	AddState("EnterName", std::make_unique<MenuState>(menuTitle, menuBody, btnEnter, textbox, "EnterNameMenu"));
+	std::unique_ptr<State> enterNameMenu = std::make_unique<MenuState>(menuTitle, menuBody, btnEnter, textbox, "EnterNameMenu");
+	AddState("EnterName", std::move(enterNameMenu));
 
 	// PASSING LEVEL SCREEN?
 	menuTitle.string = "";
@@ -143,7 +147,9 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A - Play", Button::Action::NO_ACTION);
 	btnD = Button(buttonBg, "D - Play", Button::Action::NO_ACTION);
 	btnS = Button(buttonBg, "S - Play", Button::Action::NO_ACTION);
-	AddState(GC::STATE_NEW_AREA, std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, GC::STATE_NEW_AREA));
+
+	std::unique_ptr<State> newArea = std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, GC::STATE_NEW_AREA);
+	AddState(GC::STATE_NEW_AREA, std::move(newArea));
 
 	// Main menu
 	menuTitle.string = "Game Name";
@@ -152,7 +158,8 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A Set Volume", Button::Action::GOTO_VOLUME);
 	btnD = Button(buttonBg, "D Set Volume", Button::Action::GOTO_VOLUME);
 	btnS = Button(buttonBg, "S Help", Button::Action::GOTO_HELP);
-	AddState(GC::STATE_MAINMENU, std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS, "MainMenu"));
+	std::unique_ptr<State> mainMenu = std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "MainMenu");
+	AddState(GC::STATE_MAINMENU,std::move(mainMenu) );
 
 	menuTitle.string = "Volume";
 	menuBody.string = "";
@@ -161,7 +168,9 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A - Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnD = Button(buttonBg, "D - Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnS = Button(buttonBg, "S - Volume Down", Button::Action::VOLUME_DOWN);
-	AddState(GC::STATE_VOLUME, std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, GC::STATE_VOLUME));
+
+	std::unique_ptr<State> volumeState = std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, GC::STATE_VOLUME);
+	AddState(GC::STATE_VOLUME,std::move(volumeState) );
 
 	//mMenuBackground.Initialise("iceTex"); // overrides previous set
 	//PauseMenu
@@ -171,7 +180,8 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A Resume", Button::Action::GOTO_GAME);
 	btnD = Button(buttonBg, "D Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnS = Button(buttonBg, "S Resume", Button::Action::GOTO_GAME);
-	AddState(GC::STATE_PAUSE, std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS, GC::STATE_PAUSE));
+	std::unique_ptr<State> pauseState = std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, GC::STATE_PAUSE);
+	AddState(GC::STATE_PAUSE, std::move(pauseState) );
 
 	menuTitle.string = "Help";
 	menuBody.string = "Kill things for loot, trade loot for key items, use items to fix the car";
@@ -179,13 +189,16 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A Set Volume", Button::Action::GOTO_VOLUME);
 	btnD = Button(buttonBg, "D Set Volume", Button::Action::GOTO_VOLUME);
 	btnS = Button(buttonBg, "S Main Menu", Button::Action::GOTO_MAIN_MENU);
-	AddState("HelpMenu", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "HelpMenu"));
+	std::unique_ptr<State> helpState = std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "HelpMenu");
+	AddState("HelpMenu", std::move(helpState));
 
 	// GameState
-	AddState(GC::STATE_PLAY, std::make_unique<PlayState>());
+	std::unique_ptr<State> playState = std::make_unique<PlayState>();
+	AddState(GC::STATE_PLAY, std::move(playState));
 	
 	//Trade state
-	AddState(GC::STATE_TRADE, std::make_unique<TradeState>());
+	std::unique_ptr<State> tradeState = std::make_unique<TradeState>();
+	AddState(GC::STATE_TRADE, std::move(tradeState));
 
 	//Game Over State
 	Text GOTitle;
@@ -194,7 +207,8 @@ void StateManager::Init() // initialised in gameapp
 	GOTitle.string = "Game Over";
 
 	Button btnRestart(buttonBg, "W Back to Main Menu", Button::Action::GOTO_MAIN_MENU);
-	AddState(GC::STATE_GAMEOVER, std::make_unique<GameOverState>(GOTitle, btnRestart));
+	std::unique_ptr<State> gameOverState = std::make_unique<GameOverState>(GOTitle, btnRestart);
+	AddState(GC::STATE_GAMEOVER, std::move(gameOverState));
 
 	//Win State
 	Text WinMenuTitle;
@@ -208,7 +222,8 @@ void StateManager::Init() // initialised in gameapp
 	WinMenuTxt2.string = "Press W to Play Again";
 
 	Button btnRestartfromWin(buttonBg, "", Button::Action::GOTO_MAIN_MENU);
-	AddState(GC::STATE_WIN, std::make_unique<WinState>(WinMenuTitle, WinMenuTxt2, btnRestartfromWin));
+	std::unique_ptr<State> gameOverState2 = std::make_unique<WinState>(WinMenuTitle, WinMenuTxt2, btnRestartfromWin);
+	AddState(GC::STATE_WIN, std::move(gameOverState2));
 
 	// Init all states
 	std::for_each(mStates.begin(), mStates.end(), [](auto& s) { s.second->Initialize(); });
@@ -263,7 +278,7 @@ void StateManager::Draw(const GameTimer & gt)
 	}
 }
 
-void StateManager::AddState(const std::string & name, std::unique_ptr<State> newState)
+void StateManager::AddState(const std::string & name, std::unique_ptr<State>& newState)
 {
 	//Check the a state of the same name doesn't exist
 	if (mStates.count(name) == 0)
