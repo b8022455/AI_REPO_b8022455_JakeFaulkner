@@ -24,7 +24,7 @@ public:
 		mAttack = att;
 	};
 
-	void InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int materialIndex);	//Sets up the enemy
+	//void InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int materialIndex);	//Sets up the enemy
 	void Enemy::SetRandomPosition();
 	void SetDirection(int dir);
 	void DamageEnemy(int damage);						//When enemy gets hit by weapon

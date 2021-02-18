@@ -72,7 +72,7 @@ bool PlayState::FindNearestTraderInRadius()
 			return distanceA < distanceB;
 		}
 	private:
-		float distanceA, distanceB;
+		float distanceA = 0.0f, distanceB = 0.0f;
 	};
 
 	SortByDistance s;
@@ -299,14 +299,14 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
+						0.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
 				});
 			for (auto& t : mTraders)									//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
+						0.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
 						});
 		}
@@ -336,14 +336,14 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
+						0.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
 				});
 		for (auto& t : mTraders)									//Check each trader in the game
 			while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 				e.SetPos({
 					static_cast<float>(rand() % 10 + 2.0f),
-					1.0f,
+					0.0f,
 					static_cast<float>(rand() % 10 + 2.0f)
 					});
 		}
@@ -381,7 +381,7 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
+						0.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
 			});
 
@@ -389,7 +389,7 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
+						0.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
 						});
 		}
@@ -428,14 +428,14 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 				//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 				e.SetPos({
 							static_cast<float>(rand() % 10 + 2.0f),
-							1.0f,
+							0.0f,
 							static_cast<float>(rand() % 10 + 2.0f)
 					});
 				for (auto& t : mTraders)									//Check each trader in the game
 					while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 						e.SetPos({
 							static_cast<float>(rand() % 10 + 2.0f),
-							1.0f,
+							0.0f,
 							static_cast<float>(rand() % 10 + 2.0f)
 							});
 			}
@@ -455,14 +455,14 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			mEnemies.back().SetPos({
 				static_cast<float>(rand() % 10 + 2.0f),
-				1.0f,
+				0.0f,
 				static_cast<float>(rand() % 10 + 2.0f)
 				});
 			for (auto& t : mTraders)									//Check each trader in the game
 				while (mEnemies.back().CheckCollision(mEnemies.back().GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					mEnemies.back().SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
+						0.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
 						});
 		}
