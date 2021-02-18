@@ -76,7 +76,7 @@ void MenuState::Initialize()
 
 void MenuState::Update(const GameTimer & gt)
 {
-	if (menuName == "Tutorial")
+	if (menuName == GC::STATE_TUTORIAL)
 	{
 		if (Input::Get().AnyMenuButtonPressed())
 		{
@@ -187,7 +187,7 @@ void MenuState::Update(const GameTimer & gt)
 
 void MenuState::Draw(const GameTimer & gt)
 {
-	if (menuName == "Tutorial")
+	if (menuName == GC::STATE_TUTORIAL)
 		mPanel.Draw();
 
 	mTitle.Draw();
@@ -211,4 +211,7 @@ void MenuState::Draw(const GameTimer & gt)
 void MenuState::OnResume()
 {
 	GameApp::Get().GetAudio().Play("menuMusic", nullptr, true);
+
+	if (menuName == GC::STATE_TUTORIAL)
+		mBody.string = GameApp::Get().GetTutorialText();
 }

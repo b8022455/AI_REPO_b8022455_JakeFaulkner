@@ -98,7 +98,7 @@ namespace GC
 		WORLD_BOTTOM_BOUNDARY = -15.0f,
 
 
-		TILE_UV_INC = 1.0f/8.0f // tile is 1/8 of texture atlus
+		TILE_UV_INC = 1.0f / 8.0f // tile is 1/8 of texture atlus
 		;
 
 	const std::string HELP_MESSAGES[10]
@@ -109,11 +109,21 @@ namespace GC
 		"Use the WASD keys to move and Space to attack",
 		"Help is available using the H key",
 		"Plant crops by selecting seeds from the inventory",
-		"You can harvest crops when fully grown using the 8 Key",
+		"You can harvest crops when fully grown by attacking them",
 		"Try talking to a trader when near using the 9 key",
 		"Attack your enemies using the Spacebar",
 		"Pause the game using the Enter key"
 	};
+
+	const std::string
+		TUTORIAL_INTRO = "Welcome to the end of the world...",
+		TUTORIAL_OBJECTIVE = "You must survive to reach SAFEHAVEN by the end of the day.\nKill all mutants in the area before you continue travelling",
+		TUTORIAL_MOVE = "To move use they [w][s][a][d] keys\nPause the game using the Enter key",
+		TUTORIAL_ATTACK = "Attack your enemies using the Spacebar\nYou will automatically loot enemies you kill",
+		TUTORIAL_INVENTORY = "See what you have in your inventory [i]\nCycle through what you have [UP] [DOWN]\nSelect a weapon from the list and it will boost your attack\nClose the the inventory [i]",
+		TUTORIAL_USE = "Some items in the inventory can be used [u]",
+		TUTORIAL_PLANT = "",
+		TUTORIAL_TRADE = "To trade will other survivors ";
 
 
 	const float FOOTSTEP_PITCH[7]
@@ -149,9 +159,9 @@ namespace GC
 
 		// TODO: (NOTE) IMPLEMENT ENEMY TYPES HERE
 		// ?? = NOT IMPLEMENTED OR NEEDS REVIEWING
-		ENEMY_TYPE_1 = "EnemyType1", 
+		ENEMY_TYPE_1 = "EnemyType1",
 		// BASIC BARFING ENEMY (HOBBLES TOWARD PLAYER THEN BARFS, NO DAMAGE FROM CONTACT??)
-		ENEMY_TYPE_2 = "EnemyType2", 
+		ENEMY_TYPE_2 = "EnemyType2",
 		// CHARGER ENEMY (FAST, NO PARTICLE ATTACK)
 
 
@@ -159,11 +169,12 @@ namespace GC
 		STATE_TRADE = "TradeState",
 		STATE_PAUSE = "PauseMenu",
 		STATE_MAINMENU = "MainMenu",
-	    STATE_HELP = "HelpMenu",
+		STATE_HELP = "HelpMenu",
 		STATE_GAMEOVER = "GameOver",
 		STATE_VOLUME = "Volume",
 		STATE_WIN = "WinState",
 		STATE_NEW_AREA = "NewArea1",
+		STATE_TUTORIAL = "Tutorial",
 
 		TRADER_NAME_TEST = "TravellerTest",
 		TRADER_NAME_1 = "Traveller1",
@@ -211,10 +222,10 @@ namespace GC
 	const size_t STORY_TEXT_SIZE = sizeof(STORY_TEXT) / sizeof(STORY_TEXT[0]);
 
 	const DirectX::XMFLOAT2
-		MENU_BUTTON_PIVOT{0.5f,0.6f},
-		MENU_BUTTON_DISTANCE{200.0f,100.0f}, // distance from pivot
-		MENU_TITLE_POSITION{20.0f,20.0f},
-		MENU_BODY_POSITION{20.0f,50.0f},
+		MENU_BUTTON_PIVOT{ 0.5f,0.6f },
+		MENU_BUTTON_DISTANCE{ 200.0f,100.0f }, // distance from pivot
+		MENU_TITLE_POSITION{ 20.0f,20.0f },
+		MENU_BODY_POSITION{ 20.0f,50.0f },
 
 
 		// Add this to uv coords for texture on atlus
@@ -228,7 +239,7 @@ namespace GC
 		TILE_UV_BLANK{ 0.375f , 0.5f }
 
 	;
-	
+
 	const DirectX::XMFLOAT2 TILE_UV[8] =
 	{
 		{ 0.0f , 0.0f }, // gravel
@@ -245,11 +256,11 @@ namespace GC
 	const size_t NUM_TILE_UV_RAND = 4;
 
 	// Add a random element to tile uvcoords for texture on atlus
-	const DirectX::XMFLOAT2 TILE_UV_RANDOM[ NUM_TILE_UV_RAND ]{
+	const DirectX::XMFLOAT2 TILE_UV_RANDOM[NUM_TILE_UV_RAND]{
 		{	0.000f , 	0.000f },
 		{	0.000f , 	0.125f },
 		{	0.000f , 	0.250f },
-		{	0.000f , 	0.375f } 
+		{	0.000f , 	0.375f }
 	};
 
 	// eg stoneTileUV +=  GC::TILE_UV_STONE  + GC::TILE_UV_RANDOM[rand() % GC::NUM_TILE_UV_RAND]
@@ -265,24 +276,24 @@ namespace GC
 		DIRECTION_LOWER({ 0.0f,	-1.0f,	0.0f })
 		;
 	const DirectX::XMFLOAT4
-		BUTTON_DOWN_COLOR({ 0.7f, 0.7f, 0.7f, 1.0f}),
+		BUTTON_DOWN_COLOR({ 0.7f, 0.7f, 0.7f, 1.0f }),
 		BUTTON_UP_COLOR{ 1.0f, 1.0f, 1.0f, 1.0f },
 
-		TEXT_DARK_COLOR{ 0.2f, 0.2f, 0.2f, 1.0f},
+		TEXT_DARK_COLOR{ 0.2f, 0.2f, 0.2f, 1.0f },
 		TEXT_LIGHT_COLOR{ 1.0f, 1.0f, 1.0f, 1.0f }
-		;
+	;
 
-	
+
 	const long
 		// RECT
 		PANEL_SRC[4]{ 192, 128,256,192 },
 
-		BAR_MIN {32}, // for source rect limits 0% - 100%
-		BAR_MAX { 160}, // for source rect limits 0% - 100%
-		BAR_BG[4]	{ BAR_MIN,128,BAR_MAX,160 }, // Bar background
-		BAR_GRN[4]	{ BAR_MIN,160,BAR_MAX,192 },
-		BAR_YLW[4]	{ BAR_MIN,192,BAR_MAX,224 },
-		BAR_RED[4]	{ BAR_MIN,224,BAR_MAX,256 },
+		BAR_MIN{ 32 }, // for source rect limits 0% - 100%
+		BAR_MAX{ 160 }, // for source rect limits 0% - 100%
+		BAR_BG[4]{ BAR_MIN,128,BAR_MAX,160 }, // Bar background
+		BAR_GRN[4]{ BAR_MIN,160,BAR_MAX,192 },
+		BAR_YLW[4]{ BAR_MIN,192,BAR_MAX,224 },
+		BAR_RED[4]{ BAR_MIN,224,BAR_MAX,256 },
 		BAR_SIZE{ BAR_MAX - BAR_MIN } //max - min.
 	;
 
@@ -291,15 +302,15 @@ namespace GC
 		NOON_COLOUR({ 0.12f, 0.226f, 0.12f, 1.0f }),
 		EVENING_COLOUR({ 0.12f, 0.226f, 0.44f, 1.0f }),
 		PITCH_COLOUR({ 0.12f, 0.226f, 0.8f, 1.0f })
-	;
-	
-	
+		;
+
+
 	const DirectX::XMFLOAT3
 		DAWN_STRENGTH({ 0.8f, 0.75f, 0.55f }),
 		NOON_STRENGTH({ 1.0f, 0.9f, 0.6f }),
 		EVENING_STRENGTH({ 0.7f, 0.55f, 0.4f }),
 		PITCH_STRENGTH({ 0.1f, 0.1f, 0.1f })
-	;
+		;
 
 	const ItemMap ITEM_LIST = {
 		{"Empty",			{ItemCategory::NONE,	0}}, // 

@@ -1352,6 +1352,13 @@ const std::string& GameApp::GetStoryText()
 	return GC::STORY_TEXT[mStoryIndex];
 }
 
+const std::string& GameApp::GetTutorialText()
+{
+	if (mTutorialText == "")
+		assert(mTutorialText == "");
+
+	return mTutorialText;
+}
 
 PassConstants * GameApp::GetMainPassCB()
 {

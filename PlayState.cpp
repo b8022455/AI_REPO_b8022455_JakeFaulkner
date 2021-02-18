@@ -694,7 +694,8 @@ void PlayState::Update(const GameTimer& gt)
 
 					if (!shownTutorialMenu)
 					{
-						GameApp::Get().ChangeState("TutorialMenuAttack");
+						GameApp::Get().mTutorialText = GC::TUTORIAL_ATTACK;
+						GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
 						shownTutorialMenu = true;
 					}
 				}
@@ -911,6 +912,13 @@ void PlayState::Update(const GameTimer& gt)
 			GameApp::Get().ChangeState(GC::STATE_WIN);
 		}
 	}
+
+	//if (!shownIntroMenu)
+	//{
+	//	GameApp::Get().mTutorialText = GC::TUTORIAL_INTRO;
+	//	GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+	//	//shownIntroMenu = true;
+	//}
 
 	// for dirty frame
 	for (auto& c : mCameras)
