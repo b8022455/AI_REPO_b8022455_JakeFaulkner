@@ -19,8 +19,8 @@ struct Text
 {
 	std::string string = "";
 	DirectX::SimpleMath::Vector2 position = { 0,0 };
-	DirectX::SimpleMath::Vector4 color = {0.0f,0.0f,0.0f,1.0f};
-	float rotation = 0.0f; 
+	DirectX::SimpleMath::Vector4 color = { 0.0f,0.0f,0.0f,1.0f };
+	float rotation = 0.0f;
 	DirectX::SimpleMath::Vector2 origin = { 0,0 };
 	float scale = 1.0f;
 	size_t fontIndex = 0;
@@ -45,16 +45,16 @@ struct Sprite
 {
 	std::string textureName; //lookup gpu handle
 	D3D12_GPU_DESCRIPTOR_HANDLE texture;
-	DirectX::XMUINT2 textureSize = DirectX::XMUINT2(512,512);
+	DirectX::XMUINT2 textureSize = DirectX::XMUINT2(512, 512);
 	DirectX::XMFLOAT2 position = { 0.0f,0.0f };
-	RECT destinationRectangle = {-1,-1,-1,-1}; //ignore if left = -1
-	RECT sourceRectangle = {0,0,512,512 };   //todo array for animations?
+	RECT destinationRectangle = { -1,-1,-1,-1 }; //ignore if left = -1
+	RECT sourceRectangle = { 0,0,512,512 };   //todo array for animations?
 	DirectX::SimpleMath::Vector4 color = DirectX::Colors::White;
 	float rotation = 0.0f;
 	float scale = 1.0f;
 	DirectX::XMFLOAT2 origin = DirectX::XMFLOAT2(0.0f, 0.0f);
 	DirectX::SpriteEffects effects = DirectX::SpriteEffects::SpriteEffects_None;
-	
+
 	Sprite() {};
 	Sprite(const std::string& textureName);
 
@@ -78,17 +78,17 @@ struct Sprite
 
 	void Draw();
 
-	
+
 };
 
 class Panel
 {
 	// array names
 	enum
-	{ 
-		CORNER_TL, 		CORNER_TR,		CORNER_BL,		CORNER_BR,
-		EDGE_L,		EDGE_T,		EDGE_R,		EDGE_B,
-		MIDDLE,		COUNT
+	{
+		CORNER_TL, CORNER_TR, CORNER_BL, CORNER_BR,
+		EDGE_L, EDGE_T, EDGE_R, EDGE_B,
+		MIDDLE, COUNT
 	};
 
 	// sprites making up the panel display
@@ -96,10 +96,10 @@ class Panel
 	RECT mSourceRect = { 0,0,512,512 };
 	// Screen scace of panel
 	RECT mDestRect = { 0,0,512,512 };
-	
+
 
 	void CalcSpriteRects();
-	
+
 
 public:
 	void Initialize(const std::string& textureName, const RECT& src, const RECT& dst);
@@ -115,7 +115,9 @@ public:
 	enum Action {
 		NO_ACTION,
 		GOTO_MAIN_MENU,
+		GOTO_ENTER_NAME_MENU,
 		GOTO_GAME,
+		GOTO_HELP,
 		GOTO_VOLUME,
 		VOLUME_UP,
 		VOLUME_DOWN
@@ -160,7 +162,7 @@ public:
 	SpriteManager() {};
 	void Init(ID3D12Device* device, ID3D12CommandQueue* commandQueue, UINT srvDescSize, DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthStencilFormat, CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle);
 	void CreateFontResource(ID3D12Device* device, ID3D12CommandQueue* commandQueue, UINT srvDescSize, DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthStencilFormat);
-	void OnResize( D3D12_VIEWPORT& viewport);
+	void OnResize(D3D12_VIEWPORT& viewport);
 	// Called in GameApp::Draw method before drawing sprites and fonts
 	void DrawBegin(ID3D12GraphicsCommandList* commandList, const D3D12_VIEWPORT& veiwport);
 	// Called in GameApp::Draw method after drawing sprites and fonts
@@ -174,4 +176,3 @@ public:
 
 	void DrawString(const Text& t);
 };
-

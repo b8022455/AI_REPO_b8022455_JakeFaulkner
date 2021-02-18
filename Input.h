@@ -27,7 +27,7 @@ public:
 	// Single frame key is pressed
 	bool KeyPressed(unsigned char c)
 	{
-		return mKeyTracker.IsKeyPressed( (DirectX::Keyboard::Keys)  c);
+		return mKeyTracker.IsKeyPressed((DirectX::Keyboard::Keys)  c);
 	}
 
 	// Single frame key is released
@@ -40,6 +40,24 @@ public:
 	bool KeyHeld(unsigned char c)
 	{
 		return mKeyState.IsKeyDown((DirectX::Keyboard::Keys)  c);
+	}
+
+	char GetKey()
+	{
+		char c;
+		for (c = 0x41; c <= 0x5a; c++)		//Searches through A to Z
+		{
+			if (mKeyTracker.IsKeyPressed((DirectX::Keyboard::Keys) c))
+				return c;
+		}
+
+		if (mKeyTracker.IsKeyPressed((DirectX::Keyboard::Keys) 0x20))		//Checks for space bar
+			return 0x20;
+
+		if (mKeyTracker.IsKeyPressed((DirectX::Keyboard::Keys) 0x8))		//Checks for backspace
+			return 0x8;
+
+		return 0;
 	}
 
 	// Use to retrieve trigger and stick floats
@@ -72,7 +90,7 @@ public:
 	// Normalised between -1 to 1
 	DirectX::XMFLOAT2 LeftStickF2()
 	{
-		return	{	mGamePadState.thumbSticks.leftX,	mGamePadState.thumbSticks.leftY		};
+		return	{ mGamePadState.thumbSticks.leftX,	mGamePadState.thumbSticks.leftY };
 	}
 
 	// Normalised between -1 to 1
@@ -124,8 +142,5 @@ public:
 
 	// the moment its pressed
 	bool AnyMenuButtonPressed();
-	
+
 };
-
-
-

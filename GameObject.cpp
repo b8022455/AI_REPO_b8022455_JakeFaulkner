@@ -215,11 +215,6 @@ const void GameObject::RotationAroundPoint(const DirectX::XMMATRIX& translate1, 
 	XMStoreFloat4x4(&mpInstance->World, transformation);
 }
 
-void GameObject::Move(const float& dt, const float& speed, DirectX::XMFLOAT4X4& direction) { // TODO: WORK ON MOVE HERE 
-
-	//this->mpInstance->World(std::move(direction));
-}
-
 bool GameObject::CheckCollision(const XMFLOAT3& Object1,const XMFLOAT3& Object2)
 {
 	//Could change to have Mathf.Abs() to only check the positive boundary?
@@ -231,6 +226,17 @@ bool GameObject::CheckCollision(const XMFLOAT3& Object1,const XMFLOAT3& Object2)
 		if (distanceInY > -1.5f && distanceInY < 1.5f)
 			if (distanceInZ > -1.0f && distanceInZ < 1.0f)
 				return true;
+
+	return false;
+}
+
+bool GameObject::WithinBounds(const XMFLOAT3 Object1)
+{
+	if (Object1.x < GC::WORLD_RIGHT_BOUNDARY)
+		if (Object1.x > GC::WORLD_LEFT_BOUNDARY)
+			if (Object1.z < GC::WORLD_TOP_BOUNDARY)
+				if (Object1.z > GC::WORLD_BOTTOM_BOUNDARY)
+					return true;
 
 	return false;
 }

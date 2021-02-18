@@ -158,8 +158,8 @@ bool GameApp::Initialize()
 	//	add to mAllRitems in BuildRenderItems()
 	// Change differentRenderObjectsNum in frame resource to reflect this. 
 	BuildObjGeometry("Data/Models/tempSword.obj", "tempSwordGeo", "tempSword");// loads obj
-	BuildObjGeometry("Data/Models/tempPlayer.obj", "tempPlayerGeo", "tempPlayer");//tempPlayer.obj
-	BuildObjGeometry("Data/Models/tempEnemy.obj", "tempEnemyGeo", "tempEnemy");
+	BuildObjGeometry("Data/Models/charCloak.obj", "tempPlayerGeo", "tempPlayer");//tempPlayer.obj
+	BuildObjGeometry("Data/Models/charBlob.obj", "tempEnemyGeo", "tempEnemy");
 	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" ); //quad rather than cube
 	BuildObjGeometry("Data/Models/building04.obj","traderGeo", "trader" ); //quad rather than cube
 	BuildObjGeometry("Data/Models/building03.obj", "buildingGeo", "building"); 
@@ -167,6 +167,8 @@ bool GameApp::Initialize()
 	BuildObjGeometry("Data/Models/plantPotato.obj","potatoGeo", "potato" ); // plant
 	BuildObjGeometry("Data/Models/carBody.obj","carBodyGeo", "carBody" );  // 'trader' main objective. requires 1x1x1 bounding box
 	BuildObjGeometry("Data/Models/carWheel.obj","carTireGeo", "carTire" ); // two instances 'trader' main objective  either side of car body. requires 1x1x1 bounding box
+	BuildObjGeometry("Data/Models/charGhoul.obj","enemyGhoulGeo", "enemyGhoul" ); // two instances 'trader' main objective  either side of car body. requires 1x1x1 bounding box
+
 	BuildSwordGeometry();
 	BuildPlayerGeometry();
 	BuildMaterials();
@@ -713,16 +715,11 @@ void GameApp::UpdateMainPassCB(const GameTimer& gt)
 	mMainPassCB.TotalTime = gt.TotalTime();
 	mMainPassCB.DeltaTime = gt.DeltaTime();
 	//mMainPassCB.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
-	mMainPassCB.AmbientLight = { 0.06f, 0.126f, 0.06f, 1.0f };
+	mMainPassCB.AmbientLight = { 0.12f, 0.226f, 0.12f, 1.0f };
 	
-	mMainPassCB.Lights[0].Direction = { 0.57735f, -0.57735f, 0.57735f };
+	//mMainPassCB.Lights[0].Direction = { 0.57735f, -0.57735f, 0.57735f };
+	mMainPassCB.Lights[0].Direction = { 0.5f, -1.0f, 1.0f }; //normalised in shader
 	mMainPassCB.Lights[0].Strength = { 1.0f, 0.9f, 0.6f };
-
-	//mMainPassCB.Lights[1].Direction = { -0.57735f, -0.57735f, 0.57735f };
-	//mMainPassCB.Lights[1].Strength = { 0.4f, 0.4f, 0.4f };
-	//mMainPassCB.Lights[1].Strength = { 1.0f, 0.9f, 0.6f };
-	//mMainPassCB.Lights[2].Direction = { 0.0f, -0.707f, -0.707f };
-	//mMainPassCB.Lights[2].Strength = { 0.0f, 0.0f, 0.0f };
 
 	auto currPassCB = mCurrFrameResource->PassCB.get();
 	currPassCB->CopyData(0, mMainPassCB);
@@ -1261,6 +1258,7 @@ void GameApp::BuildRenderItems()
 	mAllRitems["particle"] = BuildRenderItem(objCbIndex, "particle", "particle");
 	mAllRitems["CarBody"] = BuildRenderItem(objCbIndex, "carBodyGeo", "carBody");
 	mAllRitems["CarTire"] = BuildRenderItem(objCbIndex, "carTireGeo", "carTire");
+	mAllRitems["EnemyGhoul"] = BuildRenderItem(objCbIndex, "enemyGhoulGeo", "enemyGhoul");
 	mAllRitems["Building"] = BuildRenderItem(objCbIndex, "buildingGeo", "building");
 
 	// All the render items are opaque.

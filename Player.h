@@ -38,18 +38,12 @@ public:
 	void Move(const GameTimer& gt, const DirectX::SimpleMath::Vector3& vec);
 	void DamagePlayer(int damage);
 
-	int health = 100;
+	int health = GC::PLAYER_MAX_HEALTH;
 
 	float hazardTimer = 0; // needs to be set as needed, used to apply hazard effects (not every frame)
 	bool Slowed = false;
 	bool Slippy = false;
 
-	// used to apply boundaries to player
-	const float PLAYER_RIGHTBOUND = 15.0f;
-	const float PLAYER_LEFTBOUND = -15.0f;
-
-	const float PLAYER_UPBOUND = 15.0f;
-	const float PLAYER_DOWNBOUND = -15.0f;
 
 	PlayerFacingDirection playerDir = PlayerFacingDirection::Left;
 	int attack = 10;		//Base attack stat (base amount + weapon amount), need to make private but public for debugging purposes

@@ -21,7 +21,7 @@
 }
 #endif
 
-void SpriteManager::Init(ID3D12Device * device, ID3D12CommandQueue* commandQueue, UINT srvDescSize,DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthStencilFormat, CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle)
+void SpriteManager::Init(ID3D12Device * device, ID3D12CommandQueue* commandQueue, UINT srvDescSize, DXGI_FORMAT backBufferFormat, DXGI_FORMAT depthStencilFormat, CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle)
 {
 
 	UINT size = GameApp::Get().GetCbvSrvDescriptorSize();
@@ -32,10 +32,10 @@ void SpriteManager::Init(ID3D12Device * device, ID3D12CommandQueue* commandQueue
 
 	resourceUpload.Begin();
 	{
-		DirectX::RenderTargetState rtState(backBufferFormat,depthStencilFormat);
-		DirectX::SpriteBatchPipelineStateDescription sbPipelineDesc(rtState,nullptr,nullptr,nullptr);
+		DirectX::RenderTargetState rtState(backBufferFormat, depthStencilFormat);
+		DirectX::SpriteBatchPipelineStateDescription sbPipelineDesc(rtState, &CommonStates::NonPremultiplied, nullptr, nullptr);
 
-		mSpriteBatch = std::make_unique<DirectX::SpriteBatch>(device,resourceUpload, sbPipelineDesc);
+		mSpriteBatch = std::make_unique<DirectX::SpriteBatch>(device, resourceUpload, sbPipelineDesc);
 
 		mSpriteFont.at(0) = std::make_unique<DirectX::SpriteFont>(
 			device,
@@ -69,7 +69,7 @@ void SpriteManager::CreateFontResource(ID3D12Device * device, ID3D12CommandQueue
 {
 }
 
-void SpriteManager::OnResize( D3D12_VIEWPORT & viewport)
+void SpriteManager::OnResize(D3D12_VIEWPORT & viewport)
 {
 }
 
@@ -93,7 +93,7 @@ void SpriteManager::DrawEnd()
 
 void SpriteManager::DrawSprite(const std::string & textureName)
 {
-	mSpriteBatch->Draw(GameApp::Get().GetSpriteGpuDescHandle(textureName), XMUINT2(500, 50), XMFLOAT2(500.0f, 50.0f),  { 1.0f,1.0f,1.0f,1.0f });
+	mSpriteBatch->Draw(GameApp::Get().GetSpriteGpuDescHandle(textureName), XMUINT2(500, 50), XMFLOAT2(500.0f, 50.0f), { 1.0f,1.0f,1.0f,1.0f });
 }
 
 void SpriteManager::DrawSprite(const Sprite & s)
@@ -101,13 +101,13 @@ void SpriteManager::DrawSprite(const Sprite & s)
 	if (s.destinationRectangle.left < 0)
 	{
 		mSpriteBatch->Draw(
-			s.texture, 
-			s.textureSize, 
+			s.texture,
+			s.textureSize,
 			s.position,
-			&s.sourceRectangle, 
-			s.color, 
-			s.rotation, 
-			s.origin, 
+			&s.sourceRectangle,
+			s.color,
+			s.rotation,
+			s.origin,
 			s.scale,
 			s.effects
 		);
@@ -137,7 +137,7 @@ void SpriteManager::DrawString(size_t i, const std::string & output, const Direc
 		if (centre)
 		{
 			// gets centre point in string
-			XMStoreFloat2(&position, mSpriteFont.at(i)->MeasureString(output.c_str(),true) *-0.5f);
+			XMStoreFloat2(&position, mSpriteFont.at(i)->MeasureString(output.c_str(), true) *-0.5f);
 		}
 		// Applies position
 		position.x += pos.x;
@@ -159,10 +159,10 @@ void SpriteManager::DrawString(const Text & t)
 	{
 		const char* string = t.string.c_str();
 
-		const DirectX::SimpleMath::Vector2 origin =	(t.center)? 
+		const DirectX::SimpleMath::Vector2 origin = (t.center) ?
 			mSpriteFont.at(t.fontIndex)->MeasureString(string, true) *-0.5f : //center 
 			t.origin;															// predefined origin
-	
+
 		mSpriteFont.at(t.fontIndex)->DrawString(mSpriteBatch.get(), string, t.position, t.color, t.rotation, origin, t.scale);
 	}
 	else
@@ -197,14 +197,14 @@ Button::Button(const Sprite & s, const std::string & t, const Action & a)
 	text(t),
 	action(a)
 {
-	
+
 }
 
 void Button::Draw()
 {
 	sprite.Draw();
 
-	GameApp::Get().DrawString(1, text,sprite.position, true);
+	GameApp::Get().DrawString(1, text, sprite.position, true);
 }
 
 void Button::SetPos(const XMFLOAT2 & pos)
@@ -227,6 +227,12 @@ void Button::Activate()
 		break;
 	case Button::GOTO_MAIN_MENU:
 		GameApp::Get().ChangeState(GC::STATE_MAINMENU);
+		break;
+	case Button::GOTO_HELP:
+	  GameApp::Get().ChangeState(GC::STATE_HELP);
+	  break;
+	case Button::GOTO_ENTER_NAME_MENU:
+		GameApp::Get().ChangeState("EnterName");
 		break;
 	case Button::GOTO_GAME:
 		GameApp::Get().ChangeState(GC::STATE_PLAY);
@@ -256,7 +262,7 @@ void Panel::CalcSpriteRects()
 	long midY = (mSourceRect.bottom + mSourceRect.top) >> 1;
 
 	//subdivided by 1
-	long sizeX = (mSourceRect.right - mSourceRect.left) >> 1; 
+	long sizeX = (mSourceRect.right - mSourceRect.left) >> 1;
 	long sizeY = (mSourceRect.bottom - mSourceRect.top) >> 1;
 
 	// top left
@@ -378,6 +384,6 @@ void FadeText::Draw()
 {
 	if (mTimer > 0.0f)
 	{
-		mText.Draw();	
+		mText.Draw();
 	}
 }

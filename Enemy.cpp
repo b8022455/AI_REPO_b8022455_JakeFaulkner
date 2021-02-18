@@ -2,6 +2,10 @@
 #include "GameApp.h"
 // (NOTE) ENEMY LOOKS AT PLAYER IS IN GAMEOBJECT CLASS RATHER THAN HERE
 
+void Enemy::SetHealth(int health) {
+	mHealth = health;
+}
+
 void Enemy::InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int matIndex)
 {
 	mpInstance->MaterialIndex = matIndex;
@@ -22,7 +26,15 @@ void Enemy::MoveOffScreen()
 
 void Enemy::Reset()
 {
-	mHealth = 100;
+	// TODO: IMPLEMENT SPECIFIC HEALTH FOR EACH ENEMY
+	SetRandomPosition();
+
+	if (GetType() == GC::ENEMY_TYPE_1) {
+		mHealth = GC::ENEMYTYPE1_HEALTH;
+	}
+	if (GetType() == GC::ENEMY_TYPE_2) {
+		mHealth = GC::ENEMYTYPE2_HEALTH;
+	}
 	BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
 	times.isAttacking = false;
 	for (auto& p : particles)
@@ -32,48 +44,19 @@ void Enemy::Reset()
 		times.SetNextTimer();
 }
 
-void Enemy::SetPosition(const DirectX::XMFLOAT3& newPosition)
-{
-	//Updates position on the object
-	mpInstance->World._41 = newPosition.x;
-	mpInstance->World._42 = newPosition.y;
-	mpInstance->World._43 = newPosition.z;
-
-	//int attackDuration = 2;		//How long the attack plays for, not final time yet
-	//int attackDelay = 4;		//How long between each attack
-	
-	// ATTACK DELAY & DURATION HELD IN CONSTANTS
-	if (this->GetType() == GC::ENEMY_TYPE_1)
-		times.StartTime(GC::ENEMYTYPE1_ATTACK_DURATION, GC::ENEMYTYPE1_ATTACK_DELAY);
-
-	//Setup the enemy particles
-	particles.resize(20);
-
-}
-
 void Enemy::SetRandomPosition()
 {
-	float random_integer = (float)GetRandomValue(-15, 15);
-	float random_integer2 = (float)GetRandomValue(-15, 15);
+	float random_integer = (float)GetRandomValue(0, 10) + 2.f;
+	float random_integer2 = (float)GetRandomValue(0, 10) + 2.f;
 
 	mpInstance->World._41 = random_integer;
-	mpInstance->World._42 = 0;
+	mpInstance->World._42 = 1.f;
 	mpInstance->World._43 = random_integer2;
-}
-
-DirectX::XMFLOAT3 Enemy::GetPosition()
-{
-	return {
-		mpInstance->World._41,
-		mpInstance->World._42,
-		mpInstance->World._43
-	};
 }
 
 void Enemy::DamageEnemy(int dmg)
 {
 	mHealth -= dmg;
-	mpInstance->MaterialIndex = 5;		//Visual check, remove eventually
 	
 	float x = 0.0f;
 	float z = 0.0f;
@@ -105,15 +88,16 @@ void Enemy::DamageEnemy(int dmg)
 void Enemy::SetVelocity(const DirectX::SimpleMath::Vector3 target, const GameTimer& gt)
 {
 
-	DirectX::SimpleMath::Vector3 currentPos = GetPosition();
-	DirectX::SimpleMath::Vector3 direction = target - GetPosition(); // AB = B-A
+	DirectX::SimpleMath::Vector3 currentPos = GetPos();
+	DirectX::SimpleMath::Vector3 direction = target - GetPos(); // AB = B-A
 	direction.Normalize(); // 
 	direction.y = 0; // xz plane
 	direction *= mSpeed * gt.DeltaTime(); // apply speed
 
 	mVelocity = direction;
 
-	this->SetPos(currentPos + mVelocity);
+	if(WithinBounds(currentPos + mVelocity))
+		this->SetPos(currentPos + mVelocity);
 }
 
 int Enemy::GetRandomValue(int min, int max)
@@ -158,7 +142,7 @@ const std::string Enemy::GetDropItem()
 
 }
 
-void Enemy::Update(const GameTimer & gt) // TODO: IMPLEMENT LOGIC FOR EACH POTENTIAL AI BASED ON ENEMY TYPE
+void Enemy::Update(const GameTimer & gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR EACH POTENTIAL AI BASED ON ENEMY TYPE
 {
 	if (mSpeed <= 0.0f)
 		mSpeed = 0.0f;
@@ -206,7 +190,7 @@ void Enemy::Update(const GameTimer & gt) // TODO: IMPLEMENT LOGIC FOR EACH POTEN
 		}
 	}
 
-	if (mEnemyType == GC::ENEMY_TYPE_2) // TODO: CHARGER ENEMY
+	if (mEnemyType == GC::ENEMY_TYPE_2) // CHARGER ENEMY
 	{
 
 		switch (mBehaviour)
@@ -250,7 +234,7 @@ void Enemy::Update(const GameTimer & gt) // TODO: IMPLEMENT LOGIC FOR EACH POTEN
 	}
 }
 
-void Enemy::UpdateAttack(float dt) // TODO: NEED TO IMPLEMENT TIMER WORK HERE TOO
+void Enemy::UpdateAttack(float dt)
 {
 	// IF DURATION IS LESS THAN 0 SHOULD BE HERE
 	times.attackDuration -= dt;

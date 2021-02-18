@@ -50,6 +50,10 @@ namespace GC
 
 	const int
 		PLAYER_LOW_HEALTH = 50,
+		PLAYER_MAX_HEALTH = 100,
+
+		ENEMYTYPE1_HEALTH = 30, // BARFER
+		ENEMYTYPE2_HEALTH = 20, // RUNNER
 
 		EXP_EXPONENT = 3,
 		EXP_OFFSET = 5,
@@ -84,10 +88,28 @@ namespace GC
 		ENEMYTYPE2_MAXSPEED = 3.0f,
 		ENEMYTYPE2_DRAG = 3.0f,
 
+		WORLD_LEFT_BOUNDARY = -15.0f,
+		WORLD_RIGHT_BOUNDARY = 15.0f,
+		WORLD_TOP_BOUNDARY = 15.0f,
+		WORLD_BOTTOM_BOUNDARY = -15.0f,
+
 
 		TILE_UV_INC = 1.0f / 8.0f // tile is 1/8 of texture atlus
 		;
 
+	const std::string HELP_MESSAGES[10]
+	{
+		"You are wounded.\nPress I to open inventory",
+		"Arrow Keys to scroll \n U Key to use an item",
+		"Press 9 to Trade",
+		"Use the WASD keys to move and Space to attack",
+		"Help is available using the H key",
+		"Plant crops using the 7 Key",
+		"You can harvest crops when fully grown using the 8 Key",
+		"Try talking to a trader when near using the 9 key",
+		"Attack your enemies using the Spacebar",
+		"Pause the game using the Enter key"
+	};
 
 
 	const float FOOTSTEP_PITCH[7]
@@ -133,6 +155,7 @@ namespace GC
 		STATE_TRADE = "TradeState",
 		STATE_PAUSE = "PauseMenu",
 		STATE_MAINMENU = "MainMenu",
+	    STATE_HELP = "HelpMenu",
 		STATE_GAMEOVER = "GameOver",
 		STATE_WIN = "WinState",
 
@@ -204,6 +227,20 @@ namespace GC
 		TILE_UV_BLANK{ 0.375f , 0.5f }
 
 	;
+	
+	const DirectX::XMFLOAT2 TILE_UV[8] =
+	{
+		{ 0.0f , 0.0f }, // gravel
+		{ 0.125f , 0.5f }, // grass
+		{ 0.125f , 0.0f }, // danger
+		{ 0.0f , 0.5f }, // junk
+		{ 0.25f , 0.0f }, // spikes
+		{ 0.25f , 0.5f }, // nothing
+		{ 0.375f , 0.0f }, // nothing
+		{ 0.375f , 0.5f } // nothing
+	};
+
+
 	const size_t NUM_TILE_UV_RAND = 4;
 
 	// Add a random element to tile uvcoords for texture on atlus
@@ -313,7 +350,7 @@ namespace GC
 	{
 		{ TRADER_NAME_TEST,	{"Got some rare things to trade, stranger","heh heh heh Thank you"	}},
 		{ TRADER_NAME_1,	{"Trade with me","Now on your way"	}},
-		{ TRADER_NAME_2,	{"I need some things   you need some things","Now I need some peace and quiet and you need to leave"	}}, //
+		{ TRADER_NAME_2,	{"I need some things you need some things","Now I need some peace and quiet and you need to leave"	}}, //
 		{ TRADER_NAME_3,	{"Trade with me","Now on your way"	}}, //todo change 
 		{ TRADER_NAME_4, 	{"Trade with me","Now on your way"	}}, // no reward, charity
 		{ TRADER_OBJ_3, 	{"There's lots of space to store weapons here.","Locked and loaded"	}},			// rear of car

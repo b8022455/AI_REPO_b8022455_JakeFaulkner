@@ -43,6 +43,11 @@ void TradeState::Initialize()
 	mPanels.at(PANEL_TOP).Initialize("uiTex", r, { 0, top, s.x, colTop });// top
 	mPanels.at(PANEL_LEFT).Initialize("uiTex", r, { 0,colTop,colDivX,s.y });// left col
 	mPanels.at(PANEL_RIGHT).Initialize("uiTex", r, { colDivX,colTop,s.x,s.y });// right col
+
+	mHelpMessage.mText.center = true;
+	mHelpMessage.mText.color = DirectX::Colors::Red;
+	mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{50.f, 240.f };
+	mHelpMessage.Activate("D key to accept deal. S key to exit trade", 1.f);
 }
 
 void TradeState::Update(const GameTimer & gt)
@@ -109,6 +114,7 @@ void TradeState::Draw(const GameTimer & gt)
 		t.Draw();
 	}
 
+	mHelpMessage.Draw();
 }
 
 void TradeState::OnResume()

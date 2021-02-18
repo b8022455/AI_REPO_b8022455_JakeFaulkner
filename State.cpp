@@ -26,14 +26,78 @@ bool StateManager::IsValidState(const std::string stateName)
 	return mStates.count(stateName) == 1;
 }
 
+void StateManager::FadeUpdate(const GameTimer & gt)
+{
+	float dt = gt.DeltaTime();
+	switch (mFade)
+	{
+	case Fade::FADE_IN:
+		
+		mFadeAlpha -= mFadeRate * dt;
+		if ((mFadeAlpha <= 0.0f))
+		{
+			mFade = Fade::NONE;
+		}
+		; break;
+	case Fade::FADE_OUT:
+		mFadeAlpha += mFadeRate * dt;
+		if ((mFadeAlpha > 1.0f))
+		{
+			mFade = Fade::READY;
+		}; break;
+	case Fade::READY:
+		
+		if (IsValidState(mQueuedState))
+		{
+			if (mQueuedState != mCurrentState)
+			{
+				mCurrentState = mQueuedState;
+				mQueuedState = "";
+				EvaluateState();
+				mStates[mCurrentState]->OnResume();
+
+				if (mCurrentState != "Story1") {// changes background if state isn't Story1
+					mMenuBackground.Initialise("iceTex");
+					Story = false;
+				}
+				else {
+					mMenuBackground.Initialise("tileTex");
+					Story = true;
+				} // all implemented for story screens & changing the background for menus (NOT TESTED FOR PERFORMANCE ISSUES,
+				// E.G. MULTIPLE TEXTURES BEING LOADED INTO BACKGROUND VARIABLE)
+			}
+			
+
+		}
+		else
+		{
+			assert(false);
+		}
+
+		mFade = Fade::FADE_IN;
+
+		
+		; break;
+	case Fade::NONE:; break;
+	default:;
+	}
+}
+
 void StateManager::Init() // initialised in gameapp
 {
 	//mMenuBackground.Initialise("iceTex"); // initialize background for ALL menus
 
 	mMenuBackground.Initialise("tileTex"); 
+	mFadeForeground.Initialise("uiTex");
 
 	DirectX::XMINT2 s = GameApp::Get().GetClientSizeU2(); //todo on resize
-	mMenuBackground.sourceRectangle = { 0,0,s.x,s.y };
+	mMenuBackground.sourceRectangle = { 0,0,s.x,s.y }; // whole viewport tiled
+
+	RECT fgBlack  = { 1,511,1,511 };
+	//RECT fgWhite = { 65,511,65,511 };
+
+	mFadeForeground.sourceRectangle = fgBlack; // texture rect
+	mFadeForeground.destinationRectangle = { 0 ,0,s.x ,s.y };// whole viewport 
 
 	//set position of text elements of menus
 	Text menuTitle, menuBody;
@@ -55,7 +119,17 @@ void StateManager::Init() // initialised in gameapp
 	Button btnA(buttonBg, "A - Play", Button::Action::NO_ACTION);
 	Button btnD(buttonBg, "D - Play", Button::Action::NO_ACTION);
 	Button btnS(buttonBg, "S - Play", Button::Action::NO_ACTION);
-	AddState("Story1", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS));
+	AddState("Story1", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "Story1"));
+
+	//Enter Name Screen
+	Panel textbox;
+	const RECT src{ 192, 128, 256, 192 };
+	const RECT dst{ 300,	220, 520, 310 };
+	textbox.Initialize("uiTex", src, dst);
+	menuTitle.string = "Enter Name (8 Characters Max)";
+	menuBody.string = "Press Enter to Start";
+	Button btnEnter(buttonBg, "Enter Play", Button::GOTO_GAME);
+	AddState("EnterName", std::make_unique<MenuState>(menuTitle, menuBody, btnEnter, textbox, "EnterNameMenu"));
 
 	// PASSING LEVEL SCREEN?
 	menuTitle.string = "";
@@ -64,16 +138,16 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A - Play", Button::Action::NO_ACTION);
 	btnD = Button(buttonBg, "D - Play", Button::Action::NO_ACTION);
 	btnS = Button(buttonBg, "S - Play", Button::Action::NO_ACTION);
-	AddState("NewArea1", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS));
+	AddState("NewArea1", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "NewArea1"));
 
 	// Main menu
 	menuTitle.string = "Game Name";
 	menuBody.string = "PlaceHolder text";
-	btnW = Button(buttonBg, "W Play", Button::Action::GOTO_GAME);
+	btnW = Button(buttonBg, "W Play", Button::Action::GOTO_ENTER_NAME_MENU);
 	btnA = Button(buttonBg, "A Set Volume", Button::Action::GOTO_VOLUME);
 	btnD = Button(buttonBg, "D Set Volume", Button::Action::GOTO_VOLUME);
-	btnS = Button(buttonBg, "S Play", Button::Action::GOTO_GAME);
-	AddState("MainMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS));
+	btnS = Button(buttonBg, "S Help", Button::Action::GOTO_HELP);
+	AddState("MainMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS, "MainMenu"));
 
 	menuTitle.string = "Volume";
 	menuBody.string = "";
@@ -82,7 +156,7 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A - Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnD = Button(buttonBg, "D - Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnS = Button(buttonBg, "S - Volume Down", Button::Action::VOLUME_DOWN);
-	AddState("Volume", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS));
+	AddState("Volume", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "Volume"));
 
 	//mMenuBackground.Initialise("iceTex"); // overrides previous set
 	//PauseMenu
@@ -92,7 +166,15 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A Resume", Button::Action::GOTO_GAME);
 	btnD = Button(buttonBg, "D Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnS = Button(buttonBg, "S Resume", Button::Action::GOTO_GAME);
-	AddState("PauseMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS));
+	AddState("PauseMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS, "PauseMenu"));
+
+	menuTitle.string = "Help";
+	menuBody.string = "Kill things for loot, trade loot for key items, use items to fix the car";
+	btnW = Button(buttonBg, "W Play", Button::Action::GOTO_ENTER_NAME_MENU);
+	btnA = Button(buttonBg, "A Set Volume", Button::Action::GOTO_VOLUME);
+	btnD = Button(buttonBg, "D Set Volume", Button::Action::GOTO_VOLUME);
+	btnS = Button(buttonBg, "S Main Menu", Button::Action::GOTO_MAIN_MENU);
+	AddState("HelpMenu", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "HelpMenu"));
 
 	// GameState
 	AddState(GC::STATE_PLAY, std::make_unique<PlayState>());
@@ -112,12 +194,12 @@ void StateManager::Init() // initialised in gameapp
 	//Win State
 	Text WinMenuTitle;
 	WinMenuTitle.scale = 2.f;
-	WinMenuTitle.position = DirectX::SimpleMath::Vector2(280.f, 200.f);
+	WinMenuTitle.position = DirectX::SimpleMath::Vector2(280.f, 60.f);
 	WinMenuTitle.string = "You Escaped";
 
 	Text WinMenuTxt2;
 	WinMenuTxt2.scale = 1.f;
-	WinMenuTxt2.position = DirectX::SimpleMath::Vector2(300.f, 300.f);
+	WinMenuTxt2.position = DirectX::SimpleMath::Vector2(300.f, 480.f);
 	WinMenuTxt2.string = "Press W to Play Again";
 
 	Button btnRestartfromWin(buttonBg, "", Button::Action::GOTO_MAIN_MENU);
@@ -137,6 +219,13 @@ void StateManager::Update(const GameTimer & gt)
 	//GameApp::Get().input.Update();
 
 	GameApp::Get().mDebugLog << "State: \"" << mCurrentState << "\"\n";
+
+
+	mFadeForeground.color.w = mFadeAlpha;
+
+	FadeUpdate(gt);
+
+
 
 	if (IsValidState(mCurrentState))
 	{
@@ -158,6 +247,10 @@ void StateManager::Draw(const GameTimer & gt)
 		}
 
 		mStates[mCurrentState]->Draw(gt);
+
+		mFadeForeground.Draw();
+
+		GameApp::Get().mDebugLog << "\n" << mFadeAlpha;
 	}
 	else
 	{
@@ -195,22 +288,42 @@ void StateManager::RemoveState(const std::string & name)
 }
 void StateManager::ChangeState(const std::string & name)
 {
+	//if (IsValidState(name))
+	//{
+	//	// if queued state != 
+	//}
+
+
+	
+	// if name is valid state
+	// no queued state
+	// name isnt current state
+
 	if (IsValidState(name))
 	{
+		if (mQueuedState.length() == 0 && mCurrentState != name && mFade == Fade::NONE)
+		{
+			mQueuedState = name;
+			mFade = Fade::FADE_OUT; //fade to black
 
-		if (name != "Story1") {// changes background if state isn't Story1
-			mMenuBackground.Initialise("iceTex");
-			Story = false;
 		}
-		else {
-			mMenuBackground.Initialise("tileTex");
-			Story = true;
-		} // all implemented for story screens & changing the background for menus (NOT TESTED FOR PERFORMANCE ISSUES,
-		// E.G. MULTIPLE TEXTURES BEING LOADED INTO BACKGROUND VARIABLE)
 
-		mCurrentState = name;
-		EvaluateState();
-		mStates[name]->OnResume();
+
+		//if (name != "Story1") {// changes background if state isn't Story1
+		//	mMenuBackground.Initialise("iceTex");
+		//	Story = false;
+		//}
+		//else {
+		//	mMenuBackground.Initialise("tileTex");
+		//	Story = true;
+		//} // all implemented for story screens & changing the background for menus (NOT TESTED FOR PERFORMANCE ISSUES,
+		//// E.G. MULTIPLE TEXTURES BEING LOADED INTO BACKGROUND VARIABLE)
+
+
+
+		//mCurrentState = name;
+		//EvaluateState();
+		//mStates[name]->OnResume();
 	}
 	else
 	{
