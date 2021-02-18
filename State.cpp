@@ -12,7 +12,7 @@ bool StateManager::Story = true;
 
 void StateManager::EvaluateState()
 {
-	if (mCurrentState == GC::STATE_PLAY || mCurrentState == GC::STATE_PAUSE || mCurrentState == GC::STATE_TRADE)
+	if (mCurrentState == GC::STATE_PLAY || mCurrentState == GC::STATE_PAUSE || mCurrentState == GC::STATE_TRADE || mCurrentState == "TutorialMenuAttack")
 	{
 		mIsMenu = false;
 	}
@@ -132,8 +132,11 @@ void StateManager::Init() // initialised in gameapp
 	const RECT dst{ 300,	220, 520, 310 };
 	textbox.Initialize("uiTex", src, dst);
 	menuTitle.string = "Enter Name (8 Characters Max)";
+	menuTitle.position = DirectX::SimpleMath::Vector2{ 260.f, 180.f };
 	menuBody.string = "Press Enter to Start";
+	menuBody.position = DirectX::SimpleMath::Vector2{ 330.f, 350.f };
 	Button btnEnter(buttonBg, "Enter Play", Button::GOTO_GAME);
+	btnEnter.SetPos({ 200.f, 150.f });
 	AddState("EnterName", std::make_unique<MenuState>(menuTitle, menuBody, btnEnter, textbox, "EnterNameMenu"));
 
 	// PASSING LEVEL SCREEN?
@@ -180,6 +183,21 @@ void StateManager::Init() // initialised in gameapp
 	btnD = Button(buttonBg, "D Set Volume", Button::Action::GOTO_VOLUME);
 	btnS = Button(buttonBg, "S Main Menu", Button::Action::GOTO_MAIN_MENU);
 	AddState("HelpMenu", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "HelpMenu"));
+
+	//Tutorial help screens
+	//Attacking enemies
+	menuTitle.string = "Attacking Enemies";
+	menuTitle.position = DirectX::SimpleMath::Vector2{ 400.f, 340.f};
+	menuTitle.center = true;
+	menuBody.center = true;
+	menuBody.string = "explanation of what enemies represent in the game,\n how to damage them etc.\n";
+	menuBody.position = DirectX::SimpleMath::Vector2{ 350.f, 400.f };
+	Button btnAdvance = Button(buttonBg, "Enter To Resume", Button::Action::GOTO_GAME);
+	btnAdvance.SetPos({ 400.f, 550.f});
+	Panel msgPanel;
+	const RECT ds = { 100, 300, 700, 600 };
+	msgPanel.Initialize("uiTex", src, ds);		//Change dst
+	AddState("TutorialMenuAttack", std::make_unique<MenuState>(menuTitle, menuBody, btnAdvance, msgPanel, "Tutorial"));
 
 	// GameState
 	AddState(GC::STATE_PLAY, std::make_unique<PlayState>());

@@ -691,6 +691,12 @@ void PlayState::Update(const GameTimer& gt)
 				if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE1_RANGE) &&
 					mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
 					e.LookAt(playerPosition);
+
+					if (!shownTutorialMenu)
+					{
+						GameApp::Get().ChangeState("TutorialMenuAttack");
+						shownTutorialMenu = true;
+					}
 				}
 			}
 
