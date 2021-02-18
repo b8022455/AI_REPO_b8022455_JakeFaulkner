@@ -11,15 +11,6 @@
 
 using ButtonState = GamePad::ButtonStateTracker::ButtonState;
 
-//for (auto t : mTraders)
-//while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
-//e.SetPos({
-//	static_cast<float>(rand() % 10 + 2.0f),
-//	1.0f,
-//	static_cast<float>(rand() % 10 + 2.0f)
-//	});
-//	}
-
 
 void PlayState::InitializeBuildings()
 {
@@ -275,8 +266,13 @@ void PlayState::Initialize()
 		//Init all enemies
 		for (auto& e : mEnemies)
 			for (auto& t : mTraders)									//Check each trader in the game
-				while (e.CheckCollision(e.GetPos(), t.GetPos()) ||	//Prevents enemy spawning inside a trader
-						DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE)	//Prevents enemy spawning to close to player
+				while (e.CheckCollision(e.GetPos(), t.GetPos()) || DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE)	//Prevents enemy spawning to close to player
+					e.SetRandomPosition();
+
+		// check each building in the game
+		for (auto& e : mEnemies)
+			for (auto& b : mBuildings)									
+				while (e.CheckCollision(e.GetPos(), b.GetPos()) || DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE)	//Prevents enemy spawning to close to player
 					e.SetRandomPosition();
 
 	}
@@ -403,6 +399,10 @@ void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN 
 			for (auto& t : mTraders)								//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetRandomPosition();
+
+			for (auto& b : mBuildings)								//Check each Building in the game
+				while (e.CheckCollision(e.GetPos(), b.GetPos()))	
+					e.SetRandomPosition();
 		}
 
 	}
@@ -456,6 +456,19 @@ void PlayState::Update(const GameTimer & gt)
 		}
 
 		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), t.GetPos()))	//Prevents weapon from going through trader
+			mPlayerWeapon.ResetWeaponPosition();
+	}
+
+	for (auto& b : mBuildings)		//Checks all traders in the game
+	{
+		if (mPlayer.CheckCollision(mPlayer.GetPositionWithVelocity(gt), b.GetPos()) ||		//Prevents player from walking through building and being pushed by an enemy into building
+			mPlayer.CheckCollision(mPlayer.GetPos() + mPlayer.BouncebackPosition, b.GetPos()))
+		{
+			mPlayer.SetVelocity(0.0f);		//Prevents moving through the building
+			mPlayer.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);		//Prevents the bounceback from happening
+		}
+
+		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), b.GetPos()))	//Prevents weapon from going through building
 			mPlayerWeapon.ResetWeaponPosition();
 	}
 
@@ -1383,7 +1396,7 @@ void PlayState::ResetState(const GameTimer& gt)
 	//Reset Tiles
 	ReGen();
 
-	//Reset Buildings
+	//Reset Buildings // TODO: TEMP
 	mBuildings.clear();
 
 	//Reset Enemies
