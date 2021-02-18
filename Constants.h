@@ -109,11 +109,21 @@ namespace GC
 		"Use the WASD keys to move and Space to attack",
 		"Help is available using the H key",
 		"Plant crops by selecting seeds from the inventory",
-		"You can harvest crops when fully grown using the 8 Key",
+		"You can harvest crops when fully grown by attacking them",
 		"Try talking to a trader when near using the 9 key",
 		"Attack your enemies using the Spacebar",
 		"Pause the game using the Enter key"
 	};
+
+	const std::string
+		TUTORIAL_INTRO = "Welcome to the end of the world...",
+		TUTORIAL_OBJECTIVE = "You must survive to reach SAFEHAVEN by the end of the day.\nKill all mutants in the area before you continue travelling",
+		TUTORIAL_MOVE = "To move use they [w][s][a][d] keys\nPause the game using the Enter key",
+		TUTORIAL_ATTACK = "Attack your enemies using the Spacebar\nYou will automatically loot enemies you kill",
+		TUTORIAL_INVENTORY = "See what you have in your inventory [i]\nCycle through what you have [UP] [DOWN]\nSelect a weapon from the list and it will boost your attack\nClose the the inventory [i]",
+		TUTORIAL_USE = "Some items in the inventory can be used [u]",
+		TUTORIAL_PLANT = "",
+		TUTORIAL_TRADE = "To trade will other survivors ";
 
 
 	const float FOOTSTEP_PITCH[7]
