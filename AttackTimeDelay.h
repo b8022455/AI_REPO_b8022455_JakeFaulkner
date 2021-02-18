@@ -5,14 +5,14 @@ struct AttackTimeDelay		//All variables used in the timing stuff, kept in struct
 {
 	time_t timeAtNow;
 	struct tm currentTime;
-	float nextAtkTime; // time until next attack, set to attack delay when below 0 (use value)
-	float AttackDelay; // time between attacks (reset value)
-	float AtkDur;
-	float attackDuration; // duration of an attack (reset value)
+	float nextAtkTime = 0.0f; // time until next attack, set to attack delay when below 0 (use value)
+	float AttackDelay = 0.0f; // time between attacks (reset value)
+	float AtkDur = 0.0f;
+	float attackDuration = 0.0f; // duration of an attack (reset value)
 	errno_t storeLocaltime;
 	bool isAttacking = false;
 	int InvincibleDelay = 2;
-	int nextInvincibleDelay;
+	int nextInvincibleDelay = 0;
 	bool IsInvincible = false; 
 
 	float timer; // 
