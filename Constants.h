@@ -18,26 +18,30 @@ namespace GC
 	//Keyboard keys
 
 	const unsigned char
-
+		// TODO: (REMEMBER) INPUT KEYS HERE
 		KEY_FW = 'W',
 		KEY_BK = 'S',
 		KEY_RT = 'D',
 		KEY_LT = 'A',
-		KEY_RAISE = 'E',
-		KEY_LOWER = 'Q',
 
-		KEY_INVENTORY = 'I',
-		KEY_USEITEM = 'U',
+		// CAMERA ZOOM
+		KEY_RAISE = 'O', // OUT
+		KEY_LOWER = 'I', // IN
 
+		// PLAYER ACTIONS
+		KEY_INVENTORY = 0xD, // ENTER
+		KEY_TRADE = 'Q', //TRADE
+		KEY_USEITEM = 'E', // USE
 		KET_TALK = 'T',
-
-
 		KEY_ATTACK = 0x20,  //space
-		KEY_PAUSE = 0xD, //enter
+
+		//MENU / CAMERA & DEBUG
+		KEY_PAUSE = 'P', 
 		KEY_CAM = 0x70, // F1
+		KEY_HELP = 'H',
 
+		KEY_DEBUG_KILL_ALL = 'M',
 		KEY_DEBUG_GENERATE = 'R', // used for map regeneration command
-
 		KEY_DEBUG_ENEMY_POS = 'G'
 		;
 

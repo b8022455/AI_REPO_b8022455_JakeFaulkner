@@ -1328,14 +1328,14 @@ void PlayState::Keyboard(const GameTimer& gt)
 	}
 
 	// Toggle Help
-	if (Input::Get().KeyReleased('H'))
+	if (Input::Get().KeyReleased(GC::KEY_HELP))
 	{
 		std::swap(mHelpLocation.first, mHelpLocation.second);
 		mHelpMessage.Activate("", 0.f);
 	}
 
 	// Trade
-	if (Input::Get().KeyReleased('9'))
+	if (Input::Get().KeyReleased(GC::KEY_TRADE))
 	{
 		if (FindNearestTraderInRadius())
 		{
@@ -1349,7 +1349,7 @@ void PlayState::Keyboard(const GameTimer& gt)
 		}
 	}
 	// Pause
-	if (Input::Get().KeyReleased(0xd))
+	if (Input::Get().KeyReleased(GC::KEY_PAUSE))
 	{
 		GameApp::Get().ChangeState("PauseMenu");
 	}
@@ -1360,7 +1360,7 @@ void PlayState::Keyboard(const GameTimer& gt)
 		ReGen();
 	}
 
-	if (Input::Get().KeyReleased('M'))
+	if (Input::Get().KeyReleased(GC::KEY_DEBUG_KILL_ALL))
 	{
 		//mEnemies.clear();
 
