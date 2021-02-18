@@ -141,10 +141,6 @@ void PlayState::Initialize()
 
 	timeSet();
 
-	//++mInventory["Radio"];
-	//++mInventory["Potion"];
-	//inventoryPosition = mInventory.begin();
-
 	// todo change to closest trader in radius on button hit
 	//mpActiveTrader = &mTempTrader;
 
@@ -182,20 +178,6 @@ void PlayState::Initialize()
 		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2)); // number of enemies, Enemy(GC::enemytype, attack)
 		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 
-		//Init all enemies
-		//for (auto& e : mEnemies)
-		//{
-		//	/*if (e.GetType() == GC::ENEMY_TYPE_2)
-		//	{
-		//		e.Initialize(GC::GO_ENEMY);
-		//		e.SetHealth(GC::ENEMYTYPE1_HEALTH);
-		//	}
-		//	else if (e.GetType() == GC::ENEMY_TYPE_1)
-		//	{
-		//		e.Initialize("EnemyGhoul");
-		//		e.SetHealth(GC::ENEMYTYPE2_HEALTH);
-		//	}*/
-		//}
 	}
 
 	mCombatController.Initialize(&mPlayer, &mPlayerWeapon, &mEnemies);
@@ -357,13 +339,13 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 						1.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
 				});
-			for (auto& t : mTraders)									//Check each trader in the game
-				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
-					e.SetPos({
-						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
-						static_cast<float>(rand() % 10 + 2.0f)
-						});
+		for (auto& t : mTraders)									//Check each trader in the game
+			while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+				e.SetPos({
+					static_cast<float>(rand() % 10 + 2.0f),
+					1.0f,
+					static_cast<float>(rand() % 10 + 2.0f)
+					});
 		}
 	}
 	if (timeCycle == 3) { // evening (large / 3)
@@ -401,7 +383,8 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 						static_cast<float>(rand() % 10 + 2.0f),
 						1.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
-				});
+			});
+
 			for (auto& t : mTraders)									//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
@@ -774,7 +757,6 @@ void PlayState::Update(const GameTimer& gt)
 					newEnemy = true;
 
 				GameApp::Get().GetAudio().Play("EnemyDie1", nullptr, false, 1.0f, GetRandomVoicePitch());
-
 			}
 			else
 			{
@@ -844,30 +826,35 @@ void PlayState::Update(const GameTimer& gt)
 	// show/hide item menu
 	if (itemMenuOpen)
 	{
-		mInventoryText.string = "Inventory:  (size " + std::to_string(mInventory.size()) + ")\n";
-		//GameApp::Get().mDebugLog << "Inventory:  (size " << mInventory.size() << ")\n";
+		mInventoryText.string = "Inventory\n";
+		// Selected item
 
-
+		const std::string selectedItem = (*inventoryPosition).first;
+		
+		// all inventory items. Selected item prefixed with '>'
 		std::for_each(mInventory.begin(), mInventory.end(), [&](auto& inv)
+		{
+			if (inventoryPosition != mInventory.end())
 			{
-				if (inventoryPosition != mInventory.end())
+
+				if ((*inventoryPosition).first == inv.first)
 				{
-					//Debug purposes: shows the currently selected item based on inventoryPosition value
-					GameApp::Get().mDebugLog << "Current Selected Item: " << (*inventoryPosition).first << " x" << (*inventoryPosition).second << "\n";
-
-					if ((*inventoryPosition).first == inv.first)
-					{
-						mInventoryText.string += ">";
-					}
-					else
-					{
-						mInventoryText.string += " ";
-					}
-
+					mInventoryText.string += ">";
 				}
-				mInventoryText.string += " " + inv.first + " (" + std::to_string(inv.second) + ")\n";
+				else
+				{
+					mInventoryText.string += " ";
+				}
+			}
+			mInventoryText.string += " " + inv.first + " (" + std::to_string(inv.second) + ")\n";
 
-			});
+		});
+
+		// Display weapon attack power
+		if (GC::ITEM_LIST.at(selectedItem).category == ItemCategory::WEAPON)
+		{
+			mInventoryText.string += "\nAttack +" + std::to_string(mPlayerWeapon.GetWeaponStats(selectedItem)) + "\n";
+		}
 
 		//Help instructions for inventory
 		mHelpMessage.mText.center = true;
@@ -1524,6 +1511,7 @@ void PlayState::Reset()
 	mInventory.clear();
 	++mInventory["Radio"];
 	++mInventory["Glowing Seeds"];
+	++mInventory["Nail Bat"];
 	inventoryPosition = mInventory.begin();
 
 	//Reset help text
