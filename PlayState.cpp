@@ -692,11 +692,11 @@ void PlayState::Update(const GameTimer& gt)
 					mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
 					e.LookAt(playerPosition);
 
-					if (!shownTutorialMenu)
+					if (!shownAttackTutorial)
 					{
 						GameApp::Get().mTutorialText = GC::TUTORIAL_ATTACK;
 						GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
-						shownTutorialMenu = true;
+						shownAttackTutorial = true;
 					}
 				}
 			}
@@ -718,6 +718,14 @@ void PlayState::Update(const GameTimer& gt)
 		{
 			mPlayer.DamagePlayer(e.GetAttack());
 			mPlayerHealthBar.SetValue(mPlayer.health);
+
+			if (!shownPlantTutorial)	//replace bool?
+			{
+				GameApp::Get().mTutorialText = GC::TUTORIAL_PLANT;
+				GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+				shownPlantTutorial = true;
+			}
+
 			if (mPlayer.health < GC::PLAYER_LOW_HEALTH)
 			{
 				mHelpMessage.mText.center = true;
@@ -740,6 +748,14 @@ void PlayState::Update(const GameTimer& gt)
 			{
 				mPlayer.DamagePlayer(e.GetAttack());
 				mPlayerHealthBar.SetValue(mPlayer.health);
+
+				if (!shownPlantTutorial)	//replace bool?
+				{
+					GameApp::Get().mTutorialText = GC::TUTORIAL_PLANT;
+					GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+					shownPlantTutorial = true;
+				}
+
 				if (mPlayer.health < GC::PLAYER_LOW_HEALTH)
 				{
 					mHelpMessage.mText.center = true;
@@ -851,6 +867,13 @@ void PlayState::Update(const GameTimer& gt)
 	// show/hide item menu
 	if (itemMenuOpen)
 	{
+		if (!shownInventoryUseTutorial)
+		{
+			GameApp::Get().mTutorialText = GC::TUTORIAL_USE;
+			GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+			shownInventoryUseTutorial = true;
+		}
+
 		mInventoryText.string = "Inventory:  (size " + std::to_string(mInventory.size()) + ")\n";
 		//GameApp::Get().mDebugLog << "Inventory:  (size " << mInventory.size() << ")\n";
 
