@@ -294,7 +294,7 @@ void PlayState::Initialize()
 		// check each building in the game
 		for (auto& e : mEnemies)
 			for (auto& b : mBuildings)									
-				while (e.CheckCollision(e.GetPos(), b.GetPos()) || DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE)	//Prevents enemy spawning to close to player
+				while (e.CheckCollision(e.GetPos(), b.GetPos()) || DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE)	
 					e.SetRandomPosition();
 
 	}
@@ -428,6 +428,13 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 						1.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
 						});
+			for (auto& b : mBuildings)									
+				while (e.CheckCollision(e.GetPos(), b.GetPos()))	
+					e.SetPos({
+						static_cast<float>(rand() % 10 + 2.0f),
+						1.0f,
+						static_cast<float>(rand() % 10 + 2.0f)
+						});
 		}
 	}
 	if (timeCycle == 2) { // noon (small / 2)
@@ -460,6 +467,13 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 				});
 			for (auto& t : mTraders)									//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+					e.SetPos({
+						static_cast<float>(rand() % 10 + 2.0f),
+						1.0f,
+						static_cast<float>(rand() % 10 + 2.0f)
+						});
+			for (auto& b : mBuildings)
+				while (e.CheckCollision(e.GetPos(), b.GetPos()))
 					e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
 						1.0f,
@@ -505,6 +519,13 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 				});
 			for (auto& t : mTraders)									//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+					e.SetPos({
+						static_cast<float>(rand() % 10 + 2.0f),
+						1.0f,
+						static_cast<float>(rand() % 10 + 2.0f)
+						});
+			for (auto& b : mBuildings)
+				while (e.CheckCollision(e.GetPos(), b.GetPos()))
 					e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
 						1.0f,
@@ -556,6 +577,13 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 							1.0f,
 							static_cast<float>(rand() % 10 + 2.0f)
 							});
+				for (auto& b : mBuildings)
+					while (e.CheckCollision(e.GetPos(), b.GetPos()))
+						e.SetPos({
+							static_cast<float>(rand() % 10 + 2.0f),
+							1.0f,
+							static_cast<float>(rand() % 10 + 2.0f)
+							});
 			}
 		}
 
@@ -583,6 +611,14 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 						1.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
 						});
+			for (auto& b : mBuildings)									
+				while (mEnemies.back().CheckCollision(mEnemies.back().GetPos(), b.GetPos()))
+					mEnemies.back().SetPos({
+						static_cast<float>(rand() % 10 + 2.0f),
+						1.0f,
+						static_cast<float>(rand() % 10 + 2.0f)
+						});
+
 		}
 	}
 }
@@ -680,35 +716,23 @@ void PlayState::Update(const GameTimer& gt)
 			mPlayerWeapon.ResetWeaponPosition();
 	}
 
-	for (auto& b : mBuildings)		//Checks all traders in the game
+	for (auto& b : mBuildings)		
 	{
-		if (mPlayer.CheckCollision(mPlayer.GetPositionWithVelocity(gt), b.GetPos()) ||		//Prevents player from walking through building and being pushed by an enemy into building
+		if (mPlayer.CheckCollision(mPlayer.GetPositionWithVelocity(gt), b.GetPos()) ||		
 			mPlayer.CheckCollision(mPlayer.GetPos() + mPlayer.BouncebackPosition, b.GetPos()))
 		{
-			mPlayer.SetVelocity(0.0f);		//Prevents moving through the building
-			mPlayer.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);		//Prevents the bounceback from happening
+			mPlayer.SetVelocity(0.0f);		
+			mPlayer.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);		
 		}
 
-		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), b.GetPos()))	//Prevents weapon from going through building
+		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), b.GetPos()))	
 			mPlayerWeapon.ResetWeaponPosition();
 	}
 
 	//Checking player remains in bounds when being attacked
 	if (!mPlayer.WithinBounds(mPlayer.GetPos() + mPlayer.BouncebackPosition))
 		mPlayer.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-	for (auto& b : mBuildings)	
-	{
-		if (mPlayer.CheckCollision(mPlayer.GetPositionWithVelocity(gt), b.GetPos()) ||
-			mPlayer.CheckCollision(mPlayer.GetPos() + mPlayer.BouncebackPosition, b.GetPos()))
-		{
-			mPlayer.SetVelocity(0.0f);
-			mPlayer.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);	
-		}
-
-		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), b.GetPos()))
-			mPlayerWeapon.ResetWeaponPosition();
-	}
-
+	
 
 	mPlayer.Update(gt);
 
@@ -908,11 +932,6 @@ void PlayState::Update(const GameTimer& gt)
 				GameApp::Get().GetAudio().Play("EnemyHit1", nullptr, false, 1.0f, GetRandomVoicePitch());
 			}
 			e.SetVelocity(mPlayer.GetPos(), gt);
-
-			for (auto& b : mBuildings)
-				if (e.CheckCollision(e.GetPos(), b.GetPos()))	
-					e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-
 		}
 
 		//Checking enemy remains in bounds
@@ -924,12 +943,12 @@ void PlayState::Update(const GameTimer& gt)
 			if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
 				e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-			GameApp::Get().mDebugLog << "Enemy i:" << i
-				<< "  Health: " << e.GetHealth()
-				<< "  mpInstance: " << e.mpInstance
-				<< "  X: " << std::setprecision(2) << pos.x
-				<< "  Z:" << std::setprecision(2) << pos.z << "\n";
-		}
+		// enemy collides with buildings
+		for (auto& b : mBuildings)
+			if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, b.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
+				e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+
 		e.SetVelocity(mPlayer.GetPos(), gt);
 
 		
