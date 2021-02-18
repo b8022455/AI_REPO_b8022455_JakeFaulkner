@@ -31,7 +31,6 @@ class PlayState : public State
 	bool itemMenuOpen = false;				//Debug: only allow item selection when on a menu(either pause or an item menu)
 	
 	bool shownAttackTutorial = false;
-	bool shownIntroMenu = false;
 	bool shownPlantTutorial = false;
 	bool shownInventoryUseTutorial = false;
 

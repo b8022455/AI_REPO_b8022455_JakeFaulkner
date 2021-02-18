@@ -530,8 +530,33 @@ void PlayState::Update(const GameTimer& gt)
 	//mTileManager.Update(gt);
 	mCombatController.Update();
 
-	if (FindNearestTraderInRadius())
-		mTradeHelpMessage.Activate(GC::HELP_MESSAGES[2], 1.0f);
+	switch (GameApp::Get().menusShown)
+	{
+	case 0:
+		GameApp::Get().mTutorialText = GC::TUTORIAL_INTRO;
+		GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+		break;
+
+	case 1:
+		GameApp::Get().mTutorialText = GC::TUTORIAL_OBJECTIVE;
+		GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+		break;
+
+	case 2:
+		GameApp::Get().mTutorialText = GC::TUTORIAL_MOVE;
+		GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+		break;
+
+	case 3:
+		GameApp::Get().mTutorialText = GC::TUTORIAL_TRADE;
+		GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+		break;
+
+	case 4:
+		GameApp::Get().mTutorialText = GC::TUTORIAL_INVENTORY;
+		GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+		break;
+	}
 
 	if (revolvingHintTimer.HasTimeElapsed(gt.DeltaTime(), 8.f))
 	{

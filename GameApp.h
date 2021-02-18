@@ -114,6 +114,7 @@ public:
 
 	const std::string& GetTutorialText();
 	std::string mTutorialText = GC::TUTORIAL_INTRO;
+	int menusShown = 0;
 
 
 private:

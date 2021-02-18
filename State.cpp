@@ -189,7 +189,7 @@ void StateManager::Init() // initialised in gameapp
 	menuTitle.center = true;
 	menuTitle.position = DirectX::SimpleMath::Vector2{400.f, 340.f};
 	menuBody.center = true;
-	menuBody.position = DirectX::SimpleMath::Vector2{350.f, 400.f};
+	menuBody.position = DirectX::SimpleMath::Vector2{400.f, 400.f};
 	Button btnAdvance = Button(buttonBg, "Enter To Resume", Button::Action::GOTO_GAME);
 	btnAdvance.SetPos({400.f, 550.f});
 	Panel msgPanel;
