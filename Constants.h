@@ -53,7 +53,9 @@ namespace GC
 		PLAYER_MAX_HEALTH = 100,
 
 		ENEMYTYPE1_HEALTH = 30, // BARFER
+		ENEMYTYPE1_ATTACK = 15,
 		ENEMYTYPE2_HEALTH = 20, // RUNNER
+		ENEMYTYPE2_ATTACK = 25,
 
 		EXP_EXPONENT = 3,
 		EXP_OFFSET = 5,
@@ -75,6 +77,12 @@ namespace GC
 
 		TRADER_RADIUS = 1.75f,
 		BUILDING_RADIUS = 1.75f,
+
+		PLAYER_RIGHTBOUND = 15.0f,
+		PLAYER_LEFTBOUND = -15.0f,
+
+		PLAYER_UPBOUND = 15.0f,
+		PLAYER_DOWNBOUND = -15.0f,
 
 		ENEMYTYPE1_RANGE = 8.0f,
 		ENEMYTYPE1_ATTACK_DURATION = 2.0f,
@@ -104,7 +112,7 @@ namespace GC
 		"Press 9 to Trade",
 		"Use the WASD keys to move and Space to attack",
 		"Help is available using the H key",
-		"Plant crops using the 7 Key",
+		"Plant crops by selecting seeds from the inventory",
 		"You can harvest crops when fully grown using the 8 Key",
 		"Try talking to a trader when near using the 9 key",
 		"Attack your enemies using the Spacebar",
@@ -157,7 +165,9 @@ namespace GC
 		STATE_MAINMENU = "MainMenu",
 	    STATE_HELP = "HelpMenu",
 		STATE_GAMEOVER = "GameOver",
+		STATE_VOLUME = "Volume",
 		STATE_WIN = "WinState",
+		STATE_NEW_AREA = "NewArea1",
 
 		TRADER_NAME_TEST = "TravellerTest",
 		TRADER_NAME_1 = "Traveller1",
@@ -183,9 +193,9 @@ namespace GC
 		;
 
 	const PlantData
-		PLANT_0 = { PLANT_NAME_0 , 0.1f },
-		PLANT_1 = { PLANT_NAME_1 , 0.05f },
-		PLANT_2 = { PLANT_NAME_2 , 0.01f }
+		PLANT_0 = { PLANT_NAME_0 , 0.25f }, // 4 secs
+		PLANT_1 = { PLANT_NAME_1 , 0.125f }, // 8 secs
+		PLANT_2 = { PLANT_NAME_2 , 0.0625f } //16 secs
 	;
 
 	const BuildingData
@@ -207,7 +217,18 @@ namespace GC
 		"trader06",
 	};
 
+
 	const size_t TRADER_TALK_COUNT = sizeof(TRADER_TALK) / sizeof(TRADER_TALK[0]);
+
+	const std::string STORY_TEXT[4]
+	{
+		"It began in the 20th year of the 2nd millenium, on a tuesday, when the plague was \nreleased. The world quickly fell to ruin as it quickly spread & mutated moving between\nhosts, human, animal & plant alike. A few wars & civil uprisings later. And this is the\nworld as we now know it.\nTerrifying I know.",
+		"Dawn turns to day...\n\n\n Make use of items you carry.\n Press 'I' to open the menu\n Up/Down Arrows to navigate items\n'U' to use item",
+		"The sun hangs low in the sky...\n\n\n Plant seeds from the inventory 'U'.\n They will take a little time to grow.\n Harvest them when they have fully grown 'Space'",
+		"And finally the darkness falls...\n\n\n"
+	};
+
+	const size_t STORY_TEXT_SIZE = sizeof(STORY_TEXT) / sizeof(STORY_TEXT[0]);
 
 	const DirectX::XMFLOAT2
 		MENU_BUTTON_PIVOT{ 0.5f,0.6f },
@@ -285,53 +306,63 @@ namespace GC
 		BAR_SIZE{ BAR_MAX - BAR_MIN } //max - min.
 	;
 
-
+	const DirectX::XMFLOAT4
+		DAWN_COLOUR({ 0.12f, 0.226f, 0.12f, 1.0f }),
+		NOON_COLOUR({ 0.12f, 0.226f, 0.12f, 1.0f }),
+		EVENING_COLOUR({ 0.12f, 0.226f, 0.44f, 1.0f }),
+		PITCH_COLOUR({ 0.12f, 0.226f, 0.8f, 1.0f })
+	;
+	
+	
+	const DirectX::XMFLOAT3
+		DAWN_STRENGTH({ 0.8f, 0.75f, 0.55f }),
+		NOON_STRENGTH({ 1.0f, 0.9f, 0.6f }),
+		EVENING_STRENGTH({ 0.7f, 0.55f, 0.4f }),
+		PITCH_STRENGTH({ 0.1f, 0.1f, 0.1f })
+	;
 
 
 
 	const ItemMap ITEM_LIST = {
-		{"Empty",			{ItemCategory::None,	0}}, // 
-		{"Radio",			{ItemCategory::KeyItems,  20}},
-		{"Potion",			{ItemCategory::Healing,  20}},
-		{"Leadpipe",		{ItemCategory::Weapons,  30}},
-		{"Super Potion",	{ItemCategory::Healing,  50}},
-		{"Nail Bat",		{ItemCategory::Weapons, 100}},
-		{"Plastic Spork",	{ItemCategory::Weapons,  00}},
-		{"Holy Water",		{ItemCategory::Farming, 120}},
-		{"Magical Seeds",	{ItemCategory::Farming, 200}},
-		{"Key To Valhalla",	{ItemCategory::KeyItems,  0}},
-		{PLANT_NAME_0,		{ItemCategory::Farming, 100}},
-		{PLANT_NAME_1,		{ItemCategory::Farming, 200}},
-		{PLANT_NAME_2,		{ItemCategory::Farming, 350}},
+		{"Empty",			{ItemCategory::NONE,	0}}, // 
+		{"Radio",			{ItemCategory::KEY_ITEM,  20}},
+		{"Leadpipe",		{ItemCategory::WEAPON,  30}},
+		{"Nail Bat",		{ItemCategory::WEAPON, 100}},
+		{"Plastic Spork",	{ItemCategory::WEAPON,  00}},
+		{"Glowing Seeds",	{ItemCategory::SEED,	200}},
+		{"Key To Valhalla",	{ItemCategory::KEY_ITEM,  0}},
+		{PLANT_NAME_0,		{ItemCategory::HARVESTED_PLANT, 100}},
+		{PLANT_NAME_1,		{ItemCategory::HARVESTED_PLANT, 200}},
+		{PLANT_NAME_2,		{ItemCategory::HARVESTED_PLANT, 350}},
 
 	};
 
 	const ItemLookup ITEM_LOOKUP_ENEMIES =
 	{
 		{ "EnemyType1",			{ {"Empty",1},	{"Leadpipe",2},{"Nail Bat",2}, {"Magical Seeds",2}	}   },
-		{ "EnemyType2",			{ {"Empty",1},	{"Holy Water",2},{"Potion",2}, {"Plastic Spork",2}	}   },
+		{ "EnemyType2",			{ {"Empty",1}, {"Plastic Spork",2}						}   },
 		{ "EnemyTypeBoss",		{ {"Key To Valhalla",1}												}   },
 	};
 
 	//Trader requests. upto 3
 	const ItemLookup ITEM_LOOKUP_REQUEST
 	{
-		{ TRADER_NAME_TEST,			{{"Potion",1 }												}	},
+		{ TRADER_NAME_TEST,			{{"Leadpipe",1 }												}	},
 		{ TRADER_NAME_1,			{{"Leadpipe",2 }											}	},
-		{ TRADER_NAME_2,			{{"Potion",2}, {"Plastic Spork",2},{ "Holy Water",2}		}   },
-		{ TRADER_NAME_3,			{{"Potion",2}, {"Nail Bat",2},{ "Leadpipe",2}				}   }, //todo change 
-		{ TRADER_NAME_4,			{{"Potion",2}, {"Leadpipe",2},{ "Holy Water",2}				}   }, //todo change
-		{ TRADER_OBJ_1,				{{"Potion",2}												}   }, // front of car  //todo change
-		{ TRADER_OBJ_2,				{{"Potion",2}												}   }, // mid car       //todo change
-		{ TRADER_OBJ_3,				{{"Potion",2}												}   }, // rear of car   //todo change
+		{ TRADER_NAME_2,			{{"Leadpipe",2}, {"Plastic Spork",2}							}   },
+		{ TRADER_NAME_3,			{{"Leadpipe",2}, {"Nail Bat",2},{ "Leadpipe",2}				}   }, //todo change 
+		{ TRADER_NAME_4,			{{"Leadpipe",2}, 								}   }, //todo change
+		{ TRADER_OBJ_1,				{{"Leadpipe",2}												}   }, // front of car  //todo change
+		{ TRADER_OBJ_2,				{{"Leadpipe",2}												}   }, // mid car       //todo change
+		{ TRADER_OBJ_3,				{{"Leadpipe",2}												}   }, // rear of car   //todo change
 	};
 
 	const ItemLookup ITEM_LOOKUP_REWARD
 	{
 		{ TRADER_NAME_TEST,		{{"Key To Valhalla",1 }											}	},
-		{ TRADER_NAME_1,		{{"Leadpipe",2}													}	},
-		{ TRADER_NAME_2,		{{"Potion",2}, {"Leadpipe",2},{ "Holy Water",2}					}	}, //
-		{ TRADER_NAME_3,		{{"Potion",2}, {"Holy Water",2},{ "Holy Water",2}				}	}, //todo change 
+		{ TRADER_NAME_1,		{{"Leadpipe",2}	,{"Nail Bat",2}												}	},
+		{ TRADER_NAME_2,		{{"Leadpipe",2}, {"Leadpipe",2}				}	}, //
+		{ TRADER_NAME_3,		{{"Leadpipe",2}				}	}, //todo change 
 		{ TRADER_NAME_4,		{																}	}, // no reward, charity
 		{ TRADER_OBJ_1,			{																}   }, // front of car
 		{ TRADER_OBJ_2,			{																}   }, // mid car

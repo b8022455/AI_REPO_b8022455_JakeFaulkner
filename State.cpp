@@ -6,6 +6,7 @@
 #include "TradeState.h"
 #include "GameOverState.h"
 #include "WinState.h"
+#include "StoryState.h"
 
 bool StateManager::Story = true;
 
@@ -47,24 +48,24 @@ void StateManager::FadeUpdate(const GameTimer & gt)
 		}; break;
 	case Fade::READY:
 		
+		// Ready to change state
 		if (IsValidState(mQueuedState))
 		{
 			if (mQueuedState != mCurrentState)
 			{
+				// Last call before pausing previous state
+				mStates[mCurrentState]->OnPause(); 
+				
+				// Promote queued state to current state
 				mCurrentState = mQueuedState;
 				mQueuedState = "";
 				EvaluateState();
+
+				// First call promoted queued state
 				mStates[mCurrentState]->OnResume();
 
-				if (mCurrentState != "Story1") {// changes background if state isn't Story1
-					mMenuBackground.Initialise("iceTex");
-					Story = false;
-				}
-				else {
-					mMenuBackground.Initialise("tileTex");
-					Story = true;
-				} // all implemented for story screens & changing the background for menus (NOT TESTED FOR PERFORMANCE ISSUES,
-				// E.G. MULTIPLE TEXTURES BEING LOADED INTO BACKGROUND VARIABLE)
+				if (mCurrentState == GC::STATE_GAMEOVER || mCurrentState == GC::STATE_WIN)
+					GameApp::Get().GetState("PlayState")->Reset();			//Resets playstate after fade has ended so you cant see stuff being reset in the world
 			}
 			
 
@@ -112,6 +113,10 @@ void StateManager::Init() // initialised in gameapp
 	buttonBg.destinationRectangle = { -1,-1,-1,-1 };
 	buttonBg.Initialise("uiTex",true); // initialise button texture for ALL menus
 	
+
+	// Intro and Game story
+	AddState("Story", std::make_unique<StoryState>());
+
 	// INTRO SCREEN	
 	menuTitle.string = ""; // TODO: (NOTE) STORY BLURB 1 LOCATED HERE
 	menuBody.string = "It began in the 20th year of the 2nd millenium, on a tuesday, when the plague was \nreleased. The world quickly fell to ruin as it quickly spread & mutated moving between\nhosts, human, animal & plant alike. A few wars & civil uprisings later. And this is the\nworld as we now know it.\nTerrifying I know.\n\n\n                                                                            Press W to play";
@@ -138,7 +143,7 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A - Play", Button::Action::NO_ACTION);
 	btnD = Button(buttonBg, "D - Play", Button::Action::NO_ACTION);
 	btnS = Button(buttonBg, "S - Play", Button::Action::NO_ACTION);
-	AddState("NewArea1", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "NewArea1"));
+	AddState(GC::STATE_NEW_AREA, std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, GC::STATE_NEW_AREA));
 
 	// Main menu
 	menuTitle.string = "Game Name";
@@ -147,7 +152,7 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A Set Volume", Button::Action::GOTO_VOLUME);
 	btnD = Button(buttonBg, "D Set Volume", Button::Action::GOTO_VOLUME);
 	btnS = Button(buttonBg, "S Help", Button::Action::GOTO_HELP);
-	AddState("MainMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS, "MainMenu"));
+	AddState(GC::STATE_MAINMENU, std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS, "MainMenu"));
 
 	menuTitle.string = "Volume";
 	menuBody.string = "";
@@ -156,7 +161,7 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A - Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnD = Button(buttonBg, "D - Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnS = Button(buttonBg, "S - Volume Down", Button::Action::VOLUME_DOWN);
-	AddState("Volume", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "Volume"));
+	AddState(GC::STATE_VOLUME, std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, GC::STATE_VOLUME));
 
 	//mMenuBackground.Initialise("iceTex"); // overrides previous set
 	//PauseMenu
@@ -166,7 +171,7 @@ void StateManager::Init() // initialised in gameapp
 	btnA = Button(buttonBg, "A Resume", Button::Action::GOTO_GAME);
 	btnD = Button(buttonBg, "D Main Menu", Button::Action::GOTO_MAIN_MENU);
 	btnS = Button(buttonBg, "S Resume", Button::Action::GOTO_GAME);
-	AddState("PauseMenu", std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS, "PauseMenu"));
+	AddState(GC::STATE_PAUSE, std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS, GC::STATE_PAUSE));
 
 	menuTitle.string = "Help";
 	menuBody.string = "Kill things for loot, trade loot for key items, use items to fix the car";
@@ -288,17 +293,8 @@ void StateManager::RemoveState(const std::string & name)
 }
 void StateManager::ChangeState(const std::string & name)
 {
-	//if (IsValidState(name))
-	//{
-	//	// if queued state != 
-	//}
-
-
 	
-	// if name is valid state
-	// no queued state
-	// name isnt current state
-
+	// Queues the requested state. Actual change happens in FadeUpdate when mFade == Fade::READY
 	if (IsValidState(name))
 	{
 		if (mQueuedState.length() == 0 && mCurrentState != name && mFade == Fade::NONE)
@@ -307,23 +303,6 @@ void StateManager::ChangeState(const std::string & name)
 			mFade = Fade::FADE_OUT; //fade to black
 
 		}
-
-
-		//if (name != "Story1") {// changes background if state isn't Story1
-		//	mMenuBackground.Initialise("iceTex");
-		//	Story = false;
-		//}
-		//else {
-		//	mMenuBackground.Initialise("tileTex");
-		//	Story = true;
-		//} // all implemented for story screens & changing the background for menus (NOT TESTED FOR PERFORMANCE ISSUES,
-		//// E.G. MULTIPLE TEXTURES BEING LOADED INTO BACKGROUND VARIABLE)
-
-
-
-		//mCurrentState = name;
-		//EvaluateState();
-		//mStates[name]->OnResume();
 	}
 	else
 	{

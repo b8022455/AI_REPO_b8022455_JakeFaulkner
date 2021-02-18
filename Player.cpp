@@ -116,7 +116,7 @@ void Player::Update(const GameTimer & gt)
 
 }
 
-void Player::Reset(const GameTimer& gt)
+void Player::Reset()
 {
 	SetPos(DirectX::XMFLOAT3(0.f, 0.f, 0.f));		//Resets back to starting position
 	SetRotationY(0);

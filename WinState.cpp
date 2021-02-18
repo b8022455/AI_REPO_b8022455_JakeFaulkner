@@ -49,6 +49,11 @@ void WinState::OnResume()
 
 }
 
+void WinState::OnPause()
+{
+	GameApp::Get().GetAudio().Play("menuMusic", nullptr, true);
+}
+
 void WinState::DrawLeaderboard()
 {
 	std::vector<std::string> lines(5);

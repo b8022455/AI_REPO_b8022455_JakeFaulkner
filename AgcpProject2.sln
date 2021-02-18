@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1259
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectXTK12", "DirectXTK12\DirectXTK_Desktop_2017_Win10.vcxproj", "{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}"
 EndProject
@@ -11,9 +11,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AgcpProject2", "AgcpProject
 	EndProjectSection
 EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
 		Debug|x64 = Debug|x64
@@ -23,8 +20,8 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Debug|ARM64.ActiveCfg = Debug|ARM64
-		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Debug|ARM64.Build.0 = Debug|ARM64
+		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Debug|ARM64.ActiveCfg = Debug|x64
+		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Debug|ARM64.Build.0 = Debug|x64
 		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Debug|x64.ActiveCfg = Debug|x64
 		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Debug|x64.Build.0 = Debug|x64
 		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Debug|x86.ActiveCfg = Debug|Win32
@@ -35,7 +32,8 @@ Global
 		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Release|x64.Build.0 = Release|x64
 		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Release|x86.ActiveCfg = Release|Win32
 		{3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0}.Release|x86.Build.0 = Release|Win32
-		{08EDFAC3-2447-4CDF-9B1F-D91C8D9887E7}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{08EDFAC3-2447-4CDF-9B1F-D91C8D9887E7}.Debug|ARM64.ActiveCfg = Debug|x64
+		{08EDFAC3-2447-4CDF-9B1F-D91C8D9887E7}.Debug|ARM64.Build.0 = Debug|x64
 		{08EDFAC3-2447-4CDF-9B1F-D91C8D9887E7}.Debug|x64.ActiveCfg = Debug|x64
 		{08EDFAC3-2447-4CDF-9B1F-D91C8D9887E7}.Debug|x64.Build.0 = Debug|x64
 		{08EDFAC3-2447-4CDF-9B1F-D91C8D9887E7}.Debug|x86.ActiveCfg = Debug|Win32
@@ -51,6 +49,9 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A28EE4DE-4385-42C4-8B92-1CE02793C6A2}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 	GlobalSection(Performance) = preSolution
 		HasPerformanceSessions = true

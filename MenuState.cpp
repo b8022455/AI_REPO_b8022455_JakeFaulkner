@@ -10,7 +10,6 @@ MenuState::MenuState(const Text & t, const Text & b, const Button & b0, const Bu
 {
 	menuName = menu;
 	DirectX::SimpleMath::Vector2 clientSize = GameApp::Get().GetClientSize();
-
 	mTitle = t;
 	mBody = b;
 
@@ -190,4 +189,9 @@ void MenuState::Draw(const GameTimer & gt)
 		if (menuName != "Story1" && menuName != "EnterNameMenu") // story screen code
 			b.Draw();
 	}
+}
+
+void MenuState::OnResume()
+{
+	GameApp::Get().GetAudio().Play("menuMusic", nullptr, true);
 }

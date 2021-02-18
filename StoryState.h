@@ -1,28 +1,31 @@
 #pragma once
 #include "State.h"
+#include "SpriteManager.h"
 
-class WinState : public State
+class StoryState :	public State
 {
+	Sprite mBackground;
+	Sprite mForeground;
+	Text mBody;
+	Text mPrompt;
+
+	bool mIsIntro = true; // goes to menu/game
 public:
-	WinState(const Text& t1, const Text& t2, const Button& btn1);
+	StoryState();
 
 	virtual void Initialize() override;
 	virtual void Update(const GameTimer& gt) override;
+	// Draw sprites and fonts onto spritebatch
 	virtual void Draw(const GameTimer& gt) override;
+	// Called on state change
 	virtual void OnResume() override;
 	virtual void OnPause() override;
-	virtual void Reset()  override {};
+	virtual void Reset() override;
+
 
 	virtual void OnMouseDown(WPARAM btnState, int x, int y) override {};
 	virtual void OnMouseUp(WPARAM btnState, int x, int y) override {};
-	virtual void OnMouseMove(WPARAM btnState, int x, int y) override {};
+	virtual void OnMouseMove(WPARAM btnState, int x, int y)override {};
 	virtual void OnKeyboardInput(const GameTimer& gt) override {};
-
-private:
-	void DrawLeaderboard();
-
-	Text mTitle;
-	Text mDescription;
-	Text mLeaderboard;
-	Button mBtn;
 };
+

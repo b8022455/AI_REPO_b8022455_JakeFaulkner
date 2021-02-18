@@ -33,6 +33,9 @@ public:
 
 	static bool DEBUG;
 
+	int timePhase = 0;
+	int setPhase(int phase) { timePhase = phase; }
+
 	// Access to instance data from states and gameobjects
 	InstanceData* AddRenderItemInstance(const std::string & renderItemName);
 	// When gameobject goes out of scope or removed
@@ -106,6 +109,9 @@ public:
 	UINT mInstanceCount = 0;
 	UINT GetMaterialIndex(const std::string& materialName);
 	
+	const std::string& GetStoryText();
+	size_t mStoryIndex = 0;
+
 
 private:
 	virtual void Update(const GameTimer& gt)override;
@@ -190,4 +196,7 @@ private:
 
 	//Viewport Sprites
 	SpriteManager mSpriteManager;
+
+
+
 };

@@ -55,8 +55,15 @@ public:
 	void SetValue(int n)
 	{
 		mValue = n;
-		assert(mMax >= mValue);
-		assert(mMin <= mValue);
+		
+		if (mMax < mValue)
+		{
+			mValue = mMax;
+		}
+		else if (mMin > mValue)
+		{
+			mValue = mMin;
+		}
 
 		SetSrcRect();
 	}

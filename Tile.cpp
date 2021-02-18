@@ -556,7 +556,7 @@ void TileManager::Initialize()
 
 			if (coords[k][j] <= 0)
 			{
-				mMapData.back().back().uvIndex = (rand() % 2) + 1; // random plain tile
+				mMapData.back().back().uvIndex = (rand() % 2)/* + 1*/; // random plain tile
 			}
 			else
 				mMapData.back().back().uvIndex = coords[k][j]; // set as hazard

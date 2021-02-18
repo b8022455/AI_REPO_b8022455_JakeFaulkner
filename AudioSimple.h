@@ -91,6 +91,8 @@ public:
 class MusicEngine : public SoundEngine
 {
 private:
+	// To comparing if track is already playing
+	std::string mFrontAudio = "";
 	//Swaps front to back
 	void SwapCache();
 public:

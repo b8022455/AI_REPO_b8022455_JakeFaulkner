@@ -21,7 +21,7 @@ class Player : public GameObject
 public:
 
 	void Update(const GameTimer& gt);
-	void Reset(const GameTimer& gt);
+	void Reset();
 	void MoveUp(const GameTimer& gt);
 	void MoveDown(const GameTimer& gt);
 	void MoveLeft(const GameTimer& gt);
@@ -43,7 +43,6 @@ public:
 	float hazardTimer = 0; // needs to be set as needed, used to apply hazard effects (not every frame)
 	bool Slowed = false;
 	bool Slippy = false;
-
 
 	PlayerFacingDirection playerDir = PlayerFacingDirection::Left;
 	int attack = 10;		//Base attack stat (base amount + weapon amount), need to make private but public for debugging purposes
