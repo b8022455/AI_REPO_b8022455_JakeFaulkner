@@ -124,7 +124,7 @@ void MenuState::Update(const GameTimer & gt)
 	}
 	else
 	{
-		if (Input::Get().KeyReleased(GC::KEY_PAUSE) && mEnteredName.string.size() > 0)	// Enter, used to enter name and continue to next screen
+		if (Input::Get().KeyReleased(GC::KEY_INPUT_NAME) && mEnteredName.string.size() > 0)	// Enter, used to enter name and continue to next screen
 		{
 			GameApp::Get().PlayClickUpAudio(true);
 

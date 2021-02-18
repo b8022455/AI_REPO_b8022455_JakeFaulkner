@@ -42,7 +42,10 @@ namespace GC
 
 		KEY_DEBUG_KILL_ALL = 'M',
 		KEY_DEBUG_GENERATE = 'R', // used for map regeneration command
-		KEY_DEBUG_ENEMY_POS = 'G'
+		KEY_DEBUG_ENEMY_POS = 'G',
+
+		KEY_INPUT_NAME = 0xD
+
 		;
 
 	const size_t
@@ -104,19 +107,21 @@ namespace GC
 
 		TILE_UV_INC = 1.0f/8.0f // tile is 1/8 of texture atlus
 		;
-
+	// (NOTE) NO HELP MESSAGE AT CURRENT FOR CAMERA ZOOM
+	//KEY_RAISE = 'O', // OUT
+	//KEY_LOWER = 'I', // IN
 	const std::string HELP_MESSAGES[10]
 	{
-		"You are wounded.\nPress I to open inventory",
-		"Arrow Keys to scroll \n U Key to use an item",
-		"Press 9 to Trade",
+		"You are wounded.\nPress enter to open inventory",
+		"Arrow Keys to scroll \n E Key to use an item",
+		"Press Q to Trade",
 		"Use the WASD keys to move and Space to attack",
 		"Help is available using the H key",
 		"Plant crops by selecting seeds from the inventory",
-		"You can harvest crops when fully grown using the 8 Key",
-		"Try talking to a trader when near using the 9 key",
+		"You can harvest crops when fully grown by attacking",
+		"Try talking to a trader when near using the Q key",
 		"Attack your enemies using the Spacebar",
-		"Pause the game using the Enter key"
+		"Pause the game using the P key"
 	};
 
 
