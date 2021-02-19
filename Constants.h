@@ -123,7 +123,7 @@ namespace GC
 		TUTORIAL_INVENTORY = "See what you have in your inventory (i)\nCycle through what you have (UP) (DOWN)\nSelect a weapon from the list and it will boost your attack\nClose the the inventory (i)",
 		TUTORIAL_ATTACK = "Attack your enemies using the Spacebar\nYou will automatically loot enemies you kill",
 		TUTORIAL_USE = "Some items in the inventory can be used (u)",
-		TUTORIAL_PLANT = "";
+		TUTORIAL_PLANT = "Plant Seeds from the inventory to get healing items";
 
 
 	const float FOOTSTEP_PITCH[7]
