@@ -124,6 +124,15 @@ namespace GC
 		"Pause the game using the P key"
 	};
 
+	const std::string
+		TUTORIAL_INTRO = "Welcome to the end of the world...",
+		TUTORIAL_OBJECTIVE = "You must survive to reach SAFEHAVEN by the end of the day.\nKill all mutants in the area before you continue travelling",
+		TUTORIAL_MOVE = "To move use they (w)(s)(a)(d) keys\nPause the game using the Enter key",
+		TUTORIAL_TRADE = "To trade will other survivors ",
+		TUTORIAL_INVENTORY = "See what you have in your inventory (i)\nCycle through what you have (UP) (DOWN)\nSelect a weapon from the list and it will boost your attack\nClose the the inventory (i)",
+		TUTORIAL_ATTACK = "Attack your enemies using the Spacebar\nYou will automatically loot enemies you kill",
+		TUTORIAL_USE = "Some items in the inventory can be used (u)",
+		TUTORIAL_PLANT = "Plant Seeds from the inventory to get healing items";
 
 	const float FOOTSTEP_PITCH[7]
 	{
@@ -173,6 +182,7 @@ namespace GC
 		STATE_VOLUME = "Volume",
 		STATE_WIN = "WinState",
 		STATE_NEW_AREA = "NewArea1",
+		STATE_TUTORIAL = "Tutorial",
 
 		TRADER_NAME_TEST = "TravellerTest",
 		TRADER_NAME_1 = "Traveller1",
@@ -237,7 +247,7 @@ namespace GC
 		TILE_UV_BLANK{ 0.375f , 0.5f }
 
 	;
-	
+
 	const DirectX::XMFLOAT2 TILE_UV[8] =
 	{
 		{ 0.0f , 0.0f }, // gravel

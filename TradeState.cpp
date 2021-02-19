@@ -46,7 +46,7 @@ void TradeState::Initialize()
 
 	mHelpMessage.mText.center = true;
 	mHelpMessage.mText.color = DirectX::Colors::Red;
-	mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{50.f, 240.f };
+	mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{400.f, 240.f };
 	mHelpMessage.Activate("D key to accept deal. S key to exit trade", 1.f);
 }
 
