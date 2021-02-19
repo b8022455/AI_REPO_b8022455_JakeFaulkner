@@ -26,6 +26,7 @@ public:
 	void MoveDown(const GameTimer& gt);
 	void MoveLeft(const GameTimer& gt);
 	void MoveRight(const GameTimer& gt);
+	void Footsteps(const GameTimer& gt);
 
 	DirectX::XMFLOAT3 GetPositionWithVelocity(const GameTimer& gt);
 	void SetVelocity(const float newVelocity);

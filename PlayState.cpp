@@ -683,11 +683,15 @@ void PlayState::Update(const GameTimer& gt)
 				mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 300.f, 150.f };
 				mHelpMessage.Activate(GC::HELP_MESSAGES[0], 2.f);
 			}
-			GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
 			//Transition to game over state
 			if (mPlayer.health <= 0)
 			{
 				GameApp::Get().ChangeState("GameOver");
+				GameApp::Get().GetAudio().Play("playerDie", nullptr, false, 1.0f, GetRandomVoicePitch());
+			}
+			else
+			{
+				GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
 			}
 		}
 
@@ -710,6 +714,11 @@ void PlayState::Update(const GameTimer& gt)
 				if (mPlayer.health <= 0)
 				{
 					GameApp::Get().ChangeState("GameOver");
+					GameApp::Get().GetAudio().Play("playerDie", nullptr, false, 1.0f, GetRandomVoicePitch());
+				}
+				else
+				{
+					GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
 				}
 				break;
 			}

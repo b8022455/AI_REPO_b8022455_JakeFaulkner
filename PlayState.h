@@ -163,7 +163,6 @@ public:
 	void Keyboard(const GameTimer& gt);
 	void KeyboardDebug(const GameTimer& gt);
 	void Gamepad(const GameTimer& gt);
-
 	bool TraderStoryComplete();
 
 	int EnemiesRemaining()
