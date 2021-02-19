@@ -495,8 +495,33 @@ void PlayState::Update(const GameTimer& gt)
 	//mTileManager.Update(gt);
 	mCombatController.Update();
 
-	if (FindNearestTraderInRadius())
-		mTradeHelpMessage.Activate(GC::HELP_MESSAGES[2], 1.0f);
+	switch (GameApp::Get().menusShown)
+	{
+	case 0:
+		GameApp::Get().mTutorialText = GC::TUTORIAL_INTRO;
+		GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+		break;
+
+	case 1:
+		GameApp::Get().mTutorialText = GC::TUTORIAL_OBJECTIVE;
+		GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+		break;
+
+	case 2:
+		GameApp::Get().mTutorialText = GC::TUTORIAL_MOVE;
+		GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+		break;
+
+	case 3:
+		GameApp::Get().mTutorialText = GC::TUTORIAL_TRADE;
+		GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+		break;
+
+	case 4:
+		GameApp::Get().mTutorialText = GC::TUTORIAL_INVENTORY;
+		GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+		break;
+	}
 
 	if (revolvingHintTimer.HasTimeElapsed(gt.DeltaTime(), 8.f))
 	{
@@ -513,7 +538,7 @@ void PlayState::Update(const GameTimer& gt)
 		GetName();
 
 	timeChange += gt.DeltaTime();
-
+	
 	// AFTER 2 MINUTES CHANGE TIME PHASE IN GAME (ONLY PARTICULARLY USEFUL DURING PITCH )
 	if (timeChange >= 120.0f) {
 		timeChange = 0.0f;
@@ -656,6 +681,13 @@ void PlayState::Update(const GameTimer& gt)
 				if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE1_RANGE) &&
 					mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
 					e.LookAt(playerPosition);
+
+					if (!shownAttackTutorial)
+					{
+						GameApp::Get().mTutorialText = GC::TUTORIAL_ATTACK;
+						GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+						shownAttackTutorial = true;
+					}
 				}
 			}
 
@@ -676,6 +708,14 @@ void PlayState::Update(const GameTimer& gt)
 		{
 			mPlayer.DamagePlayer(e.GetAttack());
 			mPlayerHealthBar.SetValue(mPlayer.health);
+
+			if (!shownPlantTutorial)	//replace bool?
+			{
+				GameApp::Get().mTutorialText = GC::TUTORIAL_PLANT;
+				GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+				shownPlantTutorial = true;
+			}
+
 			if (mPlayer.health < GC::PLAYER_LOW_HEALTH)
 			{
 				mHelpMessage.mText.center = true;
@@ -698,6 +738,14 @@ void PlayState::Update(const GameTimer& gt)
 			{
 				mPlayer.DamagePlayer(e.GetAttack());
 				mPlayerHealthBar.SetValue(mPlayer.health);
+
+				if (!shownPlantTutorial)	//replace bool?
+				{
+					GameApp::Get().mTutorialText = GC::TUTORIAL_PLANT;
+					GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+					shownPlantTutorial = true;
+				}
+
 				if (mPlayer.health < GC::PLAYER_LOW_HEALTH)
 				{
 					mHelpMessage.mText.center = true;
@@ -808,6 +856,12 @@ void PlayState::Update(const GameTimer& gt)
 	// show/hide item menu
 	if (itemMenuOpen)
 	{
+		if (!shownInventoryUseTutorial)
+		{
+			GameApp::Get().mTutorialText = GC::TUTORIAL_USE;
+			GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+			shownInventoryUseTutorial = true;
+		}
 		mInventoryText.string = "Inventory\n";
 		// Selected item
 
