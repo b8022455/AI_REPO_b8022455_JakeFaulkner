@@ -83,7 +83,7 @@ void MenuState::Update(const GameTimer & gt)
 			GameApp::Get().PlayClickDownAudio();
 		}
 
-		if (Input::Get().KeyReleased(GC::KEY_PAUSE))
+		if (Input::Get().KeyReleased(GC::KEY_INPUT_NAME))
 		{
 			GameApp::Get().PlayClickUpAudio(true);
 
