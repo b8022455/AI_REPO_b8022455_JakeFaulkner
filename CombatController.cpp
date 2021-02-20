@@ -113,13 +113,13 @@ void PlayerWeapon::PositionWeapon()
 
 	if (playerDirection > 1)		//If the player direction is Up (2 in the enum) or Down (3 in the enum)
 	{
-		weaponStartingRotation = (WEAPONSTART + 90.0f);		//Sets new starting to rotation to 90 degrees for up/down
-		weaponEndRotation = (WEAPONEND + 90.0f);			//Sets new end rotation to 450 degrees
+		weaponStartingRotation = (GC::WEAPONSTART + 90.0f);		//Sets new starting to rotation to 90 degrees for up/down
+		weaponEndRotation = (GC::WEAPONEND + 90.0f);			//Sets new end rotation to 450 degrees
 	}
 	else if (playerDirection <= 1)				//If player direction is Left (0 in the enum) or Right (1 in the enum)
 	{
-		weaponStartingRotation = WEAPONSTART;
-		weaponEndRotation = WEAPONEND;			//360 degrees
+		weaponStartingRotation = GC::WEAPONSTART;
+		weaponEndRotation = GC::WEAPONEND;			//360 degrees
 	}
 
 	weaponRotation = weaponStartingRotation;
@@ -140,7 +140,7 @@ void PlayerWeapon::SwingWeapon()
 
 void PlayerWeapon::ResetWeaponPosition()
 {
-	weaponRotation = WEAPONSTART;
+	weaponRotation = GC::WEAPONSTART;
 	times.isAttacking = false;
 
 	//Resets weapon underneath the map until used again

@@ -32,8 +32,6 @@ private:
 	void PositionWeapon();
 	void UpdateWeaponMatrix();
 
-	const float WEAPONSTART = -40.0f;
-	const float WEAPONEND = 40.0f;
 	float weaponStartingRotation = -40.0f;		//0 degrees starting point for rotation
 	float weaponRotation = 0.0f;
 	float weaponEndRotation = 40.f;			//80 degress ending point for rotation

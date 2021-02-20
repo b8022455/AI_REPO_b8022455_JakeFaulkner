@@ -104,6 +104,10 @@ namespace GC
 		WORLD_TOP_BOUNDARY = 15.0f,
 		WORLD_BOTTOM_BOUNDARY = -15.0f,
 
+		// weapon rotation work
+		WEAPONSTART = -40.0f;
+		WEAPONEND = 40.0f;
+
 
 		TILE_UV_INC = 1.0f/8.0f // tile is 1/8 of texture atlus
 		;
