@@ -386,7 +386,7 @@ void GameApp::Update(const GameTimer& gt)
 {
 	assert(mpActiveCamera);
 
-	mDebugLog << "Instance count: " << mInstanceCount << "\n\n";
+	//mDebugLog << "Instance count: " << mInstanceCount << "\n\n";
 
 
 	OnKeyboardInput(gt);
@@ -407,13 +407,13 @@ void GameApp::Update(const GameTimer& gt)
 	}
 
 
-	mDebugLog
+	/*mDebugLog
 		<< "\n G) Enemy Instance count: "
 		<< mAllRitems[GC::GO_ENEMY]->InstanceCount
 		<< " Instance Size(): "
 		<< mAllRitems[GC::GO_ENEMY]->Instances.size()
 		<< "\n\n"
-		;
+		;*/
 
 	mStateManager.Update(gt);
 	AnimateMaterials(gt);

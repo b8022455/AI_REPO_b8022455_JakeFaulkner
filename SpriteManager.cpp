@@ -82,13 +82,13 @@ void SpriteManager::DrawBegin(ID3D12GraphicsCommandList * commandList, const D3D
 void SpriteManager::DrawEnd()
 {
 	// Prints debug string
-	mSpriteFont.at(1)->DrawString(mSpriteBatch.get(), GameApp::Get().mDebugLog.str().c_str(), DirectX::XMFLOAT2(10.0f, 10.0f));
+	//mSpriteFont.at(1)->DrawString(mSpriteBatch.get(), GameApp::Get().mDebugLog.str().c_str(), DirectX::XMFLOAT2(10.0f, 10.0f));
 
 	//Ends spritebatch
 	mSpriteBatch->End();
 
 	// clears stream
-	GameApp::Get().mDebugLog.str(std::string());
+	//GameApp::Get().mDebugLog.str(std::string());
 }
 
 void SpriteManager::DrawSprite(const std::string & textureName)

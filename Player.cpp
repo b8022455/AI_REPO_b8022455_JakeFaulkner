@@ -6,7 +6,7 @@
 void Player::Update(const GameTimer & gt)
 {
 	const float dt = gt.DeltaTime();
-	GameApp::Get().mDebugLog << "Health:" << health << "\n";
+	//GameApp::Get().mDebugLog << "Health:" << health << "\n";
 	
 
 	//Check if player is invincible from recent hit

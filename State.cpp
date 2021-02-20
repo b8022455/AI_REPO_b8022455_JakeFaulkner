@@ -239,7 +239,7 @@ void StateManager::Update(const GameTimer & gt)
 
 	//GameApp::Get().input.Update();
 
-	GameApp::Get().mDebugLog << "State: \"" << mCurrentState << "\"\n";
+	//GameApp::Get().mDebugLog << "State: \"" << mCurrentState << "\"\n";
 
 
 	mFadeForeground.color.w = mFadeAlpha;
@@ -271,7 +271,7 @@ void StateManager::Draw(const GameTimer & gt)
 
 		mFadeForeground.Draw();
 
-		GameApp::Get().mDebugLog << "\n" << mFadeAlpha;
+		//GameApp::Get().mDebugLog << "\n" << mFadeAlpha;
 	}
 	else
 	{
