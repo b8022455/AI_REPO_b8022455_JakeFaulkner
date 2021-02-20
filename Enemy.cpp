@@ -6,14 +6,6 @@ void Enemy::SetHealth(int health) {
 	mHealth = health;
 }
 
-void Enemy::InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int matIndex)
-{
-	mpInstance->MaterialIndex = matIndex;
-	mpInstance->World._41 = position.x;
-	mpInstance->World._42 = position.y;
-	mpInstance->World._43 = position.z;
-}
-
 void Enemy::MoveOffScreen()
 {
 	//Removes enemy
@@ -250,7 +242,7 @@ void Enemy::Update(const GameTimer& gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR 
 		if (BouncebackPosition.x != 0.0f || BouncebackPosition.z != 0.0f)		//If there was a bounceback
 		{
 			DirectX::XMFLOAT3 currentPos = this->GetPos();		//Get current position of player
-			SetPos(DirectX::XMFLOAT3(currentPos.x + BouncebackPosition.x, currentPos.y, currentPos.z + BouncebackPosition.z));		//Add the bounceback position to it, will be 0 if there is a collision
+			SetPos(DirectX::XMFLOAT3(currentPos.x + BouncebackPosition.x, 0.0f, currentPos.z + BouncebackPosition.z));		//Add the bounceback position to it, will be 0 if there is a collision
 			BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 		}
 	}
@@ -276,26 +268,16 @@ void Enemy::Update(const GameTimer& gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR 
 		default:; break;
 		}
 
-		// PROBLEM BELOW WHEN NO PARTICLE ATTACK IMPLEMENTED
-		//if (times.isAttacking) // EXECUTES ATTACK
-		//	UpdateAttack(gt.DeltaTime());
-
-		//else
-		//	if (times.CanAttack())
-		//		times.SetNextTimer();		//Makes attacking bool true and resets timer for next attack
-		//		//times.ResetTimer();
-
-		// send int in instead of using gettype in the void
-		//times.UpdateTime();
-
 		//Update enemy position based on bounceback
 		if (BouncebackPosition.x != 0.0f || BouncebackPosition.z != 0.0f)		//If there was a bounceback
 		{
 			DirectX::XMFLOAT3 currentPos = this->GetPos();		//Get current position of player
-			SetPos(DirectX::XMFLOAT3(currentPos.x + BouncebackPosition.x, currentPos.y, currentPos.z + BouncebackPosition.z));		//Add the bounceback position to it, will be 0 if there is a collision
+			SetPos(DirectX::XMFLOAT3(currentPos.x + BouncebackPosition.x, 0.0f, currentPos.z + BouncebackPosition.z));		//Add the bounceback position to it, will be 0 if there is a collision
 			BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 		}
 	}
+
+	mpInstance->World._42 = 0.0f;
 }
 
 void Enemy::UpdateAttack(float dt)

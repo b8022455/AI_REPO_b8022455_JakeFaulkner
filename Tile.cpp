@@ -580,7 +580,6 @@ void TileManager::Initialize()
 	
 		for (int j = 0; j < mDimention; ++j)
 		{
-			//tl.push_back(Tile());
 			tl.at(j).Initialize(mRenderItemName); //Creates instances
 
 			// Position instanced along a 3D grid.

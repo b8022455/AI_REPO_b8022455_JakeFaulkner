@@ -6,23 +6,12 @@
 
 struct mapData { // STRUCT FOR MAP TEXTURE AND TILE DATA
 	int uvIndex; //texture index from texture buffer for tile 
-	//int x; // horizontal component - WIP FOR 3D
-	//int y; // vertical component - WIP FOR 3D
 };
 
 class Tile : public GameObject
 {
 
 public:
-	// OLD CODE
-	//Tile() {};
-
-	//void Initialize(const std::string& renderItemName);
-	//void InitTilePosition(int instance, DirectX::XMFLOAT3 position, int textIndex);
-	//void SetPosition(const DirectX::XMFLOAT3& newSetPosition);
-	//void Tile::SetRandomPosition();
-	////int playerDirection; //TODO:use to stop player walking into object
-	//DirectX::XMFLOAT3 GetPosition();
 
 	void Initialize(const std::string& renderItemName);
 	void SetRandomPosition();

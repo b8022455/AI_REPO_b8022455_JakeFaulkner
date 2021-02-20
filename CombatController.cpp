@@ -1,4 +1,5 @@
 #include "CombatController.h"
+#include "GameApp.h"
 
 void CombatController::Initialize(Player* player, PlayerWeapon* playerWeapon, std::vector<Enemy>* enemies)
 {
@@ -101,6 +102,8 @@ void PlayerWeapon::Attack()
 	{
 		PositionWeapon();
 		SwingWeapon();
+		GameApp::Get().GetAudio().Play("playerAttack", nullptr, false, 1.0f, GC::VOICE_PITCH[rand() % GC::VOICE_PITCH_COUNT]);
+
 	}
 }
 
