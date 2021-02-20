@@ -704,9 +704,9 @@ void PlayState::Update(const GameTimer& gt)
 		}
 
 		// enemy collision with player
-		if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()))
+		if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()) && e.GetHealth() > 0)
 		{
-			mPlayer.DamagePlayer(e.GetAttack());
+			mPlayer.DamagePlayer(e.GetAttack(), e);
 			mPlayerHealthBar.SetValue(mPlayer.health);
 
 			if (!shownPlantTutorial)	//replace bool?
@@ -738,9 +738,9 @@ void PlayState::Update(const GameTimer& gt)
 		//When checking if enemy is in range, have this be in that section to prevent enemy particles from far from being checked
 		for (auto& p : e.particles)
 		{
-			if (mPlayer.CheckCollision(mPlayer.GetPos(), p.GetPos()))
+			if (mPlayer.CheckCollision(mPlayer.GetPos(), p.GetPos()) && e.GetHealth() > 0)
 			{
-				mPlayer.DamagePlayer(e.GetAttack());
+				mPlayer.DamagePlayer(e.GetAttack(), e);
 				mPlayerHealthBar.SetValue(mPlayer.health);
 
 				if (!shownPlantTutorial)	//replace bool?
@@ -789,6 +789,7 @@ void PlayState::Update(const GameTimer& gt)
 				{
 					++mInventory[droppedItem];
 				}
+
 
 				e.MoveOffScreen();
 				e.mEnabled = false;

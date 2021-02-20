@@ -10,6 +10,7 @@
 #include "DeltaTimer.h"
 #include "AttackTimeDelay.h"
 #include <d2d1helper.h>
+#include "Enemy.h"
 
 //using namespace DirectX;
 
@@ -37,7 +38,7 @@ public:
 	Velocity vel;
 	// Gamepad
 	void Move(const GameTimer& gt, const DirectX::SimpleMath::Vector3& vec);
-	void DamagePlayer(int damage);
+	void DamagePlayer(int damage, Enemy e);
 
 	int health = GC::PLAYER_MAX_HEALTH;
 
@@ -45,7 +46,7 @@ public:
 	bool Slowed = false;
 	bool Slippy = false;
 
-	//PlayerFacingDirection playerDir = PlayerFacingDirection::Left;
+	PlayerFacingDirection playerDir = PlayerFacingDirection::Left;
 	int attack = 10;		//Base attack stat (base amount + weapon amount), need to make private but public for debugging purposes
 
 	DeltaTimer mFootstepTimer;
