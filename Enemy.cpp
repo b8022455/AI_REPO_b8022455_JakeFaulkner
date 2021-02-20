@@ -26,7 +26,6 @@ void Enemy::MoveOffScreen()
 
 void Enemy::Reset()
 {
-	// TODO: IMPLEMENT SPECIFIC HEALTH FOR EACH ENEMY
 	SetRandomPosition();
 
 	if (GetType() == GC::ENEMY_TYPE_1) {
@@ -81,26 +80,72 @@ void Enemy::DamageEnemy(int dmg)
 	float x = 0.0f;
 	float z = 0.0f;
 
+	// TODO: CHECK PLAYER AGAINST THIS ENEMY POS (IF PLAYER X > ENEMY X, THEN ENEMY X - 2)
 	//Blows back enemy based on what position the enemy was hit from
-	switch (playerDirection)
-	{
-	case 0:										//Left
-		x = -2.0f;
-		break;
 
-	case 1:										//Right
-		x = 2.0f;
-		break;
-
-	case 2:										//Up
-		z = 2.0f;
-		break;
-
-	case 3:										//Down
-		z = -2.0f;
-		break;
+	int direction = 0; // used to determine which direction to apply knockback
+	// n,ne,e,se,s,sw,w,nw = 0,1,2,3,4,5,6,7 
+					   
+	// if enemy x > player x then enemy is right of the player
+	// if distx is negative then enemy is to the right
+	float distx = playerDirection.x - this->GetPos().x;
+	// if enemy z > player z then enemy is above the player
+	// if distz is negative then enemy is above
+	float distz = playerDirection.z - this->GetPos().z;
+	//-x-z = topright
+	//x-z = topleft
+	//-xz = bottomright
+	//xz = bottomleft
+	//if both positive && (distx > distz) enemy is closer on x
+	//if both positive && (distx < distz) enemy is closer on z
+	//if both negative && (distx > distz) enemy is closer on z
+	//if both negative && (distx < distz) enemy is closer on x
+	float distx2 = distx * 2;
+	float distz2 = distz * 2;
+	// if 1 negative then negative - (negative * 2)
+	bool negativeX = false; // false right, true left
+	bool negativeZ = false; // false top, true bottom
+	// negative catcher
+	if (distx < 0) {
+		distx -= distx2;
+		negativeX = true;
 	}
+	if (distz < 0) {
+		distz -= distz2;
+		negativeZ = true;
+	}
+	// TODO: IMPLEMENT LOGIC TO SELECT DIRECTION (INCLUDE HOW CLOSE TO DIAGONAL)
+	//if negativeX == true = left & negativeZ == true = bottom
 
+	// 
+	if (direction == 0) { // north
+		z = 2.0f;
+	}
+	if (direction == 1) { // north east
+		z = 2.0f;
+		x = 2.0f;
+	}
+	if (direction == 2) { // east
+		x = 2.0f;
+	}
+	if (direction == 3) { // south east
+		z = -2.0f;
+		x = 2.0f;
+	}
+	if (direction == 4) { // south
+		z = -2.0f;
+	}
+	if (direction == 5) { // south west
+		z = -2.0f;
+		x = -2.0f;
+	}
+	if (direction == 6) { // west
+		x = -2.0f;
+	}
+	if (direction == 7) { // north west
+		z = 2.0f;
+		x = -2.0f;
+	}
 	BouncebackPosition.x = x;
 	BouncebackPosition.z = z;
 }
@@ -278,7 +323,7 @@ void Enemy::UpdateAttack(float dt)
 	}
 }
 
-void Enemy::SetDirection(int dir) // may be enemy rotation?
+void Enemy::SetDirection(DirectX::XMFLOAT3 dir) // may be enemy rotation?
 {
 	playerDirection = dir;
 }

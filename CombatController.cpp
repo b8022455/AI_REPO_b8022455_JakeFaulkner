@@ -34,7 +34,7 @@ void CombatController::Update()
 
 		std::for_each(mpEnemies->begin(), mpEnemies->end(), [&](Enemy& e)
 		{
-			e.SetDirection(mpPlayer->playerDir);				//Gets direction player is facing into the enemy class to correctly blowback the enemy from the player
+			e.SetDirection(mpPlayer->GetPos());				//Gets direction player is facing into the enemy class to correctly blowback the enemy from the player
 		});
 
 	}

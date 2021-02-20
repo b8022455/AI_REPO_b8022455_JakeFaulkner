@@ -26,7 +26,7 @@ public:
 
 	void InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int materialIndex);	//Sets up the enemy
 	void Enemy::SetRandomPosition();
-	void SetDirection(int dir);
+	void SetDirection(DirectX::XMFLOAT3 dir);
 	void DamageEnemy(int damage);						//When enemy gets hit by weapon
 	const std::string GetDropItem();
 	int GetHealth() { return mHealth; }
@@ -53,7 +53,7 @@ private:
 	int mHealth = 10; // TODO: SET HEALTH BASED ON ENEMYTYPE
 	int mAttack;
 	std::string mEnemyType; // for item lookup
-	int playerDirection;								//Gets enum value of which way player is facing
+	DirectX::XMFLOAT3 playerDirection;								//Gets enum value of which way player is facing
 
 	//Order of items is from Most Common -> Rarest
 	const InventoryUnordered* mpDropItems;
