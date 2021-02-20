@@ -103,10 +103,7 @@ void Player::Update(const GameTimer & gt)
 			SetScaleY(scaleYValue);
 		}
 
-		if (mFootstepTimer.HasTimeElapsed(gt.DeltaTime(), 0.5f))
-		{
-			GameApp::Get().GetAudio().Play("playerFootstep", nullptr, false, 1.0f, GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT]);
-		}
+		Footsteps(gt);
 	}
 
 	SimpleMath::Vector3 pos = GetPos();
@@ -180,6 +177,25 @@ void Player::MoveRight(const GameTimer& gt)
 	SetRotationY(180);						//Positions player model facing right
 }
 
+void Player::Footsteps(const GameTimer& gt)
+{
+	if (mFootstepTimer.HasTimeElapsed(gt.DeltaTime(), 0.5f))
+	{
+		if (Slowed)
+		{
+			GameApp::Get().GetAudio().Play("playerFootstep", nullptr, false, 1.0f, GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT]);
+		}
+		else if (Slippy)
+		{
+			GameApp::Get().GetAudio().Play("playerFootstepStone", nullptr, false, 1.0f, GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT]);
+		}
+		else
+		{
+			GameApp::Get().GetAudio().Play("playerFootstepGrass", nullptr, false, 1.0f, GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT]);
+		}
+	}
+}
+
 void Player::Move(const GameTimer & gt, const DirectX::SimpleMath::Vector3 & vec)
 {
 	//Changes position of sword depending on where player is facing
@@ -220,11 +236,8 @@ void Player::Move(const GameTimer & gt, const DirectX::SimpleMath::Vector3 & vec
 			SetScaleY(scaleYValue);
 		}
 
-		if (mFootstepTimer.HasTimeElapsed(gt.DeltaTime(), 0.5f))
-		{
-			GameApp::Get().GetAudio().Play("playerFootstep", nullptr, false, 1.0f, GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT]);
+		Footsteps(gt);
 
-		}
 	}
 }
 

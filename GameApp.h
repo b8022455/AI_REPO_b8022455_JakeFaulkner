@@ -112,6 +112,10 @@ public:
 	const std::string& GetStoryText();
 	size_t mStoryIndex = 0;
 
+	const std::string& GetTutorialText();
+	std::string mTutorialText = GC::TUTORIAL_INTRO;
+	int menusShown = 0;
+
 
 private:
 	virtual void Update(const GameTimer& gt)override;

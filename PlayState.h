@@ -29,11 +29,14 @@ class PlayState : public State
 	Trader* mpActiveTrader = nullptr;
 	Inventory::iterator inventoryPosition = mInventory.begin();			//Used to select items from the Inventory (Increments using down key, decrements using up key, loops back around when over inventory size)
 	bool itemMenuOpen = false;				//Debug: only allow item selection when on a menu(either pause or an item menu)
+	
+	bool shownAttackTutorial = false;
+	bool shownPlantTutorial = false;
+	bool shownInventoryUseTutorial = false;
 
 	TileManager mTileManager;
 	Tile mTile;
 	CombatController mCombatController;
-	std::unordered_map<std::string, Sprite> mSprites;
 
 	enum CAMERA_TYPE
 	{
@@ -164,7 +167,6 @@ public:
 	void Keyboard(const GameTimer& gt);
 	void KeyboardDebug(const GameTimer& gt);
 	void Gamepad(const GameTimer& gt);
-
 	bool TraderStoryComplete();
 
 	int EnemiesRemaining()

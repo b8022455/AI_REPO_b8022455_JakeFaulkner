@@ -43,6 +43,10 @@ void GameObject::Initialize(const std::string & renderItemName)
 
 void GameObject::SetPos(const DirectX::XMFLOAT3 & newPos)
 {
+	if (newPos.y > 0.01f)
+	{
+
+	}
 	mpInstance->World._41 = newPos.x;
 	mpInstance->World._42 = newPos.y;
 	mpInstance->World._43 = newPos.z;
