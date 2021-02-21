@@ -74,6 +74,10 @@ void PlayerWeapon::Initialize(const std::string& renderItemName)
 {
 	// Setup a render item
 	AddRenderItemInstance("Weapon");
+	// TODO: IMPLEMENT WEAPON ROTATION TO SET WEAPON SIDEWAYS
+	//XMMATRIX transformation; // 
+	//transformation = XMMatrixRotationY(90.0f); //Rotate model before starting rotation around point
+	//XMStoreFloat4x4(&mpInstance->World, transformation);
 
 	float attackDuration = 1.f;
 	float attackDelay = 1.f;
@@ -119,7 +123,7 @@ void PlayerWeapon::PositionWeapon()
 	else if (playerDirection <= 1)				//If player direction is Left (0 in the enum) or Right (1 in the enum)
 	{
 		weaponStartingRotation = GC::WEAPONSTART;
-		weaponEndRotation = GC::WEAPONEND;			//360 degrees
+		weaponEndRotation = GC::WEAPONEND;			//80 degrees
 	}
 
 	weaponRotation = weaponStartingRotation;
