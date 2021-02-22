@@ -52,19 +52,6 @@ void TradeState::Initialize()
 
 void TradeState::Update(const GameTimer & gt)
 {
-	{
-
-		//show inventory debug
-		GameApp::Get().mDebugLog << "\nInventory:\n";
-
-		std::for_each(mpInventory->begin(), mpInventory->end(), [&](auto& inv)
-		{
-			GameApp::Get().mDebugLog << inv.first << " : " << inv.second << "\n";
-		});
-
-		if (*mpInventoryPosition != mpInventory->end())
-			GameApp::Get().mDebugLog << "Current Selected Item: " << (*mpInventoryPosition)->first << " x" << (*mpInventoryPosition)->second << "\n";
-	}
 
 	if (Input::Get().AnyMenuButtonPressed())
 	{

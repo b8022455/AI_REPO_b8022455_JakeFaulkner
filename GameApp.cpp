@@ -164,7 +164,7 @@ bool GameApp::Initialize()
 	BuildObjGeometry("Data/Models/charCloak.obj", "tempPlayerGeo", "tempPlayer");//tempPlayer.obj
 	BuildObjGeometry("Data/Models/charBlob.obj", "tempEnemyGeo", "tempEnemy");
 	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" ); //quad rather than cube
-	BuildObjGeometry("Data/Models/building04.obj","traderGeo", "trader" ); //quad rather than cube
+	BuildObjGeometry("Data/Models/trader.obj","traderGeo", "trader" ); //quad rather than cube
 	BuildObjGeometry("Data/Models/particle.obj", "particle", "particle");		//Particle used for enemy attack
 	BuildObjGeometry("Data/Models/plantPotato.obj","potatoGeo", "potato" ); // plant
 	BuildObjGeometry("Data/Models/carBody.obj","carBodyGeo", "carBody" );  // 'trader' main objective. requires 1x1x1 bounding box
@@ -385,9 +385,6 @@ UINT GameApp::GetMaterialIndex(const std::string & materialName)
 void GameApp::Update(const GameTimer& gt)
 {
 	assert(mpActiveCamera);
-
-	mDebugLog << "Instance count: " << mInstanceCount << "\n\n";
-
 
 	OnKeyboardInput(gt);
 	Input::Get().Update();
