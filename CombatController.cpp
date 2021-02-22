@@ -74,10 +74,6 @@ void PlayerWeapon::Initialize(const std::string& renderItemName)
 {
 	// Setup a render item
 	AddRenderItemInstance("Weapon");
-	// TODO: IMPLEMENT WEAPON ROTATION TO SET WEAPON SIDEWAYS
-	//XMMATRIX transformation; // 
-	//transformation = XMMatrixRotationY(90.0f); //Rotate model before starting rotation around point
-	//XMStoreFloat4x4(&mpInstance->World, transformation);
 
 	float attackDuration = 1.f;
 	float attackDelay = 1.f;
@@ -158,11 +154,13 @@ void PlayerWeapon::UpdateWeaponMatrix()
 	switch (playerDirection)
 	{
 	case 0:						//Left
+		//transformation = XMMatrixRotationX(3.14159f / 2); // check this works 
 		transformation = XMMatrixTranslation(-1.0f, 0.0f, 0.0f);
 		break;
 
 	case 1:						//Right
-		transformation = XMMatrixRotationZ(3.14159f);			//Rotate model before starting rotation around point
+		transformation = XMMatrixRotationZ(3.14159f); //Rotate model before starting rotation around point
+		//transformation = XMMatrixRotationX(3.14159f / 2); // check this works 
 		transformation *= XMMatrixTranslation(1.0f, 0.0f, 0.0f);
 		break;
 
