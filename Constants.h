@@ -113,29 +113,28 @@ namespace GC
 	// (NOTE) NO HELP MESSAGE AT CURRENT FOR CAMERA ZOOM
 	//KEY_RAISE = 'O', // OUT
 	//KEY_LOWER = 'I', // IN
-	const std::string HELP_MESSAGES[10]
+	const std::string HELP_MESSAGES[9]
 	{
-		"You are wounded.\nPress enter to open inventory",
-		"Arrow Keys to scroll \n E Key to use an item",
-		"Press Q to Trade",
+		"Arrow Keys to scroll \n (E) Key to use an item",
+		"Press (Q) to Trade",
 		"Use the WASD keys to move and Space to attack",
-		"Help is available using the H key",
+		"Help is available using the (H) key",
 		"Plant crops by selecting seeds from the inventory",
 		"You can harvest crops when fully grown by attacking",
-		"Try talking to a trader when near using the Q key",
+		"Try talking to a trader when near using the (Q) key",
 		"Attack your enemies using the Spacebar",
-		"Pause the game using the P key"
+		"Pause the game using the (P) key"
 	};
 
 	const std::string
 		TUTORIAL_INTRO = "Welcome to the end of the world...",
 		TUTORIAL_OBJECTIVE = "You must survive to reach SAFEHAVEN by the end of the day.\nKill all mutants in the area before you continue travelling",
-		TUTORIAL_MOVE = "To move use they (w)(s)(a)(d) keys\nPause the game using the Enter key",
-		TUTORIAL_TRADE = "To trade will other survivors ",
-		TUTORIAL_INVENTORY = "See what you have in your inventory (i)\nCycle through what you have (UP) (DOWN)\nSelect a weapon from the list and it will boost your attack\nClose the the inventory (i)",
-		TUTORIAL_ATTACK = "Attack your enemies using the Spacebar\nYou will automatically loot enemies you kill",
-		TUTORIAL_USE = "Some items in the inventory can be used (u)",
-		TUTORIAL_PLANT = "Plant Seeds from the inventory to get healing items";
+		TUTORIAL_MOVE = "To move use the (W)(S)(A)(D) keys\nPause the game using the (P) key",
+		TUTORIAL_TRADE = "To trade with other survivors, Press (Q) when near a trader.\n Trading allows you to get new weapons and items.",
+		TUTORIAL_INVENTORY = "See what you have in your inventory (Enter)\nCycle through what you have (UP) (DOWN)\nSelect a weapon from the list and it will boost your attack\nClose the the inventory (Enter again)",
+		TUTORIAL_ATTACK = "Attack your enemies using the Spacebar\nYou will automatically loot enemies you kill.\n Enemies can drop new weapons, healing items, or farming items.",
+		TUTORIAL_USE = "Some items in the inventory can be used (E)",
+		TUTORIAL_PLANT = "You have been damaged.\n Plant seeds from the inventory to grow healing items.\n Plants take time to grow so come back to it when its fully grown.";
 
 	const float FOOTSTEP_PITCH[7]
 	{

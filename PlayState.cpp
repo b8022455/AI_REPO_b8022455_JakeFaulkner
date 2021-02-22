@@ -220,7 +220,7 @@ void PlayState::Initialize()
 			mHelpPanel.Initialize("uiTex", src, dst);
 			mHelpText.color = DirectX::Colors::White;
 			mHelpText.fontIndex = 1;
-			mHelpText.string = "Something helpful should go here"; //todo help text
+			mHelpText.string = "(W)(A)(S)(D) - Movement \n(Spacebar) - attack \n(Enter) - Opens/Closes inventory \n(P) - Pauses the game \n(Q) - Trades when near a trader \n(E) - Use an item when in inventory";
 		}
 
 		//Help text
@@ -228,7 +228,7 @@ void PlayState::Initialize()
 			mHelpMessage.mText.center = true;
 			mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 40.f, 550.f };
 			mHelpMessage.mText.color = DirectX::Colors::Red;
-			mHelpMessage.Activate(GC::HELP_MESSAGES[3], 6.0f);
+			mHelpMessage.Activate(GC::HELP_MESSAGES[2], 6.0f);
 
 			mTradeHelpMessage.mText.center = true;
 			mTradeHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 250.f, 150.f };
@@ -530,8 +530,8 @@ void PlayState::Update(const GameTimer& gt)
 		mHelpMessage.mText.color = DirectX::Colors::Red;
 		mHelpMessage.Activate(GC::HELP_MESSAGES[revolvingHintPosition], 7.0f);
 		revolvingHintPosition++;
-		if (revolvingHintPosition > 9)
-			revolvingHintPosition = 3;
+		if (revolvingHintPosition > 8)
+			revolvingHintPosition = 2;
 	}
 
 	if (playerName == "")		//Only does this once
@@ -716,13 +716,6 @@ void PlayState::Update(const GameTimer& gt)
 				shownPlantTutorial = true;
 			}
 
-			if (mPlayer.health < GC::PLAYER_LOW_HEALTH)
-			{
-				mHelpMessage.mText.center = true;
-				mHelpMessage.mText.color = DirectX::Colors::Red;
-				mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 300.f, 150.f };
-				mHelpMessage.Activate(GC::HELP_MESSAGES[0], 2.f);
-			}
 			//Transition to game over state
 			if (mPlayer.health <= 0)
 			{
@@ -750,13 +743,6 @@ void PlayState::Update(const GameTimer& gt)
 					shownPlantTutorial = true;
 				}
 
-				if (mPlayer.health < GC::PLAYER_LOW_HEALTH)
-				{
-					mHelpMessage.mText.center = true;
-					mHelpMessage.mText.color = DirectX::Colors::Red;
-					mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 300.f, 150.f };
-					mHelpMessage.Activate(GC::HELP_MESSAGES[0], 2.f);
-				}
 				GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
 				//Transition to game over state
 				if (mPlayer.health <= 0)
@@ -904,9 +890,9 @@ void PlayState::Update(const GameTimer& gt)
 
 		//Help instructions for inventory
 		mHelpMessage.mText.center = true;
-		mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 480.f, 450.f };
+		mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 650.f, 450.f };
 		mHelpMessage.mText.color = DirectX::Colors::White;
-		mHelpMessage.Activate(GC::HELP_MESSAGES[1], 0.1f);
+		mHelpMessage.Activate(GC::HELP_MESSAGES[0], 0.1f);
 	}
 
 	// IMPLEMENT CHECK FOR ENEMIES HERE
@@ -955,12 +941,13 @@ void PlayState::Draw(const GameTimer& gt)
 	mInventoryPanel.Draw();
 	mInventoryText.Draw();
 
-	mHelpPanel.Draw();
-	mHelpText.Draw();
 
 	mMessage.Draw();
 	mHelpMessage.Draw();
 	mTradeHelpMessage.Draw();
+
+	mHelpPanel.Draw();
+	mHelpText.Draw();
 
 	mScoreTextShadow.Draw();
 	mScoreText.Draw();
