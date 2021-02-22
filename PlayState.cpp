@@ -1582,9 +1582,12 @@ void PlayState::Reset()
 	ReGen();
 
 	//Reset Lighting
+	timeCycle = 1;
+	timeChange = 0.0f;
 	GameApp::Get().GetMainPassCB()->AmbientLight = GC::DAWN_COLOUR; // dawn
 	GameApp::Get().GetMainPassCB()->Lights[1].Strength = GC::DAWN_STRENGTH;
 
+	// TODO: LOOK AT BELOW FOR ENEMY RESETTING (MAY OR MAY NOT BE NEEDED)
 	//Reset Enemies
 	size_t enemyAmount = mEnemies.size() - 1;
 	while (enemyAmount > 1)
