@@ -237,11 +237,6 @@ void StateManager::Update(const GameTimer & gt)
 {
 	auto test = GameApp::Get().AspectRatio(); //todo remove. Example of accessing GameApp
 
-	//GameApp::Get().input.Update();
-
-	GameApp::Get().mDebugLog << "State: \"" << mCurrentState << "\"\n";
-
-
 	mFadeForeground.color.w = mFadeAlpha;
 
 	FadeUpdate(gt);
@@ -271,7 +266,6 @@ void StateManager::Draw(const GameTimer & gt)
 
 		mFadeForeground.Draw();
 
-		GameApp::Get().mDebugLog << "\n" << mFadeAlpha;
 	}
 	else
 	{
