@@ -9,7 +9,6 @@ void CombatController::Initialize(Player* player, PlayerWeapon* playerWeapon, st
 	mpEnemies = enemies;
 	mpPlayerWeapon = playerWeapon;
 	mpPlayerWeapon->mpInstance->MaterialIndex = 4;
-	mpPlayerWeapon->mpInstance->World._42 -= 20.0f;
 
 	//Sets up the collision point for the weapon
 	collisionPoint = mpPlayerWeapon->mpInstance->World;
@@ -87,7 +86,7 @@ void PlayerWeapon::Reset()
 {
 	weaponRotation = weaponEndRotation;
 	times.isAttacking = false;
-	SetPos(DirectX::XMFLOAT3(0.f, -20.f, 0.f));
+	SetPos(DirectX::XMFLOAT3(0.f, 0.f, -80.f));
 	//When having different models for diff weapons, reset model to first weapon
 }
 
@@ -144,7 +143,7 @@ void PlayerWeapon::ResetWeaponPosition()
 	times.isAttacking = false;
 
 	//Resets weapon underneath the map until used again
-	SetPos(XMFLOAT3(mpInstance->World._41, mpInstance->World._42 - 5.0f, mpInstance->World._43));
+	SetPos(XMFLOAT3(mpInstance->World._41, mpInstance->World._42, mpInstance->World._43 - 80.f));
 }
 
 void PlayerWeapon::UpdateWeaponMatrix()
