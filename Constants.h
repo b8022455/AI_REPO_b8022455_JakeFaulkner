@@ -39,8 +39,8 @@ namespace GC
 
 		KEY_LOOT = 'L',
 
-		KEY_ATTACK = 0x20,  //space
-		KEY_PAUSE = 0xD, //enter
+		
+		//KEY_PAUSE = 0xD, //enter
 		//MENU / CAMERA & DEBUG
 		KEY_PAUSE = 'P', 
 		KEY_CAM = 0x70, // F1
