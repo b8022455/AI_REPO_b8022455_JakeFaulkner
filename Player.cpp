@@ -6,8 +6,6 @@
 void Player::Update(const GameTimer & gt)
 {
 	const float dt = gt.DeltaTime();
-	GameApp::Get().mDebugLog << "Health:" << health << "\n";
-	
 
 	//Check if player is invincible from recent hit
 	times.UpdateTime();
@@ -103,10 +101,7 @@ void Player::Update(const GameTimer & gt)
 			SetScaleY(scaleYValue);
 		}
 
-		if (mFootstepTimer.HasTimeElapsed(gt.DeltaTime(), 0.5f))
-		{
-			GameApp::Get().GetAudio().Play("playerFootstep", nullptr, false, 1.0f, GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT]);
-		}
+		Footsteps(gt);
 	}
 
 	SimpleMath::Vector3 pos = GetPos();
@@ -180,6 +175,25 @@ void Player::MoveRight(const GameTimer& gt)
 	SetRotationY(180);						//Positions player model facing right
 }
 
+void Player::Footsteps(const GameTimer& gt)
+{
+	if (mFootstepTimer.HasTimeElapsed(gt.DeltaTime(), 0.5f))
+	{
+		if (Slowed)
+		{
+			GameApp::Get().GetAudio().Play("playerFootstep", nullptr, false, 1.0f, GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT]);
+		}
+		else if (Slippy)
+		{
+			GameApp::Get().GetAudio().Play("playerFootstepStone", nullptr, false, 1.0f, GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT]);
+		}
+		else
+		{
+			GameApp::Get().GetAudio().Play("playerFootstepGrass", nullptr, false, 1.0f, GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT]);
+		}
+	}
+}
+
 void Player::Move(const GameTimer & gt, const DirectX::SimpleMath::Vector3 & vec)
 {
 	//Changes position of sword depending on where player is facing
@@ -220,15 +234,12 @@ void Player::Move(const GameTimer & gt, const DirectX::SimpleMath::Vector3 & vec
 			SetScaleY(scaleYValue);
 		}
 
-		if (mFootstepTimer.HasTimeElapsed(gt.DeltaTime(), 0.5f))
-		{
-			GameApp::Get().GetAudio().Play("playerFootstep", nullptr, false, 1.0f, GC::FOOTSTEP_PITCH[rand() % GC::FOOTSTEP_PITCH_COUNT]);
+		Footsteps(gt);
 
-		}
 	}
 }
 
-void Player::DamagePlayer(int damage)			//When enemy hits with player
+void Player::DamagePlayer(int damage, Enemy e)			//When enemy hits with player
 {
 	if (!times.IsInvincible)
 	{
@@ -242,24 +253,47 @@ void Player::DamagePlayer(int damage)			//When enemy hits with player
 	float x = 0.0f;
 	float z = 0.0f;
 
-	switch (playerDir)
-	{
-	case 0:									//Left
-		x = 2.5f;
-		break;
+	int direction = 0; // used to determine which direction to apply knockback 
 
-	case 1:									//Right
-		x = -2.5f;
-		break;
+	float distx = e.GetPos().x - this->GetPos().x;
+	float distz = e.GetPos().z - this->GetPos().z;
+	//-x-z = topright
+	//x-z = topleft
+	//-xz = bottomright
+	//xz = bottomleft
+	//if both positive && (distx > distz) enemy is closer on x
+	//if both positive && (distx < distz) enemy is closer on z
+	//if both negative && (distx > distz) enemy is closer on z
+	//if both negative && (distx < distz) enemy is closer on x
+	float distx2 = distx * 2;
+	float distz2 = distz * 2;
+	bool negativeX = false; // false right, true left
+	bool negativeZ = false; // false top, true bottom
+	// negative catcher
+	if (distx < 0) { distx -= distx2; negativeX = true; }
+	if (distz < 0) { distz -= distz2; negativeZ = true; }
+	//if negativeX == true = left & negativeZ == true = bottom == south west
+	// if distx < distz = closer to playerx than playerz
+	// if close to playerz then x should be jumped
+	// IGNORE DIAGONAL KNOCKBACK FOR NOW
+	bool xJump = false;
+	bool zJump = false;
+	if (distx < distz) { zJump = true; }
+	if (distz < distx) { xJump = true; }
 
-	case 2:									//Up
-		z = -2.5f;
-		break;
-
-	case 3:									//Down
-		z = 2.5f;
-		break;
-	}
+	if (xJump == true && negativeX == true) { direction = 2; } // east?
+	if (xJump == true && negativeX == false) { direction = 6; } // west?
+	if (zJump == true && negativeZ == true) { direction = 0; } // south?
+	if (zJump == true && negativeZ == false) { direction = 4; } // north?
+	// 
+	if (direction == 0) { z = 2.0f; } // north
+	if (direction == 1) { z = 2.0f;	x = 2.0f; } // north east
+	if (direction == 2) { x = 2.0f; } // east
+	if (direction == 3) { z = -2.0f; x = 2.0f; } // south east
+	if (direction == 4) { z = -2.0f; } // south
+	if (direction == 5) { z = -2.0f; x = -2.0f; } // south west
+	if (direction == 6) { x = -2.0f; } // west
+	if (direction == 7) { z = 2.0f; x = -2.0f; } // north west
 
 	BouncebackPosition.x = x;
 	BouncebackPosition.z = z;

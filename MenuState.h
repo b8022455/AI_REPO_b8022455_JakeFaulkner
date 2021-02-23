@@ -7,7 +7,7 @@ class MenuState : public State
 	Text mTitle;
 	Text mBody;
 	Text mEnteredName;		//Used only in enter name menu
-	Panel mEnterNamePanel;	//Used only in enter name menu
+	Panel mPanel;
 	std::string menuName;
 	std::vector<Button> mButtons;
 

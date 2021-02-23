@@ -54,21 +54,19 @@ MenuState::MenuState(const Button & b0, const Button & b1, const Button & b2, co
 MenuState::MenuState(const Text& t1, const Text& t2, const Button& b0, const Panel& p0, const std::string& menu)
 {
 	mTitle = t1;
-	mTitle.position = DirectX::SimpleMath::Vector2{ 260.f, 180.f };
-
 	mBody = t2;
-	mBody.position = DirectX::SimpleMath::Vector2{ 330.f, 350.f };
 	menuName = menu;
+	mPanel = p0;
 
 	mButtons.reserve(1);
 	mButtons.push_back(b0);
-	mButtons.at(0).SetPos({ 200.f, 150.f });
 
-	mEnteredName.position = DirectX::SimpleMath::Vector2{ 320.f, 250.f };
-	mEnteredName.color = DirectX::Colors::White;
-	mEnteredName.scale = 1.5f;
-
-	mEnterNamePanel = p0;
+	if (menuName == "EnterNameMenu")
+	{
+		mEnteredName.position = DirectX::SimpleMath::Vector2{ 320.f, 250.f };
+		mEnteredName.color = DirectX::Colors::White;
+		mEnteredName.scale = 1.5f;
+	}
 }
 
 void MenuState::Initialize()
@@ -78,53 +76,24 @@ void MenuState::Initialize()
 
 void MenuState::Update(const GameTimer & gt)
 {
-	if (menuName != "EnterNameMenu")
+	if (menuName == GC::STATE_TUTORIAL)
 	{
-		assert(mButtons.size() == 4);
-
 		if (Input::Get().AnyMenuButtonPressed())
 		{
 			GameApp::Get().PlayClickDownAudio();
 		}
 
-		//down
-		if (Input::Get().MenuUpHeld()) mButtons.at(0).SetColor(GC::BUTTON_DOWN_COLOR);
-		if (Input::Get().MenuLeftHeld()) mButtons.at(1).SetColor(GC::BUTTON_DOWN_COLOR);
-		if (Input::Get().MenuRightHeld())mButtons.at(2).SetColor(GC::BUTTON_DOWN_COLOR);
-		if (Input::Get().MenuDownHeld())mButtons.at(3).SetColor(GC::BUTTON_DOWN_COLOR);
-
-		//Release
-		if (Input::Get().MenuInputUp()) // W
+		if (Input::Get().KeyReleased(GC::KEY_INPUT_NAME))
 		{
 			GameApp::Get().PlayClickUpAudio(true);
-			mButtons.at(3).SetColor(GC::BUTTON_UP_COLOR);
+
 			mButtons.at(0).Activate();
 		}
-
-		if (Input::Get().MenuInputLeft()) // A
-		{
-			GameApp::Get().PlayClickUpAudio(true);
-			mButtons.at(3).SetColor(GC::BUTTON_UP_COLOR);
-			mButtons.at(1).Activate();
-		}
-
-		if (Input::Get().MenuInputRight()) // D
-		{
-			GameApp::Get().PlayClickUpAudio(true);
-			mButtons.at(3).SetColor(GC::BUTTON_UP_COLOR);
-			mButtons.at(2).Activate();
-		}
-
-		if (Input::Get().MenuInputDown()) // S
-		{
-			GameApp::Get().PlayClickUpAudio(true);
-			mButtons.at(3).SetColor(GC::BUTTON_UP_COLOR);
-			mButtons.at(3).Activate();
-		}
 	}
-	else
+
+	else if (menuName == "EnterNameMenu")
 	{
-		if (Input::Get().KeyReleased(GC::KEY_PAUSE) && mEnteredName.string.size() > 0)	// Enter, used to enter name and continue to next screen
+		if (Input::Get().KeyReleased(GC::KEY_INPUT_NAME) && mEnteredName.string.size() > 0)	// Enter, used to enter name and continue to next screen
 		{
 			GameApp::Get().PlayClickUpAudio(true);
 
@@ -170,20 +139,68 @@ void MenuState::Update(const GameTimer & gt)
 			mEnteredName.string += key;
 	}
 
+	else
+	{
+		assert(mButtons.size() == 4);
+
+		if (Input::Get().AnyMenuButtonPressed())
+		{
+			GameApp::Get().PlayClickDownAudio();
+		}
+
+		//down
+		if (Input::Get().MenuUpHeld()) mButtons.at(0).SetColor(GC::BUTTON_DOWN_COLOR);
+		if (Input::Get().MenuLeftHeld()) mButtons.at(1).SetColor(GC::BUTTON_DOWN_COLOR);
+		if (Input::Get().MenuRightHeld())mButtons.at(2).SetColor(GC::BUTTON_DOWN_COLOR);
+		if (Input::Get().MenuDownHeld())mButtons.at(3).SetColor(GC::BUTTON_DOWN_COLOR);
+
+		//Release
+		if (Input::Get().MenuInputUp()) // W
+		{
+			GameApp::Get().PlayClickUpAudio(true);
+			mButtons.at(3).SetColor(GC::BUTTON_UP_COLOR);
+			mButtons.at(0).Activate();
+		}
+
+		if (Input::Get().MenuInputLeft()) // A
+		{
+			GameApp::Get().PlayClickUpAudio(true);
+			mButtons.at(3).SetColor(GC::BUTTON_UP_COLOR);
+			mButtons.at(1).Activate();
+		}
+
+		if (Input::Get().MenuInputRight()) // D
+		{
+			GameApp::Get().PlayClickUpAudio(true);
+			mButtons.at(3).SetColor(GC::BUTTON_UP_COLOR);
+			mButtons.at(2).Activate();
+		}
+
+		if (Input::Get().MenuInputDown()) // S
+		{
+			GameApp::Get().PlayClickUpAudio(true);
+			mButtons.at(3).SetColor(GC::BUTTON_UP_COLOR);
+			mButtons.at(3).Activate();
+		}
+	}
 }
 
 void MenuState::Draw(const GameTimer & gt)
 {
+	if (menuName == GC::STATE_TUTORIAL)
+		mPanel.Draw();
+
 	mTitle.Draw();
 	mBody.Draw();
+
 	//mTempPanel.Draw();
 
 	if (menuName == "EnterNameMenu")
 	{
-		mEnterNamePanel.Draw();
+		mPanel.Draw();
 		mEnteredName.Draw();
 	}
-
+	
 	for (auto& b : mButtons)
 	{
 		if (menuName != "Story1" && menuName != "EnterNameMenu") // story screen code
@@ -193,5 +210,11 @@ void MenuState::Draw(const GameTimer & gt)
 
 void MenuState::OnResume()
 {
-	GameApp::Get().GetAudio().Play("menuMusic", nullptr, true);
+	if (menuName == GC::STATE_TUTORIAL)
+	{
+		mBody.string = GameApp::Get().GetTutorialText();
+		GameApp::Get().menusShown++;
+	}
+	else
+		GameApp::Get().GetAudio().Play("menuMusic", nullptr, true);
 }

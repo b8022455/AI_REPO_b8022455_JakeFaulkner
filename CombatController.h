@@ -32,11 +32,11 @@ private:
 	void PositionWeapon();
 	void UpdateWeaponMatrix();
 
-	float weaponStartingRotation = 0.0f;		//0 degrees starting point for rotation
-	float weaponRotation;
-	float weaponEndRotation = 360.f;			//80 degress ending point for rotation
+	float weaponStartingRotation = -40.0f;		//0 degrees starting point for rotation
+	float weaponRotation = 0.0f;
+	float weaponEndRotation = 40.f;			//80 degress ending point for rotation
 	const float weaponIncrementRotationAmount = 4.f;
-	int playerDirection;			//Gets enum value of which way player is facing, could remove and define weaponMatrix var in controller
+	int playerDirection =0;			//Gets enum value of which way player is facing, could remove and define weaponMatrix var in controller
 
 	AttackTimeDelay times;
 };
@@ -58,8 +58,8 @@ public:
 	XMFLOAT4X4 collisionPoint;
 private:
 	PlayerWeapon* mpPlayerWeapon;
-	Player* mpPlayer;
-	std::vector<Enemy>* mpEnemies; //Could be more generic with GameObject. Change collection type to state
+	Player* mpPlayer = nullptr;
+	std::vector<Enemy>* mpEnemies = nullptr; //Could be more generic with GameObject. Change collection type to state
 	const float PI = 3.14159265359f;
 	bool isAttacking = false;
 	std::string equippedWeapon = "Stick";		//Default weapon equipped

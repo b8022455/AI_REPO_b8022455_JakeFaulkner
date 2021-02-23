@@ -92,6 +92,10 @@ bool GameApp::Initialize()
 		mGameAudio.LoadSound("sfx", "EnemyDie1", L"Data/Sounds/enemyrDie01.wav");
 		mGameAudio.LoadSound("sfx", "EnemyAttack1", L"Data/Sounds/enemyrAttack01.wav");
 		mGameAudio.LoadSound("sfx", "EnemyHit1", L"Data/Sounds/enemyrHit01.wav");
+		mGameAudio.LoadSound("sfx", "playerFootstepStone", L"Data/Sounds/stone2.wav");
+		mGameAudio.LoadSound("sfx", "playerFootstepGrass", L"Data/Sounds/grass2.wav");
+		mGameAudio.LoadSound("sfx", "playerDie", L"Data/Sounds/death sound2.wav");
+		mGameAudio.LoadSound("sfx", "playerAttack", L"Data/Sounds/swingWoosh.wav");
 
 		// Plays up to 20 instances at once. SFX only
 		mGameAudio.SetCacheSize("sfx", 20);
@@ -127,7 +131,7 @@ bool GameApp::Initialize()
 		//Music 'engine'
 		mGameAudio.CreateEngine("music", AUDIO_ENGINE_TYPE::MUSIC);
 		// Loads sounds the same way
-		mGameAudio.LoadSound("music", "actionMusic", L"Data/Sounds/Ring05.wav");
+		mGameAudio.LoadSound("music", "actionMusic", L"Data/Sounds/Main game theme bugaloo.wav");
 		mGameAudio.LoadSound("music", "menuMusic", L"Data/Sounds/Spooky_Title_screen_Loop.wav");
 		// Time it takes to fade between tracks when Play() is called
 		mGameAudio.SetFade("music", 1.0f);
@@ -162,6 +166,7 @@ bool GameApp::Initialize()
 	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" ); //quad rather than cube
 	BuildObjGeometry("Data/Models/building04.obj","traderGeo", "trader" ); //quad rather than cube
 	BuildObjGeometry("Data/Models/building03.obj", "buildingGeo", "building"); 
+	BuildObjGeometry("Data/Models/trader.obj","traderGeo", "trader" ); //quad rather than cube
 	BuildObjGeometry("Data/Models/particle.obj", "particle", "particle");		//Particle used for enemy attack
 	BuildObjGeometry("Data/Models/plantPotato.obj","potatoGeo", "potato" ); // plant
 	BuildObjGeometry("Data/Models/carBody.obj","carBodyGeo", "carBody" );  // 'trader' main objective. requires 1x1x1 bounding box
@@ -382,9 +387,6 @@ UINT GameApp::GetMaterialIndex(const std::string & materialName)
 void GameApp::Update(const GameTimer& gt)
 {
 	assert(mpActiveCamera);
-
-	mDebugLog << "Instance count: " << mInstanceCount << "\n\n";
-
 
 	OnKeyboardInput(gt);
 	Input::Get().Update();
@@ -1355,6 +1357,13 @@ const std::string& GameApp::GetStoryText()
 	return GC::STORY_TEXT[mStoryIndex];
 }
 
+const std::string& GameApp::GetTutorialText()
+{
+	if (mTutorialText == "")
+		assert(mTutorialText == "");
+
+	return mTutorialText;
+}
 
 PassConstants * GameApp::GetMainPassCB()
 {

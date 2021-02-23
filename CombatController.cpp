@@ -1,4 +1,5 @@
 #include "CombatController.h"
+#include "GameApp.h"
 
 void CombatController::Initialize(Player* player, PlayerWeapon* playerWeapon, std::vector<Enemy>* enemies)
 {
@@ -8,7 +9,6 @@ void CombatController::Initialize(Player* player, PlayerWeapon* playerWeapon, st
 	mpEnemies = enemies;
 	mpPlayerWeapon = playerWeapon;
 	mpPlayerWeapon->mpInstance->MaterialIndex = 4;
-	mpPlayerWeapon->mpInstance->World._42 -= 20.0f;
 
 	//Sets up the collision point for the weapon
 	collisionPoint = mpPlayerWeapon->mpInstance->World;
@@ -34,7 +34,7 @@ void CombatController::Update()
 
 		std::for_each(mpEnemies->begin(), mpEnemies->end(), [&](Enemy& e)
 		{
-			e.SetDirection(mpPlayer->playerDir);				//Gets direction player is facing into the enemy class to correctly blowback the enemy from the player
+			e.SetDirection(mpPlayer->GetPos());				//Gets direction player is facing into the enemy class to correctly blowback the enemy from the player
 		});
 
 	}
@@ -86,7 +86,7 @@ void PlayerWeapon::Reset()
 {
 	weaponRotation = weaponEndRotation;
 	times.isAttacking = false;
-	SetPos(DirectX::XMFLOAT3(0.f, -20.f, 0.f));
+	SetPos(DirectX::XMFLOAT3(0.f, 0.f, -80.f));
 	//When having different models for diff weapons, reset model to first weapon
 }
 
@@ -101,6 +101,8 @@ void PlayerWeapon::Attack()
 	{
 		PositionWeapon();
 		SwingWeapon();
+		GameApp::Get().GetAudio().Play("playerAttack", nullptr, false, 1.0f, GC::VOICE_PITCH[rand() % GC::VOICE_PITCH_COUNT]);
+
 	}
 }
 
@@ -110,13 +112,13 @@ void PlayerWeapon::PositionWeapon()
 
 	if (playerDirection > 1)		//If the player direction is Up (2 in the enum) or Down (3 in the enum)
 	{
-		weaponStartingRotation = 90.f;		//Sets new starting to rotation to 90 degrees for up/down
-		weaponEndRotation = 450.f;			//Sets new end rotation to 450 degrees
+		weaponStartingRotation = (GC::WEAPONSTART + 90.0f);		//Sets new starting to rotation to 90 degrees for up/down
+		weaponEndRotation = (GC::WEAPONEND + 90.0f);			//Sets new end rotation to 450 degrees
 	}
 	else if (playerDirection <= 1)				//If player direction is Left (0 in the enum) or Right (1 in the enum)
 	{
-		weaponStartingRotation = 0.f;
-		weaponEndRotation = 360.f;			//360 degrees
+		weaponStartingRotation = GC::WEAPONSTART;
+		weaponEndRotation = GC::WEAPONEND;			//80 degrees
 	}
 
 	weaponRotation = weaponStartingRotation;
@@ -137,11 +139,11 @@ void PlayerWeapon::SwingWeapon()
 
 void PlayerWeapon::ResetWeaponPosition()
 {
-	weaponRotation = weaponStartingRotation;
+	weaponRotation = GC::WEAPONSTART;
 	times.isAttacking = false;
 
 	//Resets weapon underneath the map until used again
-	SetPos(XMFLOAT3(mpInstance->World._41, mpInstance->World._42 - 5.0f, mpInstance->World._43));
+	SetPos(XMFLOAT3(mpInstance->World._41, mpInstance->World._42, mpInstance->World._43 - 80.f));
 }
 
 void PlayerWeapon::UpdateWeaponMatrix()
@@ -151,11 +153,13 @@ void PlayerWeapon::UpdateWeaponMatrix()
 	switch (playerDirection)
 	{
 	case 0:						//Left
+		//transformation = XMMatrixRotationX(3.14159f / 2); // check this works 
 		transformation = XMMatrixTranslation(-1.0f, 0.0f, 0.0f);
 		break;
 
 	case 1:						//Right
-		transformation = XMMatrixRotationZ(3.14159f);			//Rotate model before starting rotation around point
+		transformation = XMMatrixRotationZ(3.14159f); //Rotate model before starting rotation around point
+		//transformation = XMMatrixRotationX(3.14159f / 2); // check this works 
 		transformation *= XMMatrixTranslation(1.0f, 0.0f, 0.0f);
 		break;
 

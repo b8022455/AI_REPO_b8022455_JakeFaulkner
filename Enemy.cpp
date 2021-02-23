@@ -6,14 +6,6 @@ void Enemy::SetHealth(int health) {
 	mHealth = health;
 }
 
-void Enemy::InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int matIndex)
-{
-	mpInstance->MaterialIndex = matIndex;
-	mpInstance->World._41 = position.x;
-	mpInstance->World._42 = position.y;
-	mpInstance->World._43 = position.z;
-}
-
 void Enemy::MoveOffScreen()
 {
 	//Removes enemy
@@ -26,7 +18,6 @@ void Enemy::MoveOffScreen()
 
 void Enemy::Reset()
 {
-	// TODO: IMPLEMENT SPECIFIC HEALTH FOR EACH ENEMY
 	SetRandomPosition();
 
 	if (GetType() == GC::ENEMY_TYPE_1) {
@@ -81,26 +72,66 @@ void Enemy::DamageEnemy(int dmg)
 	float x = 0.0f;
 	float z = 0.0f;
 
-	//Blows back enemy based on what position the enemy was hit from
-	switch (playerDirection)
-	{
-	case 0:										//Left
-		x = -2.0f;
-		break;
+	int direction = 0; // used to determine which direction to apply knockback 
+					   
+	// if enemy x > player x then enemy is right of the player
+	// if distx is negative then enemy is to the right
+	float distx = playerDirection.x - this->GetPos().x;
+	// if enemy z > player z then enemy is above the player
+	// if distz is negative then enemy is above
+	float distz = playerDirection.z - this->GetPos().z;
+	//-x-z = topright
+	//x-z = topleft
+	//-xz = bottomright
+	//xz = bottomleft
+	//if both positive && (distx > distz) enemy is closer on x
+	//if both positive && (distx < distz) enemy is closer on z
+	//if both negative && (distx > distz) enemy is closer on z
+	//if both negative && (distx < distz) enemy is closer on x
+	float distx2 = distx * 2;
+	float distz2 = distz * 2;
+	bool negativeX = false; // false right, true left
+	bool negativeZ = false; // false top, true bottom
+	// negative catcher
+	if (distx < 0) { distx -= distx2; negativeX = true; }
+	if (distz < 0) { distz -= distz2; negativeZ = true; }
+	//if negativeX == true = left & negativeZ == true = bottom == south west
+	// if distx < distz = closer to playerx than playerz
+	// if close to playerz then x should be jumped
+	
+	bool xJump = false;
+	bool zJump = false;
+	if (distx < distz) { zJump = true; }
+	if (distz < distx) { xJump = true; }
 
-	case 1:										//Right
-		x = 2.0f;
-		break;
-
-	case 2:										//Up
-		z = 2.0f;
-		break;
-
-	case 3:										//Down
-		z = -2.0f;
-		break;
+	// TODO: IMPLEMENT LOGIC FOR DIAGONAL
+	// if playerx < ( enemyx + 1.0f)
+	if ((playerDirection.x + 0.6f) < this->GetPos().x && (playerDirection.z + 0.6f) < this->GetPos().z) { // north east
+		direction = 1;
+	}
+	if ((playerDirection.x + 0.6f) < this->GetPos().x && (playerDirection.z - 0.6f) > this->GetPos().z) { // south east
+		direction = 3;
+	}
+	if ((playerDirection.x - 0.6f) > this->GetPos().x && (playerDirection.z + 0.6f) < this->GetPos().z) { // north west
+		direction = 7;
+	}
+	if ((playerDirection.x - 0.6f) > this->GetPos().x && (playerDirection.z - 0.6f) > this->GetPos().z) { // south west
+		direction = 5;
 	}
 
+	if (xJump == true && negativeX == true) { direction = 2; } // east?
+	if (xJump == true && negativeX == false) { direction = 6; } // west?
+	if (zJump == true && negativeZ == true) { direction = 4; } // south?
+	if (zJump == true && negativeZ == false) { direction = 0; } // north?
+	// 
+	if (direction == 0) { z = 2.0f;	} // north
+	if (direction == 1) { z = 2.0f;	x = 2.0f; } // north east
+	if (direction == 2) { x = 2.0f; } // east
+	if (direction == 3) { z = -2.0f; x = 2.0f; } // south east
+	if (direction == 4) { z = -2.0f; } // south
+	if (direction == 5) { z = -2.0f; x = -2.0f; } // south west
+	if (direction == 6) { x = -2.0f; } // west
+	if (direction == 7) { z = 2.0f; x = -2.0f; } // north west
 	BouncebackPosition.x = x;
 	BouncebackPosition.z = z;
 }
@@ -164,121 +195,115 @@ const std::string Enemy::GetDropItem()
 
 void Enemy::Update(const GameTimer& gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR EACH POTENTIAL AI BASED ON ENEMY TYPE
 {
-	if (mSpeed <= 0.0f)
-		mSpeed = 0.0f;
+	if (mHealth > 0) {
+		if (mSpeed <= 0.0f)
+			mSpeed = 0.0f;
 
-	// BARFING ENEMY - SLOW MOVEMENT TOWARDS PLAYER WHEN NOT ATTACKING
-	if (mEnemyType == GC::ENEMY_TYPE_1)
-	{
-
-		switch (mBehaviour)
+		// BARFING ENEMY - SLOW MOVEMENT TOWARDS PLAYER WHEN NOT ATTACKING
+		if (mEnemyType == GC::ENEMY_TYPE_1)
 		{
-		case NONE:
-			if (mSpeed > 0.0f)
+
+			switch (mBehaviour)
 			{
-				mSpeed -= (GC::ENEMYTYPE1_DRAG * gt.DeltaTime());
+			case NONE:
+				if (mSpeed > 0.0f)
+				{
+					mSpeed -= (GC::ENEMYTYPE1_DRAG * gt.DeltaTime());
+				}
+				; break;
+			case CHASE:
+				if (mSpeed < GC::ENEMYTYPE1_MAXSPEED)
+				{
+					mSpeed += (GC::ENEMYTYPE1_DRAG * gt.DeltaTime());
+				}
+				if (mSpeed >= GC::ENEMYTYPE1_MAXSPEED)
+					mSpeed = GC::ENEMYTYPE1_MAXSPEED;
+				; break;
+			default:; break;
 			}
-			; break;
-		case CHASE:
-			if (mSpeed < GC::ENEMYTYPE1_MAXSPEED)
+
+			if (times.isAttacking) // EXECUTES ATTACK
+				UpdateAttack(gt.DeltaTime());
+
+			else
+				if (times.EnemyCanAttack())
+					//times.SetNextTimer();		//Makes attacking bool true and resets timer for next attack
+					times.ResetTimer();
+
+			// send int in instead of using gettype in the void
+			times.EnemyUpdateTime(1, gt.DeltaTime());
+
+			//Update enemy position based on bounceback
+			if (BouncebackPosition.x != 0.0f || BouncebackPosition.z != 0.0f)		//If there was a bounceback
 			{
-				mSpeed += (GC::ENEMYTYPE1_DRAG * gt.DeltaTime());
+				DirectX::XMFLOAT3 currentPos = this->GetPos();		//Get current position of player
+				SetPos(DirectX::XMFLOAT3(currentPos.x + BouncebackPosition.x, 0.0f, currentPos.z + BouncebackPosition.z));		//Add the bounceback position to it, will be 0 if there is a collision
+				BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 			}
-			if (mSpeed >= GC::ENEMYTYPE1_MAXSPEED)
-				mSpeed = GC::ENEMYTYPE1_MAXSPEED;
-			; break;
-		default:; break;
 		}
 
-		if (times.isAttacking) // EXECUTES ATTACK
-			UpdateAttack(gt.DeltaTime());
-
-		else
-			if (times.EnemyCanAttack())
-				//times.SetNextTimer();		//Makes attacking bool true and resets timer for next attack
-				times.ResetTimer();
-
-		// send int in instead of using gettype in the void
-		times.EnemyUpdateTime(1, gt.DeltaTime());
-
-		//Update enemy position based on bounceback
-		if (BouncebackPosition.x != 0.0f || BouncebackPosition.z != 0.0f)		//If there was a bounceback
+		if (mEnemyType == GC::ENEMY_TYPE_2) // CHARGER ENEMY
 		{
-			DirectX::XMFLOAT3 currentPos = this->GetPos();		//Get current position of player
-			SetPos(DirectX::XMFLOAT3(currentPos.x + BouncebackPosition.x, currentPos.y, currentPos.z + BouncebackPosition.z));		//Add the bounceback position to it, will be 0 if there is a collision
-			BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-		}
-	}
-
-	if (mEnemyType == GC::ENEMY_TYPE_2) // CHARGER ENEMY
-	{
-		switch (mBehaviour)
-		{
-		case NONE:
-			if (mSpeed > 0.0f) // if speed is still being applied
+			switch (mBehaviour)
 			{
-				mSpeed -= (GC::ENEMYTYPE2_DRAG * gt.DeltaTime()); // apply drag * deltatime to reduce
+			case NONE:
+				if (mSpeed > 0.0f) // if speed is still being applied
+				{
+					mSpeed -= (GC::ENEMYTYPE2_DRAG * gt.DeltaTime()); // apply drag * deltatime to reduce
+				}
+				; break;
+			case CHASE:
+				if (mSpeed < GC::ENEMYTYPE2_MAXSPEED) // if speed is below max speed
+				{
+					mSpeed += (GC::ENEMYTYPE2_DRAG * gt.DeltaTime()); // add drag * deltatime to increase speed
+				}
+				if (mSpeed >= GC::ENEMYTYPE2_MAXSPEED)
+					mSpeed = GC::ENEMYTYPE2_MAXSPEED;
+				; break;
+			default:; break;
 			}
-			; break;
-		case CHASE:
-			if (mSpeed < GC::ENEMYTYPE2_MAXSPEED) // if speed is below max speed
+
+			//Update enemy position based on bounceback
+			if (BouncebackPosition.x != 0.0f || BouncebackPosition.z != 0.0f)		//If there was a bounceback
 			{
-				mSpeed += (GC::ENEMYTYPE2_DRAG * gt.DeltaTime()); // add drag * deltatime to increase speed
+				DirectX::XMFLOAT3 currentPos = this->GetPos();		//Get current position of player
+				SetPos(DirectX::XMFLOAT3(currentPos.x + BouncebackPosition.x, 0.0f, currentPos.z + BouncebackPosition.z));		//Add the bounceback position to it, will be 0 if there is a collision
+				BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 			}
-			if (mSpeed >= GC::ENEMYTYPE2_MAXSPEED)
-				mSpeed = GC::ENEMYTYPE2_MAXSPEED;
-			; break;
-		default:; break;
 		}
 
-		// PROBLEM BELOW WHEN NO PARTICLE ATTACK IMPLEMENTED
-		//if (times.isAttacking) // EXECUTES ATTACK
-		//	UpdateAttack(gt.DeltaTime());
-
-		//else
-		//	if (times.CanAttack())
-		//		times.SetNextTimer();		//Makes attacking bool true and resets timer for next attack
-		//		//times.ResetTimer();
-
-		// send int in instead of using gettype in the void
-		//times.UpdateTime();
-
-		//Update enemy position based on bounceback
-		if (BouncebackPosition.x != 0.0f || BouncebackPosition.z != 0.0f)		//If there was a bounceback
-		{
-			DirectX::XMFLOAT3 currentPos = this->GetPos();		//Get current position of player
-			SetPos(DirectX::XMFLOAT3(currentPos.x + BouncebackPosition.x, currentPos.y, currentPos.z + BouncebackPosition.z));		//Add the bounceback position to it, will be 0 if there is a collision
-			BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-		}
+		mpInstance->World._42 = 0.0f;
 	}
 }
 
 void Enemy::UpdateAttack(float dt)
 {
-	// IF DURATION IS LESS THAN 0 SHOULD BE HERE
-	times.attackDuration -= dt;
+	if (mHealth > 0) {
+		// IF DURATION IS LESS THAN 0 SHOULD BE HERE
+		times.attackDuration -= dt;
 
-	if (times.attackDuration <= 0.0f) // (NEXT ATTACK TIMER - DURATION)
-	{
+		if (times.attackDuration <= 0.0f) // (NEXT ATTACK TIMER - DURATION)
+		{
 
-		times.isAttacking = false;		//Attack has ended
-		for (auto& p : particles)
-			p.RemoveEffect();
-		times.attackDuration = times.AtkDur;
-	}
-	else
-	{
-		//Get the rotation of the enemy currently
-		float angle = GetRotationY();
-		angle += 90;		//Adjust the angle to the enemys facing rotation
+			times.isAttacking = false;		//Attack has ended
+			for (auto& p : particles)
+				p.RemoveEffect();
+			times.attackDuration = times.AtkDur;
+		}
+		else
+		{
+			//Get the rotation of the enemy currently
+			float angle = GetRotationY();
+			angle += 90;		//Adjust the angle to the enemys facing rotation
 
-		//Do Attack animation
-		for (auto& p : particles)
-			p.Effect(GetPos(), angle);
+			//Do Attack animation
+			for (auto& p : particles)
+				p.Effect(GetPos(), angle);
+		}
 	}
 }
 
-void Enemy::SetDirection(int dir) // may be enemy rotation?
+void Enemy::SetDirection(DirectX::XMFLOAT3 dir) // may be enemy rotation?
 {
 	playerDirection = dir;
 }

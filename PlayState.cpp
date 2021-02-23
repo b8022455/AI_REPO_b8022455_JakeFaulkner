@@ -161,7 +161,7 @@ bool PlayState::FindNearestTraderInRadius()
 			return distanceA < distanceB;
 		}
 	private:
-		float distanceA, distanceB;
+		float distanceA = 0.0f, distanceB = 0.0f;
 	};
 
 	SortByDistance s;
@@ -224,18 +224,10 @@ PlayState::PlayState()
 void PlayState::Initialize()
 {
 	GameApp::Get().SetActiveCamera(&mCameras.at(CAMERA_TYPE::GAME));
-	//GameApp::Get().SetActiveCamera(&mCamera);
-	//mTile.Initialize("Tiles");
+
 	mTileManager.Initialize();
 
 	timeSet();
-
-	//++mInventory["Radio"];
-	//++mInventory["Potion"];
-	//inventoryPosition = mInventory.begin();
-
-	// todo change to closest trader in radius on button hit
-	//mpActiveTrader = &mTempTrader;
 
 	mPlayer.Initialize("Player");
 	mPlayerWeapon.Initialize("Weapon");
@@ -253,36 +245,8 @@ void PlayState::Initialize()
 
 	// Setup temp enemies
 	{
-		// inserts n of enemies
-		// TODO: (NOTE) ENEMIES ADDED HERE
-
 		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2)); // number of enemies, Enemy(GC::enemytype, attack)
 		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
-
-		//Init all enemies
-		//for (auto& e : mEnemies)
-		//{
-		//	/*if (e.GetType() == GC::ENEMY_TYPE_2)
-		//	{
-		//		e.Initialize(GC::GO_ENEMY);
-		//		e.SetHealth(GC::ENEMYTYPE1_HEALTH);
-		//	}
-		//	else if (e.GetType() == GC::ENEMY_TYPE_1)
-		//	{
-		//		e.Initialize("EnemyGhoul");
-		//		e.SetHealth(GC::ENEMYTYPE2_HEALTH);
-		//	}*/
-		//}
-		for (auto& e : mEnemies)
-			for (auto& t : mTraders)									//Check each trader in the game
-				while (e.CheckCollision(e.GetPos(), t.GetPos()) || DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE)	//Prevents enemy spawning to close to player
-					e.SetRandomPosition();
-
-		// check each building in the game
-		for (auto& e : mEnemies)
-			for (auto& b : mBuildings)									
-				while (e.CheckCollision(e.GetPos(), b.GetPos()) || DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE)	
-					e.SetRandomPosition();
 
 	}
 
@@ -294,16 +258,6 @@ void PlayState::Initialize()
 		const DirectX::XMINT2 s = GameApp::Get().GetClientSizeU2(); //todo on resize
 		SimpleMath::Vector2 v = GameApp::Get().GetClientSize();
 
-
-		Sprite spriteSample;
-		spriteSample.scale = 0.1f;
-
-		spriteSample.Initialise("tileTex");
-		mSprites["testSpriteFirst"] = spriteSample;
-
-		spriteSample.Initialise("stoneTex");
-		mSprites["testSpriteSecond"] = spriteSample;
-
 		mScoreText.color = DirectX::Colors::White;
 		mScoreText.fontIndex = 1;
 		mScoreText.string = "Score: " + std::to_string(score);
@@ -313,7 +267,6 @@ void PlayState::Initialize()
 		mScoreTextShadow.fontIndex = 1;
 		mScoreTextShadow.string = "Score: " + std::to_string(score);
 		mScoreTextShadow.position = DirectX::SimpleMath::Vector2(651.f, 21.f);
-
 
 		// panel soruce
 		const RECT src{ GC::PANEL_SRC[0],	GC::PANEL_SRC[1],	GC::PANEL_SRC[2],	GC::PANEL_SRC[3], };
@@ -344,7 +297,7 @@ void PlayState::Initialize()
 			mHelpPanel.Initialize("uiTex", src, dst);
 			mHelpText.color = DirectX::Colors::White;
 			mHelpText.fontIndex = 1;
-			mHelpText.string = "Something helpful should go here"; //todo help text
+			mHelpText.string = "(W)(A)(S)(D) - Movement \n(Spacebar) - attack \n(Enter) - Opens/Closes inventory \n(P) - Pauses the game \n(Q) - Trades when near a trader \n(E) - Use an item when in inventory";
 		}
 
 		//Help text
@@ -352,7 +305,7 @@ void PlayState::Initialize()
 			mHelpMessage.mText.center = true;
 			mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 40.f, 550.f };
 			mHelpMessage.mText.color = DirectX::Colors::Red;
-			mHelpMessage.Activate(GC::HELP_MESSAGES[3], 6.0f);
+			mHelpMessage.Activate(GC::HELP_MESSAGES[2], 6.0f);
 
 			mTradeHelpMessage.mText.center = true;
 			mTradeHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 250.f, 150.f };
@@ -405,14 +358,14 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
+						0.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
 				});
 			for (auto& t : mTraders)									//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
+						0.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
 						});
 			for (auto& b : mBuildings)									
@@ -449,7 +402,7 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
+						0.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
 				});
 			for (auto& t : mTraders)									//Check each trader in the game
@@ -501,14 +454,15 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
+						0.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
-				});
+			});
+
 			for (auto& t : mTraders)									//Check each trader in the game
 				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
+						0.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
 						});
 			for (auto& b : mBuildings)
@@ -554,14 +508,14 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 				//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 				e.SetPos({
 							static_cast<float>(rand() % 10 + 2.0f),
-							1.0f,
+							0.0f,
 							static_cast<float>(rand() % 10 + 2.0f)
 					});
 				for (auto& t : mTraders)									//Check each trader in the game
 					while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 						e.SetPos({
 							static_cast<float>(rand() % 10 + 2.0f),
-							1.0f,
+							0.0f,
 							static_cast<float>(rand() % 10 + 2.0f)
 							});
 				for (auto& b : mBuildings)
@@ -588,14 +542,14 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			mEnemies.back().SetPos({
 				static_cast<float>(rand() % 10 + 2.0f),
-				1.0f,
+				0.0f,
 				static_cast<float>(rand() % 10 + 2.0f)
 				});
 			for (auto& t : mTraders)									//Check each trader in the game
 				while (mEnemies.back().CheckCollision(mEnemies.back().GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
 					mEnemies.back().SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
-						1.0f,
+						0.0f,
 						static_cast<float>(rand() % 10 + 2.0f)
 						});
 			for (auto& b : mBuildings)									
@@ -654,8 +608,33 @@ void PlayState::Update(const GameTimer& gt)
 	//mTileManager.Update(gt);
 	mCombatController.Update();
 
-	if (FindNearestTraderInRadius())
-		mTradeHelpMessage.Activate(GC::HELP_MESSAGES[2], 1.0f);
+	switch (GameApp::Get().menusShown)
+	{
+	case 0:
+		GameApp::Get().mTutorialText = GC::TUTORIAL_INTRO;
+		GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+		break;
+
+	case 1:
+		GameApp::Get().mTutorialText = GC::TUTORIAL_OBJECTIVE;
+		GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+		break;
+
+	case 2:
+		GameApp::Get().mTutorialText = GC::TUTORIAL_MOVE;
+		GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+		break;
+
+	case 3:
+		GameApp::Get().mTutorialText = GC::TUTORIAL_TRADE;
+		GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+		break;
+
+	case 4:
+		GameApp::Get().mTutorialText = GC::TUTORIAL_INVENTORY;
+		GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+		break;
+	}
 
 	if (revolvingHintTimer.HasTimeElapsed(gt.DeltaTime(), 8.f))
 	{
@@ -664,15 +643,15 @@ void PlayState::Update(const GameTimer& gt)
 		mHelpMessage.mText.color = DirectX::Colors::Red;
 		mHelpMessage.Activate(GC::HELP_MESSAGES[revolvingHintPosition], 7.0f);
 		revolvingHintPosition++;
-		if (revolvingHintPosition > 9)
-			revolvingHintPosition = 3;
+		if (revolvingHintPosition > 8)
+			revolvingHintPosition = 2;
 	}
 
 	if (playerName == "")		//Only does this once
 		GetName();
 
 	timeChange += gt.DeltaTime();
-
+	
 	// AFTER 2 MINUTES CHANGE TIME PHASE IN GAME (ONLY PARTICULARLY USEFUL DURING PITCH )
 	if (timeChange >= 120.0f) {
 		timeChange = 0.0f;
@@ -804,11 +783,11 @@ void PlayState::Update(const GameTimer& gt)
 		{ // THE ERASE ERROR OCCURS IN THE NEXT LOOP
 			SimpleMath::Vector3 pos = e.GetPos();
 
-			GameApp::Get().mDebugLog << "Enemy i:" << i
-				<< "  Health: " << e.GetHealth()
-				<< "  mpInstance: " << e.mpInstance
-				<< "  X: " << std::setprecision(2) << pos.x
-				<< "  Z:" << std::setprecision(2) << pos.z << "\n";
+			//GameApp::Get().mDebugLog << "Enemy i:" << i
+			//	<< "  Health: " << e.GetHealth()
+			//	<< "  mpInstance: " << e.mpInstance
+			//	<< "  X: " << std::setprecision(2) << pos.x
+			//	<< "  Z:" << std::setprecision(2) << pos.z << "\n";
 		}
 
 		if (e.mEnabled)
@@ -829,6 +808,13 @@ void PlayState::Update(const GameTimer& gt)
 				if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE1_RANGE) &&
 					mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
 					e.LookAt(playerPosition);
+
+					if (!shownAttackTutorial)
+					{
+						GameApp::Get().mTutorialText = GC::TUTORIAL_ATTACK;
+						GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+						shownAttackTutorial = true;
+					}
 				}
 			}
 
@@ -845,44 +831,55 @@ void PlayState::Update(const GameTimer& gt)
 		}
 
 		// enemy collision with player
-		if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()))
+		if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()) && e.GetHealth() > 0)
 		{
-			mPlayer.DamagePlayer(e.GetAttack());
+			mPlayer.DamagePlayer(e.GetAttack(), e);
 			mPlayerHealthBar.SetValue(mPlayer.health);
-			if (mPlayer.health < GC::PLAYER_LOW_HEALTH)
+
+			if (!shownPlantTutorial)	//replace bool?
 			{
-				mHelpMessage.mText.center = true;
-				mHelpMessage.mText.color = DirectX::Colors::Red;
-				mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 300.f, 150.f };
-				mHelpMessage.Activate(GC::HELP_MESSAGES[0], 2.f);
+				GameApp::Get().mTutorialText = GC::TUTORIAL_PLANT;
+				GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+				shownPlantTutorial = true;
 			}
-			GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
+
 			//Transition to game over state
 			if (mPlayer.health <= 0)
 			{
 				GameApp::Get().ChangeState("GameOver");
+				GameApp::Get().GetAudio().Play("playerDie", nullptr, false, 1.0f, GetRandomVoicePitch());
+			}
+			else
+			{
+				GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
 			}
 		}
 
 		//When checking if enemy is in range, have this be in that section to prevent enemy particles from far from being checked
 		for (auto& p : e.particles)
 		{
-			if (mPlayer.CheckCollision(mPlayer.GetPos(), p.GetPos()))
+			if (mPlayer.CheckCollision(mPlayer.GetPos(), p.GetPos()) && e.GetHealth() > 0)
 			{
-				mPlayer.DamagePlayer(e.GetAttack());
+				mPlayer.DamagePlayer(e.GetAttack(), e);
 				mPlayerHealthBar.SetValue(mPlayer.health);
-				if (mPlayer.health < GC::PLAYER_LOW_HEALTH)
+
+				if (!shownPlantTutorial)	//replace bool?
 				{
-					mHelpMessage.mText.center = true;
-					mHelpMessage.mText.color = DirectX::Colors::Red;
-					mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 300.f, 150.f };
-					mHelpMessage.Activate(GC::HELP_MESSAGES[0], 2.f);
+					GameApp::Get().mTutorialText = GC::TUTORIAL_PLANT;
+					GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+					shownPlantTutorial = true;
 				}
+
 				GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
 				//Transition to game over state
 				if (mPlayer.health <= 0)
 				{
 					GameApp::Get().ChangeState("GameOver");
+					GameApp::Get().GetAudio().Play("playerDie", nullptr, false, 1.0f, GetRandomVoicePitch());
+				}
+				else
+				{
+					GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
 				}
 				break;
 			}
@@ -906,13 +903,13 @@ void PlayState::Update(const GameTimer& gt)
 					++mInventory[droppedItem];
 				}
 
+
 				e.MoveOffScreen();
 				e.mEnabled = false;
 				if (timeCycle == 4)
 					newEnemy = true;
 
 				GameApp::Get().GetAudio().Play("EnemyDie1", nullptr, false, 1.0f, GetRandomVoicePitch());
-
 			}
 			else
 			{
@@ -989,36 +986,47 @@ void PlayState::Update(const GameTimer& gt)
 	// show/hide item menu
 	if (itemMenuOpen)
 	{
-		mInventoryText.string = "Inventory:  (size " + std::to_string(mInventory.size()) + ")\n";
-		//GameApp::Get().mDebugLog << "Inventory:  (size " << mInventory.size() << ")\n";
+		if (!shownInventoryUseTutorial)
+		{
+			GameApp::Get().mTutorialText = GC::TUTORIAL_USE;
+			GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+			shownInventoryUseTutorial = true;
+		}
+		mInventoryText.string = "Inventory\n";
+		// Selected item
 
-
+		const std::string selectedItem = (*inventoryPosition).first;
+		
+		// all inventory items. Selected item prefixed with '>'
 		std::for_each(mInventory.begin(), mInventory.end(), [&](auto& inv)
+		{
+			if (inventoryPosition != mInventory.end())
 			{
-				if (inventoryPosition != mInventory.end())
+
+				if ((*inventoryPosition).first == inv.first)
 				{
-					//Debug purposes: shows the currently selected item based on inventoryPosition value
-					GameApp::Get().mDebugLog << "Current Selected Item: " << (*inventoryPosition).first << " x" << (*inventoryPosition).second << "\n";
-
-					if ((*inventoryPosition).first == inv.first)
-					{
-						mInventoryText.string += ">";
-					}
-					else
-					{
-						mInventoryText.string += " ";
-					}
-
+					mInventoryText.string += ">";
 				}
-				mInventoryText.string += " " + inv.first + " (" + std::to_string(inv.second) + ")\n";
+				else
+				{
+					mInventoryText.string += " ";
+				}
+			}
+			mInventoryText.string += " " + inv.first + " (" + std::to_string(inv.second) + ")\n";
 
-			});
+		});
+
+		// Display weapon attack power
+		if (GC::ITEM_LIST.at(selectedItem).category == ItemCategory::WEAPON)
+		{
+			mInventoryText.string += "\nAttack +" + std::to_string(mPlayerWeapon.GetWeaponStats(selectedItem)) + "\n";
+		}
 
 		//Help instructions for inventory
 		mHelpMessage.mText.center = true;
-		mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 480.f, 450.f };
+		mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 650.f, 450.f };
 		mHelpMessage.mText.color = DirectX::Colors::White;
-		mHelpMessage.Activate(GC::HELP_MESSAGES[1], 0.1f);
+		mHelpMessage.Activate(GC::HELP_MESSAGES[0], 0.1f);
 	}
 
 	// IMPLEMENT CHECK FOR ENEMIES HERE
@@ -1062,22 +1070,18 @@ void PlayState::Draw(const GameTimer& gt)
 {
 	// UI
 
-	std::for_each(mSprites.begin(), mSprites.end(), [](auto& sp)
-		{
-			sp.second.Draw();
-		});
-
 	mPlayerHealthBar.Draw();
 
 	mInventoryPanel.Draw();
 	mInventoryText.Draw();
 
-	mHelpPanel.Draw();
-	mHelpText.Draw();
 
 	mMessage.Draw();
 	mHelpMessage.Draw();
 	mTradeHelpMessage.Draw();
+
+	mHelpPanel.Draw();
+	mHelpText.Draw();
 
 	mScoreTextShadow.Draw();
 	mScoreText.Draw();
@@ -1289,8 +1293,6 @@ void PlayState::ReGen() { // DOESN'T WORK PROPERLY, JUST CUTS FRAME RATE, NEED T
 
 void PlayState::UiUpdate(const GameTimer& gt)
 {
-	mSprites["testSpriteFirst"].rotation = cosf(gt.TotalTime()) * 0.1f;
-	mSprites["testSpriteSecond"].rotation = sinf(gt.TotalTime());
 
 	mPlayerHealthBar.Update(gt);
 
@@ -1473,14 +1475,14 @@ void PlayState::Keyboard(const GameTimer& gt)
 	}
 
 	// Toggle Help
-	if (Input::Get().KeyReleased('H'))
+	if (Input::Get().KeyReleased(GC::KEY_HELP))
 	{
 		std::swap(mHelpLocation.first, mHelpLocation.second);
 		mHelpMessage.Activate("", 0.f);
 	}
 
 	// Trade
-	if (Input::Get().KeyReleased('9'))
+	if (Input::Get().KeyReleased(GC::KEY_TRADE))
 	{
 		if (FindNearestTraderInRadius())
 		{
@@ -1513,7 +1515,7 @@ void PlayState::Keyboard(const GameTimer& gt)
 	}
 	
 	// Pause
-	if (Input::Get().KeyReleased(0xd))
+	if (Input::Get().KeyReleased(GC::KEY_PAUSE))
 	{
 		GameApp::Get().ChangeState("PauseMenu");
 	}
@@ -1524,7 +1526,7 @@ void PlayState::Keyboard(const GameTimer& gt)
 		ReGen();
 	}
 
-	if (Input::Get().KeyReleased('M'))
+	if (Input::Get().KeyReleased(GC::KEY_DEBUG_KILL_ALL))
 	{
 		//mEnemies.clear();
 
@@ -1688,6 +1690,7 @@ void PlayState::Reset()
 	mInventory.clear();
 	++mInventory["Radio"];
 	++mInventory["Glowing Seeds"];
+	++mInventory["Nail Bat"];
 	inventoryPosition = mInventory.begin();
 
 	//Reset help text
@@ -1722,9 +1725,12 @@ void PlayState::Reset()
 	mBuildings.clear();
 
 	//Reset Lighting
+	timeCycle = 1;
+	timeChange = 0.0f;
 	GameApp::Get().GetMainPassCB()->AmbientLight = GC::DAWN_COLOUR; // dawn
 	GameApp::Get().GetMainPassCB()->Lights[1].Strength = GC::DAWN_STRENGTH;
 
+	// TODO: LOOK AT BELOW FOR ENEMY RESETTING (MAY OR MAY NOT BE NEEDED)
 	//Reset Enemies
 	size_t enemyAmount = mEnemies.size() - 1;
 	while (enemyAmount > 1)

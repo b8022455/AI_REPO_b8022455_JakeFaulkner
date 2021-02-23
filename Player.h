@@ -10,6 +10,7 @@
 #include "DeltaTimer.h"
 #include "AttackTimeDelay.h"
 #include <d2d1helper.h>
+#include "Enemy.h"
 
 //using namespace DirectX;
 
@@ -26,6 +27,7 @@ public:
 	void MoveDown(const GameTimer& gt);
 	void MoveLeft(const GameTimer& gt);
 	void MoveRight(const GameTimer& gt);
+	void Footsteps(const GameTimer& gt);
 
 	DirectX::XMFLOAT3 GetPositionWithVelocity(const GameTimer& gt);
 	void SetVelocity(const float newVelocity);
@@ -36,7 +38,7 @@ public:
 	Velocity vel;
 	// Gamepad
 	void Move(const GameTimer& gt, const DirectX::SimpleMath::Vector3& vec);
-	void DamagePlayer(int damage);
+	void DamagePlayer(int damage, Enemy e);
 
 	int health = GC::PLAYER_MAX_HEALTH;
 

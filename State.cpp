@@ -12,7 +12,7 @@ bool StateManager::Story = true;
 
 void StateManager::EvaluateState()
 {
-	if (mCurrentState == GC::STATE_PLAY || mCurrentState == GC::STATE_PAUSE || mCurrentState == GC::STATE_TRADE)
+	if (mCurrentState == GC::STATE_PLAY || mCurrentState == GC::STATE_PAUSE || mCurrentState == GC::STATE_TRADE || mCurrentState == GC::STATE_TUTORIAL)
 	{
 		mIsMenu = false;
 	}
@@ -132,8 +132,11 @@ void StateManager::Init() // initialised in gameapp
 	const RECT dst{ 300,	220, 520, 310 };
 	textbox.Initialize("uiTex", src, dst);
 	menuTitle.string = "Enter Name (8 Characters Max)";
+	menuTitle.position = DirectX::SimpleMath::Vector2{ 260.f, 180.f };
 	menuBody.string = "Press Enter to Start";
+	menuBody.position = DirectX::SimpleMath::Vector2{ 330.f, 350.f };
 	Button btnEnter(buttonBg, "Enter Play", Button::GOTO_GAME);
+	btnEnter.SetPos({ 200.f, 150.f });
 	AddState("EnterName", std::make_unique<MenuState>(menuTitle, menuBody, btnEnter, textbox, "EnterNameMenu"));
 
 	// PASSING LEVEL SCREEN?
@@ -181,6 +184,19 @@ void StateManager::Init() // initialised in gameapp
 	btnS = Button(buttonBg, "S Main Menu", Button::Action::GOTO_MAIN_MENU);
 	AddState("HelpMenu", std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, "HelpMenu"));
 
+	//Tutorial help screens
+	menuTitle.string = "Help";
+	menuTitle.center = true;
+	menuTitle.position = DirectX::SimpleMath::Vector2{400.f, 340.f};
+	menuBody.center = true;
+	menuBody.position = DirectX::SimpleMath::Vector2{400.f, 400.f};
+	Button btnAdvance = Button(buttonBg, "Enter To Resume", Button::Action::GOTO_GAME);
+	btnAdvance.SetPos({400.f, 550.f});
+	Panel msgPanel;
+	const RECT ds = {100, 300, 700, 600};
+	msgPanel.Initialize("uiTex", src, ds);
+	AddState(GC::STATE_TUTORIAL, std::make_unique<MenuState>(menuTitle, menuBody, btnAdvance, msgPanel, GC::STATE_TUTORIAL));
+
 	// GameState
 	AddState(GC::STATE_PLAY, std::make_unique<PlayState>());
 	
@@ -221,11 +237,6 @@ void StateManager::Update(const GameTimer & gt)
 {
 	auto test = GameApp::Get().AspectRatio(); //todo remove. Example of accessing GameApp
 
-	//GameApp::Get().input.Update();
-
-	GameApp::Get().mDebugLog << "State: \"" << mCurrentState << "\"\n";
-
-
 	mFadeForeground.color.w = mFadeAlpha;
 
 	FadeUpdate(gt);
@@ -255,7 +266,6 @@ void StateManager::Draw(const GameTimer & gt)
 
 		mFadeForeground.Draw();
 
-		GameApp::Get().mDebugLog << "\n" << mFadeAlpha;
 	}
 	else
 	{
