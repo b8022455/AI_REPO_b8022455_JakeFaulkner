@@ -88,8 +88,8 @@ namespace GC
 		PLAYER_DOWNBOUND = -15.0f,
 
 		ENEMYTYPE1_RANGE = 8.0f,
-		ENEMYTYPE1_ATTACK_DURATION = 2.0f,
-		ENEMYTYPE1_ATTACK_DELAY = float(8.0f), // definitely the attack duration - cant actually be less than other
+		ENEMYTYPE1_ATTACK_DURATION = 3.0f,
+		ENEMYTYPE1_ATTACK_DELAY = float(6.0f), // definitely the attack duration - cant actually be less than other
 		ENEMYTYPE1_MAXSPEED = 1.0f,
 		ENEMYTYPE1_DRAG = 1.0f,
 

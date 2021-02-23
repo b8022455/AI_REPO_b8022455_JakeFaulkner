@@ -108,7 +108,6 @@ Enemy PlayState::Spawn(std::string enemyType) // USED TO INITIALISE ENEMIES
 		e.Initialize("EnemyGhoul");
 		e.SetHealth(GC::ENEMYTYPE1_HEALTH);
 		e.SetRandomPosition();
-		e.times.StartTime(GC::ENEMYTYPE1_ATTACK_DURATION, GC::ENEMYTYPE1_ATTACK_DELAY);
 		e.particles.resize(20);
 		return e;
 	}
@@ -653,15 +652,6 @@ void PlayState::Update(const GameTimer& gt)
 	{
 		e.Update(gt);
 
-		{ // THE ERASE ERROR OCCURS IN THE NEXT LOOP
-			SimpleMath::Vector3 pos = e.GetPos();
-
-			//GameApp::Get().mDebugLog << "Enemy i:" << i
-			//	<< "  Health: " << e.GetHealth()
-			//	<< "  mpInstance: " << e.mpInstance
-			//	<< "  X: " << std::setprecision(2) << pos.x
-			//	<< "  Z:" << std::setprecision(2) << pos.z << "\n";
-		}
 
 		if (e.mEnabled)
 		{
@@ -693,7 +683,7 @@ void PlayState::Update(const GameTimer& gt)
 
 			// enemy movement behaviour based on player radius
 			if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE &&
-				e.getattacking().isAttacking == false)
+				!e.GetIfCanAttack())
 			{
 				e.mBehaviour = Enemy::Behaviour::CHASE;
 			}
@@ -706,7 +696,7 @@ void PlayState::Update(const GameTimer& gt)
 		// enemy collision with player
 		if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()) && e.GetHealth() > 0)
 		{
-			mPlayer.DamagePlayer(e.GetAttack(), e);
+			mPlayer.DamagePlayer(e.GetAttack(), e, gt);
 			mPlayerHealthBar.SetValue(mPlayer.health);
 
 			if (!shownPlantTutorial)	//replace bool?
@@ -733,7 +723,7 @@ void PlayState::Update(const GameTimer& gt)
 		{
 			if (mPlayer.CheckCollision(mPlayer.GetPos(), p.GetPos()) && e.GetHealth() > 0)
 			{
-				mPlayer.DamagePlayer(e.GetAttack(), e);
+				mPlayer.DamagePlayer(e.GetAttack(), e, gt);
 				mPlayerHealthBar.SetValue(mPlayer.health);
 
 				if (!shownPlantTutorial)	//replace bool?
@@ -1569,6 +1559,8 @@ void PlayState::Reset()
 	ReGen();
 
 	//Reset Lighting
+	GameApp::Get().mStoryIndex = 0;
+	areas = 0;
 	timeCycle = 1;
 	timeChange = 0.0f;
 	GameApp::Get().GetMainPassCB()->AmbientLight = GC::DAWN_COLOUR; // dawn

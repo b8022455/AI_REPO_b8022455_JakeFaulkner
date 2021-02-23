@@ -1,6 +1,5 @@
 #include "Enemy.h"
 #include "GameApp.h"
-// (NOTE) ENEMY LOOKS AT PLAYER IS IN GAMEOBJECT CLASS RATHER THAN HERE
 
 void Enemy::SetHealth(int health) {
 	mHealth = health;
@@ -23,37 +22,15 @@ void Enemy::Reset()
 	if (GetType() == GC::ENEMY_TYPE_1) {
 		mHealth = GC::ENEMYTYPE1_HEALTH;
 		BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
-		times.isAttacking = false;
+		canAttack = false;
 		for (auto& p : particles)
 			p.RemoveEffect();
-		times.UpdateTime();
-		if (times.CanAttack())
-			times.SetNextTimer();
 	}
 	if (GetType() == GC::ENEMY_TYPE_2) {
 		mHealth = GC::ENEMYTYPE2_HEALTH;
 		BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
 	}
 }
-
-//void Enemy::SetPosition(const DirectX::XMFLOAT3& newPosition)
-//{
-	//Updates position on the object
-//	mpInstance->World._41 = newPosition.x;
-//	mpInstance->World._42 = newPosition.y;
-//	mpInstance->World._43 = newPosition.z;
-//
-//	//int attackDuration = 2;		//How long the attack plays for, not final time yet
-//	//int attackDelay = 4;		//How long between each attack
-//	
-//	// ATTACK DELAY & DURATION HELD IN CONSTANTS
-//	if (this->GetType() == GC::ENEMY_TYPE_1)
-//		times.StartTime(GC::ENEMYTYPE1_ATTACK_DURATION, GC::ENEMYTYPE1_ATTACK_DELAY);
-//
-//	//Setup the enemy particles
-//	particles.resize(20);
-//
-//}
 
 void Enemy::SetRandomPosition()
 {
@@ -222,16 +199,11 @@ void Enemy::Update(const GameTimer& gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR 
 			default:; break;
 			}
 
-			if (times.isAttacking) // EXECUTES ATTACK
+			if (canAttack) // EXECUTES ATTACK
 				UpdateAttack(gt.DeltaTime());
 
-			else
-				if (times.EnemyCanAttack())
-					//times.SetNextTimer();		//Makes attacking bool true and resets timer for next attack
-					times.ResetTimer();
-
-			// send int in instead of using gettype in the void
-			times.EnemyUpdateTime(1, gt.DeltaTime());
+			else if (mEnemyAttackTimer.HasTimeElapsed(gt.DeltaTime(), GC::ENEMYTYPE1_ATTACK_DELAY))
+				canAttack = true;
 
 			//Update enemy position based on bounceback
 			if (BouncebackPosition.x != 0.0f || BouncebackPosition.z != 0.0f)		//If there was a bounceback
@@ -280,15 +252,14 @@ void Enemy::UpdateAttack(float dt)
 {
 	if (mHealth > 0) {
 		// IF DURATION IS LESS THAN 0 SHOULD BE HERE
-		times.attackDuration -= dt;
+		mAttackDuration -= dt;
 
-		if (times.attackDuration <= 0.0f) // (NEXT ATTACK TIMER - DURATION)
+		if (mAttackDuration <= 0.0f) // (NEXT ATTACK TIMER - DURATION)
 		{
-
-			times.isAttacking = false;		//Attack has ended
+			canAttack = false;
 			for (auto& p : particles)
 				p.RemoveEffect();
-			times.attackDuration = times.AtkDur;
+			mAttackDuration = GC::ENEMYTYPE1_ATTACK_DURATION;
 		}
 		else
 		{
