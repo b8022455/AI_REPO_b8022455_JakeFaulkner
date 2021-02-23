@@ -118,7 +118,7 @@ void StateManager::Init() // initialised in gameapp
 	AddState("Story", std::make_unique<StoryState>());
 
 	// INTRO SCREEN	
-	menuTitle.string = ""; // TODO: (NOTE) STORY BLURB 1 LOCATED HERE
+	menuTitle.string = ""; 
 	menuBody.string = "It began in the 20th year of the 2nd millenium, on a tuesday, when the plague was \nreleased. The world quickly fell to ruin as it quickly spread & mutated moving between\nhosts, human, animal & plant alike. A few wars & civil uprisings later. And this is the\nworld as we now know it.\nTerrifying I know.\n\n\n                                                                            Press W to play";
 	Button btnW(buttonBg, "W - Play", Button::Action::GOTO_MAIN_MENU);
 	Button btnA(buttonBg, "A - Play", Button::Action::NO_ACTION);
@@ -235,7 +235,7 @@ void StateManager::Init() // initialised in gameapp
 
 void StateManager::Update(const GameTimer & gt)
 {
-	auto test = GameApp::Get().AspectRatio(); //todo remove. Example of accessing GameApp
+	auto test = GameApp::Get().AspectRatio(); 
 
 	mFadeForeground.color.w = mFadeAlpha;
 

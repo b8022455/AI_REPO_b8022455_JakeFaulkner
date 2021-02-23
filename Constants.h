@@ -167,7 +167,7 @@ namespace GC
 		GO_TRADER = "Trader",
 		GO_POTATO = "Potato",
 
-		// TODO: (NOTE) IMPLEMENT ENEMY TYPES HERE
+		// TODO: (REMEMBER) IMPLEMENT ENEMY TYPES HERE
 		// ?? = NOT IMPLEMENTED OR NEEDS REVIEWING
 		ENEMY_TYPE_1 = "EnemyType1", 
 		// BASIC BARFING ENEMY (HOBBLES TOWARD PLAYER THEN BARFS, NO DAMAGE FROM CONTACT??)
@@ -346,28 +346,28 @@ namespace GC
 	};
 
 	//Trader requests. upto 3
-	const ItemLookup ITEM_LOOKUP_REQUEST
+	const ItemLookup ITEM_LOOKUP_REQUEST // TODO: (REMEMBER) TRADER STUFF HERE
 	{
-		{ TRADER_NAME_TEST,			{{"Leadpipe",1 }												}	},
-		{ TRADER_NAME_1,			{{"Leadpipe",2 }											}	},
-		{ TRADER_NAME_2,			{{"Leadpipe",2}, {"Plastic Spork",2}							}   },
-		{ TRADER_NAME_3,			{{"Leadpipe",2}, {"Nail Bat",2},{ "Leadpipe",2}				}   }, //todo change 
-		{ TRADER_NAME_4,			{{"Leadpipe",2}, 								}   }, //todo change
-		{ TRADER_OBJ_1,				{{"Leadpipe",2}												}   }, // front of car  //todo change
-		{ TRADER_OBJ_2,				{{"Leadpipe",2}												}   }, // mid car       //todo change
-		{ TRADER_OBJ_3,				{{"Leadpipe",2}												}   }, // rear of car   //todo change
+		{ TRADER_NAME_TEST,			{{"Leadpipe",1 }								}	},
+		{ TRADER_NAME_1,			{{"Leadpipe",2 }								}	},
+		{ TRADER_NAME_2,			{{"Leadpipe",2}, {"Plastic Spork",2}			}   },
+		{ TRADER_NAME_3,			{{"Leadpipe",2}, {"Nail Bat",2},{ "Leadpipe",2}	}   },  
+		{ TRADER_NAME_4,			{{"Leadpipe",2}, 								}   }, 
+		{ TRADER_OBJ_1,				{{"Leadpipe",2}									}   }, // front of car
+		{ TRADER_OBJ_2,				{{"Leadpipe",2}									}   }, // mid car
+		{ TRADER_OBJ_3,				{{"Leadpipe",2}									}   }, // rear of car
 	};
 
-	const ItemLookup ITEM_LOOKUP_REWARD
+	const ItemLookup ITEM_LOOKUP_REWARD 
 	{
-		{ TRADER_NAME_TEST,		{{"Key To Valhalla",1 }											}	},
-		{ TRADER_NAME_1,		{{"Leadpipe",2}	,{"Nail Bat",2}												}	},
-		{ TRADER_NAME_2,		{{"Leadpipe",2}, {"Leadpipe",2}				}	}, //
-		{ TRADER_NAME_3,		{{"Leadpipe",2}				}	}, //todo change 
-		{ TRADER_NAME_4,		{																}	}, // no reward, charity
-		{ TRADER_OBJ_1,			{																}   }, // front of car
-		{ TRADER_OBJ_2,			{																}   }, // mid car
-		{ TRADER_OBJ_3,			{																}   }, // rear of car
+		{ TRADER_NAME_TEST,		{{"Key To Valhalla",1 }								}	},
+		{ TRADER_NAME_1,		{{"Leadpipe",2}	,{"Nail Bat",2}						}	},
+		{ TRADER_NAME_2,		{{"Leadpipe",2}, {"Leadpipe",2}						}	}, 
+		{ TRADER_NAME_3,		{{"Leadpipe",2}										}	},  
+		{ TRADER_NAME_4,		{													}	}, // no reward, charity
+		{ TRADER_OBJ_1,			{													}   }, // front of car
+		{ TRADER_OBJ_2,			{													}   }, // mid car
+		{ TRADER_OBJ_3,			{													}   }, // rear of car
 	};
 
 	const ItemLookup PLANT_LOOKUP_HARVEST
@@ -378,12 +378,12 @@ namespace GC
 	};
 
 
-	const std::map<std::string, DialogPair> DIALOG_PAIR
+	const std::map<std::string, DialogPair> DIALOG_PAIR 
 	{
 		{ TRADER_NAME_TEST,	{"Got some rare things to trade, stranger","heh heh heh Thank you"	}},
 		{ TRADER_NAME_1,	{"Trade with me","Now on your way"	}},
 		{ TRADER_NAME_2,	{"I need some things you need some things","Now I need some peace and quiet and you need to leave"	}}, //
-		{ TRADER_NAME_3,	{"Trade with me","Now on your way"	}}, //todo change 
+		{ TRADER_NAME_3,	{"Trade with me","Now on your way"	}},  
 		{ TRADER_NAME_4, 	{"Trade with me","Now on your way"	}}, // no reward, charity
 		{ TRADER_OBJ_3, 	{"There's lots of space to store weapons here.","Locked and loaded"	}},			// rear of car
 		{ TRADER_OBJ_2, 	{"I have to load up on supplies for the journey","That should do it"}},			// middle of car

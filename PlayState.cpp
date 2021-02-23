@@ -98,7 +98,6 @@ bool PlayState::FindNearestTraderInRadius()
 
 }
 
-// TODO: (URGENT) BARFER ENEMY ERROR HERE, SPAWN NEEDS TO BE USED WHEN ADDING THE ENEMIES
 Enemy PlayState::Spawn(std::string enemyType) // USED TO INITIALISE ENEMIES
 {
 	//Enemy e(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK);
@@ -250,7 +249,6 @@ void PlayState::Initialize()
 }
 
 void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
-	// TODO: (URGENT) CLEAR mEnemies HERE & IMMEDIATELY APPLY NEW ENEMIES
 	// use time cycle to determine number of enemies to add, enemy types are selected at random
 
 	if (fill == false) {
@@ -278,7 +276,6 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 		//Init all enemies
 		for (auto& e : mEnemies)
 		{
-			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
 						0.0f,
@@ -295,7 +292,6 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 	}
 	if (timeCycle == 2) { // noon (small / 2)
 		//	// inserts n of enemies
-		//	// TODO: (NOTE) ENEMIES ADDED HERE
 		int e1 = (rand() % 2) + 1; // random 1-2
 		int e2 = (rand() % 2) + 1; // random 1-2
 		if (e1 == 1) {
@@ -315,7 +311,6 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 		//Init all enemies
 		for (auto& e : mEnemies)
 		{
-			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
 						0.0f,
@@ -331,8 +326,7 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 		}
 	}
 	if (timeCycle == 3) { // evening (large / 3)
-		//	// inserts n of enemies
-		//	// TODO: (NOTE) ENEMIES ADDED HERE
+			// inserts n of enemies
 		int e1 = (rand() % 2) + 1; // random 1-2
 		int e2 = (rand() % 2) + 1; // random 1-2
 		int e3 = (rand() % 2) + 1; // random 1-2
@@ -360,7 +354,6 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 		//Init all enemies
 		for (auto& e : mEnemies)
 		{
-			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
 						0.0f,
@@ -377,7 +370,6 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 		}
 	}
 	if (timeCycle == 4) { // pitch (large / constant)
-		// TODO: (URGENT) WILL NEED EXTRA WORK DEPENDING ON HOW MANY ENEMIES ARE LEFT
 		// fill on basic
 		if (fill == false) {
 			int e1 = (rand() % 2) + 1; // random 1-2
@@ -407,7 +399,6 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 			//Init all enemies
 			for (auto& e : mEnemies)
 			{
-				//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 				e.SetPos({
 							static_cast<float>(rand() % 10 + 2.0f),
 							0.0f,
@@ -424,8 +415,7 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 		}
 
 		// fill until full again
-		if (fill == true) { // TODO: THIS NEEDS REWORKING, CAN'T DELETE ENEMIES FROM VECTOR WHILE GAME IS RUNNING
-			// NEED TO IMPLEMENT A METHOD OF RANDOMLY CREATING NEW ENEMIES, ADD 1 ENEMY AFTER EVERY DEATH 
+		if (fill == true) { 
 
 			int e1 = (rand() % 2) + 1; // random 1-2
 			if (e1 == 1) {
@@ -675,7 +665,7 @@ void PlayState::Update(const GameTimer& gt)
 			else
 				enemyRange = GC::ENEMYTYPE2_RANGE;
 
-			// TODO: (NOTE) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
+			// TODO: (REMEMBER) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
 			if (mPlayer.GetPos().x >= (e.GetPos().x - GC::ENEMYTYPE1_RANGE) &&
 				mPlayer.GetPos().x <= (e.GetPos().x + GC::ENEMYTYPE1_RANGE)) { // player within - range on x
 				if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE1_RANGE) &&
@@ -760,7 +750,7 @@ void PlayState::Update(const GameTimer& gt)
 
 		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), e.GetPos()))
 		{
-			// TODO: FIX ENEMY MODEL LEFT ON SCREEN
+			// TODO: (URGENT) FIX ENEMY MODEL LEFT ON SCREEN
 
 			e.DamageEnemy(mPlayer.attack);		//Takes away health from enemy + blowsback enemy position
 			if (e.GetHealth() <= 0)
@@ -807,7 +797,7 @@ void PlayState::Update(const GameTimer& gt)
 
 	});
 
-	// TODO: (NOTE) METHOD OF REGENNING ENEMIES AFTER THEIR DEATH HERE
+	// TODO: (REMEMBER) METHOD OF REGENNING ENEMIES AFTER THEIR DEATH HERE
 	if (newEnemy == true) {
 		newEnemy = false;
 		eGen(true);
@@ -899,9 +889,7 @@ void PlayState::Update(const GameTimer& gt)
 	if (EnemiesRemaining() == 0 && !mPlayer.AreaClear)
 		mPlayer.AreaClear = true;
 
-	// TODO: (URGENT) IMPLEMENT BETTER WIN CONDITION
 	// final goal is to reach a safe house, need to harvest a certain number of plants as payment to get in?
-
 
 	if (mPlayer.AreaClear && mPlayer.genArea) { // TODO: (REMEMBER) IMPLEMENT CHANGE STATE FOR NEW AREA HERE
 		// change state, trigger regen
@@ -1505,7 +1493,7 @@ void PlayState::Reset()
 	mCombatController.Reset();
 	mPlayerWeapon.Reset();
 
-	mPlayerHealthBar.SetMinMax(0, GC::PLAYER_MAX_HEALTH); // todo change to max health
+	mPlayerHealthBar.SetMinMax(0, GC::PLAYER_MAX_HEALTH); 
 	mPlayerHealthBar.SetValue(mPlayer.health);
 	mPlayerHealthBar.SetPosition({ 200.0f, 20.0f }); // todo add values to constants.h
 	mPlayerHealthBar.SetValue(GC::PLAYER_MAX_HEALTH);
@@ -1574,7 +1562,7 @@ void PlayState::Reset()
 	GameApp::Get().GetMainPassCB()->AmbientLight = GC::DAWN_COLOUR; // dawn
 	GameApp::Get().GetMainPassCB()->Lights[1].Strength = GC::DAWN_STRENGTH;
 
-	// TODO: LOOK AT BELOW FOR ENEMY RESETTING (MAY OR MAY NOT BE NEEDED)
+	// TODO: (REMEMBER) LOOK AT BELOW FOR ENEMY RESETTING (MAY OR MAY NOT BE NEEDED)
 	//Reset Enemies
 	size_t enemyAmount = mEnemies.size() - 1;
 	while (enemyAmount > 1)

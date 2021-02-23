@@ -45,7 +45,6 @@ class CombatController
 {
 public:
 	CombatController() {};	//Default Constructor
-	//todo pass in player and enemy collection pointer
 	void Initialize(Player* player, PlayerWeapon* playerWeapon, std::vector<Enemy>* enemies);
 	void Update();
 	void Reset();
