@@ -304,8 +304,7 @@ void GameApp::OnResize()
 	//assert(mpActiveCamera);
 
 	if (mpActiveCamera)
-	{
-		//todo 
+	{ 
 		mpActiveCamera->SetLens(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
 
 		BoundingFrustum::CreateFromMatrix(mCamFrustum, mpActiveCamera->GetProj());
@@ -694,7 +693,6 @@ void GameApp::UpdateMainPassCB(const GameTimer& gt)
 	mMainPassCB.TotalTime = gt.TotalTime();
 	mMainPassCB.DeltaTime = gt.DeltaTime();
 
-	// TODO: (NOTE) LIGHTS SET HERE IN UPDATE
 	//mMainPassCB.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
 	//mMainPassCB.AmbientLight = GC::DAWN_COLOUR;
 

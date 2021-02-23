@@ -50,65 +50,18 @@ void Enemy::DamageEnemy(int dmg)
 	float z = 0.0f;
 
 	int direction = 0; // used to determine which direction to apply knockback 
-					   
-	// if enemy x > player x then enemy is right of the player
-	// if distx is negative then enemy is to the right
-	float distx = playerDirection.x - this->GetPos().x;
-	// if enemy z > player z then enemy is above the player
-	// if distz is negative then enemy is above
-	float distz = playerDirection.z - this->GetPos().z;
-	//-x-z = topright
-	//x-z = topleft
-	//-xz = bottomright
-	//xz = bottomleft
-	//if both positive && (distx > distz) enemy is closer on x
-	//if both positive && (distx < distz) enemy is closer on z
-	//if both negative && (distx > distz) enemy is closer on z
-	//if both negative && (distx < distz) enemy is closer on x
-	float distx2 = distx * 2;
-	float distz2 = distz * 2;
-	bool negativeX = false; // false right, true left
-	bool negativeZ = false; // false top, true bottom
-	// negative catcher
-	if (distx < 0) { distx -= distx2; negativeX = true; }
-	if (distz < 0) { distz -= distz2; negativeZ = true; }
-	//if negativeX == true = left & negativeZ == true = bottom == south west
-	// if distx < distz = closer to playerx than playerz
-	// if close to playerz then x should be jumped
-	
-	bool xJump = false;
-	bool zJump = false;
-	if (distx < distz) { zJump = true; }
-	if (distz < distx) { xJump = true; }
+	// diagonal knockback is almost guranteed with this model
 
-	// TODO: IMPLEMENT LOGIC FOR DIAGONAL
-	// if playerx < ( enemyx + 1.0f)
-	if ((playerDirection.x + 0.6f) < this->GetPos().x && (playerDirection.z + 0.6f) < this->GetPos().z) { // north east
-		direction = 1;
-	}
-	if ((playerDirection.x + 0.6f) < this->GetPos().x && (playerDirection.z - 0.6f) > this->GetPos().z) { // south east
-		direction = 3;
-	}
-	if ((playerDirection.x - 0.6f) > this->GetPos().x && (playerDirection.z + 0.6f) < this->GetPos().z) { // north west
-		direction = 7;
-	}
-	if ((playerDirection.x - 0.6f) > this->GetPos().x && (playerDirection.z - 0.6f) > this->GetPos().z) { // south west
-		direction = 5;
-	}
+	if (this->GetPos().x > playerDirection.x) { direction = 1; } // right of player
+	if (this->GetPos().x < playerDirection.x) { direction = 3; } // left of player
+	if (this->GetPos().z > playerDirection.z) { direction = 0; } // top of player
+	if (this->GetPos().z < playerDirection.z) { direction = 2; } // bottom of player
 
-	if (xJump == true && negativeX == true) { direction = 2; } // east?
-	if (xJump == true && negativeX == false) { direction = 6; } // west?
-	if (zJump == true && negativeZ == true) { direction = 4; } // south?
-	if (zJump == true && negativeZ == false) { direction = 0; } // north?
-	// 
-	if (direction == 0) { z = 2.0f;	} // north
-	if (direction == 1) { z = 2.0f;	x = 2.0f; } // north east
-	if (direction == 2) { x = 2.0f; } // east
-	if (direction == 3) { z = -2.0f; x = 2.0f; } // south east
-	if (direction == 4) { z = -2.0f; } // south
-	if (direction == 5) { z = -2.0f; x = -2.0f; } // south west
-	if (direction == 6) { x = -2.0f; } // west
-	if (direction == 7) { z = 2.0f; x = -2.0f; } // north west
+	if (direction == 0) { z = 2.0f; } // north
+	if (direction == 1) { x = 2.0f; } // east
+	if (direction == 2) { z = -2.0f; } // south
+	if (direction == 3) { x = -2.0f; } // west
+
 	BouncebackPosition.x = x;
 	BouncebackPosition.z = z;
 }

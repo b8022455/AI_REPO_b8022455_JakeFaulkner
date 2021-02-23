@@ -152,8 +152,7 @@ public:
 	const DirectX::XMFLOAT3 CAM_OFFSET{ 0.0f,10.0f,-10.0f }; 
 	Experience mExperience;
 
-	// todo Sam/Jake description here please
-	void ReGen();
+	void ReGen(); // REGENERATE TILES
 
 	void UiUpdate(const GameTimer& gt);
 	// Returns if planted successful

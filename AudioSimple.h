@@ -17,7 +17,7 @@ class AudioSimple
 	std::unique_ptr<DirectX::AudioEngine> mAudioEngine;			// Globals for sound effects and instances assigned to it
 	std::unordered_map<std::string, SoundPair>  mSounds;		// Sounds assigned a string name
 
-	DirectX::AudioEmitter mEmitter; //todo GameObjects create emitters rather than one member variable
+	DirectX::AudioEmitter mEmitter; 
 	DirectX::AudioListener mListener; // camera properties passed in through Update()
 	X3DAUDIO_CONE mCone;
 public:

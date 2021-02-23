@@ -213,8 +213,6 @@ void Player::Move(const GameTimer & gt, const DirectX::SimpleMath::Vector3 & vec
 		SetRotationY(90);							//Positions player model facing downwards (towards camera)
 	}
 
-	//todo simplify
-
 	vel.SetVel(vec, 1.0f*gt.DeltaTime());
 
 	//Copied from Player::Move since keyboard/controller have diff functions to apply velocity

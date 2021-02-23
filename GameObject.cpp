@@ -9,11 +9,6 @@ void GameObject::AddRenderItemInstance(const std::string & renderItemName)
 	assert(mpInstance);
 }
 
-void GameObject::RemoveRenderItemInstance()
-{
-	// todo May be an issue with pointer mpInstance for moved instances that remain
-}
-
 GameObject::~GameObject()
 {
 	if (mHasInitailized)

@@ -17,8 +17,7 @@ private:
 
 	std::unique_ptr<DirectX::GamePad> mGamepad;
 	DirectX::GamePad::State mGamePadState;
-	DirectX::GamePad::ButtonStateTracker mGamePadTracker;
-	//todo 
+	DirectX::GamePad::ButtonStateTracker mGamePadTracker; 
 	int mGamePadPlayer = 0; // 1 - 4
 
 	bool useGamePad = false;
