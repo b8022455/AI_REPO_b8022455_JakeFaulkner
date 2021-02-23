@@ -482,7 +482,7 @@ void PlayState::timeSet() {
 void PlayState::Update(const GameTimer& gt)
 {
 	//mTileManager.Update(gt);
-	mCombatController.Update();
+	mCombatController.Update(gt);
 
 	switch (GameApp::Get().menusShown)
 	{

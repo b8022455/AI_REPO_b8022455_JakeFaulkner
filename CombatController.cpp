@@ -15,8 +15,9 @@ void CombatController::Initialize(Player* player, PlayerWeapon* playerWeapon, st
 	collisionPoint._41 += 0.1f;
 }
 
-void CombatController::Update()
+void CombatController::Update(const GameTimer& gt)
 {
+	mpPlayerWeapon->Update(gt);
 	isAttacking = CheckIfAttackIsFinished();		//Stops the attack
 
 	//Updates the collision point when the weapon is rotating
@@ -38,8 +39,6 @@ void CombatController::Update()
 		});
 
 	}
-
-	mpPlayerWeapon->UpdateTime();		//Keeps timer updated regardless of key input
 }
 
 void CombatController::PlayerAttack()
@@ -77,27 +76,29 @@ void PlayerWeapon::Initialize(const std::string& renderItemName)
 	float attackDuration = 1.f;
 	float attackDelay = 1.f;
 
-	times.StartTime(attackDuration, attackDelay);
+	mCanAttack = false;
+}
 
-	times.isAttacking = false;
+void PlayerWeapon::Update(const GameTimer& gt)
+{
+	if (mPlayerAttackTimer.HasTimeElapsed(gt.DeltaTime(), 1.0f))
+	{
+		mCanAttack = true;
+	}
 }
 
 void PlayerWeapon::Reset()
 {
 	weaponRotation = weaponEndRotation;
-	times.isAttacking = false;
+	mCanAttack = false;
+	mIsCurrentlySwinging = false;
 	SetPos(DirectX::XMFLOAT3(0.f, 0.f, -80.f));
 	//When having different models for diff weapons, reset model to first weapon
 }
 
-void PlayerWeapon::UpdateTime()
-{
-	times.UpdateTime();
-}
-
 void PlayerWeapon::Attack()
 {
-	if (times.CanAttack())
+	if (mCanAttack)
 	{
 		PositionWeapon();
 		SwingWeapon();
@@ -108,7 +109,8 @@ void PlayerWeapon::Attack()
 
 void PlayerWeapon::PositionWeapon()
 {
-	times.SetNextTimer();
+	mIsCurrentlySwinging = true;
+	mCanAttack = false;
 
 	if (playerDirection > 1)		//If the player direction is Up (2 in the enum) or Down (3 in the enum)
 	{
@@ -140,7 +142,8 @@ void PlayerWeapon::SwingWeapon()
 void PlayerWeapon::ResetWeaponPosition()
 {
 	weaponRotation = GC::WEAPONSTART;
-	times.isAttacking = false;
+	mCanAttack = false;
+	mIsCurrentlySwinging = false;
 
 	//Resets weapon underneath the map until used again
 	SetPos(XMFLOAT3(mpInstance->World._41, mpInstance->World._42, mpInstance->World._43 - 80.f));
@@ -182,7 +185,7 @@ void PlayerWeapon::UpdateWeaponMatrix()
 
 bool PlayerWeapon::GetAttackStatus()
 {
-	return times.isAttacking;
+	return mIsCurrentlySwinging;
 }
 
 void PlayerWeapon::SetDirection(int dir)
