@@ -9,10 +9,6 @@ void CombatController::Initialize(Player* player, PlayerWeapon* playerWeapon, st
 	mpEnemies = enemies;
 	mpPlayerWeapon = playerWeapon;
 	mpPlayerWeapon->mpInstance->MaterialIndex = 4;
-
-	//Sets up the collision point for the weapon
-	collisionPoint = mpPlayerWeapon->mpInstance->World;
-	collisionPoint._41 += 0.1f;
 }
 
 void CombatController::Update(const GameTimer& gt)
@@ -21,8 +17,8 @@ void CombatController::Update(const GameTimer& gt)
 	isAttacking = CheckIfAttackIsFinished();		//Stops the attack
 
 	//Updates the collision point when the weapon is rotating
-	collisionPoint = mpPlayerWeapon->mpInstance->World;
-	collisionPoint._41 += 0.1f;
+	weaponCollisionPoint = mpPlayerWeapon->GetPos();
+	weaponCollisionPoint.x += 0.6f;
 
 	if (isAttacking)
 	{

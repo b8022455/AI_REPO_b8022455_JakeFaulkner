@@ -51,11 +51,11 @@ public:
 	void Reset();
 	void PlayerAttack();	//Connects to PlayerWeapon::Attack() function
 	bool CheckIfAttackIsFinished();					//Checks with PlayerWeapon Class to see if its possible to attack again
+	XMFLOAT3 GetCollisionPoint() { return weaponCollisionPoint; }
 
 	std::string GetCurrentWeapon();					//Returns name of current weapon to check if selected weapon is already equipped
 	void EquipWeapon(std::string weaponName);		//Passes into SwitchWeapon in playerWeapon, used to get new attack value for player (base + weapon)
 
-	XMFLOAT4X4 collisionPoint;
 private:
 	PlayerWeapon* mpPlayerWeapon;
 	Player* mpPlayer = nullptr;
@@ -63,4 +63,5 @@ private:
 	const float PI = 3.14159265359f;
 	bool isAttacking = false;
 	std::string equippedWeapon = "Stick";		//Default weapon equipped
+	XMFLOAT3 weaponCollisionPoint;
 };
