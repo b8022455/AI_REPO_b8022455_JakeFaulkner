@@ -160,7 +160,7 @@ bool GameApp::Initialize()
 	// For each geo object
 	//	add to mAllRitems in BuildRenderItems()
 	// Change differentRenderObjectsNum in frame resource to reflect this. 
-	BuildObjGeometry("Data/Models/tempSword.obj", "tempSwordGeo", "tempSword");// loads obj
+	BuildObjGeometry("Data/Models/weapon00.obj", "tempSwordGeo", "tempSword");// loads obj
 	BuildObjGeometry("Data/Models/charCloak.obj", "tempPlayerGeo", "tempPlayer");//tempPlayer.obj
 	BuildObjGeometry("Data/Models/charBlob.obj", "tempEnemyGeo", "tempEnemy");
 	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" ); //quad rather than cube
