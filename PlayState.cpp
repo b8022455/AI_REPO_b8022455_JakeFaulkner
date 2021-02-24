@@ -23,20 +23,11 @@ void PlayState::InitializeTraders()
 	mTraders.push_back(Trader(GC::TRADER_NAME_1, GC::TRADER_NAME_2, GC::TRADER_NAME_3));
 
 	//sets up a line of traders
-	struct SetupTraders
+	for (auto& t : mTraders)
 	{
-		float x = -10.5f;
-		const int biggestGap = 3;
-		void operator()(Trader& t)
-		{
-			t.Initialize(GC::GO_TRADER);
-			t.mpInstance->MaterialIndex = 0/*GameApp::Get().GetMaterialIndex("tileTex")*/;
-			x += 1.0f + (rand() % biggestGap);
-			t.SetPos({ x, 0.0f, 4.0f });
-		}
-	};
-
-	std::for_each(mTraders.begin(), mTraders.end(), SetupTraders()); // line of traders
+		t.Initialize(GC::GO_TRADER);
+		t.mpInstance->MaterialIndex = 0;
+	}
 
 	// Side doors
 	mTraders.push_back(Trader(GC::TRADER_OBJ_1, GC::TRADER_OBJ_1, GC::TRADER_OBJ_1));
@@ -1527,13 +1518,15 @@ void PlayState::Reset()
 
 	//Reset Traders
 	float x = -10.5f;
-	const int biggestGap = 3;
+	const int biggestGap = 4;
+	float z = 5.0f;
 	for (auto& t : mTraders)
 	{
 		if (!t.GetIfStoryItem())		//Keeps position of car the same
 		{
 			x += 1.0f + (rand() % biggestGap);
-			t.SetPos({ x, 0.0f, 3.0f });
+			z = 3.0f + (rand() % biggestGap);
+			t.SetPos({ x, 0.0f, z });
 		}
 
 		t.ResetTrader();		//Resets quests/trades for each trader
