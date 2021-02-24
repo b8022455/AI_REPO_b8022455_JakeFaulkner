@@ -243,6 +243,9 @@ void Button::Activate()
 	case Button::VOLUME_DOWN:
 		GameApp::Get().GetAudio().SetVolume(-0.1f, true); // todo Luc add to constants
 		break;
+	case Button::TUT_OFF: // TODO: IMPLEMENT TUT OFF HERE
+		GameApp::Get().menusShown = GC::NO_TUTORIAL_VALUE;
+		break;
 	default:
 		break;
 	}

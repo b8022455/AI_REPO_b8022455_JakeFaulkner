@@ -30,6 +30,7 @@ class PlayState : public State
 	Inventory::iterator inventoryPosition = mInventory.begin();			//Used to select items from the Inventory (Increments using down key, decrements using up key, loops back around when over inventory size)
 	bool itemMenuOpen = false;				//Debug: only allow item selection when on a menu(either pause or an item menu)
 	
+	// TODO: (REMEMBER) TUTORIAL STUFF HERE
 	bool shownAttackTutorial = false;
 	bool shownPlantTutorial = false;
 	bool shownInventoryUseTutorial = false;

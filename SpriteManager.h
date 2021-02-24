@@ -120,7 +120,8 @@ public:
 		GOTO_HELP,
 		GOTO_VOLUME,
 		VOLUME_UP,
-		VOLUME_DOWN
+		VOLUME_DOWN,
+		TUT_OFF
 	};
 private:
 	Sprite sprite;

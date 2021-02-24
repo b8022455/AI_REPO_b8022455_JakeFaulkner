@@ -112,6 +112,8 @@ public:
 	const std::string& GetStoryText();
 	size_t mStoryIndex = 0;
 
+
+	// TODO: (REMEMBER) TUT STUFF HERE
 	const std::string& GetTutorialText();
 	std::string mTutorialText = GC::TUTORIAL_INTRO;
 	int menusShown = 0;

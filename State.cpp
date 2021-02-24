@@ -152,7 +152,7 @@ void StateManager::Init() // initialised in gameapp
 	menuTitle.string = "Game Name";
 	menuBody.string = "PlaceHolder text";
 	btnW = Button(buttonBg, "W Play", Button::Action::GOTO_ENTER_NAME_MENU);
-	btnA = Button(buttonBg, "A Set Volume", Button::Action::GOTO_VOLUME);
+	btnA = Button(buttonBg, "A No Tutorial", Button::Action::TUT_OFF);
 	btnD = Button(buttonBg, "D Set Volume", Button::Action::GOTO_VOLUME);
 	btnS = Button(buttonBg, "S Help", Button::Action::GOTO_HELP);
 	AddState(GC::STATE_MAINMENU, std::make_unique<MenuState>(menuTitle, menuBody,btnW, btnA, btnD, btnS, "MainMenu"));

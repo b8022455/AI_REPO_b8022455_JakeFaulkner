@@ -148,7 +148,6 @@ void PlayState::Initialize()
 
 	InitializeTraders();
 
-
 	// tile clumping
 	int n(0);
 	int clumpSize(5);
@@ -486,6 +485,10 @@ void PlayState::Update(const GameTimer& gt)
 
 	switch (GameApp::Get().menusShown)
 	{
+	case GC::NO_TUTORIAL_VALUE:
+		shownAttackTutorial = true;
+		shownInventoryUseTutorial = true;
+		shownPlantTutorial = true;
 	case 0:
 		GameApp::Get().mTutorialText = GC::TUTORIAL_INTRO;
 		GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
@@ -662,7 +665,7 @@ void PlayState::Update(const GameTimer& gt)
 					mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
 					e.LookAt(playerPosition);
 
-					if (!shownAttackTutorial)
+					if (shownAttackTutorial == false)
 					{
 						GameApp::Get().mTutorialText = GC::TUTORIAL_ATTACK;
 						GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
@@ -689,7 +692,7 @@ void PlayState::Update(const GameTimer& gt)
 			mPlayer.DamagePlayer(e.GetAttack(), e, gt);
 			mPlayerHealthBar.SetValue(mPlayer.health);
 
-			if (!shownPlantTutorial)	//replace bool?
+			if (shownPlantTutorial == false)	//replace bool?
 			{
 				GameApp::Get().mTutorialText = GC::TUTORIAL_PLANT;
 				GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
@@ -716,7 +719,7 @@ void PlayState::Update(const GameTimer& gt)
 				mPlayer.DamagePlayer(e.GetAttack(), e, gt);
 				mPlayerHealthBar.SetValue(mPlayer.health);
 
-				if (!shownPlantTutorial)	//replace bool?
+				if (shownPlantTutorial == false)	//replace bool?
 				{
 					GameApp::Get().mTutorialText = GC::TUTORIAL_PLANT;
 					GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
@@ -832,7 +835,7 @@ void PlayState::Update(const GameTimer& gt)
 	// show/hide item menu
 	if (itemMenuOpen)
 	{
-		if (!shownInventoryUseTutorial)
+		if (shownInventoryUseTutorial == false)
 		{
 			GameApp::Get().mTutorialText = GC::TUTORIAL_USE;
 			GameApp::Get().ChangeState(GC::STATE_TUTORIAL);

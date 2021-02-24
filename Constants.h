@@ -71,7 +71,9 @@ namespace GC
 
 		HEAL_SMALL = 10,
 		HEAL_MED = 50,
-		HEAL_LARGE = 100
+		HEAL_LARGE = 100,
+
+		NO_TUTORIAL_VALUE = -999
 
 		;
 
