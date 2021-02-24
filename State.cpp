@@ -149,8 +149,8 @@ void StateManager::Init() // initialised in gameapp
 	AddState(GC::STATE_NEW_AREA, std::make_unique<MenuState>(menuTitle, menuBody, btnW, btnA, btnD, btnS, GC::STATE_NEW_AREA));
 
 	// Main menu
-	menuTitle.string = "Game Name";
-	menuBody.string = "PlaceHolder text";
+	menuTitle.string = "Safe Haven";
+	menuBody.string = "";
 	btnW = Button(buttonBg, "W Play", Button::Action::GOTO_ENTER_NAME_MENU);
 	btnA = Button(buttonBg, "A No Tutorial", Button::Action::TUT_OFF);
 	btnD = Button(buttonBg, "D Set Volume", Button::Action::GOTO_VOLUME);
@@ -169,7 +169,7 @@ void StateManager::Init() // initialised in gameapp
 	//mMenuBackground.Initialise("iceTex"); // overrides previous set
 	//PauseMenu
 	menuTitle.string = "Pause";
-	menuBody.string = "Placeholder text";
+	menuBody.string = "";
 	btnW = Button(buttonBg, "W Resume", Button::Action::GOTO_GAME);
 	btnA = Button(buttonBg, "A Resume", Button::Action::GOTO_GAME);
 	btnD = Button(buttonBg, "D Main Menu", Button::Action::GOTO_MAIN_MENU);
