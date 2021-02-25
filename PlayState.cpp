@@ -548,7 +548,7 @@ void PlayState::Update(const GameTimer& gt)
 			mPlayer.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);		//Prevents the bounceback from happening
 		}
 
-		if (mPlayerWeapon.CheckCollision(mCombatController.GetCollisionPoint(), t.GetPos()))	//Prevents weapon from going through trader
+		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), t.GetPos()))	//Prevents weapon from going through trader
 			mPlayerWeapon.ResetWeaponPosition();
 	}
 
@@ -732,7 +732,7 @@ void PlayState::Update(const GameTimer& gt)
 			}
 		}
 
-		if (mPlayerWeapon.CheckCollision(mCombatController.GetCollisionPoint(), e.GetPos()))
+		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), e.GetPos()))
 		{
 			// TODO: (URGENT) FIX ENEMY MODEL LEFT ON SCREEN
 

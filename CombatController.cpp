@@ -16,10 +16,6 @@ void CombatController::Update(const GameTimer& gt)
 	mpPlayerWeapon->Update(gt);
 	isAttacking = CheckIfAttackIsFinished();		//Stops the attack
 
-	//Updates the collision point when the weapon is rotating
-	weaponCollisionPoint = mpPlayerWeapon->GetPos();
-	weaponCollisionPoint.x += 0.6f;
-
 	if (isAttacking)
 	{
 		mpPlayerWeapon->mpInstance->World = mpPlayer->mpInstance->World;
@@ -153,22 +149,22 @@ void PlayerWeapon::UpdateWeaponMatrix()
 	{
 	case 0:						//Left
 		//transformation = XMMatrixRotationX(3.14159f / 2); // check this works 
-		transformation = XMMatrixTranslation(-1.0f, 0.0f, 0.0f);
+		transformation = XMMatrixTranslation(-0.5f, 0.0f, 0.0f);
 		break;
 
 	case 1:						//Right
 		transformation = XMMatrixRotationZ(3.14159f); //Rotate model before starting rotation around point
 		//transformation = XMMatrixRotationX(3.14159f / 2); // check this works 
-		transformation *= XMMatrixTranslation(1.0f, 0.0f, 0.0f);
+		transformation *= XMMatrixTranslation(0.5f, 0.0f, 0.0f);
 		break;
 
 	case 2:						//Up
-		transformation = XMMatrixTranslation(-1.0f, 0.0f, 0.0f);
+		transformation = XMMatrixTranslation(-0.5f, 0.0f, 0.0f);
 		break;
 
 	case 3:						//Down
 		transformation = XMMatrixRotationZ(3.14159f);			//Rotate model before starting rotation around point
-		transformation *= XMMatrixTranslation(1.0f, 0.0f, 0.0f);
+		transformation *= XMMatrixTranslation(0.5f, 0.0f, 0.0f);
 		break;
 
 	default:
