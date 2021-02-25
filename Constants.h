@@ -331,9 +331,11 @@ namespace GC
 		{"Radio",			{ItemCategory::KEY_ITEM,  20}},
 		{"Leadpipe",		{ItemCategory::WEAPON,  30}},
 		{"Nail Bat",		{ItemCategory::WEAPON, 100}},
-		{"Plastic Spork",	{ItemCategory::WEAPON,  00}},
+		{"Scrap Metal",		{ItemCategory::WEAPON,  10}},
 		{"Glowing Seeds",	{ItemCategory::SEED,	200}},
-		{"Key To Valhalla",	{ItemCategory::KEY_ITEM,  0}},
+		{"Car Engine Part",	{ItemCategory::KEY_ITEM,  200}},
+		{"Car Key",			{ItemCategory::KEY_ITEM,  50}},
+		{"Gas",				{ItemCategory::KEY_ITEM,  400}},
 		{PLANT_NAME_0,		{ItemCategory::HARVESTED_PLANT, 100}},
 		{PLANT_NAME_1,		{ItemCategory::HARVESTED_PLANT, 200}},
 		{PLANT_NAME_2,		{ItemCategory::HARVESTED_PLANT, 350}},
@@ -342,34 +344,34 @@ namespace GC
 
 	const ItemLookup ITEM_LOOKUP_ENEMIES =
 	{
-		{ "EnemyType1",			{ {"Empty",1},	{"Leadpipe",2},{"Nail Bat",2}, {"Magical Seeds",2}	}   },
-		{ "EnemyType2",			{ {"Empty",1}, {"Plastic Spork",2}						}   },
-		{ "EnemyTypeBoss",		{ {"Key To Valhalla",1}												}   },
+		{ "EnemyType1",			{ {"Empty",1},{"Scrap Metal",4}, {"Glowing Seeds",2}}},
+		{ "EnemyType2",			{ {"Empty",1},{"Glowing Seeds",3},{"Leadpipe",2}		}},
+		{ "EnemyTypeBoss",		{ {"Car Engine Part",1}		,{"Glowing Seeds",3}		}},
 	};
 
 	//Trader requests. upto 3
 	const ItemLookup ITEM_LOOKUP_REQUEST // TODO: (REMEMBER) TRADER STUFF HERE
 	{
-		{ TRADER_NAME_TEST,			{{"Leadpipe",1 }								}	},
-		{ TRADER_NAME_1,			{{"Leadpipe",2 }								}	},
-		{ TRADER_NAME_2,			{{"Leadpipe",2}, {"Plastic Spork",2}			}   },
-		{ TRADER_NAME_3,			{{"Leadpipe",2}, {"Nail Bat",2},{ "Leadpipe",2}	}   },  
-		{ TRADER_NAME_4,			{{"Leadpipe",2}, 								}   }, 
-		{ TRADER_OBJ_1,				{{"Leadpipe",2}									}   }, // front of car
-		{ TRADER_OBJ_2,				{{"Leadpipe",2}									}   }, // mid car
-		{ TRADER_OBJ_3,				{{"Leadpipe",2}									}   }, // rear of car
+		{ TRADER_NAME_TEST,			{{"Glowing Seeds",3 }							}	},
+		{ TRADER_NAME_1,			{{PLANT_NAME_0,2 }								}	}, // plants for seeds
+		{ TRADER_NAME_2,			{{"Scrap Metal",2},								}   },
+		{ TRADER_NAME_3,			{{"Leadpipe",1}, { "Scrap Metal",1}				}   },
+		{ TRADER_NAME_4,			{{"Car Engine Part",1}, 						}   }, 
+		{ TRADER_OBJ_1,				{{"Car Key",1}									}   }, // car middle
+		{ TRADER_OBJ_2,				{{"Car Engine Part",3}							}   }, // car front
+		{ TRADER_OBJ_3,				{{"Gas",5}										}   }, // car back
 	};
 
 	const ItemLookup ITEM_LOOKUP_REWARD 
 	{
-		{ TRADER_NAME_TEST,		{{"Key To Valhalla",1 }								}	},
-		{ TRADER_NAME_1,		{{"Leadpipe",2}	,{"Nail Bat",2}						}	},
-		{ TRADER_NAME_2,		{{"Leadpipe",2}, {"Leadpipe",2}						}	}, 
-		{ TRADER_NAME_3,		{{"Leadpipe",2}										}	},  
-		{ TRADER_NAME_4,		{													}	}, // no reward, charity
-		{ TRADER_OBJ_1,			{													}   }, // front of car
-		{ TRADER_OBJ_2,			{													}   }, // mid car
-		{ TRADER_OBJ_3,			{													}   }, // rear of car
+		{ TRADER_NAME_TEST,		{{PLANT_NAME_2,4 }									}	},
+		{ TRADER_NAME_1,		{{"Glowing Seeds",5 }								}	}, // plants for seeds
+		{ TRADER_NAME_2,		{{"Car Engine Part",5}, {"Leadpipe",2}				}	}, 
+		{ TRADER_NAME_3,		{{"Nail Bat",1}	,{"Car Key",1}						}	},
+		{ TRADER_NAME_4,		{{"Gas",5}											}	}, // no reward, charity
+		{ TRADER_OBJ_1,			{													}   }, // car middle
+		{ TRADER_OBJ_2,			{													}   }, // car front
+		{ TRADER_OBJ_3,			{													}   }, // car back
 	};
 
 	const ItemLookup PLANT_LOOKUP_HARVEST
@@ -391,4 +393,14 @@ namespace GC
 		{ TRADER_OBJ_2, 	{"I have to load up on supplies for the journey","That should do it"}},			// middle of car
 		{ TRADER_OBJ_1, 	{"I need to install these parts to get this moving","Purrs like a kitten"	}}	// front of car
 	};
+
+
+	const std::string RADIO_MESSAGES[3]
+	{
+		"The voice on the radio gives directions to Safe Haven. The message repeats.",
+		"The radio picks up a suspicious distress call.",
+		"An enthusiastic trader advertises on the radio."
+	};
+
+	const size_t RADIO_MESSAGES_SIZE = sizeof(RADIO_MESSAGES) / sizeof(RADIO_MESSAGES[0]);
 }
