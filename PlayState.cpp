@@ -1100,7 +1100,10 @@ void PlayState::ItemAction()
 
 		break;
 	case ItemCategory::KEY_ITEM:
-
+		if (inventoryPosition->first == "Radio")
+		{
+			mMessage.Activate(GC::RADIO_MESSAGES[rand() % GC::RADIO_MESSAGES_SIZE],5.0f);
+		}
 
 		break;
 	}
@@ -1525,7 +1528,7 @@ void PlayState::Reset()
 		if (!t.GetIfStoryItem())		//Keeps position of car the same
 		{
 			x += 1.0f + (rand() % biggestGap);
-			z = 3.0f + (rand() % biggestGap);
+			z = 5.0f + (rand() % biggestGap);
 			t.SetPos({ x, 0.0f, z });
 		}
 

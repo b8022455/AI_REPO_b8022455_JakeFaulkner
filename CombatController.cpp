@@ -211,7 +211,7 @@ int PlayerWeapon::GetWeaponStats(std::string equippedWeapon)
 		attack = 40;
 	}
 
-	if (equippedWeapon == "Plastic Spork")
+	if (equippedWeapon == "Scrap Metal")
 	{
 		attack = 5;
 	}
