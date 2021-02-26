@@ -649,11 +649,14 @@ void PlayState::Update(const GameTimer& gt)
 			else
 				enemyRange = GC::ENEMYTYPE2_RANGE;
 
+			if (timeCycle == 4)
+				enemyRange = GC::ALL_ENEMY_MAXRANGE;
+
 			// TODO: (REMEMBER) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
-			if (mPlayer.GetPos().x >= (e.GetPos().x - GC::ENEMYTYPE1_RANGE) &&
-				mPlayer.GetPos().x <= (e.GetPos().x + GC::ENEMYTYPE1_RANGE)) { // player within - range on x
-				if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE1_RANGE) &&
-					mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
+			if (mPlayer.GetPos().x >= (e.GetPos().x - enemyRange) &&
+				mPlayer.GetPos().x <= (e.GetPos().x + enemyRange)) { // player within - range on x
+				if (mPlayer.GetPos().z >= (e.GetPos().z - enemyRange) &&
+					mPlayer.GetPos().z <= (e.GetPos().z + enemyRange)) { // player within - range on z
 					e.LookAt(playerPosition);
 
 					if (shownAttackTutorial == false)
