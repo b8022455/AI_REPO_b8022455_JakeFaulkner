@@ -442,10 +442,11 @@ void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN 
 
 	mPlayer.AreaClear = false;
 	mPlayer.genArea = false;
-	if (mPlayer.GetPos().x >= GC::PLAYER_RIGHTBOUND - 0.9375f) { mPlayer.SetPos({ -14.0f,0.0f,0.0f }); }
-	if (mPlayer.GetPos().x >= GC::PLAYER_LEFTBOUND + 0.9375f) { mPlayer.SetPos({ 14.0f,0.0f,0.0f }); }
-	if (mPlayer.GetPos().z >= GC::PLAYER_UPBOUND - 0.9375f) { mPlayer.SetPos({ 0.0f,0.0f,-14.0f }); }
-	if (mPlayer.GetPos().z >= GC::PLAYER_DOWNBOUND + 0.9375f) { mPlayer.SetPos({ 0.0f,0.0f,14.0f }); }
+	bool set = false;
+	if (mPlayer.GetPos().x >= GC::PLAYER_RIGHTBOUND - 0.9375f && set == false) { mPlayer.SetPos({ -14.0f,0.0f,0.0f }); set = true; }
+	if (mPlayer.GetPos().x <= GC::PLAYER_LEFTBOUND + 0.9375f && set == false) { mPlayer.SetPos({ 14.0f,0.0f,0.0f }); set = true; }
+	if (mPlayer.GetPos().z >= GC::PLAYER_UPBOUND - 0.9375f && set == false) { mPlayer.SetPos({ 0.0f,0.0f,-14.0f }); set = true; }
+	if (mPlayer.GetPos().z <= GC::PLAYER_DOWNBOUND + 0.9375f && set == false) { mPlayer.SetPos({ 0.0f,0.0f,14.0f }); set = true; }
 }
 
 void PlayState::timeSet() {
