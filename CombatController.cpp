@@ -65,15 +65,15 @@ void PlayerWeapon::Initialize(const std::string& renderItemName)
 	// Setup a render item
 	AddRenderItemInstance("Weapon");
 
-	float attackDuration = 1.f;
-	float attackDelay = 1.f;
+	//float attackDuration = GC::PLAYER_ATTACK_DURATION;
+	//float attackDelay = GC::PLAYER_ATTACK_DELAY;
 
 	mCanAttack = false;
 }
 
 void PlayerWeapon::Update(const GameTimer& gt)
 {
-	if (mPlayerAttackTimer.HasTimeElapsed(gt.DeltaTime(), 1.0f))
+	if (mPlayerAttackTimer.HasTimeElapsed(gt.DeltaTime(), GC::PLAYER_ATTACK_DURATION))
 	{
 		mCanAttack = true;
 	}
