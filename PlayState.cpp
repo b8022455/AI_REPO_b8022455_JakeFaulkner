@@ -669,7 +669,7 @@ void PlayState::Update(const GameTimer& gt)
 			}
 
 			// enemy movement behaviour based on player radius
-			if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE &&
+			if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < enemyRange &&
 				!e.GetIfCanAttack())
 			{
 				e.mBehaviour = Enemy::Behaviour::CHASE;
