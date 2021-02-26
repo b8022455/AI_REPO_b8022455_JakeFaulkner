@@ -71,7 +71,9 @@ namespace GC
 
 		HEAL_SMALL = 10,
 		HEAL_MED = 50,
-		HEAL_LARGE = 100
+		HEAL_LARGE = 100,
+
+		NO_TUTORIAL_VALUE = -999
 
 		;
 
@@ -88,8 +90,8 @@ namespace GC
 		PLAYER_DOWNBOUND = -15.0f,
 
 		ENEMYTYPE1_RANGE = 8.0f,
-		ENEMYTYPE1_ATTACK_DURATION = 2.0f,
-		ENEMYTYPE1_ATTACK_DELAY = float(8.0f), // definitely the attack duration - cant actually be less than other
+		ENEMYTYPE1_ATTACK_DURATION = 3.0f,
+		ENEMYTYPE1_ATTACK_DELAY = float(6.0f), // definitely the attack duration - cant actually be less than other
 		ENEMYTYPE1_MAXSPEED = 1.0f,
 		ENEMYTYPE1_DRAG = 1.0f,
 
@@ -99,44 +101,44 @@ namespace GC
 		ENEMYTYPE2_MAXSPEED = 3.0f,
 		ENEMYTYPE2_DRAG = 3.0f,
 
+		ALL_ENEMY_MAXRANGE = 50.0f,
+
 		WORLD_LEFT_BOUNDARY = -15.0f,
 		WORLD_RIGHT_BOUNDARY = 15.0f,
 		WORLD_TOP_BOUNDARY = 15.0f,
 		WORLD_BOTTOM_BOUNDARY = -15.0f,
 
-		// weapon rotation work
-		WEAPONSTART = -40.0f;
-		WEAPONEND = 40.0f;
-
+		// weapon rotation stuff
+		WEAPONSTART = -40.0f,
+		WEAPONEND = 40.0f,
 
 		TILE_UV_INC = 1.0f/8.0f // tile is 1/8 of texture atlus
 		;
 	// (NOTE) NO HELP MESSAGE AT CURRENT FOR CAMERA ZOOM
 	//KEY_RAISE = 'O', // OUT
 	//KEY_LOWER = 'I', // IN
-	const std::string HELP_MESSAGES[10]
+	const std::string HELP_MESSAGES[9]
 	{
-		"You are wounded.\nPress enter to open inventory",
-		"Arrow Keys to scroll \n E Key to use an item",
-		"Press Q to Trade",
+		"Arrow Keys to scroll \n (E) Key to use an item",
+		"Press (Q) to Trade",
 		"Use the WASD keys to move and Space to attack",
-		"Help is available using the H key",
+		"Help is available using the (H) key",
 		"Plant crops by selecting seeds from the inventory",
 		"You can harvest crops when fully grown by attacking",
-		"Try talking to a trader when near using the Q key",
+		"Try talking to a trader when near using the (Q) key",
 		"Attack your enemies using the Spacebar",
-		"Pause the game using the P key"
+		"Pause the game using the (P) key"
 	};
 
 	const std::string
 		TUTORIAL_INTRO = "Welcome to the end of the world...",
 		TUTORIAL_OBJECTIVE = "You must survive to reach SAFEHAVEN by the end of the day.\nKill all mutants in the area before you continue travelling",
-		TUTORIAL_MOVE = "To move use they (w)(s)(a)(d) keys\nPause the game using the Enter key",
-		TUTORIAL_TRADE = "To trade will other survivors ",
-		TUTORIAL_INVENTORY = "See what you have in your inventory (i)\nCycle through what you have (UP) (DOWN)\nSelect a weapon from the list and it will boost your attack\nClose the the inventory (i)",
-		TUTORIAL_ATTACK = "Attack your enemies using the Spacebar\nYou will automatically loot enemies you kill",
-		TUTORIAL_USE = "Some items in the inventory can be used (u)",
-		TUTORIAL_PLANT = "Plant Seeds from the inventory to get healing items";
+		TUTORIAL_MOVE = "To move use the (W)(S)(A)(D) keys\nPause the game using the (P) key",
+		TUTORIAL_TRADE = "To trade with other survivors, Press (Q) when near a trader.\n Trading allows you to get new weapons and items.",
+		TUTORIAL_INVENTORY = "See what you have in your inventory (Enter)\nCycle through what you have (UP) (DOWN)\nSelect a weapon from the list and it will boost your attack\nClose the the inventory (Enter again)",
+		TUTORIAL_ATTACK = "Attack your enemies using the Spacebar\nYou will automatically loot enemies you kill.\n Enemies can drop new weapons, healing items, or farming items.",
+		TUTORIAL_USE = "Some items in the inventory can be used (E)",
+		TUTORIAL_PLANT = "You have been damaged.\n Plant seeds from the inventory to grow healing items.\n Plants take time to grow so come back to it when its fully grown.";
 
 	const float FOOTSTEP_PITCH[7]
 	{
@@ -169,7 +171,7 @@ namespace GC
 		GO_TRADER = "Trader",
 		GO_POTATO = "Potato",
 
-		// TODO: (NOTE) IMPLEMENT ENEMY TYPES HERE
+		// TODO: (REMEMBER) IMPLEMENT ENEMY TYPES HERE
 		// ?? = NOT IMPLEMENTED OR NEEDS REVIEWING
 		ENEMY_TYPE_1 = "EnemyType1", 
 		// BASIC BARFING ENEMY (HOBBLES TOWARD PLAYER THEN BARFS, NO DAMAGE FROM CONTACT??)
@@ -331,9 +333,11 @@ namespace GC
 		{"Radio",			{ItemCategory::KEY_ITEM,  20}},
 		{"Leadpipe",		{ItemCategory::WEAPON,  30}},
 		{"Nail Bat",		{ItemCategory::WEAPON, 100}},
-		{"Plastic Spork",	{ItemCategory::WEAPON,  00}},
+		{"Scrap Metal",		{ItemCategory::WEAPON,  10}},
 		{"Glowing Seeds",	{ItemCategory::SEED,	200}},
-		{"Key To Valhalla",	{ItemCategory::KEY_ITEM,  0}},
+		{"Car Engine Part",	{ItemCategory::KEY_ITEM,  200}},
+		{"Car Key",			{ItemCategory::KEY_ITEM,  50}},
+		{"Gas",				{ItemCategory::KEY_ITEM,  400}},
 		{PLANT_NAME_0,		{ItemCategory::HARVESTED_PLANT, 100}},
 		{PLANT_NAME_1,		{ItemCategory::HARVESTED_PLANT, 200}},
 		{PLANT_NAME_2,		{ItemCategory::HARVESTED_PLANT, 350}},
@@ -342,34 +346,34 @@ namespace GC
 
 	const ItemLookup ITEM_LOOKUP_ENEMIES =
 	{
-		{ "EnemyType1",			{ {"Empty",1},	{"Leadpipe",2},{"Nail Bat",2}, {"Magical Seeds",2}	}   },
-		{ "EnemyType2",			{ {"Empty",1}, {"Plastic Spork",2}						}   },
-		{ "EnemyTypeBoss",		{ {"Key To Valhalla",1}												}   },
+		{ "EnemyType1",			{ {"Empty",1},{"Scrap Metal",4}, {"Glowing Seeds",2}}},
+		{ "EnemyType2",			{ {"Empty",1},{"Glowing Seeds",3},{"Leadpipe",2}		}},
+		{ "EnemyTypeBoss",		{ {"Car Engine Part",1}		,{"Glowing Seeds",3}		}},
 	};
 
 	//Trader requests. upto 3
-	const ItemLookup ITEM_LOOKUP_REQUEST
+	const ItemLookup ITEM_LOOKUP_REQUEST // TODO: (REMEMBER) TRADER STUFF HERE
 	{
-		{ TRADER_NAME_TEST,			{{"Leadpipe",1 }												}	},
-		{ TRADER_NAME_1,			{{"Leadpipe",2 }											}	},
-		{ TRADER_NAME_2,			{{"Leadpipe",2}, {"Plastic Spork",2}							}   },
-		{ TRADER_NAME_3,			{{"Leadpipe",2}, {"Nail Bat",2},{ "Leadpipe",2}				}   }, //todo change 
-		{ TRADER_NAME_4,			{{"Leadpipe",2}, 								}   }, //todo change
-		{ TRADER_OBJ_1,				{{"Leadpipe",2}												}   }, // front of car  //todo change
-		{ TRADER_OBJ_2,				{{"Leadpipe",2}												}   }, // mid car       //todo change
-		{ TRADER_OBJ_3,				{{"Leadpipe",2}												}   }, // rear of car   //todo change
+		{ TRADER_NAME_TEST,			{{"Glowing Seeds",3 }							}	},
+		{ TRADER_NAME_1,			{{PLANT_NAME_0,2 }								}	}, // plants for seeds
+		{ TRADER_NAME_2,			{{"Scrap Metal",2},								}   },
+		{ TRADER_NAME_3,			{{"Leadpipe",1}, { "Scrap Metal",1}				}   },
+		{ TRADER_NAME_4,			{{"Car Engine Part",1}, 						}   }, 
+		{ TRADER_OBJ_1,				{{"Car Key",1}									}   }, // car middle
+		{ TRADER_OBJ_2,				{{"Car Engine Part",3}							}   }, // car front
+		{ TRADER_OBJ_3,				{{"Gas",5}										}   }, // car back
 	};
 
-	const ItemLookup ITEM_LOOKUP_REWARD
+	const ItemLookup ITEM_LOOKUP_REWARD 
 	{
-		{ TRADER_NAME_TEST,		{{"Key To Valhalla",1 }											}	},
-		{ TRADER_NAME_1,		{{"Leadpipe",2}	,{"Nail Bat",2}												}	},
-		{ TRADER_NAME_2,		{{"Leadpipe",2}, {"Leadpipe",2}				}	}, //
-		{ TRADER_NAME_3,		{{"Leadpipe",2}				}	}, //todo change 
-		{ TRADER_NAME_4,		{																}	}, // no reward, charity
-		{ TRADER_OBJ_1,			{																}   }, // front of car
-		{ TRADER_OBJ_2,			{																}   }, // mid car
-		{ TRADER_OBJ_3,			{																}   }, // rear of car
+		{ TRADER_NAME_TEST,		{{PLANT_NAME_2,4 }									}	},
+		{ TRADER_NAME_1,		{{"Glowing Seeds",5 }								}	}, // plants for seeds
+		{ TRADER_NAME_2,		{{"Car Engine Part",5}, {"Leadpipe",2}				}	}, 
+		{ TRADER_NAME_3,		{{"Nail Bat",1}	,{"Car Key",1}						}	},
+		{ TRADER_NAME_4,		{{"Gas",5}											}	}, // no reward, charity
+		{ TRADER_OBJ_1,			{													}   }, // car middle
+		{ TRADER_OBJ_2,			{													}   }, // car front
+		{ TRADER_OBJ_3,			{													}   }, // car back
 	};
 
 	const ItemLookup PLANT_LOOKUP_HARVEST
@@ -380,15 +384,25 @@ namespace GC
 	};
 
 
-	const std::map<std::string, DialogPair> DIALOG_PAIR
+	const std::map<std::string, DialogPair> DIALOG_PAIR 
 	{
 		{ TRADER_NAME_TEST,	{"Got some rare things to trade, stranger","heh heh heh Thank you"	}},
 		{ TRADER_NAME_1,	{"Trade with me","Now on your way"	}},
 		{ TRADER_NAME_2,	{"I need some things you need some things","Now I need some peace and quiet and you need to leave"	}}, //
-		{ TRADER_NAME_3,	{"Trade with me","Now on your way"	}}, //todo change 
+		{ TRADER_NAME_3,	{"Trade with me","Now on your way"	}},  
 		{ TRADER_NAME_4, 	{"Trade with me","Now on your way"	}}, // no reward, charity
 		{ TRADER_OBJ_3, 	{"There's lots of space to store weapons here.","Locked and loaded"	}},			// rear of car
 		{ TRADER_OBJ_2, 	{"I have to load up on supplies for the journey","That should do it"}},			// middle of car
 		{ TRADER_OBJ_1, 	{"I need to install these parts to get this moving","Purrs like a kitten"	}}	// front of car
 	};
+
+
+	const std::string RADIO_MESSAGES[3]
+	{
+		"The voice on the radio gives directions to Safe Haven. The message repeats.",
+		"The radio picks up a suspicious distress call.",
+		"An enthusiastic trader advertises on the radio."
+	};
+
+	const size_t RADIO_MESSAGES_SIZE = sizeof(RADIO_MESSAGES) / sizeof(RADIO_MESSAGES[0]);
 }

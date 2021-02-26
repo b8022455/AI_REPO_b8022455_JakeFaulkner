@@ -569,7 +569,7 @@ void TileManager::Initialize()
 			//}
 		}
 	}
-	// TODO: (NOTE) not sure but tiles may be getting saved into tilegrid twice (as tile & gameobject) if possible
+	// TODO: not sure but tiles may be getting saved into tilegrid twice (as tile & gameobject) if possible
 
 	// create tiles
 	mTileGrid.resize(mDimention);
@@ -589,7 +589,7 @@ void TileManager::Initialize()
 				0.0f, 0.0f, 1.0f, 0.0f,
 				x + j * dx, 0.0f, z + k * dz, 1.0f);
 			
-			// TODO: (NOTE) A SLIGHT ERROR HERE, J & K SHOULD BE SWAPPED, BUT I THINK IT HELPS A LITTLE LIKE THIS
+			// TODO: (REMEMBER) A SLIGHT ERROR HERE, J & K SHOULD BE SWAPPED, BUT I THINK IT HELPS A LITTLE LIKE THIS
 			//Selects random index from array of textures WIP - will be using auto generated clumping 2d array
 
 
@@ -604,7 +604,6 @@ void TileManager::Initialize()
 }
 
 void TileManager::REGEN() {
-	// TODO: PROBLEM WITH RANDOM BEING USED HERE, FAVORS LEFT ABSOLUTELY & NEEDS MAJOR REWORKING
 	// FIXED ABOVE ISSUE BY USING RAND INSTEAD OF OTHER, TEMP FIX AND SHOULD BE LOOKED INTO LATER IF POSSIBLE
 	srand(static_cast<int>(time(NULL)));
 	std::mt19937 rng(static_cast<int>(time(NULL))); // seed the generator - 
@@ -617,7 +616,7 @@ void TileManager::REGEN() {
 		for (int k = 0; k < mDimention; k++) {
 
 			mTileGrid.at(j).at(k).mpInstance->MaterialIndex = 0;
-			// TODO: (NOTE) NUMBER USED MUSTN'T HAVE SIGNIFICANT MEANING FOR TEXTURES 
+			// TODO: (REMEMBER) NUMBER USED MUSTN'T HAVE SIGNIFICANT MEANING FOR TEXTURES 
 		}
 	}
 
@@ -1213,12 +1212,12 @@ void TileManager::SetUV( InstanceData* id,  int x, int y)
 
 Tile & TileManager::GetTile(int x, int y)
 {
-	return mTileGrid.at(y).at(x); //todo x,y may need swapping around
+	return mTileGrid.at(y).at(x); 
 }
 
 void TileManager::SetTile(int x, int y, const Tile & tile)
 {
-	mTileGrid.at(y).at(x) = tile; //todo x,y may need swapping around
+	mTileGrid.at(y).at(x) = tile; 
 
 }
 //----------------INDIVIDUAL TILE CODE-----------------------------------------------//

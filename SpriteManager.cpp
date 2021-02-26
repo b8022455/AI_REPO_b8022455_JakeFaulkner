@@ -48,7 +48,6 @@ void SpriteManager::Init(ID3D12Device * device, ID3D12CommandQueue* commandQueue
 		cpuHandle.Offset(size);
 		gpuHandle.Offset(size);
 
-		//todo next
 		//mSpriteFont.at(1) = std::make_unique<DirectX::SpriteFont>( .. )
 		mSpriteFont.at(1) = std::make_unique<DirectX::SpriteFont>(
 			device,
@@ -210,8 +209,6 @@ void Button::Draw()
 void Button::SetPos(const XMFLOAT2 & pos)
 {
 	sprite.position = pos;
-
-	//todo postion text and sprite
 }
 
 void Button::SetColor(const DirectX::SimpleMath::Vector4 & color)
@@ -245,6 +242,9 @@ void Button::Activate()
 		break;
 	case Button::VOLUME_DOWN:
 		GameApp::Get().GetAudio().SetVolume(-0.1f, true); // todo Luc add to constants
+		break;
+	case Button::TUT_OFF: // TODO: IMPLEMENT TUT OFF HERE
+		GameApp::Get().menusShown = GC::NO_TUTORIAL_VALUE;
 		break;
 	default:
 		break;

@@ -14,7 +14,6 @@ AudioSimple::~AudioSimple()
 
 void AudioSimple::Init()
 {
-	//todo put in GameAudio
 	HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 	if (FAILED(hr))
 	{
@@ -122,7 +121,7 @@ SfxEngine::SfxEngine(DirectX::AudioListener* listener)
 
 void SfxEngine::Init()
 {
-	//todo change flags
+	
 	DirectX::AUDIO_ENGINE_FLAGS eflags = DirectX::AudioEngine_Default | DirectX::AudioEngine_EnvironmentalReverb | DirectX::AudioEngine_ReverbUseFilters;
 
 #ifdef _DEBUG

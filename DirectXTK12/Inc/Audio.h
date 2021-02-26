@@ -218,7 +218,7 @@ namespace DirectX
             // Suspend/resumes audio processing (i.e. global pause/resume)
 
         float __cdecl GetMasterVolume() const noexcept;
-        void __cdecl SetMasterVolume(float volume, bool increment = false);
+        void __cdecl SetMasterVolume(float volume);
             // Master volume property for all sounds
 
         void __cdecl SetReverb(AUDIO_ENGINE_REVERB reverb);

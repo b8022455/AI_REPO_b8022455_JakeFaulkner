@@ -18,7 +18,6 @@ private:
 protected:
 	// Adds and points to an existing render item
 	void AddRenderItemInstance(const std::string& renderItemName);
-	void RemoveRenderItemInstance();
 public:
 
 	virtual ~GameObject();

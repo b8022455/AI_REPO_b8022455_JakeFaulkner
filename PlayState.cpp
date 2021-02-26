@@ -23,20 +23,11 @@ void PlayState::InitializeTraders()
 	mTraders.push_back(Trader(GC::TRADER_NAME_1, GC::TRADER_NAME_2, GC::TRADER_NAME_3));
 
 	//sets up a line of traders
-	struct SetupTraders
+	for (auto& t : mTraders)
 	{
-		float x = -10.5f;
-		const int biggestGap = 3;
-		void operator()(Trader& t)
-		{
-			t.Initialize(GC::GO_TRADER);
-			t.mpInstance->MaterialIndex = 0/*GameApp::Get().GetMaterialIndex("tileTex")*/;
-			x += 1.0f + (rand() % biggestGap);
-			t.SetPos({ x, 0.0f, 4.0f });
-		}
-	};
-
-	std::for_each(mTraders.begin(), mTraders.end(), SetupTraders()); // line of traders
+		t.Initialize(GC::GO_TRADER);
+		t.mpInstance->MaterialIndex = 0;
+	}
 
 	// Side doors
 	mTraders.push_back(Trader(GC::TRADER_OBJ_1, GC::TRADER_OBJ_1, GC::TRADER_OBJ_1));
@@ -98,7 +89,6 @@ bool PlayState::FindNearestTraderInRadius()
 
 }
 
-// TODO: (URGENT) BARFER ENEMY ERROR HERE, SPAWN NEEDS TO BE USED WHEN ADDING THE ENEMIES
 Enemy PlayState::Spawn(std::string enemyType) // USED TO INITIALISE ENEMIES
 {
 	//Enemy e(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK);
@@ -108,7 +98,6 @@ Enemy PlayState::Spawn(std::string enemyType) // USED TO INITIALISE ENEMIES
 		e.Initialize("EnemyGhoul");
 		e.SetHealth(GC::ENEMYTYPE1_HEALTH);
 		e.SetRandomPosition();
-		e.times.StartTime(GC::ENEMYTYPE1_ATTACK_DURATION, GC::ENEMYTYPE1_ATTACK_DELAY);
 		e.particles.resize(20);
 		return e;
 	}
@@ -149,7 +138,6 @@ void PlayState::Initialize()
 	mPlayerHealthBar.Initialise(GC::BAR_GRN, GC::BAR_RED);
 
 	InitializeTraders();
-
 
 	// tile clumping
 	int n(0);
@@ -220,7 +208,7 @@ void PlayState::Initialize()
 			mHelpPanel.Initialize("uiTex", src, dst);
 			mHelpText.color = DirectX::Colors::White;
 			mHelpText.fontIndex = 1;
-			mHelpText.string = "Something helpful should go here"; //todo help text
+			mHelpText.string = "(W)(A)(S)(D) - Movement \n(Spacebar) - attack \n(Enter) - Opens/Closes inventory \n(P) - Pauses the game \n(Q) - Trades when near a trader \n(E) - Use an item when in inventory";
 		}
 
 		//Help text
@@ -228,7 +216,7 @@ void PlayState::Initialize()
 			mHelpMessage.mText.center = true;
 			mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 40.f, 550.f };
 			mHelpMessage.mText.color = DirectX::Colors::Red;
-			mHelpMessage.Activate(GC::HELP_MESSAGES[3], 6.0f);
+			mHelpMessage.Activate(GC::HELP_MESSAGES[2], 6.0f);
 
 			mTradeHelpMessage.mText.center = true;
 			mTradeHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 250.f, 150.f };
@@ -250,7 +238,6 @@ void PlayState::Initialize()
 }
 
 void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
-	// TODO: (URGENT) CLEAR mEnemies HERE & IMMEDIATELY APPLY NEW ENEMIES
 	// use time cycle to determine number of enemies to add, enemy types are selected at random
 
 	if (fill == false) {
@@ -278,7 +265,6 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 		//Init all enemies
 		for (auto& e : mEnemies)
 		{
-			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
 						0.0f,
@@ -295,7 +281,6 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 	}
 	if (timeCycle == 2) { // noon (small / 2)
 		//	// inserts n of enemies
-		//	// TODO: (NOTE) ENEMIES ADDED HERE
 		int e1 = (rand() % 2) + 1; // random 1-2
 		int e2 = (rand() % 2) + 1; // random 1-2
 		if (e1 == 1) {
@@ -315,7 +300,6 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 		//Init all enemies
 		for (auto& e : mEnemies)
 		{
-			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
 						0.0f,
@@ -331,8 +315,7 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 		}
 	}
 	if (timeCycle == 3) { // evening (large / 3)
-		//	// inserts n of enemies
-		//	// TODO: (NOTE) ENEMIES ADDED HERE
+			// inserts n of enemies
 		int e1 = (rand() % 2) + 1; // random 1-2
 		int e2 = (rand() % 2) + 1; // random 1-2
 		int e3 = (rand() % 2) + 1; // random 1-2
@@ -360,7 +343,6 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 		//Init all enemies
 		for (auto& e : mEnemies)
 		{
-			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
 						0.0f,
@@ -377,7 +359,6 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 		}
 	}
 	if (timeCycle == 4) { // pitch (large / constant)
-		// TODO: (URGENT) WILL NEED EXTRA WORK DEPENDING ON HOW MANY ENEMIES ARE LEFT
 		// fill on basic
 		if (fill == false) {
 			int e1 = (rand() % 2) + 1; // random 1-2
@@ -407,7 +388,6 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 			//Init all enemies
 			for (auto& e : mEnemies)
 			{
-				//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 				e.SetPos({
 							static_cast<float>(rand() % 10 + 2.0f),
 							0.0f,
@@ -424,8 +404,7 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 		}
 
 		// fill until full again
-		if (fill == true) { // TODO: THIS NEEDS REWORKING, CAN'T DELETE ENEMIES FROM VECTOR WHILE GAME IS RUNNING
-			// NEED TO IMPLEMENT A METHOD OF RANDOMLY CREATING NEW ENEMIES, ADD 1 ENEMY AFTER EVERY DEATH 
+		if (fill == true) { 
 
 			int e1 = (rand() % 2) + 1; // random 1-2
 			if (e1 == 1) {
@@ -493,10 +472,14 @@ void PlayState::timeSet() {
 void PlayState::Update(const GameTimer& gt)
 {
 	//mTileManager.Update(gt);
-	mCombatController.Update();
+	mCombatController.Update(gt);
 
 	switch (GameApp::Get().menusShown)
 	{
+	case GC::NO_TUTORIAL_VALUE:
+		shownAttackTutorial = true;
+		shownInventoryUseTutorial = true;
+		shownPlantTutorial = true;
 	case 0:
 		GameApp::Get().mTutorialText = GC::TUTORIAL_INTRO;
 		GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
@@ -530,8 +513,8 @@ void PlayState::Update(const GameTimer& gt)
 		mHelpMessage.mText.color = DirectX::Colors::Red;
 		mHelpMessage.Activate(GC::HELP_MESSAGES[revolvingHintPosition], 7.0f);
 		revolvingHintPosition++;
-		if (revolvingHintPosition > 9)
-			revolvingHintPosition = 3;
+		if (revolvingHintPosition > 8)
+			revolvingHintPosition = 2;
 	}
 
 	if (playerName == "")		//Only does this once
@@ -653,8 +636,6 @@ void PlayState::Update(const GameTimer& gt)
 	{
 		e.Update(gt);
 
-		{ // THE ERASE ERROR OCCURS IN THE NEXT LOOP
-			SimpleMath::Vector3 pos = e.GetPos();
 
 			/*GameApp::Get().mDebugLog << "Enemy i:" << i
 				<< "  Health: " << e.GetHealth()
@@ -675,14 +656,17 @@ void PlayState::Update(const GameTimer& gt)
 			else
 				enemyRange = GC::ENEMYTYPE2_RANGE;
 
-			// TODO: (NOTE) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
-			if (mPlayer.GetPos().x >= (e.GetPos().x - GC::ENEMYTYPE1_RANGE) &&
-				mPlayer.GetPos().x <= (e.GetPos().x + GC::ENEMYTYPE1_RANGE)) { // player within - range on x
-				if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE1_RANGE) &&
-					mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
+			if (timeCycle == 4)
+				enemyRange = GC::ALL_ENEMY_MAXRANGE;
+
+			// TODO: (REMEMBER) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
+			if (mPlayer.GetPos().x >= (e.GetPos().x - enemyRange) &&
+				mPlayer.GetPos().x <= (e.GetPos().x + enemyRange)) { // player within - range on x
+				if (mPlayer.GetPos().z >= (e.GetPos().z - enemyRange) &&
+					mPlayer.GetPos().z <= (e.GetPos().z + enemyRange)) { // player within - range on z
 					e.LookAt(playerPosition);
 
-					if (!shownAttackTutorial)
+					if (shownAttackTutorial == false)
 					{
 						GameApp::Get().mTutorialText = GC::TUTORIAL_ATTACK;
 						GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
@@ -692,8 +676,8 @@ void PlayState::Update(const GameTimer& gt)
 			}
 
 			// enemy movement behaviour based on player radius
-			if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE &&
-				e.getattacking().isAttacking == false)
+			if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < enemyRange &&
+				!e.GetIfCanAttack())
 			{
 				e.mBehaviour = Enemy::Behaviour::CHASE;
 			}
@@ -706,23 +690,16 @@ void PlayState::Update(const GameTimer& gt)
 		// enemy collision with player
 		if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()) && e.GetHealth() > 0)
 		{
-			mPlayer.DamagePlayer(e.GetAttack(), e);
+			mPlayer.DamagePlayer(e.GetAttack(), e, gt);
 			mPlayerHealthBar.SetValue(mPlayer.health);
 
-			if (!shownPlantTutorial)	//replace bool?
+			if (shownPlantTutorial == false)	//replace bool?
 			{
 				GameApp::Get().mTutorialText = GC::TUTORIAL_PLANT;
 				GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
 				shownPlantTutorial = true;
 			}
 
-			if (mPlayer.health < GC::PLAYER_LOW_HEALTH)
-			{
-				mHelpMessage.mText.center = true;
-				mHelpMessage.mText.color = DirectX::Colors::Red;
-				mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 300.f, 150.f };
-				mHelpMessage.Activate(GC::HELP_MESSAGES[0], 2.f);
-			}
 			//Transition to game over state
 			if (mPlayer.health <= 0)
 			{
@@ -740,23 +717,16 @@ void PlayState::Update(const GameTimer& gt)
 		{
 			if (mPlayer.CheckCollision(mPlayer.GetPos(), p.GetPos()) && e.GetHealth() > 0)
 			{
-				mPlayer.DamagePlayer(e.GetAttack(), e);
+				mPlayer.DamagePlayer(e.GetAttack(), e, gt);
 				mPlayerHealthBar.SetValue(mPlayer.health);
 
-				if (!shownPlantTutorial)	//replace bool?
+				if (shownPlantTutorial == false)	//replace bool?
 				{
 					GameApp::Get().mTutorialText = GC::TUTORIAL_PLANT;
 					GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
 					shownPlantTutorial = true;
 				}
 
-				if (mPlayer.health < GC::PLAYER_LOW_HEALTH)
-				{
-					mHelpMessage.mText.center = true;
-					mHelpMessage.mText.color = DirectX::Colors::Red;
-					mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 300.f, 150.f };
-					mHelpMessage.Activate(GC::HELP_MESSAGES[0], 2.f);
-				}
 				GameApp::Get().GetAudio().Play("playerHit01", nullptr, false, 1.0f, GetRandomVoicePitch());
 				//Transition to game over state
 				if (mPlayer.health <= 0)
@@ -774,7 +744,7 @@ void PlayState::Update(const GameTimer& gt)
 
 		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), e.GetPos()))
 		{
-			// TODO: FIX ENEMY MODEL LEFT ON SCREEN
+			// TODO: (URGENT) FIX ENEMY MODEL LEFT ON SCREEN
 
 			e.DamageEnemy(mPlayer.attack);		//Takes away health from enemy + blowsback enemy position
 			if (e.GetHealth() <= 0)
@@ -821,7 +791,7 @@ void PlayState::Update(const GameTimer& gt)
 
 	});
 
-	// TODO: (NOTE) METHOD OF REGENNING ENEMIES AFTER THEIR DEATH HERE
+	// TODO: (REMEMBER) METHOD OF REGENNING ENEMIES AFTER THEIR DEATH HERE
 	if (newEnemy == true) {
 		newEnemy = false;
 		eGen(true);
@@ -866,7 +836,7 @@ void PlayState::Update(const GameTimer& gt)
 	// show/hide item menu
 	if (itemMenuOpen)
 	{
-		if (!shownInventoryUseTutorial)
+		if (shownInventoryUseTutorial == false)
 		{
 			GameApp::Get().mTutorialText = GC::TUTORIAL_USE;
 			GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
@@ -904,18 +874,16 @@ void PlayState::Update(const GameTimer& gt)
 
 		//Help instructions for inventory
 		mHelpMessage.mText.center = true;
-		mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 480.f, 450.f };
+		mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 650.f, 450.f };
 		mHelpMessage.mText.color = DirectX::Colors::White;
-		mHelpMessage.Activate(GC::HELP_MESSAGES[1], 0.1f);
+		mHelpMessage.Activate(GC::HELP_MESSAGES[0], 0.1f);
 	}
 
 	// IMPLEMENT CHECK FOR ENEMIES HERE
 	if (EnemiesRemaining() == 0 && !mPlayer.AreaClear)
 		mPlayer.AreaClear = true;
 
-	// TODO: (URGENT) IMPLEMENT BETTER WIN CONDITION
 	// final goal is to reach a safe house, need to harvest a certain number of plants as payment to get in?
-
 
 	if (mPlayer.AreaClear && mPlayer.genArea) { // TODO: (REMEMBER) IMPLEMENT CHANGE STATE FOR NEW AREA HERE
 		// change state, trigger regen
@@ -955,12 +923,13 @@ void PlayState::Draw(const GameTimer& gt)
 	mInventoryPanel.Draw();
 	mInventoryText.Draw();
 
-	mHelpPanel.Draw();
-	mHelpText.Draw();
 
 	mMessage.Draw();
 	mHelpMessage.Draw();
 	mTradeHelpMessage.Draw();
+
+	mHelpPanel.Draw();
+	mHelpText.Draw();
 
 	mScoreTextShadow.Draw();
 	mScoreText.Draw();
@@ -1141,7 +1110,10 @@ void PlayState::ItemAction()
 
 		break;
 	case ItemCategory::KEY_ITEM:
-
+		if (inventoryPosition->first == "Radio")
+		{
+			mMessage.Activate(GC::RADIO_MESSAGES[rand() % GC::RADIO_MESSAGES_SIZE],5.0f);
+		}
 
 		break;
 	}
@@ -1518,7 +1490,7 @@ void PlayState::Reset()
 	mCombatController.Reset();
 	mPlayerWeapon.Reset();
 
-	mPlayerHealthBar.SetMinMax(0, GC::PLAYER_MAX_HEALTH); // todo change to max health
+	mPlayerHealthBar.SetMinMax(0, GC::PLAYER_MAX_HEALTH); 
 	mPlayerHealthBar.SetValue(mPlayer.health);
 	mPlayerHealthBar.SetPosition({ 200.0f, 20.0f }); // todo add values to constants.h
 	mPlayerHealthBar.SetValue(GC::PLAYER_MAX_HEALTH);
@@ -1559,13 +1531,15 @@ void PlayState::Reset()
 
 	//Reset Traders
 	float x = -10.5f;
-	const int biggestGap = 3;
+	const int biggestGap = 4;
+	float z = 5.0f;
 	for (auto& t : mTraders)
 	{
 		if (!t.GetIfStoryItem())		//Keeps position of car the same
 		{
 			x += 1.0f + (rand() % biggestGap);
-			t.SetPos({ x, 0.0f, 3.0f });
+			z = 5.0f + (rand() % biggestGap);
+			t.SetPos({ x, 0.0f, z });
 		}
 
 		t.ResetTrader();		//Resets quests/trades for each trader
@@ -1582,9 +1556,14 @@ void PlayState::Reset()
 	ReGen();
 
 	//Reset Lighting
+	GameApp::Get().mStoryIndex = 0;
+	areas = 0;
+	timeCycle = 1;
+	timeChange = 0.0f;
 	GameApp::Get().GetMainPassCB()->AmbientLight = GC::DAWN_COLOUR; // dawn
 	GameApp::Get().GetMainPassCB()->Lights[1].Strength = GC::DAWN_STRENGTH;
 
+	// TODO: (REMEMBER) LOOK AT BELOW FOR ENEMY RESETTING (MAY OR MAY NOT BE NEEDED)
 	//Reset Enemies
 	size_t enemyAmount = mEnemies.size() - 1;
 	while (enemyAmount > 1)

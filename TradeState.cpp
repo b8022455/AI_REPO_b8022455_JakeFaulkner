@@ -52,7 +52,6 @@ void TradeState::Initialize()
 
 void TradeState::Update(const GameTimer & gt)
 {
-	{
 
 		//show inventory debug
 		//GameApp::Get().mDebugLog << "\nInventory:\n";
@@ -239,12 +238,10 @@ void TradeState::RefreshText()
 	{
 		// show trade items if can trade
 		mText[TEXT_REQUEST].string = mpTrader->GetRequestAsString().c_str();
-		mText[TEXT_REWARD].string = mpTrader->GetRewardAsString().c_str();
 	}
 	else
 	{
 		//show nothing
-		mText[TEXT_REQUEST].string = "";
 		mText[TEXT_REWARD].string = mText[TEXT_REQUEST].string;
 	}
 }

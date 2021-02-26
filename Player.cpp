@@ -6,13 +6,10 @@
 void Player::Update(const GameTimer & gt)
 {
 	const float dt = gt.DeltaTime();
-	//GameApp::Get().mDebugLog << "Health:" << health << "\n";
-	
 
-	//Check if player is invincible from recent hit
-	times.UpdateTime();
-	if (times.currentTime.tm_sec > times.nextInvincibleDelay)
-		times.SetInvincibleStatus(false);
+	//Gives cooldown from being attacked
+	if (mDamageInvincibilityTimer.HasTimeElapsed(dt, 4.0f))
+		isImmune = false;
 
 	if (BouncebackPosition.x != 0.0f || BouncebackPosition.z != 0.0f)		//If there has been a bounceback
 	{
@@ -121,11 +118,6 @@ void Player::Reset()
 	SetVelocity(0);
 	BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);		//Not sure if needs to be reset
 
-	//Resetting attack delay
-	times.UpdateTime();
-	times.SetNextTimer();
-	times.SetInvincibleStatus(false);
-
 	playerDir = PlayerFacingDirection::Left;		//Find way to replace instead of resetting
 
 	//Reset player bobbing animation
@@ -221,8 +213,6 @@ void Player::Move(const GameTimer & gt, const DirectX::SimpleMath::Vector3 & vec
 		SetRotationY(90);							//Positions player model facing downwards (towards camera)
 	}
 
-	//todo simplify
-
 	vel.SetVel(vec, 1.0f*gt.DeltaTime());
 
 	//Copied from Player::Move since keyboard/controller have diff functions to apply velocity
@@ -241,15 +231,13 @@ void Player::Move(const GameTimer & gt, const DirectX::SimpleMath::Vector3 & vec
 	}
 }
 
-void Player::DamagePlayer(int damage, Enemy e)			//When enemy hits with player
+void Player::DamagePlayer(int damage, Enemy e, const GameTimer& gt)			//When enemy hits with player
 {
-	if (!times.IsInvincible)
+	if (!isImmune)
 	{
 		health -= damage;
 		if (health < 0)	health = 0;		//Prevents assert error in health bar (line 59 of bar.h)
-		times.SetInvincibleStatus(true);
-		times.nextInvincibleDelay = times.currentTime.tm_sec + times.InvincibleDelay;
-		if (times.nextInvincibleDelay >= 60)	times.nextInvincibleDelay -= 60;
+		isImmune = true;
 	}
 
 	float x = 0.0f;

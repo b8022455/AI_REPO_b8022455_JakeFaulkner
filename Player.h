@@ -8,7 +8,6 @@
 #include "GameObject.h"
 #include "Velocity.h"
 #include "DeltaTimer.h"
-#include "AttackTimeDelay.h"
 #include <d2d1helper.h>
 #include "Enemy.h"
 
@@ -38,7 +37,7 @@ public:
 	Velocity vel;
 	// Gamepad
 	void Move(const GameTimer& gt, const DirectX::SimpleMath::Vector3& vec);
-	void DamagePlayer(int damage, Enemy e);
+	void DamagePlayer(int damage, Enemy e, const GameTimer& gt);
 
 	int health = GC::PLAYER_MAX_HEALTH;
 
@@ -50,7 +49,6 @@ public:
 	int attack = 10;		//Base attack stat (base amount + weapon amount), need to make private but public for debugging purposes
 
 	DeltaTimer mFootstepTimer;
-	AttackTimeDelay times;
 
 	DirectX::XMFLOAT3 BouncebackPosition = { 0.0f, 0.0f, 0.0f };
 
@@ -67,6 +65,10 @@ private:
 
 	float scaleYValue = 0.8f;
 	DeltaTimer mAnimationTimer;		//Used currently for bobbing of player when moving
+
+	//Prevents player from insta dying
+	DeltaTimer mDamageInvincibilityTimer;
+	bool isImmune = false;
 
 	D2D1_RECT_F VELOCITY { 0.0f, //LEFT = left
 	0.0f, //UP = top

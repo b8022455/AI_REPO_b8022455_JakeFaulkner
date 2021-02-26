@@ -4,11 +4,8 @@
 #include "Constants.h"
 #include <random>
 #include "Constants.h"
-#include "AttackTimeDelay.h"
 #include "DeltaTimer.h"
 #include "EnemyParticle.h"
-
-
 
 class Enemy : public GameObject
 {
@@ -32,7 +29,7 @@ public:
 	int GetHealth() { return mHealth; }
 	int GetAttack() { return mAttack; }
 	std::string& GetType() { return mEnemyType; }
-	AttackTimeDelay getattacking() { return times; }
+	bool GetIfCanAttack() { return canAttack; }
 
 	void Update(const GameTimer& gt);
 	void Reset();
@@ -42,7 +39,6 @@ public:
 	DirectX::XMFLOAT3 BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);		//Gets enemy position once bounceback has taken effect
 
 	std::vector<EnemyParticle> particles;
-	AttackTimeDelay times;
 	void SetVelocity(const DirectX::SimpleMath::Vector3 target, const GameTimer& gt);
 	void SetHealth(int health); // ONLY USED WHEN ENEMY IS FIRST INITIALISED 
 
@@ -50,13 +46,17 @@ public:
 private:
 	int GetRandomValue(int min, int max);				//Gets random value of spawning enemy position & loot drops
 
-	int mHealth; // TODO: SET HEALTH BASED ON ENEMYTYPE
+	int mHealth;
 	int mAttack;
 	std::string mEnemyType; // for item lookup
 	DirectX::XMFLOAT3 playerDirection;								//Gets enum value of which way player is facing
 
 	//Order of items is from Most Common -> Rarest
 	const InventoryUnordered* mpDropItems;
+
+	DeltaTimer mEnemyAttackTimer;
+	bool canAttack = false;
+	float mAttackDuration;
 
 
 	DirectX::SimpleMath::Vector3 mVelocity;

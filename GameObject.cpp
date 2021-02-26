@@ -9,11 +9,6 @@ void GameObject::AddRenderItemInstance(const std::string & renderItemName)
 	assert(mpInstance);
 }
 
-void GameObject::RemoveRenderItemInstance()
-{
-	// todo May be an issue with pointer mpInstance for moved instances that remain
-}
-
 GameObject::~GameObject()
 {
 	if (mHasInitailized)
@@ -227,7 +222,7 @@ bool GameObject::CheckCollision(const XMFLOAT3& Object1,const XMFLOAT3& Object2)
 	float distanceInZ = Object1.z - Object2.z;
 
 	if (distanceInX > -1.0f && distanceInX < 1.0f)
-		if (distanceInY > -1.5f && distanceInY < 1.5f)
+		if (distanceInY > -2.f && distanceInY < 2.f)
 			if (distanceInZ > -1.0f && distanceInZ < 1.0f)
 				return true;
 

@@ -48,7 +48,7 @@ struct Sprite
 	DirectX::XMUINT2 textureSize = DirectX::XMUINT2(512, 512);
 	DirectX::XMFLOAT2 position = { 0.0f,0.0f };
 	RECT destinationRectangle = { -1,-1,-1,-1 }; //ignore if left = -1
-	RECT sourceRectangle = { 0,0,512,512 };   //todo array for animations?
+	RECT sourceRectangle = { 0,0,512,512 };   
 	DirectX::SimpleMath::Vector4 color = DirectX::Colors::White;
 	float rotation = 0.0f;
 	float scale = 1.0f;
@@ -120,7 +120,8 @@ public:
 		GOTO_HELP,
 		GOTO_VOLUME,
 		VOLUME_UP,
-		VOLUME_DOWN
+		VOLUME_DOWN,
+		TUT_OFF
 	};
 private:
 	Sprite sprite;

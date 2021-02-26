@@ -160,11 +160,11 @@ bool GameApp::Initialize()
 	// For each geo object
 	//	add to mAllRitems in BuildRenderItems()
 	// Change differentRenderObjectsNum in frame resource to reflect this. 
-	BuildObjGeometry("Data/Models/tempSword.obj", "tempSwordGeo", "tempSword");// loads obj
+	BuildObjGeometry("Data/Models/weapon00.obj", "tempSwordGeo", "tempSword");// loads obj
 	BuildObjGeometry("Data/Models/charCloak.obj", "tempPlayerGeo", "tempPlayer");//tempPlayer.obj
 	BuildObjGeometry("Data/Models/charBlob.obj", "tempEnemyGeo", "tempEnemy");
 	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" ); //quad rather than cube
-	BuildObjGeometry("Data/Models/building04.obj","traderGeo", "trader" ); //quad rather than cube
+	BuildObjGeometry("Data/Models/trader.obj","traderGeo", "trader" ); //quad rather than cube
 	BuildObjGeometry("Data/Models/particle.obj", "particle", "particle");		//Particle used for enemy attack
 	BuildObjGeometry("Data/Models/plantPotato.obj","potatoGeo", "potato" ); // plant
 	BuildObjGeometry("Data/Models/carBody.obj","carBodyGeo", "carBody" );  // 'trader' main objective. requires 1x1x1 bounding box
@@ -304,8 +304,7 @@ void GameApp::OnResize()
 	//assert(mpActiveCamera);
 
 	if (mpActiveCamera)
-	{
-		//todo 
+	{ 
 		mpActiveCamera->SetLens(0.25f*MathHelper::Pi, AspectRatio(), 1.0f, 1000.0f);
 
 		BoundingFrustum::CreateFromMatrix(mCamFrustum, mpActiveCamera->GetProj());
@@ -697,7 +696,6 @@ void GameApp::UpdateMainPassCB(const GameTimer& gt)
 	mMainPassCB.TotalTime = gt.TotalTime();
 	mMainPassCB.DeltaTime = gt.DeltaTime();
 
-	// TODO: (NOTE) LIGHTS SET HERE IN UPDATE
 	//mMainPassCB.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
 	//mMainPassCB.AmbientLight = GC::DAWN_COLOUR;
 
