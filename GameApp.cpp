@@ -403,13 +403,13 @@ void GameApp::Update(const GameTimer& gt)
 	}
 
 
-	mDebugLog
-		<< "\n G) Enemy Instance count: "
-		<< mAllRitems[GC::GO_ENEMY]->InstanceCount
-		<< " Instance Size(): "
-		<< mAllRitems[GC::GO_ENEMY]->Instances.size()
-		<< "\n\n"
-		;
+	//mDebugLog
+	//	<< "\n G) Enemy Instance count: "
+	//	<< mAllRitems[GC::GO_ENEMY]->InstanceCount
+	//	<< " Instance Size(): "
+	//	<< mAllRitems[GC::GO_ENEMY]->Instances.size()
+	//	<< "\n\n"
+	//	;
 
 	mStateManager.Update(gt);
 	AnimateMaterials(gt);

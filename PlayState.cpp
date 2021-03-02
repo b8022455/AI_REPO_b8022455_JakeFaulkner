@@ -91,7 +91,6 @@ bool PlayState::FindNearestTraderInRadius()
 
 Enemy PlayState::Spawn(std::string enemyType) // USED TO INITIALISE ENEMIES
 {
-	//Enemy e(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK);
 	if (enemyType == GC::ENEMY_TYPE_1)
 	{
 		Enemy e(GC::ENEMY_TYPE_1, GC::ENEMYTYPE1_ATTACK);
@@ -156,6 +155,14 @@ void PlayState::Initialize()
 
 	// Setup temp enemies
 	{
+		//mPopulation.push_back(Enemy());
+		//mPopulation.push_back(Enemy());
+		//mPopulation.push_back(Enemy());
+		//mPopulation.push_back(Enemy());
+
+		//mEnemies.push_back(Enemy());
+		//mEnemies.push_back(Enemy());
+
 		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2)); // number of enemies, Enemy(GC::enemytype, attack)
 		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 
@@ -237,203 +244,203 @@ void PlayState::Initialize()
 
 }
 
-void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
-	// use time cycle to determine number of enemies to add, enemy types are selected at random
-
-	if (fill == false) {
-		mEnemies.clear();
-	}
-
-	if (timeCycle == 1) { // dawn (small / 2)
-		//	// inserts n of enemies
-		int e1 = (rand() % 2) + 1; // random 1-2
-		int e2 = (rand() % 2) + 1; // random 1-2
-		if (e1 == 1) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
-		}
-		else if (e1 == 2) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
-		}
-
-		if (e2 == 1) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
-		}
-		else if (e2 == 2) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
-		}
-
-		//Init all enemies
-		for (auto& e : mEnemies)
-		{
-			e.SetPos({
-						static_cast<float>(rand() % 10 + 2.0f),
-						0.0f,
-						static_cast<float>(rand() % 10 + 2.0f)
-				});
-			for (auto& t : mTraders)									//Check each trader in the game
-				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
-					e.SetPos({
-						static_cast<float>(rand() % 10 + 2.0f),
-						0.0f,
-						static_cast<float>(rand() % 10 + 2.0f)
-						});
-		}
-	}
-	if (timeCycle == 2) { // noon (small / 2)
-		//	// inserts n of enemies
-		int e1 = (rand() % 2) + 1; // random 1-2
-		int e2 = (rand() % 2) + 1; // random 1-2
-		if (e1 == 1) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
-		}
-		else if (e1 == 2) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
-		}
-
-		if (e2 == 1) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
-		}
-		else if (e2 == 2) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
-		}
-
-		//Init all enemies
-		for (auto& e : mEnemies)
-		{
-			e.SetPos({
-						static_cast<float>(rand() % 10 + 2.0f),
-						0.0f,
-						static_cast<float>(rand() % 10 + 2.0f)
-				});
-		for (auto& t : mTraders)									//Check each trader in the game
-			while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
-				e.SetPos({
-					static_cast<float>(rand() % 10 + 2.0f),
-					0.0f,
-					static_cast<float>(rand() % 10 + 2.0f)
-					});
-		}
-	}
-	if (timeCycle == 3) { // evening (large / 3)
-			// inserts n of enemies
-		int e1 = (rand() % 2) + 1; // random 1-2
-		int e2 = (rand() % 2) + 1; // random 1-2
-		int e3 = (rand() % 2) + 1; // random 1-2
-		if (e1 == 1) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
-		}
-		else if (e1 == 2) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
-		}
-
-		if (e2 == 1) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
-		}
-		else if (e2 == 2) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
-		}
-
-		if (e3 == 1) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
-		}
-		else if (e3 == 2) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
-		}
-
-		//Init all enemies
-		for (auto& e : mEnemies)
-		{
-			e.SetPos({
-						static_cast<float>(rand() % 10 + 2.0f),
-						0.0f,
-						static_cast<float>(rand() % 10 + 2.0f)
-			});
-
-			for (auto& t : mTraders)									//Check each trader in the game
-				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
-					e.SetPos({
-						static_cast<float>(rand() % 10 + 2.0f),
-						0.0f,
-						static_cast<float>(rand() % 10 + 2.0f)
-						});
-		}
-	}
-	if (timeCycle == 4) { // pitch (large / constant)
-		// fill on basic
-		if (fill == false) {
-			int e1 = (rand() % 2) + 1; // random 1-2
-			int e2 = (rand() % 2) + 1; // random 1-2
-			int e3 = (rand() % 2) + 1; // random 1-2
-			if (e1 == 1) {
-				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
-			}
-			else if (e1 == 2) {
-				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
-			}
-
-			if (e2 == 1) {
-				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
-			}
-			else if (e2 == 2) {
-				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
-			}
-
-			if (e3 == 1) {
-				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
-			}
-			else if (e3 == 2) {
-				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
-			}
-
-			//Init all enemies
-			for (auto& e : mEnemies)
-			{
-				e.SetPos({
-							static_cast<float>(rand() % 10 + 2.0f),
-							0.0f,
-							static_cast<float>(rand() % 10 + 2.0f)
-					});
-				for (auto& t : mTraders)									//Check each trader in the game
-					while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
-						e.SetPos({
-							static_cast<float>(rand() % 10 + 2.0f),
-							0.0f,
-							static_cast<float>(rand() % 10 + 2.0f)
-							});
-			}
-		}
-
-		// fill until full again
-		if (fill == true) { 
-
-			int e1 = (rand() % 2) + 1; // random 1-2
-			if (e1 == 1) {
-				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
-			}
-			else if (e1 == 2) {
-				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
-			}
-			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
-			mEnemies.back().SetPos({
-				static_cast<float>(rand() % 10 + 2.0f),
-				0.0f,
-				static_cast<float>(rand() % 10 + 2.0f)
-				});
-			for (auto& t : mTraders)									//Check each trader in the game
-				while (mEnemies.back().CheckCollision(mEnemies.back().GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
-					mEnemies.back().SetPos({
-						static_cast<float>(rand() % 10 + 2.0f),
-						0.0f,
-						static_cast<float>(rand() % 10 + 2.0f)
-						});
-		}
-	}
-}
+//void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
+//	// use time cycle to determine number of enemies to add, enemy types are selected at random
+//
+//	if (fill == false) {
+//		mEnemies.clear();
+//	}
+//
+//	if (timeCycle == 1) { // dawn (small / 2)
+//		//	// inserts n of enemies
+//		int e1 = (rand() % 2) + 1; // random 1-2
+//		int e2 = (rand() % 2) + 1; // random 1-2
+//		if (e1 == 1) {
+//			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
+//		}
+//		else if (e1 == 2) {
+//			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+//		}
+//
+//		if (e2 == 1) {
+//			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
+//		}
+//		else if (e2 == 2) {
+//			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+//		}
+//
+//		//Init all enemies
+//		for (auto& e : mEnemies)
+//		{
+//			e.SetPos({
+//						static_cast<float>(rand() % 10 + 2.0f),
+//						0.0f,
+//						static_cast<float>(rand() % 10 + 2.0f)
+//				});
+//			for (auto& t : mTraders)									//Check each trader in the game
+//				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+//					e.SetPos({
+//						static_cast<float>(rand() % 10 + 2.0f),
+//						0.0f,
+//						static_cast<float>(rand() % 10 + 2.0f)
+//						});
+//		}
+//	}
+//	if (timeCycle == 2) { // noon (small / 2)
+//		//	// inserts n of enemies
+//		int e1 = (rand() % 2) + 1; // random 1-2
+//		int e2 = (rand() % 2) + 1; // random 1-2
+//		if (e1 == 1) {
+//			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
+//		}
+//		else if (e1 == 2) {
+//			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+//		}
+//
+//		if (e2 == 1) {
+//			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
+//		}
+//		else if (e2 == 2) {
+//			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+//		}
+//
+//		//Init all enemies
+//		for (auto& e : mEnemies)
+//		{
+//			e.SetPos({
+//						static_cast<float>(rand() % 10 + 2.0f),
+//						0.0f,
+//						static_cast<float>(rand() % 10 + 2.0f)
+//				});
+//		for (auto& t : mTraders)									//Check each trader in the game
+//			while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+//				e.SetPos({
+//					static_cast<float>(rand() % 10 + 2.0f),
+//					0.0f,
+//					static_cast<float>(rand() % 10 + 2.0f)
+//					});
+//		}
+//	}
+//	if (timeCycle == 3) { // evening (large / 3)
+//			// inserts n of enemies
+//		int e1 = (rand() % 2) + 1; // random 1-2
+//		int e2 = (rand() % 2) + 1; // random 1-2
+//		int e3 = (rand() % 2) + 1; // random 1-2
+//		if (e1 == 1) {
+//			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
+//		}
+//		else if (e1 == 2) {
+//			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+//		}
+//
+//		if (e2 == 1) {
+//			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
+//		}
+//		else if (e2 == 2) {
+//			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+//		}
+//
+//		if (e3 == 1) {
+//			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
+//		}
+//		else if (e3 == 2) {
+//			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+//		}
+//
+//		//Init all enemies
+//		for (auto& e : mEnemies)
+//		{
+//			e.SetPos({
+//						static_cast<float>(rand() % 10 + 2.0f),
+//						0.0f,
+//						static_cast<float>(rand() % 10 + 2.0f)
+//			});
+//
+//			for (auto& t : mTraders)									//Check each trader in the game
+//				while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+//					e.SetPos({
+//						static_cast<float>(rand() % 10 + 2.0f),
+//						0.0f,
+//						static_cast<float>(rand() % 10 + 2.0f)
+//						});
+//		}
+//	}
+//	if (timeCycle == 4) { // pitch (large / constant)
+//		// fill on basic
+//		if (fill == false) {
+//			int e1 = (rand() % 2) + 1; // random 1-2
+//			int e2 = (rand() % 2) + 1; // random 1-2
+//			int e3 = (rand() % 2) + 1; // random 1-2
+//			if (e1 == 1) {
+//				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
+//			}
+//			else if (e1 == 2) {
+//				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+//			}
+//
+//			if (e2 == 1) {
+//				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
+//			}
+//			else if (e2 == 2) {
+//				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+//			}
+//
+//			if (e3 == 1) {
+//				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
+//			}
+//			else if (e3 == 2) {
+//				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+//			}
+//
+//			//Init all enemies
+//			for (auto& e : mEnemies)
+//			{
+//				e.SetPos({
+//							static_cast<float>(rand() % 10 + 2.0f),
+//							0.0f,
+//							static_cast<float>(rand() % 10 + 2.0f)
+//					});
+//				for (auto& t : mTraders)									//Check each trader in the game
+//					while (e.CheckCollision(e.GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+//						e.SetPos({
+//							static_cast<float>(rand() % 10 + 2.0f),
+//							0.0f,
+//							static_cast<float>(rand() % 10 + 2.0f)
+//							});
+//			}
+//		}
+//
+//		// fill until full again
+//		if (fill == true) { 
+//
+//			int e1 = (rand() % 2) + 1; // random 1-2
+//			if (e1 == 1) {
+//				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
+//			}
+//			else if (e1 == 2) {
+//				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+//			}
+//			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
+//			mEnemies.back().SetPos({
+//				static_cast<float>(rand() % 10 + 2.0f),
+//				0.0f,
+//				static_cast<float>(rand() % 10 + 2.0f)
+//				});
+//			for (auto& t : mTraders)									//Check each trader in the game
+//				while (mEnemies.back().CheckCollision(mEnemies.back().GetPos(), t.GetPos()))	//Prevents enemies from spawning inside a trader
+//					mEnemies.back().SetPos({
+//						static_cast<float>(rand() % 10 + 2.0f),
+//						0.0f,
+//						static_cast<float>(rand() % 10 + 2.0f)
+//						});
+//		}
+//	}
+//}
 
 void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN LEAVING AN AREA
 
 	ReGen();
-	eGen(false);
+	//eGen(false);
 	timeSet();
 
 	timeChange = 0.0f;
@@ -471,6 +478,24 @@ void PlayState::timeSet() {
 
 void PlayState::Update(const GameTimer& gt)
 {
+	//Genetic Algorithm
+	if (mPopulation.size() == 0)
+	{
+		//Organise the vector of enemies
+		struct SortByFitness
+		{
+			bool operator()(Enemy& a, Enemy& b)
+			{
+				return a.GetFitnessValue() > b.GetFitnessValue();		//Returns the higher fitness value
+			}
+		};
+
+		SortByFitness organiseVector;
+
+		std::sort(mDefeatedEnemies.begin(), mDefeatedEnemies.end(), std::ref(organiseVector));
+	}
+
+
 	//mTileManager.Update(gt);
 	mCombatController.Update(gt);
 
@@ -528,7 +553,7 @@ void PlayState::Update(const GameTimer& gt)
 		timeCycle += 1;
 		if (timeCycle > 4)
 			timeCycle = 1;
-		eGen(false);
+		//eGen(false);
 		timeSet();
 	}
 
@@ -784,7 +809,7 @@ void PlayState::Update(const GameTimer& gt)
 	// TODO: (REMEMBER) METHOD OF REGENNING ENEMIES AFTER THEIR DEATH HERE
 	if (newEnemy == true) {
 		newEnemy = false;
-		eGen(true);
+		//eGen(true);
 	}
 	PassConstants* pMainPassCB = GameApp::Get().GetMainPassCB();
 
@@ -1555,13 +1580,13 @@ void PlayState::Reset()
 
 	// TODO: (REMEMBER) LOOK AT BELOW FOR ENEMY RESETTING (MAY OR MAY NOT BE NEEDED)
 	//Reset Enemies
-	size_t enemyAmount = mEnemies.size() - 1;
+	/*size_t enemyAmount = mEnemies.size() - 1;
 	while (enemyAmount > 1)
 	{
 		mEnemies.at(enemyAmount - 1).MoveOffScreen();
 		mEnemies.erase(mEnemies.begin() + (enemyAmount - 1));
 		enemyAmount--;
-	}
+	}*/
 
 	for (auto& e : mEnemies)
 	{

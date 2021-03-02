@@ -6,6 +6,7 @@
 #include "Constants.h"
 #include "DeltaTimer.h"
 #include "EnemyParticle.h"
+#include "GeneticInformation.h"
 
 class Enemy : public GameObject
 {
@@ -19,6 +20,26 @@ public:
 		mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at(mEnemyType);
 		assert(mpDropItems);
 		mAttack = att;
+	};
+
+	Enemy()
+	{
+		enemyGenetics.GetRandomGenetics();
+		std::string type = enemyGenetics.GetEnemyType();
+
+		if (type == "EnemyType1")
+		{
+			Initialize("EnemyGhoul");
+			particles.resize(20);
+		}
+		else
+			Initialize(GC::GO_ENEMY);
+
+		SetHealth(enemyGenetics.GetHealth());
+		mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at(type);
+		assert(mpDropItems);
+
+		SetRandomPosition();
 	};
 
 	//void InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int materialIndex);	//Sets up the enemy
@@ -43,6 +64,10 @@ public:
 	void SetHealth(int health); // ONLY USED WHEN ENEMY IS FIRST INITIALISED 
 
 	Behaviour mBehaviour = Behaviour::NONE;
+
+	//Genetic Algorithm
+	int GetFitnessValue() { return fitnessValue; }
+
 private:
 	int GetRandomValue(int min, int max);				//Gets random value of spawning enemy position & loot drops
 
@@ -58,6 +83,9 @@ private:
 	bool canAttack = false;
 	float mAttackDuration;
 
+	//Stores the genetic information for each enemy (variables which will be different for each enemy + have potential to mutate)
+	GeneticInformation enemyGenetics;
+	int fitnessValue = 0;		//Increments when enemy damages the player
 
 	DirectX::SimpleMath::Vector3 mVelocity;
 	float mSpeed = 1.0f; // current speed - LEAVE AS IS, CHANGES & ISN'T STATIC

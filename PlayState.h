@@ -25,6 +25,11 @@ class PlayState : public State
 	std::vector<Plant> mPlants;
 	Inventory mInventory;
 
+	//Genetic algorithm variables
+	std::vector<Enemy> mPopulation;			//Each generation of candidates.
+	std::vector<Enemy> mDefeatedEnemies;	//Stores enemies defeated, used to mate them before deleting them
+	std::vector<Enemy> mNextGeneration;		//Stores the children of the enemies in the population, is assigned to mPopulation at the end of a generation
+
 	// Trader player is focused on
 	Trader* mpActiveTrader = nullptr;
 	Inventory::iterator inventoryPosition = mInventory.begin();			//Used to select items from the Inventory (Increments using down key, decrements using up key, loops back around when over inventory size)
@@ -106,7 +111,7 @@ public:
 	virtual void OnPause()									override;
 
 	void reInitialize();
-	void eGen(bool fill); // bool is only needed for pitch
+	//void eGen(bool fill); // bool is only needed for pitch
 	void timeSet();
 
 	void Controls(const GameTimer& gt);
