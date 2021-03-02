@@ -143,6 +143,7 @@ private:
 	void BuildTileGeometry();
 	void BuildSwordGeometry();
 	void BuildPlayerGeometry();
+	void BuildBuildingGeometry();
 	void BuildPSOs();
 	void BuildFrameResources();
 	void BuildMaterial(int& index, int texIndex, const std::string& name, float roughness = 0.5f, const DirectX::XMFLOAT4& diffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f }, const DirectX::XMFLOAT3& fresnel = { 0.05f, 0.05f, 0.05f });

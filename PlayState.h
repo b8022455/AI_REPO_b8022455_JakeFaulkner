@@ -12,6 +12,7 @@
 #include "Constants.h"
 #include "Trader.h"
 #include "Plant.h"
+#include "Building.h"
 #include <math.h>
 #include "Bar.h"
 using namespace std;
@@ -23,7 +24,11 @@ class PlayState : public State
 	std::vector<Trader> mTraders;
 	std::vector<Enemy> mEnemies;
 	std::vector<Plant> mPlants;
+	std::vector<Building> mBuildings;
+
 	Inventory mInventory;
+	const InventoryUnordered* mpDropItems;
+	
 
 	// Trader player is focused on
 	Trader* mpActiveTrader = nullptr;
@@ -89,7 +94,14 @@ class PlayState : public State
 	int areas = 0; 
 	std::string playerName = "";
 
+	// Building player is focused on
+	Building* mpActiveBuilding = nullptr;
+	
+	void InitializeBuildings();
+	bool FindNearestBuildingInRadius();
+
 public:
+	
 	PlayState();
 
 	virtual void Initialize() override;
@@ -111,6 +123,8 @@ public:
 
 	void Controls(const GameTimer& gt);
 
+	const std::string Loot(const InventoryUnordered* mpDropItems);
+
 	Player* GetPlayer()
 	{
 		return &mPlayer;
@@ -129,6 +143,11 @@ public:
 	Inventory::iterator* GetInventoryPos()
 	{
 		return &inventoryPosition;
+	}
+
+	Building* GetBuilding()
+	{
+		return mpActiveBuilding;
 	}
 
 	void InventoryUp();

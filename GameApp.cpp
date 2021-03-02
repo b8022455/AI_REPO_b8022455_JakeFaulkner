@@ -164,6 +164,8 @@ bool GameApp::Initialize()
 	BuildObjGeometry("Data/Models/charCloak.obj", "tempPlayerGeo", "tempPlayer");//tempPlayer.obj
 	BuildObjGeometry("Data/Models/charBlob.obj", "tempEnemyGeo", "tempEnemy");
 	BuildObjGeometry("Data/Models/flatTile.obj","floorTileGeo", "floorTile" ); //quad rather than cube
+	BuildObjGeometry("Data/Models/building04.obj","traderGeo", "trader" ); //quad rather than cube
+	BuildObjGeometry("Data/Models/building03.obj", "buildingGeo", "building"); 
 	BuildObjGeometry("Data/Models/trader.obj","traderGeo", "trader" ); //quad rather than cube
 	BuildObjGeometry("Data/Models/particle.obj", "particle", "particle");		//Particle used for enemy attack
 	BuildObjGeometry("Data/Models/plantPotato.obj","potatoGeo", "potato" ); // plant
@@ -1081,6 +1083,7 @@ void GameApp::BuildSwordGeometry()
 	mGeometries[geo->Name] = std::move(geo);
 }
 
+
 void GameApp::BuildPlayerGeometry()
 {
 	GeometryGenerator geoGen;
@@ -1237,6 +1240,7 @@ void GameApp::BuildRenderItems()
 	mAllRitems["CarBody"] = BuildRenderItem(objCbIndex, "carBodyGeo", "carBody");
 	mAllRitems["CarTire"] = BuildRenderItem(objCbIndex, "carTireGeo", "carTire");
 	mAllRitems["EnemyGhoul"] = BuildRenderItem(objCbIndex, "enemyGhoulGeo", "enemyGhoul");
+	mAllRitems["Building"] = BuildRenderItem(objCbIndex, "buildingGeo", "building");
 
 	// All the render items are opaque.
 	for (auto& e : mAllRitems)
