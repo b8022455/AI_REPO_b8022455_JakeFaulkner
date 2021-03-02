@@ -155,20 +155,15 @@ void PlayState::Initialize()
 
 	// Setup temp enemies
 	{
-		//mPopulation.push_back(Enemy());
-		//mPopulation.push_back(Enemy());
-		//mPopulation.push_back(Enemy());
-		//mPopulation.push_back(Enemy());
+		mPopulation.push_back(Enemy());
+		mPopulation.push_back(Enemy());
 
-		//mEnemies.push_back(Enemy());
-		//mEnemies.push_back(Enemy());
-
-		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2)); // number of enemies, Enemy(GC::enemytype, attack)
-		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
+		//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2)); // number of enemies, Enemy(GC::enemytype, attack)
+		//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 
 	}
 
-	mCombatController.Initialize(&mPlayer, &mPlayerWeapon, &mEnemies);
+	mCombatController.Initialize(&mPlayer, &mPlayerWeapon, &mPopulation);
 
 
 	// Sprites
@@ -445,7 +440,7 @@ void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN 
 
 	timeChange = 0.0f;
 
-	mCombatController.Initialize(&mPlayer, &mPlayerWeapon, &mEnemies);
+	mCombatController.Initialize(&mPlayer, &mPlayerWeapon, &mPopulation);
 
 	mPlayer.AreaClear = false;
 	mPlayer.genArea = false;
@@ -657,7 +652,7 @@ void PlayState::Update(const GameTimer& gt)
 
 
 	int i = 0;
-	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
+	std::for_each(mPopulation.begin(), mPopulation.end(), [&](Enemy& e)
 	{
 		e.Update(gt);
 
@@ -669,7 +664,7 @@ void PlayState::Update(const GameTimer& gt)
 
 			//Generically gets the enemy range without duplicating code
 			float enemyRange;
-			if (e.GetType() == GC::ENEMY_TYPE_1)
+			if (e.GetGenetics().GetEnemyType() == GC::ENEMY_TYPE_1)
 				enemyRange = GC::ENEMYTYPE1_RANGE;	// ENEMY TYPE EXCLUSIVE LOGIC LOCATED HERE
 			else
 				enemyRange = GC::ENEMYTYPE2_RANGE;
@@ -1377,7 +1372,7 @@ void PlayState::Keyboard(const GameTimer& gt)
 	{
 		//mEnemies.clear();
 
-		for (auto& e : mEnemies)
+		for (auto& e : mPopulation)
 		{
 			e.Reset();
 			e.mEnabled = false;
@@ -1433,7 +1428,7 @@ void PlayState::KeyboardDebug(const GameTimer& gt)
 	// Debug random enemy pos
 	if (Input::Get().KeyReleased(GC::KEY_DEBUG_ENEMY_POS))
 	{
-		std::for_each(mEnemies.begin(), mEnemies.end(), [](Enemy& e)
+		std::for_each(mPopulation.begin(), mPopulation.end(), [](Enemy& e)
 			{
 				e.mEnabled = true;
 				e.Reset();
@@ -1588,7 +1583,7 @@ void PlayState::Reset()
 		enemyAmount--;
 	}*/
 
-	for (auto& e : mEnemies)
+	for (auto& e : mPopulation)
 	{
 		e.mEnabled = true;
 		e.Reset();

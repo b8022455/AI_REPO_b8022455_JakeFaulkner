@@ -21,7 +21,7 @@ class PlayState : public State
 	Player mPlayer;
 	PlayerWeapon mPlayerWeapon;
 	std::vector<Trader> mTraders;
-	std::vector<Enemy> mEnemies;
+	//std::vector<Enemy> mEnemies;
 	std::vector<Plant> mPlants;
 	Inventory mInventory;
 
@@ -177,7 +177,7 @@ public:
 	int EnemiesRemaining()
 	{
 		int count = 0;
-		for (auto& e : mEnemies)
+		for (auto& e : mPopulation)
 		{
 			if (e.mEnabled) ++count;
 		}

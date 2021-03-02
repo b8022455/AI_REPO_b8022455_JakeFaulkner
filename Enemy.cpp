@@ -19,14 +19,14 @@ void Enemy::Reset()
 {
 	SetRandomPosition();
 
-	if (GetType() == GC::ENEMY_TYPE_1) {
+	if (enemyGenetics.GetEnemyType() == GC::ENEMY_TYPE_1) {
 		mHealth = GC::ENEMYTYPE1_HEALTH;
 		BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
 		canAttack = false;
 		for (auto& p : particles)
 			p.RemoveEffect();
 	}
-	if (GetType() == GC::ENEMY_TYPE_2) {
+	if (enemyGenetics.GetEnemyType() == GC::ENEMY_TYPE_2) {
 		mHealth = GC::ENEMYTYPE2_HEALTH;
 		BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
 	}
@@ -130,7 +130,7 @@ void Enemy::Update(const GameTimer& gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR 
 			mSpeed = 0.0f;
 
 		// BARFING ENEMY - SLOW MOVEMENT TOWARDS PLAYER WHEN NOT ATTACKING
-		if (mEnemyType == GC::ENEMY_TYPE_1)
+		if (enemyGenetics.GetEnemyType() == GC::ENEMY_TYPE_1)
 		{
 
 			switch (mBehaviour)
@@ -167,7 +167,7 @@ void Enemy::Update(const GameTimer& gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR 
 			}
 		}
 
-		if (mEnemyType == GC::ENEMY_TYPE_2) // CHARGER ENEMY
+		if (enemyGenetics.GetEnemyType() == GC::ENEMY_TYPE_2) // CHARGER ENEMY
 		{
 			switch (mBehaviour)
 			{

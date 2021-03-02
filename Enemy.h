@@ -16,8 +16,7 @@ public:
 
 	Enemy(const std::string& type, int att)			//Gives enemy its type
 	{
-		mEnemyType = type;
-		mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at(mEnemyType);
+		mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at(type);
 		assert(mpDropItems);
 		mAttack = att;
 	};
@@ -35,6 +34,7 @@ public:
 		else
 			Initialize(GC::GO_ENEMY);
 
+		mAttack = 1;
 		SetHealth(enemyGenetics.GetHealth());
 		mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at(type);
 		assert(mpDropItems);
@@ -49,8 +49,8 @@ public:
 	const std::string GetDropItem();
 	int GetHealth() { return mHealth; }
 	int GetAttack() { return mAttack; }
-	std::string& GetType() { return mEnemyType; }
 	bool GetIfCanAttack() { return canAttack; }
+	GeneticInformation GetGenetics() { return enemyGenetics; }
 
 	void Update(const GameTimer& gt);
 	void Reset();
@@ -73,7 +73,6 @@ private:
 
 	int mHealth;
 	int mAttack;
-	std::string mEnemyType; // for item lookup
 	DirectX::XMFLOAT3 playerDirection;								//Gets enum value of which way player is facing
 
 	//Order of items is from Most Common -> Rarest
