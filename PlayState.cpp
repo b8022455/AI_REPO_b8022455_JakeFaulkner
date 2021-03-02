@@ -157,6 +157,8 @@ void PlayState::Initialize()
 	{
 		mPopulation.push_back(Enemy());
 		mPopulation.push_back(Enemy());
+		mPopulation.push_back(Enemy());
+		mPopulation.push_back(Enemy());
 
 		//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2)); // number of enemies, Enemy(GC::enemytype, attack)
 		//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
@@ -650,31 +652,30 @@ void PlayState::Update(const GameTimer& gt)
 		}
 	}
 
-
-	int i = 0;
-	std::for_each(mPopulation.begin(), mPopulation.end(), [&](Enemy& e)
+	for (int i = 0; i < mPopulation.size(); i++)
 	{
-		e.Update(gt);
+		mPopulation.at(i).Update(gt);
+		//e.Update(gt);
 
 
-		if (e.mEnabled)
+		if (mPopulation.at(i).mEnabled)
 		{
 			//Enemy look at players position (only do when in range), only look when not attacking either
 			XMVECTOR playerPosition = XMLoadFloat3(&mPlayer.GetPos());
 
 			//Generically gets the enemy range without duplicating code
 			float enemyRange;
-			if (e.GetGenetics().GetEnemyType() == GC::ENEMY_TYPE_1)
+			if (mPopulation.at(i).GetGenetics().GetEnemyType() == GC::ENEMY_TYPE_1)
 				enemyRange = GC::ENEMYTYPE1_RANGE;	// ENEMY TYPE EXCLUSIVE LOGIC LOCATED HERE
 			else
 				enemyRange = GC::ENEMYTYPE2_RANGE;
 
 			// TODO: (REMEMBER) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
-			if (mPlayer.GetPos().x >= (e.GetPos().x - GC::ENEMYTYPE1_RANGE) &&
-				mPlayer.GetPos().x <= (e.GetPos().x + GC::ENEMYTYPE1_RANGE)) { // player within - range on x
-				if (mPlayer.GetPos().z >= (e.GetPos().z - GC::ENEMYTYPE1_RANGE) &&
-					mPlayer.GetPos().z <= (e.GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
-					e.LookAt(playerPosition);
+			if (mPlayer.GetPos().x >= (mPopulation.at(i).GetPos().x - GC::ENEMYTYPE1_RANGE) &&
+				mPlayer.GetPos().x <= (mPopulation.at(i).GetPos().x + GC::ENEMYTYPE1_RANGE)) { // player within - range on x
+				if (mPlayer.GetPos().z >= (mPopulation.at(i).GetPos().z - GC::ENEMYTYPE1_RANGE) &&
+					mPlayer.GetPos().z <= (mPopulation.at(i).GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
+					mPopulation.at(i).LookAt(playerPosition);
 
 					if (shownAttackTutorial == false)
 					{
@@ -686,21 +687,21 @@ void PlayState::Update(const GameTimer& gt)
 			}
 
 			// enemy movement behaviour based on player radius
-			if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < GC::ENEMYTYPE1_RANGE &&
-				!e.GetIfCanAttack())
+			if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), mPopulation.at(i).GetPos()) < GC::ENEMYTYPE1_RANGE &&
+				!mPopulation.at(i).GetIfCanAttack())
 			{
-				e.mBehaviour = Enemy::Behaviour::CHASE;
+				mPopulation.at(i).mBehaviour = Enemy::Behaviour::CHASE;
 			}
 			else
 			{
-				e.mBehaviour = Enemy::Behaviour::NONE;
+				mPopulation.at(i).mBehaviour = Enemy::Behaviour::NONE;
 			}
 		}
 
 		// enemy collision with player
-		if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()) && e.GetHealth() > 0)
+		if (mPlayer.CheckCollision(mPlayer.GetPos(), mPopulation.at(i).GetPos()) && mPopulation.at(i).GetHealth() > 0)
 		{
-			mPlayer.DamagePlayer(e.GetAttack(), e, gt);
+			mPlayer.DamagePlayer(mPopulation.at(i).GetAttack(), mPopulation.at(i), gt);
 			mPlayerHealthBar.SetValue(mPlayer.health);
 
 			if (shownPlantTutorial == false)	//replace bool?
@@ -723,11 +724,11 @@ void PlayState::Update(const GameTimer& gt)
 		}
 
 		//When checking if enemy is in range, have this be in that section to prevent enemy particles from far from being checked
-		for (auto& p : e.particles)
+		for (auto& p : mPopulation.at(i).particles)
 		{
-			if (mPlayer.CheckCollision(mPlayer.GetPos(), p.GetPos()) && e.GetHealth() > 0)
+			if (mPlayer.CheckCollision(mPlayer.GetPos(), p.GetPos()) && mPopulation.at(i).GetHealth() > 0)
 			{
-				mPlayer.DamagePlayer(e.GetAttack(), e, gt);
+				mPlayer.DamagePlayer(mPopulation.at(i).GetAttack(), mPopulation.at(i), gt);
 				mPlayerHealthBar.SetValue(mPlayer.health);
 
 				if (shownPlantTutorial == false)	//replace bool?
@@ -752,27 +753,27 @@ void PlayState::Update(const GameTimer& gt)
 			}
 		}
 
-		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), e.GetPos()))
+		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), mPopulation.at(i).GetPos()))
 		{
 			// TODO: (URGENT) FIX ENEMY MODEL LEFT ON SCREEN
 
-			e.DamageEnemy(mPlayer.attack);		//Takes away health from enemy + blowsback enemy position
-			if (e.GetHealth() <= 0)
+			mPopulation.at(i).DamageEnemy(mPlayer.attack);		//Takes away health from enemy + blowsback enemy position
+			if (mPopulation.at(i).GetHealth() <= 0)
 			{
 				// gain exp
 				mExperience.AddExp(GC::EXP_DEFAULT);
 				score += GC::SCORE_ENEMY;
 
 				//Could be put into an exists function in Inventory Class
-				std::string droppedItem = e.GetDropItem();
+				std::string droppedItem = mPopulation.at(i).GetDropItem();
 				if (droppedItem != "Empty")		//I.e An item was dropped from enemy
 				{
 					++mInventory[droppedItem];
 				}
 
 
-				e.MoveOffScreen();
-				e.mEnabled = false;
+				mPopulation.at(i).MoveOffScreen();
+				mPopulation.at(i).mEnabled = false;
 				if (timeCycle == 4)
 					newEnemy = true;
 
@@ -785,21 +786,22 @@ void PlayState::Update(const GameTimer& gt)
 		}
 
 		//Checking enemy remains in bounds
-		if (!e.WithinBounds(e.GetPos() + e.BouncebackPosition))
-			e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+		if (!mPopulation.at(i).WithinBounds(mPopulation.at(i).GetPos() + mPopulation.at(i).BouncebackPosition))
+			mPopulation.at(i).BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 		// enemy collides with traders
 		for (auto& t : mTraders)
-			if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
-				e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+			if (mPopulation.at(i).CheckCollision(mPopulation.at(i).GetPos() + mPopulation.at(i).BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
+				mPopulation.at(i).BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-		e.SetVelocity(mPlayer.GetPos(), gt);
+		mPopulation.at(i).SetVelocity(mPlayer.GetPos(), gt);
 
-		
-
-		i++;
-
-	});
+		if (!mPopulation.at(i).mEnabled)
+		{
+			mPopulation.erase(mPopulation.begin() + i);
+			break;
+		}
+	}
 
 	// TODO: (REMEMBER) METHOD OF REGENNING ENEMIES AFTER THEIR DEATH HERE
 	if (newEnemy == true) {
@@ -890,32 +892,39 @@ void PlayState::Update(const GameTimer& gt)
 	}
 
 	// IMPLEMENT CHECK FOR ENEMIES HERE
-	if (EnemiesRemaining() == 0 && !mPlayer.AreaClear)
-		mPlayer.AreaClear = true;
+	if (EnemiesRemaining() == 0)
+	{
+		//Spawn more and do the elite selection, mating part here
+		mPopulation.push_back(Enemy());
+		mPopulation.push_back(Enemy());
+		mPopulation.push_back(Enemy());
+		mPopulation.push_back(Enemy());
+	}
+
 
 	// final goal is to reach a safe house, need to harvest a certain number of plants as payment to get in?
 
-	if (mPlayer.AreaClear && mPlayer.genArea) { // TODO: (REMEMBER) IMPLEMENT CHANGE STATE FOR NEW AREA HERE
-		// change state, trigger regen
-		areas += 1;
-		timeCycle += 1;
-		if (timeCycle > 4)
-			timeCycle = 1;
-		timeChange = 0.0f;
-		if (areas < 4) {
-			reInitialize();
-			++GameApp::Get().mStoryIndex;
-			GameApp::Get().ChangeState("Story"); //"NewArea1"
-			//GameApp::Get().ChangeState(GC::STATE_NEW_AREA);
-		}
-		if (areas == 4) { // TODO: (REMEMBER) CURRENTLY WIN CONDITION IS HERE
-			reInitialize();
-			areas = 0;
-			timeCycle = 1;
-			StoreScore();
-			GameApp::Get().ChangeState(GC::STATE_WIN);
-		}
-	}
+	//if (mPlayer.AreaClear && mPlayer.genArea) { // TODO: (REMEMBER) IMPLEMENT CHANGE STATE FOR NEW AREA HERE
+	//	// change state, trigger regen
+	//	areas += 1;
+	//	timeCycle += 1;
+	//	if (timeCycle > 4)
+	//		timeCycle = 1;
+	//	timeChange = 0.0f;
+	//	if (areas < 4) {
+	//		reInitialize();
+	//		++GameApp::Get().mStoryIndex;
+	//		GameApp::Get().ChangeState("Story"); //"NewArea1"
+	//		//GameApp::Get().ChangeState(GC::STATE_NEW_AREA);
+	//	}
+	//	if (areas == 4) { // TODO: (REMEMBER) CURRENTLY WIN CONDITION IS HERE
+	//		reInitialize();
+	//		areas = 0;
+	//		timeCycle = 1;
+	//		StoreScore();
+	//		GameApp::Get().ChangeState(GC::STATE_WIN);
+	//	}
+	//}
 
 	// for dirty frame
 	for (auto& c : mCameras)
