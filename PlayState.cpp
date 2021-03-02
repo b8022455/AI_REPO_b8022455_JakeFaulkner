@@ -20,45 +20,11 @@ void PlayState::InitializeBuildings()
 	mBuildings.push_back(Building(GC::BUILDING_1));
 	mBuildings.push_back(Building(GC::BUILDING_2));
 	
-	struct SetupBuildings
-	{
-		float x,z = -5.5f;
-		const int biggestGap = -5.5f;
-		void operator()(Building& b)
-		{
-			b.Initialize(GC::GO_BUILDING);
-			b.mpInstance->MaterialIndex = 0;
-			x,z += 3.0f + (rand() % biggestGap);
-			b.SetPos({ x, 0.0f, z });
-		}
-	};
 	
-	std::for_each(mBuildings.begin(), mBuildings.end(), SetupBuildings());
-
-	for (auto& b : mBuildings) // Prevents buildings spawning on top of traders
+	for (auto& b : mBuildings)
 	{
-		for (auto t : mTraders)
-		{
-			while (b.CheckCollision(t.GetPos(), b.GetPos()))
-				b.SetPos({
-					static_cast<float>(rand() % 10 + 2.0f),
-					0.0f,
-					static_cast<float>(rand() % 10 + 2.0f)
-					});
-		};
-	};
-
-	for (auto& b : mBuildings) // Prevents buildings from spawning on top of enemies
-	{
-		for (auto e : mEnemies)
-		{
-			while (b.CheckCollision(e.GetPos(), b.GetPos()))
-				b.SetPos({
-					static_cast<float>(rand() % 10 + 2.0f),
-					0.0f,
-					static_cast<float>(rand() % 10 + 2.0f)
-					});
-		};
+		b.Initialize(GC::GO_BUILDING);
+		b.mpInstance->MaterialIndex = 0;
 	};
 }
 
@@ -908,7 +874,7 @@ void PlayState::Update(const GameTimer& gt)
 
 		// enemy collides with buildings
 		for (auto& b : mBuildings)
-			if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, b.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
+			if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, b.GetPos()))		
 				e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 
@@ -1704,7 +1670,14 @@ void PlayState::Reset()
 	ReGen();
 
 	//Reset Buildings // TODO: TEMP
-	mBuildings.clear();
+
+	//mBuildings.clear();
+	for (auto& b : mBuildings)
+	{
+		x += 1.0f + (rand() % biggestGap);
+		z = 5.0f + (rand() % biggestGap);
+		b.SetPos({ x, 0.0f, z });
+	}
 
 	//Reset Lighting
 	GameApp::Get().mStoryIndex = 0;
