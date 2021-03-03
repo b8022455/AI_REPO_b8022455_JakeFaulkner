@@ -489,7 +489,17 @@ void PlayState::Update(const GameTimer& gt)
 
 		SortByFitness organiseVector;
 
+		//Sort the population in terms of fitness value (Enemies that hit the player more times are towards the front of the vector)
 		std::sort(mDefeatedEnemies.begin(), mDefeatedEnemies.end(), std::ref(organiseVector));
+
+		//Elite selection - Allow the best enemy from current generation to move onto the next unedited
+
+		//Mate to produce next generation of enemies - selection, crossover and mutation happens here
+
+		mPopulation.push_back(Enemy());
+		mPopulation.push_back(Enemy());
+		mPopulation.push_back(Enemy());
+		mPopulation.push_back(Enemy());
 	}
 
 
@@ -704,6 +714,8 @@ void PlayState::Update(const GameTimer& gt)
 			mPlayer.DamagePlayer(mPopulation.at(i).GetAttack(), mPopulation.at(i), gt);
 			mPlayerHealthBar.SetValue(mPlayer.health);
 
+			mPopulation.at(i).IncrementFitnessValue();
+
 			if (shownPlantTutorial == false)	//replace bool?
 			{
 				GameApp::Get().mTutorialText = GC::TUTORIAL_PLANT;
@@ -730,6 +742,8 @@ void PlayState::Update(const GameTimer& gt)
 			{
 				mPlayer.DamagePlayer(mPopulation.at(i).GetAttack(), mPopulation.at(i), gt);
 				mPlayerHealthBar.SetValue(mPlayer.health);
+
+				mPopulation.at(i).IncrementFitnessValue();
 
 				if (shownPlantTutorial == false)	//replace bool?
 				{
@@ -798,6 +812,7 @@ void PlayState::Update(const GameTimer& gt)
 
 		if (!mPopulation.at(i).mEnabled)
 		{
+			mDefeatedEnemies.push_back(mPopulation.at(i));		//Store in different vector to mate before erasing
 			mPopulation.erase(mPopulation.begin() + i);
 			break;
 		}
@@ -889,16 +904,6 @@ void PlayState::Update(const GameTimer& gt)
 		mHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 650.f, 450.f };
 		mHelpMessage.mText.color = DirectX::Colors::White;
 		mHelpMessage.Activate(GC::HELP_MESSAGES[0], 0.1f);
-	}
-
-	// IMPLEMENT CHECK FOR ENEMIES HERE
-	if (EnemiesRemaining() == 0)
-	{
-		//Spawn more and do the elite selection, mating part here
-		mPopulation.push_back(Enemy());
-		mPopulation.push_back(Enemy());
-		mPopulation.push_back(Enemy());
-		mPopulation.push_back(Enemy());
 	}
 
 
