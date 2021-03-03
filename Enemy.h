@@ -67,6 +67,7 @@ public:
 
 	//Genetic Algorithm
 	int GetFitnessValue() { return fitnessValue; }
+	void IncrementFitnessValue() { fitnessValue++; }
 
 private:
 	int GetRandomValue(int min, int max);				//Gets random value of spawning enemy position & loot drops
