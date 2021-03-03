@@ -493,8 +493,13 @@ void PlayState::Update(const GameTimer& gt)
 		std::sort(mDefeatedEnemies.begin(), mDefeatedEnemies.end(), std::ref(organiseVector));
 
 		//Elite selection - Allow the best enemy from current generation to move onto the next unedited
+		mDefeatedEnemies.at(0).Reset();			//Resets to bring hp back to normal, enables use for the next generation
+
+		mNextGeneration.push_back(mDefeatedEnemies.at(0));		//Add the fittest candidate from the previous generation into the next
 
 		//Mate to produce next generation of enemies - selection, crossover and mutation happens here
+		mNextGeneration.push_back(Enemy(mDefeatedEnemies.at(1), mDefeatedEnemies.at(2)));		//Example of how inheritance is going to work
+
 
 		mPopulation.push_back(Enemy());
 		mPopulation.push_back(Enemy());

@@ -21,7 +21,7 @@ public:
 		mAttack = att;
 	};
 
-	Enemy()
+	Enemy()		//Constructor to get the initial candidates of the population (Uses random genetics)
 	{
 		enemyGenetics.GetRandomGenetics();
 		std::string type = enemyGenetics.GetEnemyType();
@@ -40,6 +40,33 @@ public:
 		assert(mpDropItems);
 
 		SetRandomPosition();
+	};
+
+	Enemy(Enemy parent1, Enemy parent2)			//Constructor to inherit genetic information from parents
+	{
+		//Cannot loop through each genetic information part when its a class structure?
+		std::vector<int> chromosomes(3);
+
+		for (int i = 0; i < chromosomes.size(); i++)
+		{
+			int rand = enemyGenetics.GetRandomInt(0, 100);		//Get random probability whether to inherit from 1st parent(45%), 2nd parent(45%) or mutate(10%)
+			
+			if (rand < 45)		//Inherit from 1st parent
+			{
+				mHealth = parent1.enemyGenetics.GetHealth();
+			}
+
+			else if (rand < 90)	//Inherit from 2nd parent
+			{
+				mHealth = parent2.enemyGenetics.GetHealth();
+			}
+
+			//else
+				//Mutate function
+		}
+
+		//Function to assign new genetic information
+
 	};
 
 	//void InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int materialIndex);	//Sets up the enemy
