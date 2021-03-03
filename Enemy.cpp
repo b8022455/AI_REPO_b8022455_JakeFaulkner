@@ -130,7 +130,7 @@ void Enemy::Update(const GameTimer& gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR 
 			mSpeed = 0.0f;
 
 		// BARFING ENEMY - SLOW MOVEMENT TOWARDS PLAYER WHEN NOT ATTACKING
-		if (enemyGenetics.GetEnemyType() == GC::ENEMY_TYPE_1)
+		if (mEnemyType == GC::ENEMY_TYPE_1)
 		{
 
 			switch (mBehaviour)
@@ -167,7 +167,7 @@ void Enemy::Update(const GameTimer& gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR 
 			}
 		}
 
-		if (enemyGenetics.GetEnemyType() == GC::ENEMY_TYPE_2) // CHARGER ENEMY
+		if (mEnemyType == GC::ENEMY_TYPE_2) // CHARGER ENEMY
 		{
 			switch (mBehaviour)
 			{
@@ -230,4 +230,33 @@ void Enemy::UpdateAttack(float dt)
 void Enemy::SetDirection(DirectX::XMFLOAT3 dir) // may be enemy rotation?
 {
 	playerDirection = dir;
+}
+
+//Genetic Algorithm Functions
+
+void Enemy::GetRandomGenetics()
+{
+	chromosomes.push_back(GetRandomInt(20, 100));		//Health
+	chromosomes.push_back(GetRandomInt(2, 10));			//Attack Delay
+	chromosomes.push_back(GetRandomInt(2, 10));			//Movement Speed
+	chromosomes.push_back(GetRandomInt(1, 2));			//Behaviour type
+
+	//Get Enemy type model based on integer value of type
+	if (chromosomes.at(3) == 1)		//Enemy type 1
+	{
+		Initialize("EnemyGhoul");
+		particles.resize(20);
+		mEnemyType = GC::ENEMY_TYPE_1;
+		mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at("EnemyType1");
+	}
+	else
+	{
+		Initialize(GC::GO_ENEMY);
+		mEnemyType = GC::ENEMY_TYPE_2;
+		mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at("EnemyType2");
+	}
+
+	mAttack = 1;
+	mHealth = chromosomes.at(0);
+	assert(mpDropItems);
 }

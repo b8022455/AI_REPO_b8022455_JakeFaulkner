@@ -23,21 +23,7 @@ public:
 
 	Enemy()		//Constructor to get the initial candidates of the population (Uses random genetics)
 	{
-		enemyGenetics.GetRandomGenetics();
-		std::string type = enemyGenetics.GetEnemyType();
-
-		if (type == "EnemyType1")
-		{
-			Initialize("EnemyGhoul");
-			particles.resize(20);
-		}
-		else
-			Initialize(GC::GO_ENEMY);
-
-		mAttack = 1;
-		SetHealth(enemyGenetics.GetHealth());
-		mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at(type);
-		assert(mpDropItems);
+		GetRandomGenetics();		//Get random values for genetic information
 
 		SetRandomPosition();
 	};
@@ -45,20 +31,19 @@ public:
 	Enemy(Enemy parent1, Enemy parent2)			//Constructor to inherit genetic information from parents
 	{
 		//Cannot loop through each genetic information part when its a class structure?
-		std::vector<int> chromosomes(3);
 
 		for (int i = 0; i < chromosomes.size(); i++)
 		{
-			int rand = enemyGenetics.GetRandomInt(0, 100);		//Get random probability whether to inherit from 1st parent(45%), 2nd parent(45%) or mutate(10%)
+			int rand = GetRandomInt(0, 100);		//Get random probability whether to inherit from 1st parent (45%), 2nd parent (45%) or mutate (10%)
 			
 			if (rand < 45)		//Inherit from 1st parent
 			{
-				mHealth = parent1.enemyGenetics.GetHealth();
+				chromosomes.at(i) = parent1.chromosomes.at(i);
 			}
 
 			else if (rand < 90)	//Inherit from 2nd parent
 			{
-				mHealth = parent2.enemyGenetics.GetHealth();
+				chromosomes.at(i) = parent2.chromosomes.at(i);
 			}
 
 			//else
@@ -95,12 +80,23 @@ public:
 	//Genetic Algorithm
 	int GetFitnessValue() { return fitnessValue; }
 	void IncrementFitnessValue() { fitnessValue++; }
+	void GetRandomGenetics();		//Gets random genetic information for initial candidates
+
+	int GetRandomInt(int min, int max)
+	{
+		std::random_device rd;
+		std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+		std::uniform_int_distribution<int> uni(min, max);
+
+		return uni(rng);
+	};
 
 private:
 	int GetRandomValue(int min, int max);				//Gets random value of spawning enemy position & loot drops
 
 	int mHealth;
 	int mAttack;
+	std::string mEnemyType;
 	DirectX::XMFLOAT3 playerDirection;								//Gets enum value of which way player is facing
 
 	//Order of items is from Most Common -> Rarest
@@ -109,6 +105,9 @@ private:
 	DeltaTimer mEnemyAttackTimer;
 	bool canAttack = false;
 	float mAttackDuration;
+
+	//Genetic Information Variables
+	std::vector<int> chromosomes;		//Health | AttackDelay | MovementSpeed | EnemyType
 
 	//Stores the genetic information for each enemy (variables which will be different for each enemy + have potential to mutate)
 	GeneticInformation enemyGenetics;
