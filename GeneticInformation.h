@@ -10,49 +10,49 @@ public:
 	GeneticInformation()	{};
 
 	//Used to get the initial populations genetics
-	void GetRandomGenetics()
-	{
-		//Uses a random number generator to get initial values, value boundaries aren't final
-		this->mHealth = GetRandomInt(20, 100);
-		this->mAttackDelay = GetRandomFloat(0.2f, 1.0f);
-		this->mMovementSpeed = GetRandomFloat(0.2f, 1.0f);
-		this->mEnemyType = GetRandomBehaviour();
-	};
+	//void GetRandomGenetics()
+	//{
+	//	//Uses a random number generator to get initial values, value boundaries aren't final
+	//	this->mHealth = GetRandomInt(20, 100);
+	//	this->mAttackDelay = GetRandomFloat(0.2f, 1.0f);
+	//	this->mMovementSpeed = GetRandomFloat(0.2f, 1.0f);
+	//	this->mEnemyType = GetRandomBehaviour();
+	//};
 
-	std::string GetEnemyType() { return mEnemyType; }
-	int GetHealth() { return mHealth; }
+	//std::string GetEnemyType() { return mEnemyType; }
+	//int GetHealth() { return mHealth; }
 
-	#pragma region Random Value Generator functions (GetRandomInt, GetRandomFloat, GetRandomBehaviour)
+	//#pragma region Random Value Generator functions (GetRandomInt, GetRandomFloat, GetRandomBehaviour)
 
-	int GetRandomInt(int min, int max)
-	{
-		std::random_device rd;
-		std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
-		std::uniform_int_distribution<int> uni(min, max);
+	//int GetRandomInt(int min, int max)
+	//{
+	//	std::random_device rd;
+	//	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+	//	std::uniform_int_distribution<int> uni(min, max);
 
-		return uni(rng);
-	};
+	//	return uni(rng);
+	//};
 
-	float GetRandomFloat(float min, float max)
-	{
-		std::random_device rd;
-		std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
-		std::uniform_int_distribution<int> uni(static_cast<int>(min), static_cast<int>(max));
+	//float GetRandomFloat(float min, float max)
+	//{
+	//	std::random_device rd;
+	//	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+	//	std::uniform_int_distribution<int> uni(static_cast<int>(min), static_cast<int>(max));
 
-		return static_cast<float>(uni(rng));
-	}
+	//	return static_cast<float>(uni(rng));
+	//}
 
-	std::string GetRandomBehaviour()
-	{
-		int rand = GetRandomInt(0, 1);
+	//std::string GetRandomBehaviour()
+	//{
+	//	int rand = GetRandomInt(0, 1);
 
-		if (rand == 0)
-			return "EnemyType1";
-		else
-			return "EnemyType2";
-	}
+	//	if (rand == 0)
+	//		return "EnemyType1";
+	//	else
+	//		return "EnemyType2";
+	//}
 
-	#pragma endregion
+	//#pragma endregion
 
 private:
 	int mHealth;

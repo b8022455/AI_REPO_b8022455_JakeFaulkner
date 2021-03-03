@@ -500,11 +500,10 @@ void PlayState::Update(const GameTimer& gt)
 		//Mate to produce next generation of enemies - selection, crossover and mutation happens here
 		mNextGeneration.push_back(Enemy(mDefeatedEnemies.at(1), mDefeatedEnemies.at(2)));		//Example of how inheritance is going to work
 
+		mPopulation.clear();		//Remove the previous generation to prepare for the next
+		mPopulation = mNextGeneration;
+		mNextGeneration.clear();
 
-		mPopulation.push_back(Enemy());
-		mPopulation.push_back(Enemy());
-		mPopulation.push_back(Enemy());
-		mPopulation.push_back(Enemy());
 	}
 
 
@@ -680,7 +679,7 @@ void PlayState::Update(const GameTimer& gt)
 
 			//Generically gets the enemy range without duplicating code
 			float enemyRange;
-			if (mPopulation.at(i).GetGenetics().GetEnemyType() == GC::ENEMY_TYPE_1)
+			if (mPopulation.at(i).GetType() == GC::ENEMY_TYPE_1)
 				enemyRange = GC::ENEMYTYPE1_RANGE;	// ENEMY TYPE EXCLUSIVE LOGIC LOCATED HERE
 			else
 				enemyRange = GC::ENEMYTYPE2_RANGE;

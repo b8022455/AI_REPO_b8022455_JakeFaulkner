@@ -28,29 +28,27 @@ public:
 		SetRandomPosition();
 	};
 
-	Enemy(Enemy parent1, Enemy parent2)			//Constructor to inherit genetic information from parents
+	Enemy(Enemy& parent1, Enemy& parent2)			//Constructor to inherit genetic information from parents
 	{
-		//Cannot loop through each genetic information part when its a class structure?
+		//Include other stuff to set up the enemy like model, random pos etc in here as well
 
-		for (int i = 0; i < chromosomes.size(); i++)
+		for (int i = 0; i < parent1.chromosomes.size(); i++)
 		{
 			int rand = GetRandomInt(0, 100);		//Get random probability whether to inherit from 1st parent (45%), 2nd parent (45%) or mutate (10%)
 			
 			if (rand < 45)		//Inherit from 1st parent
 			{
-				chromosomes.at(i) = parent1.chromosomes.at(i);
+				chromosomes.push_back(parent1.chromosomes.at(i));
 			}
 
 			else if (rand < 90)	//Inherit from 2nd parent
 			{
-				chromosomes.at(i) = parent2.chromosomes.at(i);
+				chromosomes.push_back(parent2.chromosomes.at(i));
 			}
 
 			//else
 				//Mutate function
 		}
-
-		//Function to assign new genetic information
 
 	};
 
@@ -61,8 +59,8 @@ public:
 	const std::string GetDropItem();
 	int GetHealth() { return mHealth; }
 	int GetAttack() { return mAttack; }
+	std::string GetType() { return mEnemyType; }
 	bool GetIfCanAttack() { return canAttack; }
-	GeneticInformation GetGenetics() { return enemyGenetics; }
 
 	void Update(const GameTimer& gt);
 	void Reset();
