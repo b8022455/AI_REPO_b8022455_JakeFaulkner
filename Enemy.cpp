@@ -260,3 +260,8 @@ void Enemy::GetRandomGenetics()
 	mHealth = chromosomes.at(0);
 	assert(mpDropItems);
 }
+
+int Enemy::MutateGenetics()
+{
+	return GetRandomInt(20, 100);
+}

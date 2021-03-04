@@ -46,9 +46,35 @@ public:
 				chromosomes.push_back(parent2.chromosomes.at(i));
 			}
 
-			//else
-				//Mutate function
+			else
+			{
+				if (i != 3)		//Prevents mutation happening on enemy type, type cannot be mutated
+					chromosomes.push_back(MutateGenetics());
+				else
+					chromosomes.push_back(parent1.chromosomes.at(i));		//Pass on type as it cannot be mutated
+			}
 		}
+
+		//Set up model and rest of non-genetic information
+		if (chromosomes.at(3) == 1)		//Enemy type 1
+		{
+			Initialize("EnemyGhoul");
+			particles.resize(20);
+			mEnemyType = GC::ENEMY_TYPE_1;
+			mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at("EnemyType1");
+		}
+		else
+		{
+			Initialize(GC::GO_ENEMY);
+			mEnemyType = GC::ENEMY_TYPE_2;
+			mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at("EnemyType2");
+		}
+
+		mAttack = 1;
+		mHealth = chromosomes.at(0);
+		assert(mpDropItems);
+
+		SetRandomPosition();
 
 	};
 
@@ -79,6 +105,7 @@ public:
 	int GetFitnessValue() { return fitnessValue; }
 	void IncrementFitnessValue() { fitnessValue++; }
 	void GetRandomGenetics();		//Gets random genetic information for initial candidates
+	int MutateGenetics();
 
 	int GetRandomInt(int min, int max)
 	{
