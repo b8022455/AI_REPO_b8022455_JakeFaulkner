@@ -92,13 +92,13 @@ namespace GC
 		ENEMYTYPE1_RANGE = 8.0f,
 		ENEMYTYPE1_ATTACK_DURATION = 3.0f,
 		ENEMYTYPE1_ATTACK_DELAY = float(6.0f), // definitely the attack duration - cant actually be less than other
-		ENEMYTYPE1_MAXSPEED = 1.0f,
+		ENEMYTYPE1_MAXSPEED = 5.0f,
 		ENEMYTYPE1_DRAG = 1.0f,
 
 		ENEMYTYPE2_RANGE = 6.0f,
 		ENEMYTYPE2_ATTACK_DURATION = 8.0f,
 		ENEMYTYPE2_ATTACK_DELAY = float(4.0f), // definitely the attack duration - cant actually be less than other on normal timer
-		ENEMYTYPE2_MAXSPEED = 3.0f,
+		ENEMYTYPE2_MAXSPEED = 5.0f,
 		ENEMYTYPE2_DRAG = 3.0f,
 
 		WORLD_LEFT_BOUNDARY = -15.0f,
