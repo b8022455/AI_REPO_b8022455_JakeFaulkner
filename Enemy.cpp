@@ -17,19 +17,27 @@ void Enemy::MoveOffScreen()
 
 void Enemy::Reset()
 {
-	SetRandomPosition();
-
-	if (mEnemyType == GC::ENEMY_TYPE_1) {
-		mHealth = GC::ENEMYTYPE1_HEALTH;
-		BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
-		canAttack = false;
+	mEnabled = true;
+	mHealth = chromosomes.at(0);
+	canAttack = false;
+	BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
+	if (mEnemyType == GC::ENEMY_TYPE_1)
 		for (auto& p : particles)
 			p.RemoveEffect();
-	}
-	if (mEnemyType == GC::ENEMY_TYPE_2) {
-		mHealth = GC::ENEMYTYPE2_HEALTH;
-		BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
-	}
+
+	SetRandomPosition();
+
+	//if (mEnemyType == GC::ENEMY_TYPE_1) {
+	//	mHealth = GC::ENEMYTYPE1_HEALTH;
+	//	BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
+	//	canAttack = false;
+	//	for (auto& p : particles)
+	//		p.RemoveEffect();
+	//}
+	//if (mEnemyType == GC::ENEMY_TYPE_2) {
+	//	mHealth = GC::ENEMYTYPE2_HEALTH;
+	//	BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
+	//}
 }
 
 void Enemy::SetRandomPosition()
