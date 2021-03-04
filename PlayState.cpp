@@ -159,6 +159,7 @@ void PlayState::Initialize()
 		mPopulation.push_back(Enemy());
 		mPopulation.push_back(Enemy());
 		mPopulation.push_back(Enemy());
+		mPopulation.push_back(Enemy());
 
 		//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2)); // number of enemies, Enemy(GC::enemytype, attack)
 		//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
@@ -498,7 +499,14 @@ void PlayState::Update(const GameTimer& gt)
 		mNextGeneration.push_back(mDefeatedEnemies.at(0));		//Add the fittest candidate from the previous generation into the next
 
 		//Mate to produce next generation of enemies - selection, crossover and mutation happens here
-		mNextGeneration.push_back(Enemy(mDefeatedEnemies.at(1), mDefeatedEnemies.at(2)));		//Example of how inheritance is going to work
+		for (int i = 0; i < 2; i++)		//Mate fitter candidates from population (1st->3rd, 2nd->4th, 5th is discarded)
+		{
+			int j = i + 2;
+
+			//Parents have 2 children to keep candidate count at 5 (2 children per couple, 1 from elite selection)
+			mNextGeneration.push_back(Enemy(mDefeatedEnemies.at(i), mDefeatedEnemies.at(j)));
+			mNextGeneration.push_back(Enemy(mDefeatedEnemies.at(i), mDefeatedEnemies.at(j)));
+		}
 
 		mPopulation.clear();		//Remove the previous generation to prepare for the next
 		mPopulation = mNextGeneration;

@@ -19,6 +19,7 @@ void Enemy::Reset()
 {
 	mEnabled = true;
 	mHealth = chromosomes.at(0);
+	fitnessValue = 0;
 	canAttack = false;
 	BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
 	if (mEnemyType == GC::ENEMY_TYPE_1)
