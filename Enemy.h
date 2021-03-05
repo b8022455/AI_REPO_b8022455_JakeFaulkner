@@ -48,13 +48,13 @@ public:
 
 			else
 			{
-				if (i != 3)		//Prevents mutation happening on enemy type, type cannot be mutated
-					chromosomes.push_back(MutateGenetics());
-				else
-					chromosomes.push_back(parent1.chromosomes.at(i));		//Pass on type as it cannot be mutated
-
+				chromosomes.push_back(MutateGenetics());
 			}
 		}
+
+		//Prevents GameObject error with enemy types
+		if (chromosomes.at(3) < 2)
+			chromosomes.at(3) = 1;
 
 		//Set up model and rest of non-genetic information
 		if (chromosomes.at(3) == 1)		//Enemy type 1

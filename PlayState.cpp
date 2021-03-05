@@ -136,7 +136,7 @@ void PlayState::Initialize()
 	// ui bar
 	mPlayerHealthBar.Initialise(GC::BAR_GRN, GC::BAR_RED);
 
-	InitializeTraders();
+	//InitializeTraders();
 
 	// tile clumping
 	int n(0);
