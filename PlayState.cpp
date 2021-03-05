@@ -479,7 +479,7 @@ void PlayState::Update(const GameTimer& gt)
 	//Genetic Algorithm
 	if (mPopulation.size() == 0)
 	{
-		SelectCandidates();
+ 		SelectCandidates();
 	}
 
 	//mTileManager.Update(gt);
@@ -1712,4 +1712,12 @@ void PlayState::SelectCandidates()
 	mPopulation = mNextGeneration;
 	mNextGeneration.clear();
 	mDefeatedEnemies.clear();		//Remove the previous generation to prepare for the next
+
+	for (auto& e : mPopulation)
+	{
+		for (auto t : mTraders)
+			while (e.CheckCollision(e.GetPos(), t.GetPos()) ||
+				DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < (GC::ENEMYTYPE1_RANGE + 2.f))	//Prevents enemies from spawning inside a trader
+				e.SetRandomPosition();
+	}
 }

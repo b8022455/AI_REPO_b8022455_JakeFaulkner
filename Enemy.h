@@ -73,7 +73,7 @@ public:
 
 		mAttack = 1;
 		mHealth = chromosomes.at(0);
-		mSpeed = static_cast<float>(chromosomes.at(2)) * 0.15f;
+		mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
 		assert(mpDropItems);
 
 		SetRandomPosition();

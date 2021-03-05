@@ -147,7 +147,7 @@ void Enemy::Update(const GameTimer& gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR 
 				mSpeed = 0.0f;
 				; break;
 			case CHASE:
-				mSpeed = static_cast<float>(chromosomes.at(2)) * 0.15f;
+				mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
 				; break;
 			default:; break;
 			}
@@ -175,7 +175,7 @@ void Enemy::Update(const GameTimer& gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR 
 				mSpeed = 0.0f;
 				; break;
 			case CHASE:
-				mSpeed = static_cast<float>(chromosomes.at(2)) * 0.15f;
+				mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
 				; break;
 			default:; break;
 			}
@@ -230,7 +230,7 @@ void Enemy::GetRandomGenetics()
 {
 	chromosomes.push_back(GetRandomInt(10, 45));		//Health
 	chromosomes.push_back(GetRandomInt(2, 10));			//Attack Delay
-	chromosomes.push_back(GetRandomInt(1, 20));		//Movement Speed
+	chromosomes.push_back(GetRandomInt(20, 80));		//Movement Speed
 	chromosomes.push_back(GetRandomInt(1, 2));			//Behaviour type
 
 	//Get Enemy type model based on integer value of type
@@ -250,7 +250,7 @@ void Enemy::GetRandomGenetics()
 
 	mAttack = 1;
 	mHealth = chromosomes.at(0);
-	mSpeed = static_cast<float>(chromosomes.at(2)) * 0.15f;
+	mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
 	assert(mpDropItems);
 }
 
