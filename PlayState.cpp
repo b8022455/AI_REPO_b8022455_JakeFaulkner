@@ -479,41 +479,8 @@ void PlayState::Update(const GameTimer& gt)
 	//Genetic Algorithm
 	if (mPopulation.size() == 0)
 	{
-		//Organise the vector of enemies
-		struct SortByFitness
-		{
-			bool operator()(Enemy& a, Enemy& b)
-			{
-				return a.GetFitnessValue() > b.GetFitnessValue();		//Returns the higher fitness value
-			}
-		};
-
-		SortByFitness organiseVector;
-
-		//Sort the population in terms of fitness value (Enemies that hit the player more times are towards the front of the vector)
-		std::sort(mDefeatedEnemies.begin(), mDefeatedEnemies.end(), std::ref(organiseVector));
-
-		//Elite selection - Allow the best enemy from current generation to move onto the next unedited
-		mDefeatedEnemies.at(0).Reset();			//Resets to bring hp back to normal, enables use for the next generation
-
-		mNextGeneration.push_back(mDefeatedEnemies.at(0));		//Add the fittest candidate from the previous generation into the next
-
-		//Mate to produce next generation of enemies - selection, crossover and mutation happens here
-		for (int i = 0; i < 2; i++)		//Mate fitter candidates from population (1st->3rd, 2nd->4th, 5th is discarded)
-		{
-			int j = i + 2;
-
-			//Parents have 2 children to keep candidate count at 5 (2 children per couple, 1 from elite selection)
-			mNextGeneration.push_back(Enemy(mDefeatedEnemies.at(i), mDefeatedEnemies.at(j)));
-			mNextGeneration.push_back(Enemy(mDefeatedEnemies.at(i), mDefeatedEnemies.at(j)));
-		}
-
-		mPopulation.clear();		//Remove the previous generation to prepare for the next
-		mPopulation = mNextGeneration;
-		mNextGeneration.clear();
-
+		SelectCandidates();
 	}
-
 
 	//mTileManager.Update(gt);
 	mCombatController.Update(gt);
@@ -1708,4 +1675,41 @@ void PlayState::StoreScore()
 			fout.close();
 		}
 	}
+}
+
+//Genetic Algorithm
+void PlayState::SelectCandidates()
+{
+	//Organise the vector of enemies
+	struct SortByFitness
+	{
+		bool operator()(Enemy& a, Enemy& b)
+		{
+			return a.GetFitnessValue() > b.GetFitnessValue();		//Returns the higher fitness value
+		}
+	};
+
+	SortByFitness organiseVector;
+
+	//Sort the population in terms of fitness value (Enemies that hit the player more times are towards the front of the vector)
+	std::sort(mDefeatedEnemies.begin(), mDefeatedEnemies.end(), std::ref(organiseVector));
+
+	//Elite selection - Allow the best enemy from current generation to move onto the next unedited
+	mDefeatedEnemies.at(0).Reset();			//Resets to bring hp back to normal, enables use for the next generation
+
+	mNextGeneration.push_back(mDefeatedEnemies.at(0));		//Add the fittest candidate from the previous generation into the next
+
+	//Mate to produce next generation of enemies - selection, crossover and mutation happens here
+	for (int i = 0; i < 2; i++)		//Mate fitter candidates from population (1st->3rd, 2nd->4th, 5th is discarded)
+	{
+		int j = i + 2;
+
+		//Parents have 2 children to keep candidate count at 5 (2 children per couple, 1 from elite selection)
+		mNextGeneration.push_back(Enemy(mDefeatedEnemies.at(i), mDefeatedEnemies.at(j)));
+		mNextGeneration.push_back(Enemy(mDefeatedEnemies.at(i), mDefeatedEnemies.at(j)));
+	}
+
+	mPopulation = mNextGeneration;
+	mNextGeneration.clear();
+	mDefeatedEnemies.clear();		//Remove the previous generation to prepare for the next
 }

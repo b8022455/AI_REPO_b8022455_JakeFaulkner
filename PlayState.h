@@ -25,10 +25,11 @@ class PlayState : public State
 	std::vector<Plant> mPlants;
 	Inventory mInventory;
 
-	//Genetic algorithm variables
+	//Genetic algorithm variables + functions
 	std::vector<Enemy> mPopulation;			//Each generation of candidates.
 	std::vector<Enemy> mDefeatedEnemies;	//Stores enemies defeated, used to mate them before deleting them
 	std::vector<Enemy> mNextGeneration;		//Stores the children of the enemies in the population, is assigned to mPopulation at the end of a generation
+	void SelectCandidates();				//Chooses which candidates are used for elite selection and mating processes
 
 	// Trader player is focused on
 	Trader* mpActiveTrader = nullptr;

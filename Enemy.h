@@ -52,6 +52,7 @@ public:
 					chromosomes.push_back(MutateGenetics());
 				else
 					chromosomes.push_back(parent1.chromosomes.at(i));		//Pass on type as it cannot be mutated
+
 			}
 		}
 
@@ -72,7 +73,7 @@ public:
 
 		mAttack = 1;
 		mHealth = chromosomes.at(0);
-		mSpeed = static_cast<float>(chromosomes.at(2) / 10);
+		mSpeed = static_cast<float>(chromosomes.at(2)) * 0.15f;
 		assert(mpDropItems);
 
 		SetRandomPosition();
