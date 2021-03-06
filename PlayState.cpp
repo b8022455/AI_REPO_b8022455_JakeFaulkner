@@ -652,39 +652,24 @@ void PlayState::Update(const GameTimer& gt)
 			//Enemy look at players position (only do when in range), only look when not attacking either
 			XMVECTOR playerPosition = XMLoadFloat3(&mPlayer.GetPos());
 
-			//Generically gets the enemy range without duplicating code
-			float enemyRange;
-			if (mPopulation.at(i).GetType() == GC::ENEMY_TYPE_1)
-				enemyRange = GC::ENEMYTYPE1_RANGE;	// ENEMY TYPE EXCLUSIVE LOGIC LOCATED HERE
-			else
-				enemyRange = GC::ENEMYTYPE2_RANGE;
+			if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), mPopulation.at(i).GetPos()) < mPopulation.at(i).GetEnemyRange())
+			{
+				mPopulation.at(i).LookAt(playerPosition);
 
-			// TODO: (REMEMBER) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
-			if (mPlayer.GetPos().x >= (mPopulation.at(i).GetPos().x - GC::ENEMYTYPE1_RANGE) &&
-				mPlayer.GetPos().x <= (mPopulation.at(i).GetPos().x + GC::ENEMYTYPE1_RANGE)) { // player within - range on x
-				if (mPlayer.GetPos().z >= (mPopulation.at(i).GetPos().z - GC::ENEMYTYPE1_RANGE) &&
-					mPlayer.GetPos().z <= (mPopulation.at(i).GetPos().z + GC::ENEMYTYPE1_RANGE)) { // player within - range on z
-					mPopulation.at(i).LookAt(playerPosition);
-
-					if (shownAttackTutorial == false)
-					{
-						GameApp::Get().mTutorialText = GC::TUTORIAL_ATTACK;
-						GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
-						shownAttackTutorial = true;
-					}
+				if (shownAttackTutorial == false)
+				{
+					GameApp::Get().mTutorialText = GC::TUTORIAL_ATTACK;
+					GameApp::Get().ChangeState(GC::STATE_TUTORIAL);
+					shownAttackTutorial = true;
 				}
-			}
 
-			// enemy movement behaviour based on player radius
-			if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), mPopulation.at(i).GetPos()) < GC::ENEMYTYPE1_RANGE &&
-				!mPopulation.at(i).GetIfCanAttack())
-			{
-				mPopulation.at(i).mBehaviour = Enemy::Behaviour::CHASE;
+				if(!mPopulation.at(i).GetIfCanAttack())
+					mPopulation.at(i).mBehaviour = Enemy::Behaviour::CHASE;
+				else
+					mPopulation.at(i).mBehaviour = Enemy::Behaviour::NONE;
 			}
 			else
-			{
 				mPopulation.at(i).mBehaviour = Enemy::Behaviour::NONE;
-			}
 		}
 
 		// enemy collision with player
@@ -1581,7 +1566,7 @@ void PlayState::Reset()
 		e.mEnabled = true;
 		e.Reset();
 
-		while (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < (GC::ENEMYTYPE1_RANGE + 2.f))	//Prevents enemies from spawning inside a trader
+		while (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < 10.f)	//Prevents enemies from spawning inside a trader
 			e.SetRandomPosition();
 	}
 
@@ -1713,7 +1698,7 @@ void PlayState::SelectCandidates()
 
 	for (auto& e : mPopulation)
 	{
-		while (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < (GC::ENEMYTYPE1_RANGE + 2.f))	//Prevents enemies from spawning inside a trader
+		while (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < 10.f)	//Prevents enemies from spawning inside a trader
 			e.SetRandomPosition();
 	}
 }

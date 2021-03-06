@@ -231,10 +231,11 @@ void Enemy::GetRandomGenetics()
 	chromosomes.push_back(GetRandomInt(10, 45));		//Health
 	chromosomes.push_back(GetRandomInt(10, 100));		//Attack Delay
 	chromosomes.push_back(GetRandomInt(20, 80));		//Movement Speed
+	chromosomes.push_back(GetRandomInt(10, 100));		//Enemy Sight Distance
 	chromosomes.push_back(GetRandomInt(1, 2));			//Behaviour type
 
 	//Get Enemy type model based on integer value of type
-	if (chromosomes.at(3) == 1)		//Enemy type 1
+	if (chromosomes.at(4) == 1)		//Enemy type 1
 	{
 		Initialize("EnemyGhoul");
 		particles.resize(20);
@@ -252,6 +253,7 @@ void Enemy::GetRandomGenetics()
 	mHealth = chromosomes.at(0);
 	mAttackDelay = static_cast<float>(chromosomes.at(1)) / 10.f;
 	mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
+	mEnemySightRange = static_cast<float>(chromosomes.at(3) + 20) / 10.f;
 	assert(mpDropItems);
 }
 

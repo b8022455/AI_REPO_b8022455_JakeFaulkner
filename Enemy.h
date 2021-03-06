@@ -73,8 +73,9 @@ public:
 
 		mAttack = 1;
 		mHealth = chromosomes.at(0);
-		mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
 		mAttackDelay = static_cast<float>(chromosomes.at(1)) / 10.f;
+		mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
+		mEnemySightRange = static_cast<float>(chromosomes.at(3) + 20) / 10.f;
 		assert(mpDropItems);
 
 		SetRandomPosition();
@@ -90,6 +91,7 @@ public:
 	int GetAttack() { return mAttack; }
 	std::string GetType() { return mEnemyType; }
 	bool GetIfCanAttack() { return canAttack; }
+	float GetEnemyRange() { return mEnemySightRange; }
 
 	void Update(const GameTimer& gt);
 	void Reset();
@@ -125,6 +127,7 @@ private:
 	int mHealth;
 	int mAttack;
 	float mAttackDelay;
+	float mEnemySightRange;
 	std::string mEnemyType;
 	DirectX::XMFLOAT3 playerDirection;								//Gets enum value of which way player is facing
 
@@ -136,7 +139,7 @@ private:
 	float mAttackDuration;
 
 	//Genetic Information Variables
-	std::vector<int> chromosomes;		//Health | AttackDelay | MovementSpeed | EnemyType
+	std::vector<int> chromosomes;		//Health | AttackDelay | MovementSpeed | Enemy Sight Distance | EnemyType
 
 	//Stores the genetic information for each enemy (variables which will be different for each enemy + have potential to mutate)
 	GeneticInformation enemyGenetics;
