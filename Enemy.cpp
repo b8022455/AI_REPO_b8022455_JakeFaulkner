@@ -204,7 +204,8 @@ void Enemy::UpdateAttack(float dt)
 			canAttack = false;
 			for (auto& p : particles)
 				p.RemoveEffect();
-			mAttackDuration = GC::ENEMYTYPE1_ATTACK_DURATION;
+			//mAttackDuration = GC::ENEMYTYPE1_ATTACK_DURATION;
+			mAttackDuration = static_cast<float>(chromosomes.at(4));
 		}
 		else
 		{
@@ -233,6 +234,7 @@ void Enemy::GetRandomGenetics()
 	chromosomes.push_back(GetRandomInt(20, 80));		//Movement Speed
 	chromosomes.push_back(GetRandomInt(10, 100));		//Enemy Sight Distance
 	chromosomes.push_back(GetRandomInt(1, 2));			//Behaviour type
+	chromosomes.push_back(GetRandomInt(10, 100));		//Attack Duration
 
 	//Get Enemy type model based on integer value of type
 	if (chromosomes.at(4) == 1)		//Enemy type 1
@@ -254,6 +256,7 @@ void Enemy::GetRandomGenetics()
 	mAttackDelay = static_cast<float>(chromosomes.at(1)) / 10.f;
 	mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
 	mEnemySightRange = static_cast<float>(chromosomes.at(3) + 20) / 10.f;
+	mAttackDuration = static_cast<float>(chromosomes.at(4));
 	assert(mpDropItems);
 }
 

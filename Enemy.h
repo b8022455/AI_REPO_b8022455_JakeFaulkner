@@ -76,6 +76,7 @@ public:
 		mAttackDelay = static_cast<float>(chromosomes.at(1)) / 10.f;
 		mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
 		mEnemySightRange = static_cast<float>(chromosomes.at(3) + 20) / 10.f;
+		mAttackDuration = static_cast<float>(chromosomes.at(4)) / 10.f;
 		assert(mpDropItems);
 
 		SetRandomPosition();
@@ -139,7 +140,7 @@ private:
 	float mAttackDuration;
 
 	//Genetic Information Variables
-	std::vector<int> chromosomes;		//Health | AttackDelay | MovementSpeed | Enemy Sight Distance | EnemyType
+	std::vector<int> chromosomes;		//Health | AttackDelay | MovementSpeed | Enemy Sight Distance | EnemyType | Attack Duration
 
 	//Stores the genetic information for each enemy (variables which will be different for each enemy + have potential to mutate)
 	GeneticInformation enemyGenetics;
