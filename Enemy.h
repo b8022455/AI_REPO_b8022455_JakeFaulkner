@@ -74,6 +74,7 @@ public:
 		mAttack = 1;
 		mHealth = chromosomes.at(0);
 		mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
+		mAttackDelay = static_cast<float>(chromosomes.at(1)) / 10.f;
 		assert(mpDropItems);
 
 		SetRandomPosition();
@@ -123,6 +124,7 @@ private:
 
 	int mHealth;
 	int mAttack;
+	float mAttackDelay;
 	std::string mEnemyType;
 	DirectX::XMFLOAT3 playerDirection;								//Gets enum value of which way player is facing
 

@@ -1581,10 +1581,8 @@ void PlayState::Reset()
 		e.mEnabled = true;
 		e.Reset();
 
-		for (auto t : mTraders)
-			while (e.CheckCollision(e.GetPos(), t.GetPos()) ||
-				DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < (GC::ENEMYTYPE1_RANGE + 2.f))	//Prevents enemies from spawning inside a trader
-				e.SetRandomPosition();
+		while (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < (GC::ENEMYTYPE1_RANGE + 2.f))	//Prevents enemies from spawning inside a trader
+			e.SetRandomPosition();
 	}
 
 }
@@ -1715,9 +1713,7 @@ void PlayState::SelectCandidates()
 
 	for (auto& e : mPopulation)
 	{
-		for (auto t : mTraders)
-			while (e.CheckCollision(e.GetPos(), t.GetPos()) ||
-				DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < (GC::ENEMYTYPE1_RANGE + 2.f))	//Prevents enemies from spawning inside a trader
-				e.SetRandomPosition();
+		while (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < (GC::ENEMYTYPE1_RANGE + 2.f))	//Prevents enemies from spawning inside a trader
+			e.SetRandomPosition();
 	}
 }

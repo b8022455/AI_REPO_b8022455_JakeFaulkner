@@ -155,7 +155,7 @@ void Enemy::Update(const GameTimer& gt) // TODO: (REMEMBER) IMPLEMENT LOGIC FOR 
 			if (canAttack) // EXECUTES ATTACK
 				UpdateAttack(gt.DeltaTime());
 
-			else if (mEnemyAttackTimer.HasTimeElapsed(gt.DeltaTime(), GC::ENEMYTYPE1_ATTACK_DELAY))
+			else if (mEnemyAttackTimer.HasTimeElapsed(gt.DeltaTime(), mAttackDelay))
 				canAttack = true;
 
 			//Update enemy position based on bounceback
@@ -229,7 +229,7 @@ void Enemy::SetDirection(DirectX::XMFLOAT3 dir) // may be enemy rotation?
 void Enemy::GetRandomGenetics()
 {
 	chromosomes.push_back(GetRandomInt(10, 45));		//Health
-	chromosomes.push_back(GetRandomInt(2, 10));			//Attack Delay
+	chromosomes.push_back(GetRandomInt(10, 100));		//Attack Delay
 	chromosomes.push_back(GetRandomInt(20, 80));		//Movement Speed
 	chromosomes.push_back(GetRandomInt(1, 2));			//Behaviour type
 
@@ -250,6 +250,7 @@ void Enemy::GetRandomGenetics()
 
 	mAttack = 1;
 	mHealth = chromosomes.at(0);
+	mAttackDelay = static_cast<float>(chromosomes.at(1)) / 10.f;
 	mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
 	assert(mpDropItems);
 }
