@@ -524,7 +524,7 @@ void PlayState::Update(const GameTimer& gt)
 	timeChange += gt.DeltaTime();
 	
 	// AFTER 2 MINUTES CHANGE TIME PHASE IN GAME (ONLY PARTICULARLY USEFUL DURING PITCH )
-	if (timeChange >= 120.0f) {
+	if (timeChange >= GC::AREA_CLEAR_DURATION) { // formerly 120.0f / 2 min
 		timeChange = 0.0f;
 		timeCycle += 1;
 		if (timeCycle > 4)
