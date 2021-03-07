@@ -116,7 +116,7 @@ public:
 	// TODO: (REMEMBER) TUT STUFF HERE
 	const std::string& GetTutorialText();
 	std::string mTutorialText = GC::TUTORIAL_INTRO;
-	int menusShown = 0;
+	int menusShown = 10;
 
 
 private:
