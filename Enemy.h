@@ -53,16 +53,6 @@ public:
 	void GetInheritedGenetics(const std::vector<int> inheritedGenes);	//Passes in inherited information from algorithm class for offspring candidates
 	std::vector<int> GetChromosomes() { return chromosomes; }			//Used during crossover process to obtain parents genetic information in GeneticAlgorithm::GetOffspringCandidate
 
-
-	int GetRandomInt(int min, int max)
-	{
-		std::random_device rd;
-		std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
-		std::uniform_int_distribution<int> uni(min, max);
-
-		return uni(rng);
-	};
-
 private:
 	int GetRandomValue(int min, int max);				//Gets random value of spawning enemy position & loot drops
 

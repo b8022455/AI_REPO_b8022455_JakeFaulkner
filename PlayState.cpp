@@ -138,14 +138,9 @@ void PlayState::Initialize()
 
 	//InitializeTraders();
 
-	// Create initial population candidates
-	{
-		mAlgorithm.CreateInitialPopulation();
-
-	}
+	mAlgorithm.CreateInitialPopulation();
 
 	mCombatController.Initialize(&mPlayer, &mPlayerWeapon, &mAlgorithm.mPopulation);
-
 
 	// Sprites
 	{
@@ -268,7 +263,7 @@ void PlayState::Update(const GameTimer& gt)
 
 		for (auto& e : mAlgorithm.mPopulation)
 		{
-			while (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < 10.f)	//Prevents enemies from spawning inside a trader
+			while (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < 8.f)	//Prevents enemies from spawning inside a trader
 				e.SetRandomPosition();
 		}
 	}
@@ -1111,19 +1106,19 @@ void PlayState::Keyboard(const GameTimer& gt)
 	}
 
 	// Trade
-	if (Input::Get().KeyReleased(GC::KEY_TRADE))
-	{
-		if (FindNearestTraderInRadius())
-		{
-			//todo play sound
-			assert(mpActiveTrader);
-			GameApp::Get().ChangeState(GC::STATE_TRADE);
-		}
-		else
-		{
-			//todo sound fail sound
-		}
-	}
+	//if (Input::Get().KeyReleased(GC::KEY_TRADE))
+	//{
+	//	if (FindNearestTraderInRadius())
+	//	{
+	//		//todo play sound
+	//		assert(mpActiveTrader);
+	//		GameApp::Get().ChangeState(GC::STATE_TRADE);
+	//	}
+	//	else
+	//	{
+	//		//todo sound fail sound
+	//	}
+	//}
 	// Pause
 	if (Input::Get().KeyReleased(GC::KEY_PAUSE))
 	{
@@ -1323,7 +1318,7 @@ void PlayState::Reset()
 		e.mEnabled = true;
 		e.Reset();
 
-		while (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < 10.f)	//Prevents enemies from spawning inside a trader
+		while (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < 8.f)	//Prevents enemies from spawning inside a trader
 			e.SetRandomPosition();
 	}
 
