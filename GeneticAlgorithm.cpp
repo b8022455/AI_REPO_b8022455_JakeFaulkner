@@ -51,8 +51,8 @@ void GeneticAlgorithm::MatingProcess()
 		int j = i + 2;
 
 		//Parents have 2 children to keep candidate count at 5 (2 children per couple, 1 from elite selection)
-		mNextGeneration.push_back(Enemy(mDefeatedEnemies.at(i), mDefeatedEnemies.at(j)));
-		mNextGeneration.push_back(Enemy(mDefeatedEnemies.at(i), mDefeatedEnemies.at(j)));
+		mNextGeneration.push_back(GetOffspringCandidate(mDefeatedEnemies.at(i), mDefeatedEnemies.at(j)));
+		mNextGeneration.push_back(GetOffspringCandidate(mDefeatedEnemies.at(i), mDefeatedEnemies.at(j)));
 	}
 }
 
@@ -82,6 +82,46 @@ Enemy GeneticAlgorithm::GetInitialCandidate()
 	Candidate.GetInitialGenetics(geneticInformation);		//Passes randomized genetics to enemy
 
 	return Candidate;
+}
+
+Enemy GeneticAlgorithm::GetOffspringCandidate(Enemy& parent1, Enemy& parent2)
+{
+	//Create local vector of genetics, that is passed into the enemy class
+	Enemy offspring;
+	std::vector<int> offspringGenetics;		//Is passed to the enemy for their genetic information
+
+	//Get parent genetics
+ 	std::vector<int> parent1Genetics = parent1.GetChromosomes();
+	std::vector<int> parent2Genetics = parent2.GetChromosomes();
+
+	//Loops through each part of the genetics
+	for (int i = 0; i < parent1Genetics.size(); i++)
+	{
+		int probability = GetRandomInt(0, 100);		//Get random probability whether to inherit from 1st parent (45%), 2nd parent (45%) or mutate (10%)
+
+		if (probability < 45)						//Inherit from 1st parent
+			offspringGenetics.push_back(parent1Genetics.at(i));
+
+		else if (probability < 90)					//Inherit from 2nd parent
+			offspringGenetics.push_back(parent2Genetics.at(i));
+
+		else
+			offspringGenetics.push_back(MutateProcess());		//Gets new random mutated value
+	}
+
+	//Prevents GameObject errors when instanciating enemy models
+	if (offspringGenetics.at(4) > 2)
+		offspringGenetics.at(4) = GetRandomInt(1, 2);
+
+	//Passes inherited genetics to enemy
+	offspring.GetInheritedGenetics(offspringGenetics);
+
+	return offspring;
+}
+
+int GeneticAlgorithm::MutateProcess()
+{
+	return GetRandomInt(20, 100);
 }
 
 int GeneticAlgorithm::GetRandomInt(int min, int max)

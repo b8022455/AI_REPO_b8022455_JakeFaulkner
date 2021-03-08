@@ -22,61 +22,6 @@ public:
 
 	Enemy()	{};
 
-	Enemy(Enemy& parent1, Enemy& parent2)			//Constructor to inherit genetic information from parents
-	{
-		//Include other stuff to set up the enemy like model, random pos etc in here as well
-
-		for (int i = 0; i < parent1.chromosomes.size(); i++)
-		{
-			int rand = GetRandomInt(0, 100);		//Get random probability whether to inherit from 1st parent (45%), 2nd parent (45%) or mutate (10%)
-			
-			if (rand < 45)		//Inherit from 1st parent
-			{
-				chromosomes.push_back(parent1.chromosomes.at(i));
-			}
-
-			else if (rand < 90)	//Inherit from 2nd parent
-			{
-				chromosomes.push_back(parent2.chromosomes.at(i));
-			}
-
-			else
-			{
-				chromosomes.push_back(MutateGenetics());
-			}
-		}
-
-		//Prevents GameObject error with enemy types
-		if (chromosomes.at(3) < 2)
-			chromosomes.at(3) = 1;
-
-		//Set up model and rest of non-genetic information
-		if (chromosomes.at(3) == 1)		//Enemy type 1
-		{
-			Initialize("EnemyGhoul");
-			particles.resize(20);
-			mEnemyType = GC::ENEMY_TYPE_1;
-			mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at("EnemyType1");
-		}
-		else
-		{
-			Initialize(GC::GO_ENEMY);
-			mEnemyType = GC::ENEMY_TYPE_2;
-			mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at("EnemyType2");
-		}
-
-		mAttack = 1;
-		mHealth = chromosomes.at(0);
-		mAttackDelay = static_cast<float>(chromosomes.at(1)) / 10.f;
-		mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
-		mEnemySightRange = static_cast<float>(chromosomes.at(3) + 20) / 10.f;
-		mAttackDuration = static_cast<float>(chromosomes.at(4)) / 10.f;
-		assert(mpDropItems);
-
-		SetRandomPosition();
-
-	};
-
 	//void InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int materialIndex);	//Sets up the enemy
 	void Enemy::SetRandomPosition();
 	void SetDirection(DirectX::XMFLOAT3 dir);
@@ -104,9 +49,9 @@ public:
 	//Genetic Algorithm
 	int GetFitnessValue() { return fitnessValue; }
 	void IncrementFitnessValue() { fitnessValue++; }
-	void GetRandomGenetics();		//Gets random genetic information for initial candidates
-	int MutateGenetics();
 	void GetInitialGenetics(const std::vector<int> randomGenes);		//Passes in genetic information from algorithm class for initial candidates, used to assign values to private variables
+	void GetInheritedGenetics(const std::vector<int> inheritedGenes);	//Passes in inherited information from algorithm class for offspring candidates
+	std::vector<int> GetChromosomes() { return chromosomes; }			//Used during crossover process to obtain parents genetic information in GeneticAlgorithm::GetOffspringCandidate
 
 
 	int GetRandomInt(int min, int max)

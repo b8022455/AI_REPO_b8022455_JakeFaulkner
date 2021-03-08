@@ -17,10 +17,12 @@ public:
 	std::vector<Enemy> mPopulation;			//Stores current candidates
 private:
 	Enemy GetInitialCandidate();		//Creates a new enemy that is added to the population, genetics are randomized
+	Enemy GetOffspringCandidate(Enemy& parent1, Enemy& parent2);		//Creates a new enemy that is added to the next generation, genetics are inherited from parents or mutated
 	
 	void ElitistSelection();	//Chooses the best candidate from the population to advance to the next generation
 	void MatingProcess();		//Has candidates of the current generation mate to produce offspring for next generation
 	void GenerationTransition();			//Removes the previous generation and replaces with the next generation
+	int MutateProcess();					//Gets a new value for a chromosome, uses GetRandomInt function
 	int GetRandomInt(int min, int max);		//Returns a random integer value, used to get random values for initial candidates genetic information		
 
 	struct SortByFitness

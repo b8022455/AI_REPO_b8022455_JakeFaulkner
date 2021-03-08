@@ -28,17 +28,6 @@ void Enemy::Reset()
 
 	SetRandomPosition();
 
-	//if (mEnemyType == GC::ENEMY_TYPE_1) {
-	//	mHealth = GC::ENEMYTYPE1_HEALTH;
-	//	BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
-	//	canAttack = false;
-	//	for (auto& p : particles)
-	//		p.RemoveEffect();
-	//}
-	//if (mEnemyType == GC::ENEMY_TYPE_2) {
-	//	mHealth = GC::ENEMYTYPE2_HEALTH;
-	//	BouncebackPosition = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
-	//}
 }
 
 void Enemy::SetRandomPosition()
@@ -226,45 +215,6 @@ void Enemy::SetDirection(DirectX::XMFLOAT3 dir) // may be enemy rotation?
 }
 
 //Genetic Algorithm Functions
-
-void Enemy::GetRandomGenetics()
-{
-	chromosomes.push_back(GetRandomInt(10, 45));		//Health
-	chromosomes.push_back(GetRandomInt(10, 100));		//Attack Delay
-	chromosomes.push_back(GetRandomInt(20, 80));		//Movement Speed
-	chromosomes.push_back(GetRandomInt(10, 100));		//Enemy Sight Distance
-	chromosomes.push_back(GetRandomInt(1, 2));			//Behaviour type
-	chromosomes.push_back(GetRandomInt(10, 100));		//Attack Duration
-
-	//Get Enemy type model based on integer value of type
-	if (chromosomes.at(4) == 1)		//Enemy type 1
-	{
-		Initialize("EnemyGhoul");
-		particles.resize(20);
-		mEnemyType = GC::ENEMY_TYPE_1;
-		mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at("EnemyType1");
-	}
-	else
-	{
-		Initialize(GC::GO_ENEMY);
-		mEnemyType = GC::ENEMY_TYPE_2;
-		mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at("EnemyType2");
-	}
-
-	mAttack = 1;
-	mHealth = chromosomes.at(0);
-	mAttackDelay = static_cast<float>(chromosomes.at(1)) / 10.f;
-	mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
-	mEnemySightRange = static_cast<float>(chromosomes.at(3) + 20) / 10.f;
-	mAttackDuration = static_cast<float>(chromosomes.at(4));
-	assert(mpDropItems);
-}
-
-int Enemy::MutateGenetics()
-{
-	return GetRandomInt(20, 100);
-}
-
 void Enemy::GetInitialGenetics(const std::vector<int> genes)
 {
 	//Get genes created in GeneticAlgorithm::CreateInitialCandidate
@@ -294,6 +244,40 @@ void Enemy::GetInitialGenetics(const std::vector<int> genes)
 	mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
 	mEnemySightRange = static_cast<float>(chromosomes.at(3) + 20) / 10.f;
 	mAttackDuration = static_cast<float>(chromosomes.at(4));
+	assert(mpDropItems);
+
+	SetRandomPosition();
+}
+
+void Enemy::GetInheritedGenetics(const std::vector<int> genes)
+{
+	//Get genes created in GeneticAlgorithm::CreateOffspringCandidate
+	chromosomes = genes;
+
+	if (chromosomes.size() == 0)
+		assert(chromosomes.size() == 0);
+
+	//Set up model and rest of non-genetic information
+	if (chromosomes.at(3) == 1)		//Enemy type 1
+	{
+		Initialize("EnemyGhoul");
+		particles.resize(20);
+		mEnemyType = GC::ENEMY_TYPE_1;
+		mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at("EnemyType1");
+	}
+	else
+	{
+		Initialize(GC::GO_ENEMY);
+		mEnemyType = GC::ENEMY_TYPE_2;
+		mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at("EnemyType2");
+	}
+
+	mAttack = 1;
+	mHealth = chromosomes.at(0);
+	mAttackDelay = static_cast<float>(chromosomes.at(1)) / 10.f;
+	mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
+	mEnemySightRange = static_cast<float>(chromosomes.at(3) + 20) / 10.f;
+	mAttackDuration = static_cast<float>(chromosomes.at(4)) / 10.f;
 	assert(mpDropItems);
 
 	SetRandomPosition();
