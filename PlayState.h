@@ -14,6 +14,8 @@
 #include "Plant.h"
 #include <math.h>
 #include "Bar.h"
+
+#include "GeneticAlgorithm.h"
 using namespace std;
 
 class PlayState : public State
@@ -26,10 +28,7 @@ class PlayState : public State
 	Inventory mInventory;
 
 	//Genetic algorithm variables + functions
-	std::vector<Enemy> mPopulation;			//Each generation of candidates.
-	std::vector<Enemy> mDefeatedEnemies;	//Stores enemies defeated, used to mate them before deleting them
-	std::vector<Enemy> mNextGeneration;		//Stores the children of the enemies in the population, is assigned to mPopulation at the end of a generation
-	void SelectCandidates();				//Chooses which candidates are used for elite selection and mating processes
+	GeneticAlgorithm mAlgorithm;
 
 	// Trader player is focused on
 	Trader* mpActiveTrader = nullptr;
@@ -174,15 +173,5 @@ public:
 	void KeyboardDebug(const GameTimer& gt);
 	void Gamepad(const GameTimer& gt);
 	bool TraderStoryComplete();
-
-	int EnemiesRemaining()
-	{
-		int count = 0;
-		for (auto& e : mPopulation)
-		{
-			if (e.mEnabled) ++count;
-		}
-		return count;
-	}
 };
 

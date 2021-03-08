@@ -140,15 +140,11 @@ void PlayState::Initialize()
 
 	// Create initial population candidates
 	{
-		mPopulation.push_back(Enemy());
-		mPopulation.push_back(Enemy());
-		mPopulation.push_back(Enemy());
-		mPopulation.push_back(Enemy());
-		mPopulation.push_back(Enemy());
+		mAlgorithm.CreateInitialPopulation();
 
 	}
 
-	mCombatController.Initialize(&mPlayer, &mPlayerWeapon, &mPopulation);
+	mCombatController.Initialize(&mPlayer, &mPlayerWeapon, &mAlgorithm.mPopulation);
 
 
 	// Sprites
@@ -232,7 +228,7 @@ void PlayState::reInitialize() { // USED TO LOAD A NEW MAP & ENEMIES, ETC, WHEN 
 
 	timeChange = 0.0f;
 
-	mCombatController.Initialize(&mPlayer, &mPlayerWeapon, &mPopulation);
+	mCombatController.Initialize(&mPlayer, &mPlayerWeapon, &mAlgorithm.mPopulation);
 
 	mPlayer.AreaClear = false;
 	mPlayer.genArea = false;
@@ -265,10 +261,16 @@ void PlayState::timeSet() {
 
 void PlayState::Update(const GameTimer& gt)
 {
-	//Genetic Algorithm
-	if (mPopulation.size() == 0)
+	//Genetic Algorithm - Check if all enemies have been defeated in the game
+	if (mAlgorithm.CurrentGenerationFinished())
 	{
- 		SelectCandidates();
+		mAlgorithm.SelectCandidates();
+
+		for (auto& e : mAlgorithm.mPopulation)
+		{
+			while (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < 10.f)	//Prevents enemies from spawning inside a trader
+				e.SetRandomPosition();
+		}
 	}
 
 	//mTileManager.Update(gt);
@@ -430,20 +432,20 @@ void PlayState::Update(const GameTimer& gt)
 		}
 	}
 
-	for (int i = 0; i < mPopulation.size(); i++)
+	for (int i = 0; i < mAlgorithm.mPopulation.size(); i++)
 	{
-		mPopulation.at(i).Update(gt);
+		mAlgorithm.mPopulation.at(i).Update(gt);
 		//e.Update(gt);
 
 
-		if (mPopulation.at(i).mEnabled)
+		if (mAlgorithm.mPopulation.at(i).mEnabled)
 		{
 			//Enemy look at players position (only do when in range), only look when not attacking either
 			XMVECTOR playerPosition = XMLoadFloat3(&mPlayer.GetPos());
 
-			if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), mPopulation.at(i).GetPos()) < mPopulation.at(i).GetEnemyRange())
+			if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), mAlgorithm.mPopulation.at(i).GetPos()) < mAlgorithm.mPopulation.at(i).GetEnemyRange())
 			{
-				mPopulation.at(i).LookAt(playerPosition);
+				mAlgorithm.mPopulation.at(i).LookAt(playerPosition);
 
 				if (shownAttackTutorial == false)
 				{
@@ -452,22 +454,22 @@ void PlayState::Update(const GameTimer& gt)
 					shownAttackTutorial = true;
 				}
 
-				if(!mPopulation.at(i).GetIfCanAttack())
-					mPopulation.at(i).mBehaviour = Enemy::Behaviour::CHASE;
+				if(!mAlgorithm.mPopulation.at(i).GetIfCanAttack())
+					mAlgorithm.mPopulation.at(i).mBehaviour = Enemy::Behaviour::CHASE;
 				else
-					mPopulation.at(i).mBehaviour = Enemy::Behaviour::NONE;
+					mAlgorithm.mPopulation.at(i).mBehaviour = Enemy::Behaviour::NONE;
 			}
 			else
-				mPopulation.at(i).mBehaviour = Enemy::Behaviour::NONE;
+				mAlgorithm.mPopulation.at(i).mBehaviour = Enemy::Behaviour::NONE;
 		}
 
 		// enemy collision with player
-		if (mPlayer.CheckCollision(mPlayer.GetPos(), mPopulation.at(i).GetPos()) && mPopulation.at(i).GetHealth() > 0)
+		if (mPlayer.CheckCollision(mPlayer.GetPos(), mAlgorithm.mPopulation.at(i).GetPos()) && mAlgorithm.mPopulation.at(i).GetHealth() > 0)
 		{
-			mPlayer.DamagePlayer(mPopulation.at(i).GetAttack(), mPopulation.at(i), gt);
+			mPlayer.DamagePlayer(mAlgorithm.mPopulation.at(i).GetAttack(), mAlgorithm.mPopulation.at(i), gt);
 			mPlayerHealthBar.SetValue(mPlayer.health);
 
-			mPopulation.at(i).IncrementFitnessValue();
+			mAlgorithm.IncrementFitnessValue(i);
 
 			if (shownPlantTutorial == false)	//replace bool?
 			{
@@ -489,14 +491,14 @@ void PlayState::Update(const GameTimer& gt)
 		}
 
 		//When checking if enemy is in range, have this be in that section to prevent enemy particles from far from being checked
-		for (auto& p : mPopulation.at(i).particles)
+		for (auto& p : mAlgorithm.mPopulation.at(i).particles)
 		{
-			if (mPlayer.CheckCollision(mPlayer.GetPos(), p.GetPos()) && mPopulation.at(i).GetHealth() > 0)
+			if (mPlayer.CheckCollision(mPlayer.GetPos(), p.GetPos()) && mAlgorithm.mPopulation.at(i).GetHealth() > 0)
 			{
-				mPlayer.DamagePlayer(mPopulation.at(i).GetAttack(), mPopulation.at(i), gt);
+				mPlayer.DamagePlayer(mAlgorithm.mPopulation.at(i).GetAttack(), mAlgorithm.mPopulation.at(i), gt);
 				mPlayerHealthBar.SetValue(mPlayer.health);
 
-				mPopulation.at(i).IncrementFitnessValue();
+				mAlgorithm.IncrementFitnessValue(i);
 
 				if (shownPlantTutorial == false)	//replace bool?
 				{
@@ -520,27 +522,27 @@ void PlayState::Update(const GameTimer& gt)
 			}
 		}
 
-		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), mPopulation.at(i).GetPos()))
+		if (mPlayerWeapon.CheckCollision(mPlayerWeapon.GetPos(), mAlgorithm.mPopulation.at(i).GetPos()))
 		{
 			// TODO: (URGENT) FIX ENEMY MODEL LEFT ON SCREEN
 
-			mPopulation.at(i).DamageEnemy(mPlayer.attack);		//Takes away health from enemy + blowsback enemy position
-			if (mPopulation.at(i).GetHealth() <= 0)
+			mAlgorithm.mPopulation.at(i).DamageEnemy(mPlayer.attack);		//Takes away health from enemy + blowsback enemy position
+			if (mAlgorithm.mPopulation.at(i).GetHealth() <= 0)
 			{
 				// gain exp
 				mExperience.AddExp(GC::EXP_DEFAULT);
 				score += GC::SCORE_ENEMY;
 
 				//Could be put into an exists function in Inventory Class
-				std::string droppedItem = mPopulation.at(i).GetDropItem();
+				std::string droppedItem = mAlgorithm.mPopulation.at(i).GetDropItem();
 				if (droppedItem != "Empty")		//I.e An item was dropped from enemy
 				{
 					++mInventory[droppedItem];
 				}
 
 
-				mPopulation.at(i).MoveOffScreen();
-				mPopulation.at(i).mEnabled = false;
+				mAlgorithm.mPopulation.at(i).MoveOffScreen();
+				mAlgorithm.mPopulation.at(i).mEnabled = false;
 				if (timeCycle == 4)
 					newEnemy = true;
 
@@ -553,20 +555,19 @@ void PlayState::Update(const GameTimer& gt)
 		}
 
 		//Checking enemy remains in bounds
-		if (!mPopulation.at(i).WithinBounds(mPopulation.at(i).GetPos() + mPopulation.at(i).BouncebackPosition))
-			mPopulation.at(i).BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+		if (!mAlgorithm.mPopulation.at(i).WithinBounds(mAlgorithm.mPopulation.at(i).GetPos() + mAlgorithm.mPopulation.at(i).BouncebackPosition))
+			mAlgorithm.mPopulation.at(i).BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 		// enemy collides with traders
 		for (auto& t : mTraders)
-			if (mPopulation.at(i).CheckCollision(mPopulation.at(i).GetPos() + mPopulation.at(i).BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
-				mPopulation.at(i).BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+			if (mAlgorithm.mPopulation.at(i).CheckCollision(mAlgorithm.mPopulation.at(i).GetPos() + mAlgorithm.mPopulation.at(i).BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
+				mAlgorithm.mPopulation.at(i).BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-		mPopulation.at(i).SetVelocity(mPlayer.GetPos(), gt);
+		mAlgorithm.mPopulation.at(i).SetVelocity(mPlayer.GetPos(), gt);
 
-		if (!mPopulation.at(i).mEnabled)
+		if (!mAlgorithm.mPopulation.at(i).mEnabled)
 		{
-			mDefeatedEnemies.push_back(mPopulation.at(i));		//Store in different vector to mate before erasing
-			mPopulation.erase(mPopulation.begin() + i);
+			mAlgorithm.MoveEnemyFromPopulation(i);
 			break;
 		}
 	}
@@ -1134,18 +1135,6 @@ void PlayState::Keyboard(const GameTimer& gt)
 	{
 		ReGen();
 	}
-
-	if (Input::Get().KeyReleased(GC::KEY_DEBUG_KILL_ALL))
-	{
-		//mEnemies.clear();
-
-		for (auto& e : mPopulation)
-		{
-			e.Reset();
-			e.mEnabled = false;
-			e.MoveOffScreen();
-		}
-	}
 }
 
 void PlayState::KeyboardDebug(const GameTimer& gt)
@@ -1190,17 +1179,6 @@ void PlayState::KeyboardDebug(const GameTimer& gt)
 		mCamType = CAMERA_TYPE::GAME;
 		//Update active camera
 		GameApp::Get().SetActiveCamera(&mCameras.at(CAMERA_TYPE::GAME));
-	}
-
-	// Debug random enemy pos
-	if (Input::Get().KeyReleased(GC::KEY_DEBUG_ENEMY_POS))
-	{
-		std::for_each(mPopulation.begin(), mPopulation.end(), [](Enemy& e)
-			{
-				e.mEnabled = true;
-				e.Reset();
-				e.SetRandomPosition();
-			});
 	}
 }
 
@@ -1340,17 +1318,7 @@ void PlayState::Reset()
 	GameApp::Get().GetMainPassCB()->AmbientLight = GC::DAWN_COLOUR; // dawn
 	GameApp::Get().GetMainPassCB()->Lights[1].Strength = GC::DAWN_STRENGTH;
 
-	// TODO: (REMEMBER) LOOK AT BELOW FOR ENEMY RESETTING (MAY OR MAY NOT BE NEEDED)
-	//Reset Enemies
-	/*size_t enemyAmount = mEnemies.size() - 1;
-	while (enemyAmount > 1)
-	{
-		mEnemies.at(enemyAmount - 1).MoveOffScreen();
-		mEnemies.erase(mEnemies.begin() + (enemyAmount - 1));
-		enemyAmount--;
-	}*/
-
-	for (auto& e : mPopulation)
+	for (auto& e : mAlgorithm.mPopulation)
 	{
 		e.mEnabled = true;
 		e.Reset();
@@ -1446,48 +1414,5 @@ void PlayState::StoreScore()
 
 			fout.close();
 		}
-	}
-}
-
-//Genetic Algorithm
-void PlayState::SelectCandidates()
-{
-	//Organise the vector of enemies
-	struct SortByFitness
-	{
-		bool operator()(Enemy& a, Enemy& b)
-		{
-			return a.GetFitnessValue() > b.GetFitnessValue();		//Returns the higher fitness value
-		}
-	};
-
-	SortByFitness organiseVector;
-
-	//Sort the population in terms of fitness value (Enemies that hit the player more times are towards the front of the vector)
-	std::sort(mDefeatedEnemies.begin(), mDefeatedEnemies.end(), std::ref(organiseVector));
-
-	//Elite selection - Allow the best enemy from current generation to move onto the next unedited
-	mDefeatedEnemies.at(0).Reset();			//Resets to bring hp back to normal, enables use for the next generation
-
-	mNextGeneration.push_back(mDefeatedEnemies.at(0));		//Add the fittest candidate from the previous generation into the next
-
-	//Mate to produce next generation of enemies - selection, crossover and mutation happens here
-	for (int i = 0; i < 2; i++)		//Mate fitter candidates from population (1st->3rd, 2nd->4th, 5th is discarded)
-	{
-		int j = i + 2;
-
-		//Parents have 2 children to keep candidate count at 5 (2 children per couple, 1 from elite selection)
-		mNextGeneration.push_back(Enemy(mDefeatedEnemies.at(i), mDefeatedEnemies.at(j)));
-		mNextGeneration.push_back(Enemy(mDefeatedEnemies.at(i), mDefeatedEnemies.at(j)));
-	}
-
-	mPopulation = mNextGeneration;
-	mNextGeneration.clear();
-	mDefeatedEnemies.clear();		//Remove the previous generation to prepare for the next
-
-	for (auto& e : mPopulation)
-	{
-		while (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < 10.f)	//Prevents enemies from spawning inside a trader
-			e.SetRandomPosition();
 	}
 }
