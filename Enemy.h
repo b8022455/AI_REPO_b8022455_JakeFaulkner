@@ -20,12 +20,7 @@ public:
 		mAttack = att;
 	};
 
-	Enemy()		//Constructor to get the initial candidates of the population (Uses random genetics)
-	{
-		GetRandomGenetics();		//Get random values for genetic information
-
-		SetRandomPosition();
-	};
+	Enemy()	{};
 
 	Enemy(Enemy& parent1, Enemy& parent2)			//Constructor to inherit genetic information from parents
 	{
@@ -111,6 +106,8 @@ public:
 	void IncrementFitnessValue() { fitnessValue++; }
 	void GetRandomGenetics();		//Gets random genetic information for initial candidates
 	int MutateGenetics();
+	void GetInitialGenetics(const std::vector<int> randomGenes);		//Passes in genetic information from algorithm class for initial candidates, used to assign values to private variables
+
 
 	int GetRandomInt(int min, int max)
 	{

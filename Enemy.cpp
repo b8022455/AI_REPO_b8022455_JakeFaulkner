@@ -264,3 +264,37 @@ int Enemy::MutateGenetics()
 {
 	return GetRandomInt(20, 100);
 }
+
+void Enemy::GetInitialGenetics(const std::vector<int> genes)
+{
+	//Get genes created in GeneticAlgorithm::CreateInitialCandidate
+	chromosomes = genes;
+
+	if (chromosomes.size() == 0)
+		assert(chromosomes.size() == 0);
+
+	//Get Enemy type model based on integer value of type
+	if (chromosomes.at(4) == 1)		//Enemy type 1
+	{
+		Initialize("EnemyGhoul");
+		particles.resize(20);
+		mEnemyType = GC::ENEMY_TYPE_1;
+		mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at("EnemyType1");
+	}
+	else
+	{
+		Initialize(GC::GO_ENEMY);
+		mEnemyType = GC::ENEMY_TYPE_2;
+		mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at("EnemyType2");
+	}
+
+	mAttack = 1;
+	mHealth = chromosomes.at(0);
+	mAttackDelay = static_cast<float>(chromosomes.at(1)) / 10.f;
+	mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
+	mEnemySightRange = static_cast<float>(chromosomes.at(3) + 20) / 10.f;
+	mAttackDuration = static_cast<float>(chromosomes.at(4));
+	assert(mpDropItems);
+
+	SetRandomPosition();
+}

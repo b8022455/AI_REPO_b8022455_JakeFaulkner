@@ -3,11 +3,10 @@
 void GeneticAlgorithm::CreateInitialPopulation()
 {
 	//Constructs enemies with random genetics to start
-	mPopulation.push_back(Enemy());
-	mPopulation.push_back(Enemy());
-	mPopulation.push_back(Enemy());
-	mPopulation.push_back(Enemy());
-	mPopulation.push_back(Enemy());
+	for (int i = 0; i < EnemyCount; i++)
+	{
+		mPopulation.push_back(GetInitialCandidate());
+	}
 }
 
 bool GeneticAlgorithm::CurrentGenerationFinished()
@@ -65,4 +64,31 @@ void GeneticAlgorithm::GenerationTransition()
 	//Clear for future generations
 	mNextGeneration.clear();
 	mDefeatedEnemies.clear();
+}
+
+Enemy GeneticAlgorithm::GetInitialCandidate()
+{
+	Enemy Candidate;
+	std::vector<int> geneticInformation;		//Is passed to the enemy for their genetic information
+
+	//Create the randomized genetics to be given to initial enemy
+	geneticInformation.push_back(GetRandomInt(10, 45));		//Health
+	geneticInformation.push_back(GetRandomInt(10, 100));	//Attack Delay
+	geneticInformation.push_back(GetRandomInt(20, 80));		//Movement Speed
+	geneticInformation.push_back(GetRandomInt(10, 100));	//Enemy Sight Distance
+	geneticInformation.push_back(GetRandomInt(1, 2));		//Behaviour Type
+	geneticInformation.push_back(GetRandomInt(10, 100));	//Attack Duration
+
+	Candidate.GetInitialGenetics(geneticInformation);		//Passes randomized genetics to enemy
+
+	return Candidate;
+}
+
+int GeneticAlgorithm::GetRandomInt(int min, int max)
+{
+	std::random_device rd;
+	std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+	std::uniform_int_distribution<int> uni(min, max);
+
+	return uni(rng);
 }
