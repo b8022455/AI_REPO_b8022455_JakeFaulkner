@@ -181,7 +181,6 @@
     <ClCompile Include="WinState.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneticInformation.h" />
     <ClInclude Include="AttackTimeDelay.h" />
     <ClInclude Include="AudioSImple.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>

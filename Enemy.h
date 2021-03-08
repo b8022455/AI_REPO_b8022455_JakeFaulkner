@@ -6,7 +6,6 @@
 #include "Constants.h"
 #include "DeltaTimer.h"
 #include "EnemyParticle.h"
-#include "GeneticInformation.h"
 
 class Enemy : public GameObject
 {
@@ -142,8 +141,6 @@ private:
 	//Genetic Information Variables
 	std::vector<int> chromosomes;		//Health | AttackDelay | MovementSpeed | Enemy Sight Distance | EnemyType | Attack Duration
 
-	//Stores the genetic information for each enemy (variables which will be different for each enemy + have potential to mutate)
-	GeneticInformation enemyGenetics;
 	int fitnessValue = 0;		//Increments when enemy damages the player
 
 	DirectX::SimpleMath::Vector3 mVelocity;

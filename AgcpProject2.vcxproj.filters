@@ -254,9 +254,6 @@
     <ClInclude Include="StoryState.h">
       <Filter>Header Files\States</Filter>
     </ClInclude>
-    <ClInclude Include="GeneticInformation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Default.hlsl">
