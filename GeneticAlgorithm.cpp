@@ -74,7 +74,7 @@ Enemy GeneticAlgorithm::GetInitialCandidate()
 	//Create the randomized genetics to be given to initial enemy
 	geneticInformation.push_back(GetRandomInt(10, 45));		//Health
 	geneticInformation.push_back(GetRandomInt(10, 100));	//Attack Delay
-	geneticInformation.push_back(GetRandomInt(20, 80));		//Movement Speed
+	geneticInformation.push_back(GetRandomInt(20, 100));	//Movement Speed
 	geneticInformation.push_back(GetRandomInt(10, 100));	//Enemy Sight Distance
 	geneticInformation.push_back(GetRandomInt(1, 2));		//Behaviour Type
 	geneticInformation.push_back(GetRandomInt(10, 100));	//Attack Duration
