@@ -27,8 +27,9 @@ class PlayState : public State
 	std::vector<Plant> mPlants;
 	Inventory mInventory;
 
-	//Genetic algorithm variables + functions
+	//Genetic algorithm
 	GeneticAlgorithm mAlgorithm;
+	FadeText mGenerationMessage;
 
 	// Trader player is focused on
 	Trader* mpActiveTrader = nullptr;

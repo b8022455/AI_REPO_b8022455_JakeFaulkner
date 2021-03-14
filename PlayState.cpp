@@ -157,6 +157,7 @@ void PlayState::Initialize()
 		mScoreTextShadow.string = "Score: " + std::to_string(score);
 		mScoreTextShadow.position = DirectX::SimpleMath::Vector2(651.f, 21.f);
 
+
 		// panel soruce
 		const RECT src{ GC::PANEL_SRC[0],	GC::PANEL_SRC[1],	GC::PANEL_SRC[2],	GC::PANEL_SRC[3], };
 		// inv panel
@@ -199,6 +200,11 @@ void PlayState::Initialize()
 			mTradeHelpMessage.mText.center = true;
 			mTradeHelpMessage.mText.position = DirectX::SimpleMath::Vector2{ 250.f, 150.f };
 			mTradeHelpMessage.mText.color = DirectX::Colors::Red;
+
+			mGenerationMessage.mText.center = true;
+			mGenerationMessage.mText.position = DirectX::SimpleMath::Vector2(400.f, 300.f);
+			mGenerationMessage.mText.color = DirectX::Colors::Red;
+
 		}
 	}
 
@@ -259,6 +265,7 @@ void PlayState::Update(const GameTimer& gt)
 	//Genetic Algorithm - Check if all enemies have been defeated in the game
 	if (mAlgorithm.CurrentGenerationFinished())
 	{
+		mGenerationMessage.Activate("New Generation", 1.5f);
 		mAlgorithm.SelectCandidates();
 
 		for (auto& e : mAlgorithm.mPopulation)
@@ -364,68 +371,6 @@ void PlayState::Update(const GameTimer& gt)
 	mCameras.at(CAMERA_TYPE::GAME).SetPosition(
 		Lerp(mCameras.at(CAMERA_TYPE::GAME).GetPosition(), mPlayer.GetPos() + CAM_OFFSET, 0.9999f * gt.DeltaTime())
 	);
-
-	// MUST CHECK BOTH METHODS
-	// currently -15 to 15 on both (BOUNDARIES SHOULD BE PUBLIC AND USED TO CALCULATE)
-	// tiles are 32 by 32
-	// 0.0f is middle of grid
-	// each tile is 0.9375 of a world position
-	// player position + half max tile * (MaxWorldPos / MaxTile) to find current tile (REPEAT FOR X & Y APPROPRIATELY)
-	// LAST COMPONENT OF THE CALCULATION WILL CAUSE PROBLEMS IF SIZE OF EACH TILE ITSELF INCREASED
-	//const float diff = float(mTileManager.MaxGen) / 30.0f;
-	const float diff2 = 30.0f / float(mTileManager.MaxGen); // WORLDSPACE / GRID SIZE
-	int underX = (int)round(mPlayer.GetPos().x); // worldspace position does not correspond to tilemap coordinate
-	int underZ = (int)round(mPlayer.GetPos().z);
-	float tileX = (underX + (0.5f * (mTileManager.MaxGen))/* * diff*/); // greater
-	float tileZ = (underZ + (0.5f * (mTileManager.MaxGen)))/* * diff*/; // greater
-	float tileX2 = (underX + (0.5f * (mTileManager.MaxGen)) * diff2); //lesser
-	float tileZ2 = (underZ + (0.5f * (mTileManager.MaxGen)) * diff2); // lesser
-
-	// USED FOR DEBUGGING THE SAFETY NET FOR THE PLAYER GRID CHECKER - KEEP IF ERRORS ARISE LATER
-	//if ((tileX < 0 || tileZ < 0 || tileX > mTileManager.MaxGen || tileZ > mTileManager.MaxGen) ||
-	//	(tileX2 < 0 || tileZ2 < 0 || tileX2 > mTileManager.MaxGen || tileZ2 > mTileManager.MaxGen)) {
-	//
-	//	int r = 0;
-	//}
-
-	// if player over the grid execute the grid check 
-	if ((tileX > 0 && tileZ > 0 && tileX < mTileManager.MaxGen && tileZ < mTileManager.MaxGen) &&
-		(tileX2 >= 0 && tileZ2 >= 0 && tileX2 <= mTileManager.MaxGen && tileZ2 <= mTileManager.MaxGen)) {
-
-		// POSSIBLE GLITCH HERE (TILE ACTIVE WHEN PLAYER NOT OVER IT, TILE RIGHT / RIGHT&UP) - FIXED ITSELF??
-		// 
-		// if the player is over a poison/damage tile
-		if (mTileManager.GetIndex(static_cast<int>(tileX), static_cast<int>(tileZ)) == mTileManager.Haz1Tex ||
-			mTileManager.GetIndex(static_cast<int>(tileX2), static_cast<int>(tileZ2)) == mTileManager.Haz1Tex) {
-			if (mPlayer.hazardTimer <= 0) { // if hazard should be active
-				mPlayer.health -= 5;
-				mPlayerHealthBar.SetValue(mPlayer.health);
-				mPlayer.hazardTimer = 3; // reset hazard timer 
-
-			}
-		}
-
-		// if the player is over a slow tile
-		if (mTileManager.GetIndex(static_cast<int>(tileX), static_cast<int>(tileZ)) == mTileManager.Haz2Tex ||
-			mTileManager.GetIndex(static_cast<int>(tileX2), static_cast<int>(tileZ2)) == mTileManager.Haz2Tex) {
-			mPlayer.Slowed = true;
-		}
-
-		if (mTileManager.GetIndex(static_cast<int>(tileX), static_cast<int>(tileZ)) != mTileManager.Haz2Tex &&
-			mTileManager.GetIndex(static_cast<int>(tileX2), static_cast<int>(tileZ2)) != mTileManager.Haz2Tex) {
-			mPlayer.Slowed = false;
-		}
-
-		if (mTileManager.GetIndex(static_cast<int>(tileX), static_cast<int>(tileZ)) == mTileManager.Haz3Tex ||
-			mTileManager.GetIndex(static_cast<int>(tileX2), static_cast<int>(tileZ2)) == mTileManager.Haz3Tex) {
-			mPlayer.Slippy = true;
-		}
-
-		if (mTileManager.GetIndex(static_cast<int>(tileX), static_cast<int>(tileZ)) != mTileManager.Haz3Tex &&
-			mTileManager.GetIndex(static_cast<int>(tileX2), static_cast<int>(tileZ2)) != mTileManager.Haz3Tex) {
-			mPlayer.Slippy = false;
-		}
-	}
 
 	for (int i = 0; i < mAlgorithm.mPopulation.size(); i++)
 	{
@@ -707,6 +652,8 @@ void PlayState::Draw(const GameTimer& gt)
 	mScoreTextShadow.Draw();
 	mScoreText.Draw();
 
+	mGenerationMessage.Draw();
+
 }
 
 void PlayState::OnMouseDown(WPARAM btnState, int x, int y)
@@ -940,6 +887,7 @@ void PlayState::UiUpdate(const GameTimer& gt)
 	mMessage.Update(gt);
 	mHelpMessage.Update(gt);
 	mTradeHelpMessage.Update(gt);
+	mGenerationMessage.Update(gt);
 }
 
 bool PlayState::CreatePlant()
