@@ -20,9 +20,8 @@ public:
 		mAttack = att;
 	};
 
-	Enemy()	{};
+	Enemy()	{};		//Default Constructor
 
-	//void InitEnemyPosition(int instance, DirectX::XMFLOAT3 position, int materialIndex);	//Sets up the enemy
 	void Enemy::SetRandomPosition();
 	void SetDirection(DirectX::XMFLOAT3 dir);
 	void DamageEnemy(int damage);						//When enemy gets hit by weapon
@@ -46,12 +45,12 @@ public:
 
 	Behaviour mBehaviour = Behaviour::NONE;
 
-	//Genetic Algorithm
+	//Genetic Algorithm Related Functions
 	int GetFitnessValue() { return fitnessValue; }
 	void IncrementFitnessValue() { fitnessValue++; }
-	void GetInitialGenetics(const std::vector<int> randomGenes);		//Passes in genetic information from algorithm class for initial candidates, used to assign values to private variables
-	void GetInheritedGenetics(const std::vector<int> inheritedGenes);	//Passes in inherited information from algorithm class for offspring candidates
-	std::vector<int> GetChromosomes() { return chromosomes; }			//Used during crossover process to obtain parents genetic information in GeneticAlgorithm::GetOffspringCandidate
+	void GetInitialGenetics(const std::vector<int> randomGenes);		//Passes in genetic information for initial candidates
+	void GetInheritedGenetics(const std::vector<int> inheritedGenes);	//Passes in genetic information for offspring candidates
+	std::vector<int> GetChromosomes() { return chromosomes; }
 
 private:
 	int GetRandomValue(int min, int max);				//Gets random value of spawning enemy position & loot drops
@@ -70,14 +69,12 @@ private:
 	bool canAttack = false;
 	float mAttackDuration;
 
-	//Genetic Information Variables
-	std::vector<int> chromosomes;		//Health | AttackDelay | MovementSpeed | Enemy Sight Distance | EnemyType | Attack Duration
-
-	int fitnessValue = 0;		//Increments when enemy damages the player
-
 	DirectX::SimpleMath::Vector3 mVelocity;
 	float mSpeed = 1.0f; // current speed - LEAVE AS IS, CHANGES & ISN'T STATIC
-	//float mMaxSpeed = 1.0f; // max speed
 	float mDrag = 1.0f; // speed to add (* deltatime in enemy update)
 
+
+	//Genetic Information Variables
+	std::vector<int> chromosomes;		//Health | AttackDelay | MovementSpeed | Enemy Sight Distance | EnemyType | Attack Duration
+	int fitnessValue = 0;				//Increments every time candidate damages the player
 };

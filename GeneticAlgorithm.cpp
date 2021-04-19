@@ -11,13 +11,13 @@ void GeneticAlgorithm::CreateInitialPopulation()
 
 bool GeneticAlgorithm::CurrentGenerationFinished()
 {
-	return mPopulation.size() == 0;
+	return mPopulation.size() == 0;		//Current generation ends when all enemies have been defeated
 }
 
 void GeneticAlgorithm::MoveEnemyFromPopulation(const int offset)
 {
 	mDefeatedEnemies.push_back(mPopulation.at(offset));		//Add enemy to be checked during the mating process
-	mPopulation.erase(mPopulation.begin() + offset);		//Remove from population
+	mPopulation.erase(mPopulation.begin() + offset);		//Remove from population vector
 }
 
 void GeneticAlgorithm::IncrementFitnessValue(int offset)
@@ -39,7 +39,7 @@ void GeneticAlgorithm::SelectCandidates()
 
 void GeneticAlgorithm::ElitistSelection()
 {
-	mDefeatedEnemies.at(0).Reset();		//Resets health, fitness value to be used again
+	mDefeatedEnemies.at(0).Reset();						//Resets health, fitness value etc. to be used again
 	mNextGeneration.push_back(mDefeatedEnemies.at(0));	//Adds to the next generation
 }
 
@@ -61,15 +61,15 @@ void GeneticAlgorithm::GenerationTransition()
 	//Make next population of candidates the next generation
 	mPopulation = mNextGeneration;
 
-	//Clear for future generations
+	//Clear vectors for future generations
 	mNextGeneration.clear();
 	mDefeatedEnemies.clear();
 }
 
 Enemy GeneticAlgorithm::GetInitialCandidate()
 {
-	Enemy Candidate;
-	std::vector<int> geneticInformation;		//Is passed to the enemy for their genetic information
+	Enemy Candidate;							//Candidate to be added to the population
+	std::vector<int> geneticInformation;		//Create candidates genetic information
 
 	//Create the randomized genetics to be given to initial enemy
 	geneticInformation.push_back(GetRandomInt(10, 45));		//Health
@@ -79,22 +79,22 @@ Enemy GeneticAlgorithm::GetInitialCandidate()
 	geneticInformation.push_back(GetRandomInt(1, 2));		//Behaviour Type
 	geneticInformation.push_back(GetRandomInt(10, 100));	//Attack Duration
 
-	Candidate.GetInitialGenetics(geneticInformation);		//Passes randomized genetics to enemy
+	Candidate.GetInitialGenetics(geneticInformation);		//Passes randomized genetics to candidate
 
 	return Candidate;
 }
 
 Enemy GeneticAlgorithm::GetOffspringCandidate(Enemy& parent1, Enemy& parent2)
 {
-	//Create local vector of genetics, that is passed into the enemy class
+	//Create local vector of genetics, that is passed to the offspring candidate
 	Enemy offspring;
-	std::vector<int> offspringGenetics;		//Is passed to the enemy for their genetic information
+	std::vector<int> offspringGenetics;		//Made up of inherited parent 1, parent 2 or mutated values
 
 	//Get parent genetics
  	std::vector<int> parent1Genetics = parent1.GetChromosomes();
 	std::vector<int> parent2Genetics = parent2.GetChromosomes();
 
-	//Loops through each part of the genetics
+	//Loops through each gene
 	for (int i = 0; i < parent1Genetics.size(); i++)
 	{
 		int probability = GetRandomInt(0, 100);		//Get random probability whether to inherit from 1st parent (45%), 2nd parent (45%) or mutate (10%)
@@ -113,7 +113,7 @@ Enemy GeneticAlgorithm::GetOffspringCandidate(Enemy& parent1, Enemy& parent2)
 	if (offspringGenetics.at(4) > 2)
 		offspringGenetics.at(4) = GetRandomInt(1, 2);
 
-	//Passes inherited genetics to enemy
+	//Passes inherited genetics to offspring
 	offspring.GetInheritedGenetics(offspringGenetics);
 
 	return offspring;

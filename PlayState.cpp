@@ -136,8 +136,7 @@ void PlayState::Initialize()
 	// ui bar
 	mPlayerHealthBar.Initialise(GC::BAR_GRN, GC::BAR_RED);
 
-	//InitializeTraders();
-
+	//Creates first generation of candidates
 	mAlgorithm.CreateInitialPopulation();
 
 	mCombatController.Initialize(&mPlayer, &mPlayerWeapon, &mAlgorithm.mPopulation);
@@ -262,11 +261,11 @@ void PlayState::timeSet() {
 
 void PlayState::Update(const GameTimer& gt)
 {
-	//Genetic Algorithm - Check if all enemies have been defeated in the game
+	//Check if all enemies have been defeated in the population
 	if (mAlgorithm.CurrentGenerationFinished())
 	{
 		mGenerationMessage.Activate("New Generation", 1.5f);
-		mAlgorithm.SelectCandidates();
+		mAlgorithm.SelectCandidates();			//Mating and elitist selection processes
 
 		for (auto& e : mAlgorithm.mPopulation)
 		{
@@ -375,8 +374,6 @@ void PlayState::Update(const GameTimer& gt)
 	for (int i = 0; i < mAlgorithm.mPopulation.size(); i++)
 	{
 		mAlgorithm.mPopulation.at(i).Update(gt);
-		//e.Update(gt);
-
 
 		if (mAlgorithm.mPopulation.at(i).mEnabled)
 		{
@@ -409,7 +406,7 @@ void PlayState::Update(const GameTimer& gt)
 			mPlayer.DamagePlayer(mAlgorithm.mPopulation.at(i).GetAttack(), mAlgorithm.mPopulation.at(i), gt);
 			mPlayerHealthBar.SetValue(mPlayer.health);
 
-			mAlgorithm.IncrementFitnessValue(i);
+			mAlgorithm.IncrementFitnessValue(i);		//Increment fitness value when candidate collides with player
 
 			if (shownPlantTutorial == false)	//replace bool?
 			{
@@ -438,7 +435,7 @@ void PlayState::Update(const GameTimer& gt)
 				mPlayer.DamagePlayer(mAlgorithm.mPopulation.at(i).GetAttack(), mAlgorithm.mPopulation.at(i), gt);
 				mPlayerHealthBar.SetValue(mPlayer.health);
 
-				mAlgorithm.IncrementFitnessValue(i);
+				mAlgorithm.IncrementFitnessValue(i);		//Increment fitness value when candidate collides with player
 
 				if (shownPlantTutorial == false)	//replace bool?
 				{
@@ -505,9 +502,9 @@ void PlayState::Update(const GameTimer& gt)
 
 		mAlgorithm.mPopulation.at(i).SetVelocity(mPlayer.GetPos(), gt);
 
-		if (!mAlgorithm.mPopulation.at(i).mEnabled)
+		if (!mAlgorithm.mPopulation.at(i).mEnabled)		//Enemy is out of health
 		{
-			mAlgorithm.MoveEnemyFromPopulation(i);
+			mAlgorithm.MoveEnemyFromPopulation(i);		//Move out of population vector
 			break;
 		}
 	}

@@ -1,6 +1,5 @@
 #pragma once
 #include "State.h"
-//#include "GameObject.h"
 #include "CombatController.h"
 #include "Common/Camera.h"
 #include "Tile.h"
@@ -23,13 +22,12 @@ class PlayState : public State
 	Player mPlayer;
 	PlayerWeapon mPlayerWeapon;
 	std::vector<Trader> mTraders;
-	//std::vector<Enemy> mEnemies;
 	std::vector<Plant> mPlants;
 	Inventory mInventory;
 
-	//Genetic algorithm
+	//Genetic algorithm Variables
 	GeneticAlgorithm mAlgorithm;
-	FadeText mGenerationMessage;
+	FadeText mGenerationMessage;		//Alerts when a new generation has started
 
 	// Trader player is focused on
 	Trader* mpActiveTrader = nullptr;

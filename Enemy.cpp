@@ -217,7 +217,7 @@ void Enemy::SetDirection(DirectX::XMFLOAT3 dir) // may be enemy rotation?
 //Genetic Algorithm Functions
 void Enemy::GetInitialGenetics(const std::vector<int> genes)
 {
-	//Get genes created in GeneticAlgorithm::CreateInitialCandidate
+	//Obtained genes from CreateInitialCandidate function
 	chromosomes = genes;
 
 	if (chromosomes.size() == 0)
@@ -238,20 +238,22 @@ void Enemy::GetInitialGenetics(const std::vector<int> genes)
 		mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at("EnemyType2");
 	}
 
-	mAttack = 1;
+	mAttack = 1;					//Prevents player from dying, allowing for easier testing of model
+
+	//Assign genetics to enemy
 	mHealth = chromosomes.at(0);
 	mAttackDelay = static_cast<float>(chromosomes.at(1)) / 10.f;
 	mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
 	mEnemySightRange = static_cast<float>(chromosomes.at(3) + 20) / 10.f;
 	mAttackDuration = static_cast<float>(chromosomes.at(4));
-	assert(mpDropItems);
 
+	assert(mpDropItems);
 	SetRandomPosition();
 }
 
 void Enemy::GetInheritedGenetics(const std::vector<int> genes)
 {
-	//Get genes created in GeneticAlgorithm::CreateOffspringCandidate
+	//Obtain genes from CreateOffspringCandidate function
 	chromosomes = genes;
 
 	if (chromosomes.size() == 0)
@@ -272,13 +274,15 @@ void Enemy::GetInheritedGenetics(const std::vector<int> genes)
 		mpDropItems = &GC::ITEM_LOOKUP_ENEMIES.at("EnemyType2");
 	}
 
-	mAttack = 1;
+	mAttack = 1;					//Prevents player from dying, allowing for easier testing of model
+
+	//Assign genetics to enemy
 	mHealth = chromosomes.at(0);
 	mAttackDelay = static_cast<float>(chromosomes.at(1)) / 10.f;
 	mSpeed = static_cast<float>(chromosomes.at(2)) * 0.05f;
 	mEnemySightRange = static_cast<float>(chromosomes.at(3) + 20) / 10.f;
 	mAttackDuration = static_cast<float>(chromosomes.at(4)) / 10.f;
-	assert(mpDropItems);
 
+	assert(mpDropItems);
 	SetRandomPosition();
 }
