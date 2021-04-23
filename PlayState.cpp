@@ -154,9 +154,9 @@ void PlayState::Initialize()
 		n++;
 	}
 
-	// Setup temp enemies
+	// TODO: (AI) Setup temp enemies
 	{
-		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2)); // number of enemies, Enemy(GC::enemytype, attack)
+		//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2)); // number of enemies, Enemy(GC::enemytype, attack)
 		mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 
 	}
@@ -243,7 +243,7 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 	if (fill == false) {
 		mEnemies.clear();
 	}
-
+	// TODO: (AI) ENEMIES REGEN HERE
 	if (timeCycle == 1) { // dawn (small / 2)
 		//	// inserts n of enemies
 		int e1 = (rand() % 2) + 1; // random 1-2
@@ -252,19 +252,23 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 		else if (e1 == 2) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+			//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 
 		if (e2 == 1) {
 			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 		else if (e2 == 2) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+			//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 
 		//Init all enemies
 		for (auto& e : mEnemies)
 		{
+			e.timeCycle = timeCycle;
+
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
 						0.0f,
@@ -287,19 +291,22 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 		else if (e1 == 2) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+			//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 
 		if (e2 == 1) {
 			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 		else if (e2 == 2) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+			//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 
 		//Init all enemies
 		for (auto& e : mEnemies)
 		{
+			e.timeCycle = timeCycle;
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
 						0.0f,
@@ -323,26 +330,30 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 		else if (e1 == 2) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+			//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 
 		if (e2 == 1) {
 			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 		else if (e2 == 2) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+			//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 
 		if (e3 == 1) {
 			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 		else if (e3 == 2) {
-			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+			//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+			mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 		}
 
 		//Init all enemies
 		for (auto& e : mEnemies)
 		{
+			e.timeCycle = timeCycle;
 			e.SetPos({
 						static_cast<float>(rand() % 10 + 2.0f),
 						0.0f,
@@ -368,26 +379,30 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 			}
 			else if (e1 == 2) {
-				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+				//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 			}
 
 			if (e2 == 1) {
 				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 			}
 			else if (e2 == 2) {
-				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+				//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 			}
 
 			if (e3 == 1) {
 				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 			}
 			else if (e3 == 2) {
-				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+				//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 			}
 
 			//Init all enemies
 			for (auto& e : mEnemies)
 			{
+				e.timeCycle = timeCycle;
 				e.SetPos({
 							static_cast<float>(rand() % 10 + 2.0f),
 							0.0f,
@@ -411,8 +426,11 @@ void PlayState::eGen(bool fill) { // fill = true is for pitch respawning
 				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 			}
 			else if (e1 == 2) {
-				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+				//mEnemies.push_back(Spawn(GC::ENEMY_TYPE_2));
+				mEnemies.push_back(Spawn(GC::ENEMY_TYPE_1));
 			}
+
+			mEnemies.back().timeCycle = timeCycle;
 			//todo enemy model based on type  -- "EnemyGhoul"   "Enemy"
 			mEnemies.back().SetPos({
 				static_cast<float>(rand() % 10 + 2.0f),
@@ -631,10 +649,11 @@ void PlayState::Update(const GameTimer& gt)
 		}
 	}
 
-
+	// TODO: (AI) ENEMIES LOGIC LOCATED HERE
 	int i = 0;
 	std::for_each(mEnemies.begin(), mEnemies.end(), [&](Enemy& e)
 	{
+		//e.timeCycle = timeCycle; // SHOULD CURRENTLY BE SET ON INITIALISATION
 		e.Update(gt);
 
 
@@ -653,12 +672,33 @@ void PlayState::Update(const GameTimer& gt)
 			if (timeCycle == 4)
 				enemyRange = GC::ALL_ENEMY_MAXRANGE;
 
+			// TODO: (AI) LOOK AT AND SET EACH DIRECTION BELOW
+			if (e.newdir) {
+				int r = rand() % 4;
+				if (r == 0) // up
+					e.dir = GC::UPWARDS;
+				if (r == 1) // down
+					e.dir = GC::DOWNWARDS;
+				if (r == 2) // left
+					e.dir = GC::LEFTWARDS;
+				if (r == 3) // right
+					e.dir = GC::RIGHTWARDS;
+				e.newdir = false;
+			}
+
+			if (e.mBehaviour == Enemy::Behaviour::ROAM || e.mBehaviour == Enemy::Behaviour::SHUFFLE || 
+				e.mBehaviour == Enemy::Behaviour::WAIT) {
+				DirectX::XMVECTOR vect = XMLoadFloat3(&e.dir);
+				e.LookAt(vect); // player looks in the direction they are shuffling, roaming
+			}
+
 			// TODO: (REMEMBER) IF PLAYER IN RANGE OF SIGHT LOCATED HERE, COULD IMPROVE & IMPLEMENT FOR OTHER ENEMY TYPES
 			if (mPlayer.GetPos().x >= (e.GetPos().x - enemyRange) &&
 				mPlayer.GetPos().x <= (e.GetPos().x + enemyRange)) { // player within - range on x
 				if (mPlayer.GetPos().z >= (e.GetPos().z - enemyRange) &&
 					mPlayer.GetPos().z <= (e.GetPos().z + enemyRange)) { // player within - range on z
-					e.LookAt(playerPosition);
+					if (e.mBehaviour == Enemy::Behaviour::CHASE) // MAYBE LOOK AT PLAYER IF CHANCE OF THIS IS ABOVE A THRESHOLD
+						e.LookAt(playerPosition); // enemy auto looks at the player if in range, overrides, shuffle & roam
 
 					if (shownAttackTutorial == false)
 					{
@@ -670,16 +710,24 @@ void PlayState::Update(const GameTimer& gt)
 			}
 
 			// enemy movement behaviour based on player radius
-			if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < enemyRange &&
-				!e.GetIfCanAttack())
+			if (DirectX::SimpleMath::Vector3::Distance(mPlayer.GetPos(), e.GetPos()) < enemyRange/* &&
+				!e.GetIfCanAttack()*/) // MAYBE CHANGE THE IF_CAN_ATTACK
 			{
-				e.mBehaviour = Enemy::Behaviour::CHASE;
+				//e.mBehaviour = Enemy::Behaviour::CHASE; // old code
+				e.player_proximity = true;
 			}
 			else
 			{
-				e.mBehaviour = Enemy::Behaviour::NONE;
+				//e.mBehaviour = Enemy::Behaviour::WAIT; // old code
+				e.player_proximity = false;
 			}
 		}
+
+		//TODO: (AI) MOVEMENT APPLIED HERE
+		if (e.mBehaviour == Enemy::Behaviour::CHASE)
+			e.SetVelocity(mPlayer.GetPos(), gt); // MOVEMENT FOR ENEMY
+		else
+			e.SetVelocity(e.dir, gt); // MOVEMENT FOR ENEMY
 
 		// enemy collision with player
 		if (mPlayer.CheckCollision(mPlayer.GetPos(), e.GetPos()) && e.GetHealth() > 0)
@@ -776,10 +824,6 @@ void PlayState::Update(const GameTimer& gt)
 		for (auto& t : mTraders)
 			if (e.CheckCollision(e.GetPos() + e.BouncebackPosition, t.GetPos()))		//If there is a collision between any of the traders and the bounceback position of the enemy
 				e.BouncebackPosition = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-
-		e.SetVelocity(mPlayer.GetPos(), gt);
-
-		
 
 		i++;
 

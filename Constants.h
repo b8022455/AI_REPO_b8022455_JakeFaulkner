@@ -116,6 +116,19 @@ namespace GC
 		WEAPONSTART = -40.0f,
 		WEAPONEND = 40.0f,
 
+		// TODO: (AI) BEHAVIOUR TIMERS HERE
+		SHORT_SHUFFLE = 0.5f,
+		MID_SHUFFLE = 1.0f,
+		LONG_SHUFFLE = 1.5f,
+
+		SHORT_ROAM = 2.0f,
+		MID_ROAM = 3.0f,
+		LONG_ROAM = 4.0f,
+
+		SHORT_TIMER = 5.0f,
+		MID_TIMER = 10.0f,
+		LONG_TIMER = 15.0f,
+
 		TILE_UV_INC = 1.0f/8.0f // tile is 1/8 of texture atlus
 		;
 	// (NOTE) NO HELP MESSAGE AT CURRENT FOR CAMERA ZOOM
@@ -293,7 +306,14 @@ namespace GC
 		DIRECTION_RGT({ 1.0f,	0.0f,	0.0f }),
 		DIRECTION_LFT({ -1.0f,	0.0f,	0.0f }),
 		DIRECTION_RAISE({ 0.0f,	1.0f,	0.0f }),
-		DIRECTION_LOWER({ 0.0f,	-1.0f,	0.0f })
+		DIRECTION_LOWER({ 0.0f,	-1.0f,	0.0f }),
+
+		EMPTYMOVE({ 0.0f, 0.0f , 0.0f }),
+		UPWARDS({ 0.0f, 0.0f, 100.0f }), // POSITIVE Z?
+		DOWNWARDS({ 0.0f, 0.0f, -100.0f }), // NEGATIVE Z?
+		LEFTWARDS({ -100.0f, 0.0f, 0.0f }), // NEGATIVE X?
+		RIGHTWARDS({ 100.0f, 0.0f, 0.0f }) // POSITIVE X?
+
 		;
 	const DirectX::XMFLOAT4
 		BUTTON_DOWN_COLOR({ 0.7f, 0.7f, 0.7f, 1.0f}),
@@ -302,7 +322,6 @@ namespace GC
 		TEXT_DARK_COLOR{ 0.2f, 0.2f, 0.2f, 1.0f},
 		TEXT_LIGHT_COLOR{ 1.0f, 1.0f, 1.0f, 1.0f }
 		;
-
 	
 	const long
 		// RECT
